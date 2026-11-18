@@ -1,0 +1,59 @@
+{
+ "file": "b-match-dictation.html",
+ "sheet": "examples\\design-review\\b-match-dictation-sheet.png",
+ "screens": {
+  "title": {
+   "deco_density": 0.699,
+   "empty_ratio": 0.281,
+   "colors": 52,
+   "hierarchy": 1.0,
+   "min_contrast": 5.01,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "question": {
+   "deco_density": 0.696,
+   "empty_ratio": 0.285,
+   "colors": 35,
+   "hierarchy": 1.0,
+   "min_contrast": 13.84,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "correct": {
+   "deco_density": 0.727,
+   "empty_ratio": 0.267,
+   "colors": 35,
+   "hierarchy": 1.03,
+   "min_contrast": 3.63,
+   "low_contrast": 2,
+   "overlaps": 0
+  },
+  "result": {
+   "deco_density": 0.755,
+   "empty_ratio": 0.242,
+   "colors": 48,
+   "hierarchy": 1.4,
+   "min_contrast": 4.54,
+   "low_contrast": 0,
+   "overlaps": 1
+  }
+ },
+ "summary": {
+  "deco_density": 0.712,
+  "empty_ratio": 0.276,
+  "colors": 35,
+  "hierarchy": 1.4,
+  "min_contrast": 3.63,
+  "overlaps": 0,
+  "title_empty_ratio": 0.281,
+  "title_deco_density": 0.699
+ },
+ "verdict": "WARN",
+ "hints": [
+  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
+ ],
+ "missing_screens": [
+  "wrong"
+ ]
+}

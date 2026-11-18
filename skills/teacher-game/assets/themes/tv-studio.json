@@ -1,0 +1,14 @@
+{
+ "id": "tv-studio",
+ "title": "생방송 퀴즈쇼 무대",
+ "desc": "LED 벽과 조명, ON AIR 간판이 반짝이는 방송 스튜디오에서 미스터 Q와 함께 퀴즈를 풀어요.",
+ "keywords": ["방송", "퀴즈쇼", "스튜디오", "박수", "생방송", "모둠"],
+ "subject": ["사회", "과학", "국어", "수학", "영어", "상식"],
+ "mood": ["upbeat", "신남", "화려함"],
+ "palette": {"bg1": "#0a0620", "bg2": "#26093f", "text": "#ffffff", "card": "#1c1038", "cardText": "#ffffff", "cardBorder": "#ffd23f", "primary": "#ffd23f", "btnText": "#1a0f2e", "accent": "#ff3d7f", "good": "#2bff88", "bad": "#ff3366"},
+ "fonts": {"display": "Black Han Sans"},
+ "host": true,
+ "motion": "high",
+ "baseTheme": "gameshow",
+ "bgType": "spot"
+}

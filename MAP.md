@@ -9,7 +9,7 @@
 ## 1. 요청 → 칸 찾기
 | 선생님 말 (예) | 칸 | 내려받을 폴더 |
 |---|---|---|
-| 게임, 퀴즈, 방탈출, 골든벨, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (quiz-show · escape-room · drag-deliver, 스킨 9) |
+| 게임, 퀴즈, 방탈출, 종 울리기, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (quiz-show · escape-room · drag-deliver, 스킨 9) |
 | 타이머, 뽑기, 모둠 나누기, 자리 바꾸기, 투표 | 🧰 수업 도구 | `skills/teacher-class-tools` (예정) 📋 |
 | 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (lesson-deck: chalkboard · clean-keynote · notebook-pastel) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |
@@ -60,5 +60,6 @@
 | `shared/fonts/` | Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
 | `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |
 | `shared/tools/stamp.py` | 결과 파일에 보이지 않는 만든이 표시(meta generator + 주석) | 게임·슬라이드·영상 조립 때 자동 |
+| `shared/assets/` | 디자인 소재(CC0 캐릭터 DiceBear·Tabler/Iconoir 아이콘·Open Color·ZzFX 효과음) + `manifest.json` | 게임 `theme:auto`가 `theme_auto.py`로 골라 씀 (쓴 것만 파일에 들어감) |
 | `shared/voice/voice.js` | 브라우저에서 가장 자연스러운 목소리를 골라 읽어 주기 (문장 나눔·15초 끊김 대책·iOS 대응) | 게임 조립 때 자동 포함 (`TSVoice.speak`) |
 | `shared/stage/` | 슬라이드·영상 공통 무대 | 기존대로 |

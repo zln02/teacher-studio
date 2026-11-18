@@ -44,7 +44,7 @@ AI는 **짧은 기획(spec) 한 장**만 쓴다. 엔진·부품·디자인·점�
 요청을 방식으로 바꾼다 (자세한 표는 spec-schema.md):
 | 요청 | mechanic |
 |---|---|
-| 퀴즈·골든벨·OX 퀴즈 | `quiz` |
+| 퀴즈·종 울리기·OX 퀴즈 | `quiz` |
 | 모둠 OX 서바이벌 | `survival` |
 | 방탈출·협동 미션 | `escape` |
 | 짝 맞추기·카드 뒤집기 | `match` |
@@ -52,15 +52,22 @@ AI는 **짧은 기획(spec) 한 장**만 쓴다. 엔진·부품·디자인·점�
 | 주사위 말판 | `board` |
 | 분류·끌어서 넣기 | `sort` |
 - spec에는 **내용(items) + 방식 + 디자인 방향(`design`: 과목·학년·분위기)** 만 적는다. 색·글꼴·글자 크기는 쓰지 않는다(도구가 정한다).
-- 예시 7개: `assets/spec-examples/*.json` (자기 요청과 가장 가까운 것을 복사해 내용만 바꾼다).
+- 예시 10개: `assets/spec-examples/*.json` (자기 요청과 가장 가까운 것을 복사해 내용만 바꾼다).
 
 ### 4단계 · 만들기 + 점검 (한 번에)
 ```
 python3 scripts/build.py --spec spec.json --out game.html
 ```
 (= 디자인 값 계산 `scripts/design.py` → 엔진+부품+테마 조립 → `scripts/check_game.py`. 한 번에 안 되면 출력이 **spec의 고칠 곳**으로 알려 준다.)
-- 같은 말로 다른 모양: `design.seed`를 바꾼다. 다른 느낌: `design.theme`(default·notebook·spotlight), `mood`.
+- **모양은 기본이 `theme:"auto"`**: spec의 `design.words`(우주·바다·동화·긴장감·따뜻하게·고급스럽게·역사 …)와 `mood`로 `scripts/theme_auto.py`가 배경 장면·도우미 캐릭터·소품·축하 연출·제목 글꼴·음악을 **조합**해요 (같은 말 → 같은 결과). 요청이 한 세계를 분명히 가리킬 때만(예: 「방송국 퀴즈쇼」→ tv-studio, 「거북선」→ joseon-war-room, 「분리배출」→ recycle-robot) 이식 테마 한 벌이 그대로 나와요. 기본 3종(default·notebook·spotlight)은 `design.theme`로 직접 고를 때만.
+- 같은 말로 다른 모양: `design.seed`를 바꾼다.
 - FAIL이 있으면 spec을 고쳐 다시 실행. WARN은 이유가 있으면 둔다. 이어서 `references/qa-checklist.md`.
+
+### 4.2단계 · 디자인 점검 (보여 주기 전에 꼭)
+```
+python3 scripts/design_review.py game.html --out review/
+```
+제목·문제·정답·오답·결과 화면을 찍어 **접촉 시트 PNG**와 수치(장식 밀도·휑함·색 수·시선·글자 대비·겹침)를 만든다. **PNG를 직접 눈으로 보고** `references/design-rubric.md` 8가지(장면·시선·휑함·캐릭터/소품·축하 연출 …)를 확인 → 모자라면 spec의 `design.words`/`mood`/`seed`만 고쳐 다시 build (최대 2번). 수치가 옛 스킨 9개 기준보다 낮으면 WARN과 고칠 방법이 나온다.
 - 한 줄 명령: `python3 ../teacher-studio/scripts/studio.py build game --spec spec.json --open`
 
 ### 4.5단계 · 직접 코드가 필요할 때만
@@ -108,4 +115,6 @@ python3 scripts/build.py --spec spec.json --out game.html
 | `references/classroom.md` · `qa-checklist.md` · `legal-advisory.md` | 크기 기준 / 최종 점검 / 저작권 권고 |
 | `references/engine-api.md` | 직접 코드 때만 |
 | `scripts/design.py` · `build.py` · `check_game.py` | 디자인 값 / 조립 / 점검 |
+| `scripts/theme_auto.py` · `assets/themes/` | 분위기 낱말 → 부품 조합(배경·캐릭터·소품·연출). 이식 테마 9개는 완성품이 아니라 **부품 창고**(진행자 캐릭터·무대 장치·배경)예요 |
+| `scripts/design_review.py` · `references/design-rubric.md` | 디자인 점검(그림 보기 + 수치) |
 | `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 목소리 `voice/voice.js`(자동 포함), 보이지 않는 만든이 표시 `tools/stamp.py`(자동), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |

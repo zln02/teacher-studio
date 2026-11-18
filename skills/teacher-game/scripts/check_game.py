@@ -18,6 +18,9 @@ import json
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+SILENT_JS = ("(function(){try{if(window.speechSynthesis){window.speechSynthesis.speak=function(){};}}catch(e){}"
+             "try{if(window.AudioNode&&window.AudioDestinationNode){var oc=AudioNode.prototype.connect;AudioNode.prototype.connect=function(d){if(d instanceof AudioDestinationNode)return d;return oc.apply(this,arguments);};}}catch(e){}})()")  # tests stay silent
+MUTE = ["--mute-audio"]
 sys.path.insert(0, str(HERE))
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
@@ -160,13 +163,14 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
             b = None
             for kw in ({}, {"channel": "chrome"}, {"channel": "msedge"}):
                 try:
-                    b = p.chromium.launch(**kw)
+                    b = p.chromium.launch(args=MUTE, **kw)
                     break
                 except Exception:
                     continue
             if b is None:
                 return [("WARN", "no headless browser found (playwright chromium / Chrome / Edge): autoplay skipped, static checks only")]
             pg = b.new_page(viewport={"width": 1920, "height": 1080})
+            pg.add_init_script(SILENT_JS)
             pg.on("pageerror", lambda e: errors.append(str(e)[:160]))
             pg.goto(path.resolve().as_uri())
             pg.wait_for_timeout(600)

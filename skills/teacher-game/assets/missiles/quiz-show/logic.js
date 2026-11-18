@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
-/* MISSILE: quiz-show — 팀 퀴즈쇼 / 골든벨 / OX (객관식·OX 혼합) + 세계관 무대
+/* MISSILE: quiz-show — 팀 퀴즈쇼 / 강당 종 울리기 / OX (객관식·OX 혼합) + 세계관 무대
    Based on assets/kits/quiz-show.js (kit itself is untouched).
    GAME.items = [{ type:"mc"|"ox", q:"문제", choices:["보기1",...], answer:0, exp:"해설" }]
      OX는 choices 생략 가능 (answer: 0=O, 1=X). 보너스: GAME.bonusEvery (기본 4문제마다 2배)
@@ -159,7 +159,7 @@ window.GAME_LOGIC = (function(){
     };
   }
 
-  /* ---------- golden bell ---------- */
+  /* ---------- auditorium bell ---------- */
   function bellSVG(size){
     var id = "qsbg" + (++uid), g1 = C("bell", "#ffd54a"), g2 = C("bellDeep", "#c98a12"), o = C("bellLine", "#6b3f05");
     return '<svg class="qs-bellsvg" viewBox="0 0 200 230" width="' + size + '" height="' + Math.round(size * 1.15) + '"><defs><linearGradient id="' + id + '" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="' + g2 + '"/><stop offset=".32" stop-color="' + g1 + '"/><stop offset=".52" stop-color="#fff6c8"/><stop offset=".72" stop-color="' + g1 + '"/><stop offset="1" stop-color="' + g2 + '"/></linearGradient></defs>' +

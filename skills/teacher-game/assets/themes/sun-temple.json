@@ -1,0 +1,18 @@
+{
+  "id": "sun-temple",
+  "title": "태양 신전의 봉인 style 고대 신전 탐험",
+  "desc": "맞힐 때마다 태양 문양이 깨어나고, 틀리면 천장이 내려오는 고대 신전이에요.",
+  "keywords": ["신전", "태양", "탐험", "고대", "유적", "횃불", "모험", "문명"],
+  "subject": ["역사", "사회", "세계사", "국어"],
+  "mood": ["긴장감", "도전", "신비"],
+  "baseTheme": "detective",
+  "palette": {
+    "bg1": "#1a1009", "bg2": "#3c2817", "text": "#fff1cc",
+    "card": "#f6e8c4", "cardText": "#2a1c10", "cardBorder": "#7a5530",
+    "primary": "#35c2ad", "btnText": "#06241f", "accent": "#e2a93a",
+    "good": "#2f6b2f", "bad": "#a3281c"
+  },
+  "fonts": { "display": "Black Han Sans", "body": "Noto Sans KR" },
+  "host": true,
+  "motion": "high"
+}

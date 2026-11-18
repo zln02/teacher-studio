@@ -1,11 +1,11 @@
 # 게임 기획 한 장 (spec) — 요청을 부품으로 바꾸는 표
 
-AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향). 엔진·부품·디자인·점검은 도구가 맡는다. 형식 전체는 `spec.schema.json`, 예시 7개는 `assets/spec-examples/`.
+AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향). 엔진·부품·디자인·점검은 도구가 맡는다. 형식 전체는 `spec.schema.json`, 예시 10개는 `assets/spec-examples/`.
 
 ## 1. 요청 → 방식(mechanic)
 | 선생님·사용자 말 | mechanic | items 한 칸 | 비고 |
 |---|---|---|---|
-| 퀴즈·골든벨·복습·OX 퀴즈 | `quiz` | `{q, choices[2~4], answer, exp}` 또는 `{type:"ox", q, answer:0/1}` | 팀 차례제, 보너스, 틀린 문제만 다시 |
+| 퀴즈·종 울리기·복습·OX 퀴즈 | `quiz` | `{q, choices[2~4], answer, exp}` 또는 `{type:"ox", q, answer:0/1}` | 팀 차례제, 보너스, 틀린 문제만 다시 |
 | 모둠 OX 서바이벌·탈락전 | `survival` | OX 문제만 | 팀마다 라이프, 마지막 생존 팀 우승 (`lives`) |
 | 방탈출·미션·협동 | `escape` | quiz 형식 + `clue`(단서 글자) | 자물쇠 3~6개, 제한 시간(`seconds`), 오답 시간 감점 |
 | 짝 맞추기·카드 뒤집기·받아쓰기 낱말 | `match` | `{a, b}` | 3~8쌍 |
@@ -23,7 +23,8 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `rounds` / `timer` | 전부 / 없음 | 수업 시작 5분 → 문제 5~6개. 칠판 팀전은 timer 20~30 |
 | `design.subject/grade/mood` | 과목·학년·분위기 | 분위기: 긴장감·신남·차분·따뜻함·밝음 (「따뜻하게」「고급스럽게」 같은 말도 알아들어요) |
 | `design.large` | false | 어르신·먼 화면 → true (personal에서 칠판 수준 글자) |
-| `design.theme` | default | notebook(필기 느낌·개인), spotlight(쇼 느낌) |
+| `design.theme` | **auto** | 기본은 auto. 요청이 한 세계를 분명히 가리킬 때만 이름 지정: `tv-studio`(방송국 퀴즈쇼) · `auditorium-bell`(강당 종 울리기) · `space-station` · `joseon-war-room`(거북선·임진왜란) · `antidote-lab`(해독제·연구소) · `sun-temple`(유적·이집트) · `post-office-night`(우체국) · `cell-feeding`(세포) · `recycle-robot`(분리배출). 그 밖에 notebook(필기 느낌)·spotlight(쇼 느낌)·default |
+| `design.words` | 없음 | auto일 때 장면 낱말 목록: 우주·바다·동화·숲·역사·긴장감·따뜻하게·고급스럽게·송년·스포츠·과학 … 도우미 캐릭터·배경·소품·축하 연출·글꼴·음악이 낱말로 정해져요 (낱말이 없으면 제목·과목·분위기에서 찾아요) |
 | `libs` | 없음 | 필요한 부품만 파일에 넣기: confetti(꽃가루)·katex(수식)·lucide(아이콘)·chartjs·anime·phaser(크다, 정말 필요할 때만). `motion`은 2020년 이전 크롬에서 안 돌아가서 `allow_modern:true`를 함께 적어야만 들어가요(아니면 만들기가 멈추고 anime.js를 권해요) |
 | `allow_modern` | false | `libs`에 `motion`을 꼭 넣어야 할 때만 true (점검기는 주의로 표시) |
 | `credit` | false | **선생님이 원할 때만** true → 결과 화면에 작게 「교사 스튜디오로 만듦」. 기본은 화면에 아무 표시도 없어요 (파일 속 보이지 않는 정보와 선생님 메뉴 맨 아래 「만든 도구」 줄만 있어요) |

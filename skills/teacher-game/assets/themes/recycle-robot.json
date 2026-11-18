@@ -1,0 +1,12 @@
+{
+  "id": "recycle-robot",
+  "title": "분리수거 로봇 공장",
+  "desc": "맞힐 때마다 공장이 깨끗해지고 로봇 배터리가 차올라요.",
+  "keywords": ["분리수거", "환경", "로봇", "공장", "과학", "물질", "재활용"],
+  "subject": ["과학", "환경", "실과", "기술"],
+  "mood": ["상쾌", "신남", "탐구", "밝음"],
+  "palette": {"bg1": "#13293a", "bg2": "#24485a", "text": "#e9fffb", "card": "#f4f8fb", "cardText": "#13293a", "cardBorder": "#3ecbb8", "primary": "#ff9f43", "btnText": "#2a1405", "accent": "#7cf7c8", "good": "#1f9a5a", "bad": "#e0483f"},
+  "fonts": {"display": "Do Hyeon"},
+  "host": true,
+  "motion": "high"
+}

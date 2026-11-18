@@ -5,7 +5,7 @@
 ## 연결표
 | 방식 | 핵심 동작 | 잘 맞는 내용 | 부품 |
 |---|---|---|---|
-| 퀴즈쇼·골든벨·OX | 고르기 | 모든 과목, 팀전 | `assets/kits/quiz-show.js` (그대로) |
+| 퀴즈쇼·종 울리기·OX | 고르기 | 모든 과목, 팀전 | `assets/kits/quiz-show.js` (그대로) |
 | 달리는 섬 고르기 | 움직이는 대상 누르기 | 개념 확인, 개인/팀 | `assets/examples/lighthouse-runner.js` 변형 |
 | 블록 점프(횡스크롤) | 걸어가서 정답 블록 치기 | 저학년 느낌, 사실 확인 | `assets/examples/block-jump.js` + `packs:["kenney-platformer-core"]` |
 | 끌어서 배달·분류 | 끌기 → 칸에 놓기 | 단어 뜻, 분류(생물/무생물), 짝짓기 | 직접 작성: `NG.drag` + `NG.hitTest` |

@@ -13,7 +13,10 @@
   "mood": "따뜻함",
   "seed": 6,
   "large": true,
-  "theme": "notebook"
+  "words": [
+   "가족",
+   "따뜻하게"
+  ]
  },
  "items": [
   {

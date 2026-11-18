@@ -55,6 +55,27 @@ This product includes third-party components:
     at view time; GSAP is governed by GSAP's own Standard License (gsap.com/standard-license), not by this project's license.
     Default animations use Motion, anime.js and CSS.
 
+13. DiceBear avatar styles thumbs, lorelei, shapes, rings, glass, identicon, pixel-art 9.4.2 — pre-rendered SVGs (seeds a-l; lorelei also
+     happy/sad variants), made with @dicebear/core 9.4.3 (Copyright (c) 2024 Florian Körner — MIT License; render tool only, not bundled).
+     Artwork: CC0 1.0 Universal (public domain dedication, https://creativecommons.org/publicdomain/zero/1.0/); no permission or credit is
+     required, given here as a courtesy. Designers/sources: thumbs, shapes, rings, glass, identicon — DiceBear (dicebear.com);
+     lorelei — Lisa Wischofsky (instagram.com/lischi_art); pixel-art — DiceBear (Figma community "Pixel Art").
+     Location: shared/assets/characters/dicebear/ (license texts: LICENSE-<style>.txt). Unmodified renderer output.
+
+14. Tabler Icons 3.52.0 (outline subset) — Copyright (c) 2020-2026 Paweł Kuna — MIT License
+     Location: shared/assets/icons/tabler/ (LICENSE in that folder). Unmodified.
+
+15. Iconoir 7.12.2 (regular subset) — Copyright (c) 2021 Luca Burgio — MIT License
+     Location: shared/assets/icons/iconoir/ (LICENSE in that folder). Unmodified.
+
+16. Open Color 1.9.1 — Copyright (c) 2016 heeyeun — MIT License
+     Location: shared/assets/colors/ (LICENSE in that folder). Unmodified.
+
+17. ZzFX Micro 1.4.0 — Copyright (c) 2019 Frank Force — MIT License
+     Location: shared/assets/sfx/zzfx.js (LICENSE in that folder).
+     Modification: one syntax-only change (`jump ||= 1` -> `jump = jump || 1`) for older Chrome; line endings CRLF -> LF.
+     shared/assets/sfx/presets.json (the 16 named sound parameter lists) is original work of this project (Apache-2.0).
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 

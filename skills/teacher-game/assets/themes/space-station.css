@@ -1,0 +1,8 @@
+/* THEME space-station — card/button look only (decoration, never layout): cut-corner HUD panels with a cyan glow. */
+body[data-world="space-station"] .ts-q{border-radius:8px 40px 8px 40px;box-shadow:0 0 0 3px rgba(92,242,255,.35),0 0 36px rgba(92,242,255,.35),0 10px 0 rgba(0,0,0,.4);background-image:repeating-linear-gradient(0deg,rgba(92,242,255,.05) 0 2px,transparent 2px 6px)}
+body[data-world="space-station"] .ts-choice{border-radius:8px 30px 8px 30px}
+body[data-world="space-station"] .ts-choice .mark{border-radius:14px;background:#5cf2ff;color:#06122a;box-shadow:0 0 14px #5cf2ff}
+body[data-world="space-station"] .ts-ox{border-radius:8px 40px 8px 40px}
+body[data-world="space-station"] .ts-explcard{border-radius:8px 30px 8px 30px;background-image:repeating-linear-gradient(0deg,rgba(92,242,255,.06) 0 2px,transparent 2px 6px)}
+body[data-world="space-station"] .ts-chip{border-radius:10px 24px 10px 24px}
+body[data-world="space-station"] .ts-tile,body[data-world="space-station"] .ts-lock,body[data-world="space-station"] .ts-teambox{border-radius:8px 28px 8px 28px;box-shadow:0 0 20px rgba(92,242,255,.3),0 8px 0 rgba(0,0,0,.35)}

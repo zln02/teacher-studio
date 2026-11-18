@@ -1,0 +1,66 @@
+{
+ "file": "j-tv-quiz-dokdo.html",
+ "sheet": "examples\\design-review\\j-tv-quiz-dokdo-sheet.png",
+ "screens": {
+  "title": {
+   "deco_density": 0.389,
+   "empty_ratio": 0.535,
+   "colors": 43,
+   "hierarchy": 2.68,
+   "min_contrast": 12.63,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "question": {
+   "deco_density": 0.367,
+   "empty_ratio": 0.377,
+   "colors": 45,
+   "hierarchy": 3.28,
+   "min_contrast": 5.01,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "correct": {
+   "deco_density": 0.446,
+   "empty_ratio": 0.24,
+   "colors": 40,
+   "hierarchy": 5.53,
+   "min_contrast": 5.01,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "wrong": {
+   "deco_density": 0.426,
+   "empty_ratio": 0.378,
+   "colors": 46,
+   "hierarchy": 1.33,
+   "min_contrast": 3.55,
+   "low_contrast": 3,
+   "overlaps": 0
+  },
+  "result": {
+   "deco_density": 0.706,
+   "empty_ratio": 0.226,
+   "colors": 38,
+   "hierarchy": 1.5,
+   "min_contrast": 11.63,
+   "low_contrast": 0,
+   "overlaps": 1
+  }
+ },
+ "summary": {
+  "deco_density": 0.413,
+  "empty_ratio": 0.332,
+  "colors": 43.667,
+  "hierarchy": 5.53,
+  "min_contrast": 3.55,
+  "overlaps": 0,
+  "title_empty_ratio": 0.535,
+  "title_deco_density": 0.389
+ },
+ "verdict": "WARN",
+ "hints": [
+  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
+ ],
+ "missing_screens": []
+}

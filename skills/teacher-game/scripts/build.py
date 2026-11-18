@@ -33,6 +33,7 @@ SKILL = HERE.parent
 sys.path.insert(0, str(HERE))
 import design  # noqa: E402  (shim -> shared/design/design.py)
 import specs  # noqa: E402
+import theme_auto  # noqa: E402
 
 for _sub in ("fonts", "vendor", "tools"):
     sys.path.insert(0, str(SKILL / "shared" / _sub))
@@ -48,15 +49,55 @@ FOOT = "\nreturn COMP.boot();\n})();\n"
 
 def theme_for(tokens: dict, spec: dict) -> str:
     """Pick the theme module: explicit design.theme, else default."""
-    t = (spec.get("design") or {}).get("theme") or tokens.get("theme") or "default"
-    return t if (THEMES / f"{t}.js").exists() else "default"
+    t = (spec.get("design") or {}).get("theme") or tokens.get("theme") or "auto"  # auto is the default look
+    if t == "auto":
+        named = theme_auto.compose(spec)["named"]  # a request that clearly names one ported world uses it as is
+        t = named or "auto"
+    return t if (THEMES / f"{t}.js").exists() else "auto"
+
+
+def theme_meta(theme: str) -> dict:
+    """assets/themes/<id>.json: title, palette, fonts, host(bool), moods, subjects (Python-side facts about a theme)."""
+    f = THEMES / f"{theme}.json"
+    return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
 
 
 def make_tokens(spec: dict) -> dict:
     """Tokens from the design block (deterministic)."""
     d = spec.get("design") or {}
     tk = design.generate(d.get("subject", ""), int(d.get("grade", 5)), d.get("mood", ""), spec.get("use", "class"),
-                         int(d.get("seed", 0)), bool(d.get("large", False)), d.get("theme", "default"))
+                         int(d.get("seed", 0)), bool(d.get("large", False)), d.get("theme", "auto"))
+    th = theme_for(tk, spec)
+    tk["theme"] = th
+    meta = theme_meta(th)
+    if meta.get("palette"):  # a ported theme brings its own scene palette (contrast is re-validated below)
+        tk["colors"].update(meta["palette"])
+        tk["palette"] = th
+        for k in ("baseTheme", "bgType"):
+            if meta.get(k):
+                tk[k] = meta[k]
+        tk["contrast"] = {"text_on_bg": round(min(design.contrast(tk["colors"]["text"], tk["colors"]["bg1"]), design.contrast(tk["colors"]["text"], tk["colors"]["bg2"])), 2),
+                          "cardText_on_card": round(design.contrast(tk["colors"]["cardText"], tk["colors"]["card"]), 2),
+                          "btnText_on_primary": round(design.contrast(tk["colors"]["btnText"], tk["colors"]["primary"]), 2)}
+    if th == "auto":  # mood words -> composed look (scripts/theme_auto.py)
+        au = theme_auto.compose(spec, tk)
+        if au.get("palette"):
+            tk["colors"].update(au["palette"])
+            tk["palette"] = "auto-" + au["recipe"]
+            tk["contrast"] = {"text_on_bg": round(min(design.contrast(tk["colors"]["text"], tk["colors"]["bg1"]), design.contrast(tk["colors"]["text"], tk["colors"]["bg2"])), 2),
+                              "cardText_on_card": round(design.contrast(tk["colors"]["cardText"], tk["colors"]["card"]), 2),
+                              "btnText_on_primary": round(design.contrast(tk["colors"]["btnText"], tk["colors"]["primary"]), 2)}
+        if au.get("baseTheme"):
+            tk["baseTheme"] = au["baseTheme"]
+        if au.get("fonts"):
+            tk["fonts"] = {**au["fonts"], "embeddable": au["fonts"]["display"].startswith("Noto")}
+        if au.get("motion") and tk["motion"] != "calm":
+            tk["motion"] = au["motion"]
+        meta = {"host": True, "music": au.get("music")}
+    if meta.get("fonts"):
+        tk["fonts"] = {"display": meta["fonts"]["display"], "body": meta["fonts"].get("body", tk["fonts"]["body"]), "embeddable": False}
+    if meta.get("motion") and tk["motion"] != "calm":
+        tk["motion"] = meta["motion"]
     return tk
 
 
@@ -90,23 +131,34 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     teams = spec.get("teams", 0)
     spec_out = {k: v for k, v in spec.items() if k not in ("items", "title", "subtitle")}
     spec_out["tokens"] = tokens
+    music = theme_meta(theme_for(tokens, spec)).get("music")
+    if theme_for(tokens, spec) == "auto":
+        au = theme_auto.compose(spec, tokens)
+        spec_out["autoTheme"] = au["config"]
+        music = au.get("music")
     spec_out["device"] = device
+    theme = theme_for(tokens, spec)
     data = {
         "title": spec["title"], "subtitle": spec.get("subtitle", ""), "theme": tokens["baseTheme"],
         "themeOverride": {"primary": c["primary"], "accent": c["accent"], "bg1": c["bg1"], "bg2": c["bg2"], "text": c["text"], "muted": c["text"],
                           "card": c["card"], "cardBorder": c["cardBorder"], "cardText": c["cardText"], "btnText": c["btnText"],
-                          "good": c["good"], "bad": c["bad"], "font": '"%s"' % tokens["fonts"]["display"], "glow": "none"},
+                          "good": c["good"], "bad": c["bad"], "font": '"%s"' % tokens["fonts"]["display"], "glow": "none", **({"mood": music} if music else {})},
         "credit": spec.get("credit") is True, "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
         "music": bool(tokens["sound"]["music"]) and spec.get("music", True), "calm": tokens["motion"] == "calm",
-        "mascots": device != "phone" and use == "class", "items": items, "spec": spec_out,
+        "mascots": device != "phone" and use == "class" and theme not in ("auto",) and not theme_meta(theme).get("host"), "items": items, "spec": spec_out,
     }
-    theme = theme_for(tokens, spec)
     parts = [(COMP / "core.js").read_text(encoding="utf-8"), (COMP / f"{mech}.js").read_text(encoding="utf-8"),
              (THEMES / "default.js").read_text(encoding="utf-8")]
+    if theme == "auto":  # parts of ported themes (hosts, staging) used by the composed look
+        for pt in theme_auto.compose(spec, tokens)["config"]["partThemes"]:
+            parts.append((THEMES / f"{pt}.js").read_text(encoding="utf-8"))
     if theme != "default":
         parts.append((THEMES / f"{theme}.js").read_text(encoding="utf-8"))
     logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
-    css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8") + "\n/* TS:CSS END */\n"
+    css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8")
+    if (THEMES / f"{theme}.css").exists():
+        css += "\n" + (THEMES / f"{theme}.css").read_text(encoding="utf-8")
+    css += "\n/* TS:CSS END */\n"
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
         (td / "d.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")

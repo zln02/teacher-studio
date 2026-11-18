@@ -11,7 +11,11 @@
   "subject": "과학",
   "grade": 4,
   "mood": "신남",
-  "seed": 5
+  "seed": 5,
+  "words": [
+   "우주",
+   "신남"
+  ]
  },
  "items": [
   {

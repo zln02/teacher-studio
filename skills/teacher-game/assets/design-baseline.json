@@ -1,0 +1,206 @@
+{
+ "_note": "Measured on the 9 legacy skins (play screen). Spec builds below these thresholds get a WARN with hints.",
+ "skins": [
+  {
+   "skin": "drag-deliver-cell-feed",
+   "title": {
+    "deco_density": 0.086,
+    "empty_ratio": 0.686,
+    "colors": 52,
+    "hierarchy": 1.0,
+    "min_contrast": 2.81,
+    "low_contrast": 10,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.143,
+    "empty_ratio": 0.513,
+    "colors": 53,
+    "hierarchy": 1.42,
+    "min_contrast": 8.23,
+    "low_contrast": 0,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "drag-deliver-post-office",
+   "title": {
+    "deco_density": 0.254,
+    "empty_ratio": 0.552,
+    "colors": 36,
+    "hierarchy": 3.21,
+    "min_contrast": 2.59,
+    "low_contrast": 2,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.328,
+    "empty_ratio": 0.428,
+    "colors": 45,
+    "hierarchy": 1.57,
+    "min_contrast": 1.11,
+    "low_contrast": 1,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "drag-deliver-recycle",
+   "title": {
+    "deco_density": 0.285,
+    "empty_ratio": 0.501,
+    "colors": 31,
+    "hierarchy": 1.32,
+    "min_contrast": 7.28,
+    "low_contrast": 0,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.331,
+    "empty_ratio": 0.394,
+    "colors": 35,
+    "hierarchy": 1.77,
+    "min_contrast": 1.17,
+    "low_contrast": 1,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "escape-room-joseon",
+   "title": {
+    "deco_density": 0.192,
+    "empty_ratio": 0.537,
+    "colors": 45,
+    "hierarchy": 3.13,
+    "min_contrast": 1.1,
+    "low_contrast": 1,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.191,
+    "empty_ratio": 0.538,
+    "colors": 45,
+    "hierarchy": 3.13,
+    "min_contrast": 1.1,
+    "low_contrast": 1,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "escape-room-lab",
+   "title": {
+    "deco_density": 0.16,
+    "empty_ratio": 0.574,
+    "colors": 30,
+    "hierarchy": 3.13,
+    "min_contrast": 10.74,
+    "low_contrast": 0,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.16,
+    "empty_ratio": 0.575,
+    "colors": 30,
+    "hierarchy": 3.13,
+    "min_contrast": 10.74,
+    "low_contrast": 0,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "escape-room-temple",
+   "title": {
+    "deco_density": 0.174,
+    "empty_ratio": 0.514,
+    "colors": 39,
+    "hierarchy": 3.13,
+    "min_contrast": 1.03,
+    "low_contrast": 1,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.175,
+    "empty_ratio": 0.512,
+    "colors": 39,
+    "hierarchy": 3.13,
+    "min_contrast": 1.03,
+    "low_contrast": 1,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "quiz-show-golden-bell",
+   "title": {
+    "deco_density": 0.396,
+    "empty_ratio": 0.391,
+    "colors": 54,
+    "hierarchy": 3.26,
+    "min_contrast": 6.22,
+    "low_contrast": 0,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.412,
+    "empty_ratio": 0.273,
+    "colors": 50,
+    "hierarchy": 4.77,
+    "min_contrast": 2.83,
+    "low_contrast": 6,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "quiz-show-space-quiz",
+   "title": {
+    "deco_density": 0.242,
+    "empty_ratio": 0.549,
+    "colors": 38,
+    "hierarchy": 3.26,
+    "min_contrast": 12.93,
+    "low_contrast": 0,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.245,
+    "empty_ratio": 0.371,
+    "colors": 42,
+    "hierarchy": 1.38,
+    "min_contrast": 13.83,
+    "low_contrast": 0,
+    "overlaps": 0
+   }
+  },
+  {
+   "skin": "quiz-show-tv-studio",
+   "title": {
+    "deco_density": 0.495,
+    "empty_ratio": 0.437,
+    "colors": 34,
+    "hierarchy": 3.41,
+    "min_contrast": 3.65,
+    "low_contrast": 2,
+    "overlaps": 0
+   },
+   "play": {
+    "deco_density": 0.486,
+    "empty_ratio": 0.332,
+    "colors": 36,
+    "hierarchy": 5.53,
+    "min_contrast": 4.42,
+    "low_contrast": 1,
+    "overlaps": 0
+   }
+  }
+ ],
+ "thresholds": {
+  "deco_density_min": 0.129,
+  "empty_ratio_max": 0.632,
+  "colors_min": 27,
+  "median": {
+   "deco_density": 0.245,
+   "empty_ratio": 0.428,
+   "colors": 42,
+   "hierarchy": 3.13,
+   "min_contrast": 2.83
+  }
+ }
+}

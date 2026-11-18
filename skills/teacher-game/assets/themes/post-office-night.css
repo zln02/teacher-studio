@@ -1,0 +1,6 @@
+/* post-office-night: parchment cards with a wooden frame and a warm lantern glow (decoration only) */
+body[data-world="post-office-night"] .ts-q,body[data-world="post-office-night"] .ts-explcard,body[data-world="post-office-night"] .ts-clue{border:7px solid #8a5a2b;border-radius:26px;box-shadow:0 8px 0 #5a3a1a,0 0 30px rgba(255,210,63,.35)}
+body[data-world="post-office-night"] .choice,body[data-world="post-office-night"] .ts-tile,body[data-world="post-office-night"] .ts-lock,body[data-world="post-office-night"] .ts-teambox{border:6px solid #8a5a2b;border-radius:22px;box-shadow:0 6px 0 #5a3a1a}
+body[data-world="post-office-night"] .ts-pill,body[data-world="post-office-night"] .ts-chip{border-color:#8a5a2b;box-shadow:0 4px 0 #5a3a1a}
+body[data-world="post-office-night"] .ts-next,body[data-world="post-office-night"] .ts-oxbtns button{border:5px solid #8a5a2b;box-shadow:0 6px 0 #5a3a1a}
+body[data-world="post-office-night"] #ts-bubble{background:#fff4dc;color:#3b2412;border-color:#8a5a2b;box-shadow:0 8px 0 rgba(0,0,0,.3)}

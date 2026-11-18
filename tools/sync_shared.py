@@ -27,7 +27,7 @@ STAGE_SKILLS = ("teacher-motion", "teacher-slides")
 
 # what each skill gets under skills/<skill>/shared/  (vendor = ids from shared/vendor/manifest.json)
 PLAN = {
-    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
+    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
     "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti"]},
     "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
     "teacher-studio": {"design": False, "fonts": False, "tools": True, "vendor": []},
@@ -64,6 +64,10 @@ def expected() -> dict[Path, bytes]:
         if cfg["tools"]:
             for tool in ("ensure.py", "stamp.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
+        if cfg.get("assets"):  # design asset arsenal (characters, icons, colors, sfx) - see shared/assets/manifest.json
+            for f in _files(SHARED / "assets"):
+                if f.name != "verify_assets.py":
+                    add(f, base / "assets" / f.relative_to(SHARED / "assets"))
         if cfg.get("voice"):
             add(SHARED / "voice" / "voice.js", base / "voice" / "voice.js")
         if cfg["vendor"]:

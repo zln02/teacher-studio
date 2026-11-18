@@ -26,7 +26,7 @@ license: Apache-2.0
 · 법률 안내: …
 
 무엇을 만들까요? 번호나 말로 편하게 말씀해 주세요.
-1. 🎮 수업 게임 — 퀴즈쇼·골든벨 / 방탈출 / 끌어서 보내기(단어·분류)
+1. 🎮 수업 게임 — 퀴즈쇼·종 울리기 / 방탈출 / 끌어서 보내기(단어·분류)
 2. 🖥 수업 슬라이드 — 칠판 / 깔끔한 발표 / 파스텔 노트
 3. ✨ 과목 소개 영상 — 첫 시간에 틀 30~40초 영상
 4. ⏱ 수업 시작 화면 — 카운트다운 + 오늘의 주제
@@ -52,7 +52,7 @@ license: Apache-2.0
 ## 3. 요청 → 미사일 (빠른 길)
 | 선생님 말 | 명령 |
 |---|---|
-| 퀴즈, 골든벨, OX, 칠판 모둠전 | `studio.py fire game/quiz-show/<tv-studio·golden-bell·space-quiz>` |
+| 퀴즈, 종 울리기, OX, 칠판 모둠전 | `studio.py fire game/quiz-show/<tv-studio·golden-bell·space-quiz>` |
 | 방탈출, 미션, 협동, 긴장감 | `studio.py fire game/escape-room/<joseon·lab·temple>` |
 | 단어 뜻, 분류, 짝, 끌어서, 태블릿 | `studio.py fire game/drag-deliver/<post-office·cell-feed·recycle>` |
 | 수업 PPT(웹), 발표 자료, 연수 자료 | `studio.py fire slides/lesson-deck/<chalkboard·clean-keynote·notebook-pastel>` |

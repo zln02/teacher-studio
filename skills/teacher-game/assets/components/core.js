@@ -113,21 +113,82 @@ H.finish = function(extra){
   NG.finish(d);
 };
 
-/* background from the chosen theme (default derives everything from tokens) */
+/* ---- theme runtime ----
+   A theme is COMP.themes[id] = { paint(ctx,t,dt,W,H,TK,S), host:{svg(TK),name,lines:{title,start,correct,wrong,win,lose}},
+   deco(TK)->html, sfx(), onReact(kind,S,TK), celebrate(S,TK) }. The metadata (palette, fonts, moods) lives in <id>.json.
+   S = COMP.S is the shared show state: progress 0..1 (from NG.hud.setProgress), cheer/miss pulses (decay to 0),
+   misses (count), win (0/1 after the game ends). Every mechanic feeds it, so any theme works with any mechanic. */
+var S = COMP.S = { progress: 0, cheer: 0, miss: 0, misses: 0, win: 0, lose: 0, scene: "title" };
+H.theme = function(){ return COMP.themes[TK.theme] || COMP.themes["default"]; };
+H.lines = function(kind){ var h = H.theme().host, l = h && h.lines && h.lines[kind]; return l && l.length ? U.pick(l) : ""; };
+H.hostEl = function(){ return document.querySelector("#ts-deco .ts-host"); };
+H.mood = function(m){ var e = H.hostEl(); if (e) e.setAttribute("data-mood", m || "idle"); };
+H.sayHost = function(text, ms){
+  var b = document.getElementById("ts-bubble"); if (!b) return;
+  if (!text){ b.className = "empty"; return; }
+  b.firstChild.textContent = text; b.className = ""; NG.fx.pop(b);
+  if (H._bt) NG.cancel(H._bt);
+  H._bt = NG.after(ms || 2400, function(){ b.className = "empty"; });
+};
+H.react = function(kind){
+  var th = H.theme(), e = H.hostEl();
+  if (kind === "correct"){ S.cheer = 1; } else if (kind === "wrong"){ S.miss = 1; S.misses++; }
+  else if (kind === "win"){ S.win = 1; S.cheer = 1; } else if (kind === "lose"){ S.lose = 1; S.miss = 1; }
+  var mood = { correct: "happy", win: "happy", wrong: "sad", lose: "sad", start: "wow" }[kind] || "idle";
+  if (e){
+    H.mood(mood); e.classList.remove("hop"); void e.offsetWidth; e.classList.add("hop");
+    NG.after(1900, function(){ if (!S.win && !S.lose) H.mood("idle"); e.classList.remove("hop"); });
+  }
+  if (kind !== "title") H.sayHost(H.lines(kind), kind === "win" || kind === "lose" ? 6000 : 2400);
+  if (th.onReact) th.onReact(kind, S, TK);
+};
+H.mountLayer = function(){
+  var stage = document.getElementById("stage"), th = H.theme(); if (!stage) return;
+  var old = document.getElementById("ts-deco"); if (old) old.parentNode.removeChild(old);
+  old = document.getElementById("ts-bubble"); if (old) old.parentNode.removeChild(old);
+  var d = document.createElement("div"); d.id = "ts-deco"; d.setAttribute("data-scene", "title");
+  d.innerHTML = (th.deco ? th.deco(TK) : "") + (th.host ? '<div class="ts-host" data-mood="idle"><div class="ts-bob">' + th.host.svg(TK) + "</div></div>" : "");
+  stage.insertBefore(d, document.getElementById("scene"));
+  if (th.host){
+    var b = document.createElement("div"); b.id = "ts-bubble"; b.className = "empty"; b.innerHTML = "<span></span>"; stage.appendChild(b);
+  }
+  if (th.sfx) th.sfx();
+};
 H.applyTheme = function(){
-  var th = COMP.themes[TK.theme] || COMP.themes["default"];
-  NG.bg.custom(function(ctx, t, dt, W, Hh){ th.paint(ctx, t, dt, W, Hh, TK); });
+  var th = H.theme();
+  try { document.body.setAttribute("data-world", TK.theme); } catch (e) {}
+  NG.bg.custom(function(ctx, t, dt, W, Hh){ th.paint(ctx, t, dt, W, Hh, TK, S); });
+  H.mountLayer();
 };
 (function(){
   var orig = NG.setTheme;
   NG.setTheme = function(n, o){ orig(n, o); H.applyTheme(); };
+  var fb = NG.feedback;
+  NG.feedback = function(ok){ var r = fb.apply(NG, arguments); H.react(ok ? "correct" : "wrong"); return r; };
+  var fin = NG.finish;
+  NG.finish = function(d){
+    var ok = d && d.ratio != null ? d.ratio >= 0.5 : (NG.state.correct >= NG.state.wrong);
+    H.react(ok ? "win" : "lose"); return fin.apply(NG, arguments);
+  };
+  var sp = NG.hud.setProgress;
+  NG.hud.setProgress = function(p){ S.progress = p; return sp.apply(NG.hud, arguments); };
+  var last = "";
+  NG.onUpdate(function(dt){
+    S.cheer = Math.max(0, S.cheer - dt * 0.42); S.miss = Math.max(0, S.miss - dt * 0.5);
+    var sn = NG.sceneName || "";
+    if (sn !== last){
+      last = sn; var d = document.getElementById("ts-deco"); if (d) d.setAttribute("data-scene", sn);
+      if (sn === "title" || sn === "countdown"){ S.win = 0; S.lose = 0; S.progress = 0; S.misses = 0; H.mood("idle"); H.sayHost(""); }
+      if (sn === "title" && H.theme().host) NG.after(500, function(){ H.sayHost(H.lines("title"), 4000); });
+    }
+  });
 })();
 
 COMP.boot = function(){
   var factory = COMP.mech[SPEC.mechanic], inst = null;
   if (!factory) throw new Error("unknown mechanic: " + SPEC.mechanic);
   return {
-    start: function(){ NG.teacher.hooks = {}; var list = COMP.pending || H.prepItems(); COMP.pending = null; inst = factory(list); inst.start(); },
+    start: function(){ S.progress = 0; S.misses = 0; S.win = 0; S.lose = 0; H.react("start"); NG.teacher.hooks = {}; var list = COMP.pending || H.prepItems(); COMP.pending = null; inst = factory(list); inst.start(); },
     toText: function(){ return inst && inst.toText ? inst.toText() : {}; },
     auto: function(){ return inst && inst.auto ? inst.auto() : false; }
   };

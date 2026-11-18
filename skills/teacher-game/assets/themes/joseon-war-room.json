@@ -1,0 +1,18 @@
+{
+  "id": "joseon-war-room",
+  "title": "거북선 작전실 style 조선 수군 작전실",
+  "desc": "맞힐 때마다 거북선이 한 조각씩 완성되고, 틀리면 적선이 다가오는 조선 수군 작전실이에요.",
+  "keywords": ["거북선", "조선", "임진왜란", "수군", "작전실", "이순신", "역사", "바다"],
+  "subject": ["역사", "사회", "한국사", "도덕"],
+  "mood": ["긴장감", "도전", "전통"],
+  "baseTheme": "hanok",
+  "palette": {
+    "bg1": "#0b1426", "bg2": "#1b2a3f", "text": "#f6edd6",
+    "card": "#f6ecd0", "cardText": "#2a1a0e", "cardBorder": "#6b4423",
+    "primary": "#c9a24a", "btnText": "#2a1a0e", "accent": "#c8402f",
+    "good": "#2f6b2f", "bad": "#a3281c"
+  },
+  "fonts": { "display": "Song Myung", "body": "Gowun Batang" },
+  "host": true,
+  "motion": "high"
+}

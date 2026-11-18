@@ -1,0 +1,6 @@
+/* recycle-robot: steel-and-teal factory look for cards and buttons (decoration only, no layout changes) */
+body[data-world="recycle-robot"] .ts-q,body[data-world="recycle-robot"] .ts-explcard,body[data-world="recycle-robot"] .ts-clue{border:6px solid #3ecbb8;border-radius:22px;box-shadow:0 8px 0 #145e57,0 0 26px rgba(124,247,200,.35)}
+body[data-world="recycle-robot"] .choice,body[data-world="recycle-robot"] .ts-tile,body[data-world="recycle-robot"] .ts-lock,body[data-world="recycle-robot"] .ts-teambox{border:5px solid #3ecbb8;border-radius:20px;box-shadow:0 6px 0 #145e57}
+body[data-world="recycle-robot"] .ts-pill,body[data-world="recycle-robot"] .ts-chip{border-color:#ff9f43;box-shadow:0 4px 0 #7a3d0c}
+body[data-world="recycle-robot"] .ts-next,body[data-world="recycle-robot"] .ts-oxbtns button{border:5px solid #7a3d0c;box-shadow:0 6px 0 #7a3d0c;letter-spacing:1px}
+body[data-world="recycle-robot"] #ts-bubble{background:#0f2233;color:#7cf7c8;border-color:#3ecbb8;box-shadow:0 8px 0 rgba(0,0,0,.35),0 0 20px rgba(124,247,200,.35)}

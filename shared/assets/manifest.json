@@ -1,0 +1,213 @@
+{
+ "_note": "Design asset arsenal: CC0/MIT only. Every license file was read from the downloaded npm package (npm pack, no install scripts). sha256 = sha256 of the sorted '<path>\t<file sha256>\n' lines of every file in `paths` (paths relative to shared/assets). Check: python shared/assets/verify_assets.py. Not bundled on purpose: tsParticles (first-party canvas effect instead), Kenney (see skills/teacher-game/assets/packs), OpenDoodles/Open Peeps raw files (no official repo found), DiceBear open-peeps/notionists (CC0 but 17-22KB per face), bottts (not CC0).",
+ "items": {
+  "dicebear-thumbs": {
+   "name": "DiceBear thumbs (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-thumbs.txt",
+   "paths": [
+    "characters/dicebear/thumbs"
+   ],
+   "source": "npm:@dicebear/thumbs@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 19778,
+   "sha256": "97963c00370c8b7f30bdf7405e0129d886e43d64b321fbad7c4b40cf54633a36",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "동글 캐릭터 (귀여운 얼굴·손가락)"
+  },
+  "dicebear-lorelei": {
+   "name": "DiceBear lorelei (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-lorelei.txt",
+   "paths": [
+    "characters/dicebear/lorelei"
+   ],
+   "source": "npm:@dicebear/lorelei@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 77512,
+   "sha256": "6dde505f17eddbb7e313b2744933915d1dd2c3b4244a050d0ceab01aaec9f1f2",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "선 그림 인물 (표정 바꾸기 쉬움)"
+  },
+  "dicebear-shapes": {
+   "name": "DiceBear shapes (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-shapes.txt",
+   "paths": [
+    "characters/dicebear/shapes"
+   ],
+   "source": "npm:@dicebear/shapes@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 17461,
+   "sha256": "deac2e59e936c1fe8e2273a2917afb38a6374c9adf78c0c8dc24d787b42ad305",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "도형 모양 프로필"
+  },
+  "dicebear-rings": {
+   "name": "DiceBear rings (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-rings.txt",
+   "paths": [
+    "characters/dicebear/rings"
+   ],
+   "source": "npm:@dicebear/rings@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 35807,
+   "sha256": "258a03876bef8c47cc7b0b85a79208057873ef49f72cccc1397b2b4c8c319f49",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "동심원 모양 프로필"
+  },
+  "dicebear-glass": {
+   "name": "DiceBear glass (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-glass.txt",
+   "paths": [
+    "characters/dicebear/glass"
+   ],
+   "source": "npm:@dicebear/glass@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 30239,
+   "sha256": "cb5e38958419a71c7a3f70acf32d1271f1cd819566241d816fe93c722eb50cd3",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "유리 질감 도형 프로필"
+  },
+  "dicebear-identicon": {
+   "name": "DiceBear identicon (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-identicon.txt",
+   "paths": [
+    "characters/dicebear/identicon"
+   ],
+   "source": "npm:@dicebear/identicon@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 13870,
+   "sha256": "43b60e7833661cb88180915d242e095a087d232944a24730eb4082136fe09e27",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "기하학 무늬 프로필"
+  },
+  "dicebear-pixel-art": {
+   "name": "DiceBear pixel-art (pre-rendered, seeds a-l)",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-pixel-art.txt",
+   "paths": [
+    "characters/dicebear/pixel-art"
+   ],
+   "source": "npm:@dicebear/pixel-art@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 21404,
+   "sha256": "953253fe0913334cff1bc603ca385bcd1bc9d205f1042d389bb1f2d7e28395e2",
+   "notes": "Design files: CC0 1.0 (see license_file). Code that rendered them: MIT. SVGs keep the style's own <metadata> credit. Seeds a..l are fixed, so the same seed always gives the same face.",
+   "use": "도트 인물 (레트로 게임)"
+  },
+  "dicebear-lorelei-mood": {
+   "name": "DiceBear lorelei mood variants",
+   "version": "9.4.2",
+   "license": "CC0-1.0",
+   "license_file": "characters/dicebear/LICENSE-lorelei.txt",
+   "paths": [
+    "characters/dicebear/lorelei-mood"
+   ],
+   "source": "npm:@dicebear/lorelei@9.4.2 rendered with npm:@dicebear/core@9.4.3 (MIT, render tool only)",
+   "files": 12,
+   "bytes": 75110,
+   "sha256": "138cd03f185f12b1e135df01c013dfff10f29aeeed98a8abb53f3141ee6af0b8",
+   "notes": "mouth fixed to happy01 / sad01, seeds a..f. Same CC0 design license as lorelei.",
+   "use": "기쁜 표정(happy-*) / 슬픈 표정(sad-*) 인물 6명씩"
+  },
+  "tabler-icons": {
+   "name": "Tabler Icons (outline subset)",
+   "version": "3.52.0",
+   "license": "MIT",
+   "license_file": "icons/tabler/LICENSE",
+   "paths": [
+    "icons/tabler"
+   ],
+   "source": "npm:@tabler/icons@3.52.0",
+   "files": 176,
+   "bytes": 95465,
+   "sha256": "79bfb7af9073a449510198d81d955d8c27b925f645dd28276dff1881b502e401",
+   "notes": "subset of icons/outline; unmodified files. Colour with CSS `color`.",
+   "use": "수업 게임용 아이콘 (윤곽선, stroke=currentColor, 24x24)"
+  },
+  "iconoir": {
+   "name": "Iconoir (regular subset)",
+   "version": "7.12.2",
+   "license": "MIT",
+   "license_file": "icons/iconoir/LICENSE",
+   "paths": [
+    "icons/iconoir"
+   ],
+   "source": "npm:iconoir@7.12.2",
+   "files": 99,
+   "bytes": 68660,
+   "sha256": "0e866158932d0110cfc4343ba264b5148915c6f9ba5282f52b634b741f820bd7",
+   "notes": "subset of icons/regular; unmodified. No brand logos included.",
+   "use": "수업 게임용 아이콘 (둥근 선 스타일, stroke=currentColor)"
+  },
+  "open-color": {
+   "name": "Open Color",
+   "version": "1.9.1",
+   "license": "MIT",
+   "license_file": "colors/LICENSE",
+   "paths": [
+    "colors/open-color.json"
+   ],
+   "source": "npm:open-color@1.9.1",
+   "files": 1,
+   "bytes": 2213,
+   "sha256": "60f6b6ddb1f4fbd637519f900cc1268c5e70483b237f7403d55517cb8c6d682a",
+   "notes": "unmodified open-color.json: gray..orange are 10-step arrays",
+   "use": "15색 x 10단계 색 팔레트 (white/black는 한 값)"
+  },
+  "zzfx": {
+   "name": "ZzFX Micro",
+   "version": "1.4.0",
+   "license": "MIT",
+   "license_file": "sfx/LICENSE",
+   "paths": [
+    "sfx/zzfx.js"
+   ],
+   "source": "npm:zzfx@1.4.0 (ZzFXMicro.js)",
+   "files": 1,
+   "bytes": 5607,
+   "sha256": "5644f539832a820c4079616f3f69ae4bc7fa4e59a5373c7ea84a416bb2d72108",
+   "notes": "es2017. One syntax-only patch: `jump ||= 1` -> `jump = jump || 1` (ES2021 operator). Line endings CRLF->LF. Creates AudioContext at load: call zzfxX.resume() on the first click.",
+   "use": "효과음 합성 (오디오 파일 없이 숫자 목록으로 소리)"
+  },
+  "zzfx-presets": {
+   "name": "ZzFX sound presets (first-party)",
+   "version": "1",
+   "license": "Apache-2.0",
+   "license_file": "../../LICENSE",
+   "paths": [
+    "sfx/presets.json"
+   ],
+   "source": "first-party (Teacher Studio)",
+   "files": 1,
+   "bytes": 1993,
+   "sha256": "fd6f9bf79ce0f2141acbce93bf0ea2527b1941c93126b8e5b5cfdeb1c5911af2",
+   "notes": "all 21 params numeric; validated by running zzfx buildSamples with a stubbed AudioContext (finite samples, peak<=1).",
+   "use": "16개 이름 붙은 효과음 파라미터 (coin, correct, wrong, win ...)"
+  },
+  "dicebear-core": {
+   "name": "DiceBear core (render tool, not shipped)",
+   "version": "9.4.3",
+   "license": "MIT",
+   "license_file": "characters/dicebear/LICENSE-core.txt",
+   "paths": [],
+   "source": "npm:@dicebear/core@9.4.3",
+   "files": 0,
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "notes": "License kept for the MIT code that produced the SVGs; no files of it are bundled.",
+   "use": "n/a (the pre-render script only)"
+  }
+ }
+}

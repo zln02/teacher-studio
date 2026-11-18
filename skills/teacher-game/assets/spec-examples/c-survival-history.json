@@ -11,7 +11,11 @@
   "subject": "역사",
   "grade": 5,
   "mood": "긴장감",
-  "seed": 3
+  "seed": 3,
+  "words": [
+   "역사",
+   "전통"
+  ]
  },
  "items": [
   {

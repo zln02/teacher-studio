@@ -1,0 +1,12 @@
+/* sun-temple: sandstone slab cards with a chiselled gold edge. Decoration only (no sizes). */
+body[data-world="sun-temple"] .ts-q,
+body[data-world="sun-temple"] .ts-explcard,
+body[data-world="sun-temple"] .ts-clue{background-image:linear-gradient(#fbf0d2,#ebd7a6);border:7px solid #7a5530;border-radius:10px;box-shadow:0 8px 0 rgba(0,0,0,.5),inset 0 0 0 4px #c99a3e,inset 0 0 40px rgba(122,85,48,.25)}
+body[data-world="sun-temple"] .choice:not(.correct):not(.wrong),
+body[data-world="sun-temple"] .ts-tile:not(.done):not(.bad),
+body[data-world="sun-temple"] .ts-teambox,
+body[data-world="sun-temple"] .ts-lock:not(.open){background-image:linear-gradient(#fbf0d2,#e9d4a0);border-color:#7a5530;border-radius:10px;box-shadow:0 7px 0 rgba(0,0,0,.5),inset 0 0 0 3px #c99a3e}
+body[data-world="sun-temple"] .ts-pill{border-color:#c99a3e;box-shadow:0 4px 0 rgba(0,0,0,.45)}
+body[data-world="sun-temple"] .ts-next,
+body[data-world="sun-temple"] .btn{border:5px solid #0f6a5d;box-shadow:0 6px 0 #0a4a41}
+body[data-world="sun-temple"] .title{color:#ffe9a8;text-shadow:0 6px 0 #5a3a10,0 0 40px rgba(255,170,60,.55)}

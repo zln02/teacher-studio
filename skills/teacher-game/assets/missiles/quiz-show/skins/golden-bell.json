@@ -1,6 +1,6 @@
 {
- "title": "품사 골든벨",
- "subtitle": "중2 국어 · 문법 — 아홉 가지 품사",
+ "title": "품사 종 울리기",
+ "subtitle": "중2 국어 · 문법 — 마지막 한 명까지 종을 울려요",
  "theme": "gameshow",
  "themeOverride": {
   "primary": "#ffcf3a",
@@ -34,15 +34,15 @@
   "revealText": "정답 공개",
   "skin": "golden-bell",
   "hostName": "진행 · 종소리 선생님",
-  "howto": "맞힐 때마다 골든벨이 울리고 점점 밝아져요",
+  "howto": "맞힐 때마다 종이 울리고 점점 밝아져요",
   "boardText": "O",
-  "lastNextText": "골든벨 울리기 ▶",
+  "lastNextText": "종 울리기 ▶",
   "rainIcon": "✨",
-  "finaleTitle": "골든벨이 울렸어요!",
+  "finaleTitle": "종이 울렸어요!",
   "finaleSub": "{total}문제 중 {n}문제 정답 — 모두 멋진 도전!",
   "lines": {
    "title": [
-    "도전! 골든벨, 시작해요!"
+    "종 울릴 준비 됐나요?"
    ],
    "start": [
     "첫 문제! 집중해요"

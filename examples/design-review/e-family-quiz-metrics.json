@@ -1,0 +1,66 @@
+{
+ "file": "e-family-quiz.html",
+ "sheet": "examples\\design-review\\e-family-quiz-sheet.png",
+ "screens": {
+  "title": {
+   "deco_density": 0.155,
+   "empty_ratio": 0.725,
+   "colors": 53,
+   "hierarchy": 1.0,
+   "min_contrast": 4.54,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "question": {
+   "deco_density": 0.144,
+   "empty_ratio": 0.652,
+   "colors": 51,
+   "hierarchy": 1.23,
+   "min_contrast": 4.54,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "correct": {
+   "deco_density": 0.127,
+   "empty_ratio": 0.511,
+   "colors": 44,
+   "hierarchy": 1.23,
+   "min_contrast": 2.72,
+   "low_contrast": 1,
+   "overlaps": 0
+  },
+  "wrong": {
+   "deco_density": 0.115,
+   "empty_ratio": 0.605,
+   "colors": 47,
+   "hierarchy": 5.53,
+   "min_contrast": 2.72,
+   "low_contrast": 1,
+   "overlaps": 0
+  },
+  "result": {
+   "deco_density": 0.312,
+   "empty_ratio": 0.602,
+   "colors": 48,
+   "hierarchy": 1.5,
+   "min_contrast": 3.94,
+   "low_contrast": 1,
+   "overlaps": 1
+  }
+ },
+ "summary": {
+  "deco_density": 0.129,
+  "empty_ratio": 0.589,
+  "colors": 47.333,
+  "hierarchy": 5.53,
+  "min_contrast": 2.72,
+  "overlaps": 0,
+  "title_empty_ratio": 0.725,
+  "title_deco_density": 0.155
+ },
+ "verdict": "WARN",
+ "hints": [
+  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
+ ],
+ "missing_screens": []
+}

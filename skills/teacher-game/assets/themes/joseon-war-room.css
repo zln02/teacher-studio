@@ -1,0 +1,13 @@
+/* joseon-war-room: parchment scroll cards, wood + gold trim. Decoration only (no sizes). */
+body[data-world="joseon-war-room"] .ts-q,
+body[data-world="joseon-war-room"] .ts-explcard,
+body[data-world="joseon-war-room"] .ts-clue{background-image:linear-gradient(#fbf3da,#ecdcb0);border:6px solid #6b4423;border-radius:14px;box-shadow:0 8px 0 rgba(0,0,0,.45),inset 0 0 40px rgba(107,68,35,.25)}
+body[data-world="joseon-war-room"] .choice:not(.correct):not(.wrong),
+body[data-world="joseon-war-room"] .ts-tile:not(.done):not(.bad),
+body[data-world="joseon-war-room"] .ts-teambox,
+body[data-world="joseon-war-room"] .ts-lock:not(.open){background-image:linear-gradient(#fbf3da,#eadaae);border-color:#6b4423;border-radius:14px;box-shadow:0 7px 0 rgba(0,0,0,.45),inset 0 0 26px rgba(107,68,35,.2)}
+body[data-world="joseon-war-room"] .ts-pill{border-color:#c9a24a;box-shadow:0 4px 0 rgba(0,0,0,.4)}
+body[data-world="joseon-war-room"] .ts-next,
+body[data-world="joseon-war-room"] .btn{border:5px solid #7b5a14;box-shadow:0 6px 0 #5d440c}
+body[data-world="joseon-war-room"] .ts-chip{box-shadow:0 4px 0 rgba(0,0,0,.4)}
+body[data-world="joseon-war-room"] .title{color:#f6edd6;text-shadow:0 6px 0 #5a1a10,0 0 36px rgba(0,0,0,.85);letter-spacing:8px}

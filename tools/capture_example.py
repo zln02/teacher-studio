@@ -28,7 +28,7 @@ def launch(pw):
     """Use an installed Chrome/Edge so nothing has to be downloaded."""
     for ch in ("chrome", "msedge", None):
         try:
-            return pw.chromium.launch(channel=ch) if ch else pw.chromium.launch()
+            return pw.chromium.launch(channel=ch, args=["--mute-audio"]) if ch else pw.chromium.launch(args=["--mute-audio"])
         except Exception:
             continue
     raise SystemExit("no Chrome/Edge/Chromium found for Playwright")
@@ -59,6 +59,7 @@ def save_gif(frames: list[Image.Image], durations: list[int], out: Path, colors:
 def open_page(pw, page: Path):
     browser = launch(pw)
     tab = browser.new_page(viewport={"width": 1280, "height": 720})
+    tab.add_init_script("(function(){try{window.speechSynthesis.speak=function(){};}catch(e){}try{var oc=AudioNode.prototype.connect;AudioNode.prototype.connect=function(d){if(d instanceof AudioDestinationNode)return d;return oc.apply(this,arguments);};}catch(e){}})()")
     errors: list[str] = []
     tab.on("pageerror", lambda e: errors.append(str(e)))
     tab.goto(page.resolve().as_uri())

@@ -1,0 +1,14 @@
+{
+ "id": "auditorium-bell",
+ "title": "강당 종 울리기",
+ "desc": "빨간 커튼 강당 무대에서 맞힐 때마다 큰 종이 울리고 점점 환하게 빛나요.",
+ "keywords": ["강당", "종", "무대", "커튼", "학급", "마지막 한 명까지"],
+ "subject": ["국어", "사회", "과학", "수학", "영어", "도덕"],
+ "mood": ["따뜻함", "cute", "warm"],
+ "palette": {"bg1": "#2a140a", "bg2": "#5a2f17", "text": "#fff7e6", "card": "#3b2412", "cardText": "#fff7e6", "cardBorder": "#e0a84a", "primary": "#ffcf3a", "btnText": "#2b1a0e", "accent": "#c8372d", "good": "#3ddc84", "bad": "#ff5a5a"},
+ "fonts": {"display": "Black Han Sans"},
+ "host": true,
+ "motion": "normal",
+ "baseTheme": "gameshow",
+ "bgType": "spot"
+}

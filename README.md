@@ -134,7 +134,7 @@
 | 퀴즈쇼 | 방탈출 | 끌어서 보내기 |
 |---|---|---|
 | <img src="docs/gallery/play-quiz-show-tv-studio.jpg" alt="방송국"><br><sub>방송국</sub> | <img src="docs/gallery/title-escape-room-joseon.jpg" alt="거북선 작전실"><br><sub>거북선 작전실</sub> | <img src="docs/gallery/play-drag-deliver-post-office.jpg" alt="달밤 우체국"><br><sub>달밤 우체국 (영어 발음)</sub> |
-| <img src="docs/gallery/play-quiz-show-golden-bell.jpg" alt="골든벨"><br><sub>강당 골든벨</sub> | <img src="docs/gallery/title-escape-room-lab.jpg" alt="해독제 실험실"><br><sub>해독제 실험실</sub> | <img src="docs/gallery/play-drag-deliver-cell-feed.jpg" alt="세포 먹이 주기"><br><sub>세포 먹이 주기</sub> |
+| <img src="docs/gallery/play-quiz-show-golden-bell.jpg" alt="강당 종 울리기"><br><sub>강당 종 울리기</sub> | <img src="docs/gallery/title-escape-room-lab.jpg" alt="해독제 실험실"><br><sub>해독제 실험실</sub> | <img src="docs/gallery/play-drag-deliver-cell-feed.jpg" alt="세포 먹이 주기"><br><sub>세포 먹이 주기</sub> |
 | <img src="docs/gallery/play-quiz-show-space-quiz.jpg" alt="우주 정거장"><br><sub>우주 정거장</sub> | <img src="docs/gallery/title-escape-room-temple.jpg" alt="태양 신전"><br><sub>태양 신전</sub> | <img src="docs/gallery/play-drag-deliver-recycle.jpg" alt="분리수거 로봇"><br><sub>분리수거 로봇</sub> |
 
 </details>
@@ -173,7 +173,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 · 영상: MP4 영상 파일까지 바로 만들어요   · 나누기: 학교 드라이브·USB로 / 링크는 Claude 앱 '게시'
 
 무엇을 만들까요? 번호나 말로 편하게 말씀해 주세요.
-1. 🎮 수업 게임 — 퀴즈쇼·골든벨 / 방탈출 / 끌어서 보내기(단어·분류)
+1. 🎮 수업 게임 — 퀴즈쇼·종 울리기 / 방탈출 / 끌어서 보내기(단어·분류)
 2. 🖥 수업 슬라이드 — 칠판 / 깔끔한 발표 / 파스텔 노트
 3. ✨ 과목 소개 영상 — 첫 시간에 틀 30~40초 영상
 4. ⏱ 수업 시작 화면 — 카운트다운 + 오늘의 주제
@@ -204,7 +204,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 
 | 분야 | 만들 수 있는 것 | 고를 수 있는 디자인 | 이럴 때 |
 |---|---|---|---|
-| 🎮 수업 게임 | **퀴즈쇼** | 방송국 · 강당 골든벨 · 우주 정거장 | 퀴즈·OX·골든벨, 칠판 모둠전 |
+| 🎮 수업 게임 | **퀴즈쇼** | 방송국 · 강당 종 울리기 · 우주 정거장 | 퀴즈·OX·종 울리기, 칠판 모둠전 |
 | | **방탈출** | 거북선 작전실 · 해독제 실험실 · 태양 신전 | 단원 마무리, 반 전체 협동 (3~6단계) |
 | | **끌어서 보내기** | 달밤 우체국 · 세포 먹이 · 분리수거 로봇 | 단어 뜻, 분류, 짝 맞추기, 태블릿 |
 | 🖥 슬라이드 | **수업·연수 발표** (화면 구성 13종) | 칠판 · 키노트형 · 파스텔 노트 | 수업 PPT 대신, 연수·설명회 |

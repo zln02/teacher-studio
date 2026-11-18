@@ -14,6 +14,7 @@ teacher-studio/
 │  ├─ design/                      ← 디자인 생성기(design.py) · palettes.json · tokens.schema.json
 │  ├─ vendor/                      ← 고정 버전 라이브러리(motion·confetti·chartjs·katex·lucide·phaser·animejs·axe-core) + LICENSE + manifest.json + inline.py
 │  ├─ fonts/                       ← Noto Sans/Serif KR 기본 글자 모음(base/) + embed.py + OFL 문서
+│  ├─ assets/                      ← 디자인 소재 원본(DiceBear CC0 캐릭터·Tabler/Iconoir 아이콘·Open Color·ZzFX) + manifest.json + verify_assets.py (게임 스킬에 복사)
 │  ├─ voice/voice.js               ← 가장 자연스러운 브라우저 목소리 고르기 + 문장별 읽기(게임에 자동 포함)
 │  └─ tools/                       ← ensure.py(처음 필요할 때 동의 받고 설치) · stamp.py(결과 파일의 보이지 않는 만든이 표시)
 ├─ scripts/setup.py             ← 설치: 스킬 등록(Claude Code ~/.claude/skills, Codex ~/.agents/skills) + doctor
@@ -34,6 +35,11 @@ teacher-studio/
 **슬라이드·모션** (`.../missiles/<id>/`): `show.js`(window.SHOW) · `style.css` · `skins/<skin>.json`(완전한 DOC) · `README.md`
 
 규칙: 과목별 문구를 코드에 넣지 않는다(전부 skins/content에서). 스킨마다 그림을 따로 그린다(색만 바꾸기 금지). 시간 연출은 가상 시계(`NG.after` / `STAGE.timeline`)로 — 그래야 자동 점검과 MP4 렌더가 정확하다.
+
+## 게임 만들기 흐름 (spec 방식)
+spec → `build.py`(디자인 토큰 → 엔진+부품+테마 조립 → `check_game.py`) → `design_review.py`(접촉 시트 PNG + 수치, 옛 스킨 baseline과 비교) → AI가 그림을 보고 `design-rubric.md` 확인 → spec(`design.words/mood/seed`)만 고쳐 다시 build (최대 2번).
+- **테마**: `design.theme`의 기본은 `auto`. `scripts/theme_auto.py`가 낱말 → 레시피(우주·바다·동화·긴장·고급·따뜻·숲·전통·스포츠·과학)를 정해 배경 생성기·캐릭터(DiceBear 또는 이식 테마의 진행자)·Tabler 소품·축하 연출·글꼴·음악·무대 장치를 **부품으로 조합**하고, `assets/themes/auto.js`가 그린다. 요청이 한 세계를 분명히 가리킬 때만 이식 테마(`assets/themes/<id>.js·json·css`) 한 벌을 그대로 쓴다.
+- **테마 계약**: `COMP.themes[id] = {paint, host{svg,name,lines}, deco, sfx, onReact}` + 모든 방식이 내보내는 공통 상태 `COMP.S`(progress·cheer·miss·win/lose). 그래서 어느 테마든 7개 방식 모두에서 동작한다.
 
 ## 명령
 ```bash

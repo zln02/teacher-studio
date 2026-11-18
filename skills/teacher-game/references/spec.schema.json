@@ -29,7 +29,8 @@
     "grade": {"type": "integer"},
     "mood": {"type": "string", "description": "긴장감 | 신남 | 차분 | 따뜻함 | 밝음 | 자연 ..."},
     "seed": {"type": "integer", "description": "change to get another look from the same words"},
-    "theme": {"enum": ["default", "notebook", "spotlight"]},
+    "theme": {"enum": ["auto", "tv-studio", "auditorium-bell", "space-station", "joseon-war-room", "antidote-lab", "sun-temple", "post-office-night", "cell-feeding", "recycle-robot", "default", "notebook", "spotlight"], "default": "auto", "description": "auto (default) composes scene + host + props + celebration from words/mood; a named theme only when the request clearly names that world"},
+    "words": {"type": "array", "items": {"type": "string"}, "description": "mood/scene words for theme:auto, e.g. [\"우주\",\"동화\",\"바다\",\"긴장감\",\"따뜻하게\",\"고급스럽게\"]"},
     "large": {"type": "boolean", "description": "personal use only: class-size type (grandparents, far screens)"}
    }
   },

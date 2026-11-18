@@ -1,0 +1,13 @@
+/* antidote-lab: clean lab-panel cards, teal borders, graph-paper grid. Decoration only (no sizes). */
+body[data-world="antidote-lab"] .ts-q,
+body[data-world="antidote-lab"] .ts-explcard,
+body[data-world="antidote-lab"] .ts-clue{background-image:linear-gradient(rgba(60,140,170,.13) 2px,transparent 2px),linear-gradient(90deg,rgba(60,140,170,.13) 2px,transparent 2px);background-size:36px 36px;border:6px solid #2d6f7f;border-radius:12px;box-shadow:0 8px 0 #133640,inset 0 0 30px rgba(45,111,127,.18)}
+body[data-world="antidote-lab"] .ts-q{border-left:26px solid #19b38a}
+body[data-world="antidote-lab"] .choice:not(.correct):not(.wrong),
+body[data-world="antidote-lab"] .ts-tile:not(.done):not(.bad),
+body[data-world="antidote-lab"] .ts-teambox,
+body[data-world="antidote-lab"] .ts-lock:not(.open){border-color:#2d6f7f;border-radius:12px;box-shadow:0 7px 0 #133640}
+body[data-world="antidote-lab"] .ts-pill{border-color:#19b38a;box-shadow:0 4px 0 rgba(0,0,0,.4)}
+body[data-world="antidote-lab"] .ts-next,
+body[data-world="antidote-lab"] .btn{border:5px solid #064d3b;border-radius:18px;box-shadow:0 6px 0 #053a2c}
+body[data-world="antidote-lab"] .title{color:#e8fbff;font-style:normal;text-shadow:0 6px 0 #0a5a48,0 0 36px rgba(25,179,138,.7)}

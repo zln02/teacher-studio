@@ -1,0 +1,12 @@
+{
+  "id": "cell-feeding",
+  "title": "몽글이의 몸속 세포 마을",
+  "desc": "맞힐 때마다 세포 속 기관이 깨어나고 몽글이가 쑥쑥 자라요.",
+  "keywords": ["세포", "몸", "생물", "과학", "영양", "먹이", "기관", "핵"],
+  "subject": ["과학", "생물", "보건"],
+  "mood": ["포근", "즐거움", "밝음", "자연"],
+  "palette": {"bg1": "#fff4e6", "bg2": "#ffe0ec", "text": "#3b2a4a", "card": "#fffaf0", "cardText": "#3b2a4a", "cardBorder": "#5cc98a", "primary": "#cf2f73", "btnText": "#ffffff", "accent": "#5cc98a", "good": "#2a9d5e", "bad": "#e24a56"},
+  "fonts": {"display": "Jua"},
+  "host": true,
+  "motion": "normal"
+}

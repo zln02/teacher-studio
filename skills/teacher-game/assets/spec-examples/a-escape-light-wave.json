@@ -11,7 +11,11 @@
   "subject": "과학",
   "grade": 8,
   "mood": "긴장감",
-  "seed": 1
+  "seed": 1,
+  "words": [
+   "방탈출",
+   "긴장감"
+  ]
  },
  "items": [
   {

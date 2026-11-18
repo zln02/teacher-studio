@@ -14,7 +14,11 @@
   "subject": "영어",
   "grade": 3,
   "mood": "신남",
-  "seed": 4
+  "seed": 4,
+  "words": [
+   "동화",
+   "영어"
+  ]
  },
  "items": [
   {
