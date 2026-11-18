@@ -4,54 +4,54 @@
  "screens": {
   "title": {
    "plain_cards": 0,
-   "deco_density": 0.215,
-   "empty_ratio": 0.662,
-   "colors": 35,
+   "deco_density": 0.173,
+   "empty_ratio": 0.665,
+   "colors": 52,
    "hierarchy": 1.0,
-   "min_contrast": 2.59,
-   "low_contrast": 1,
+   "min_contrast": 5.7,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "question": {
    "plain_cards": 0,
-   "deco_density": 0.208,
-   "empty_ratio": 0.546,
-   "colors": 38,
+   "deco_density": 0.154,
+   "empty_ratio": 0.444,
+   "colors": 44,
    "hierarchy": 1.0,
-   "min_contrast": 11.86,
+   "min_contrast": 11.29,
    "low_contrast": 0,
    "overlaps": 0
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.207,
-   "empty_ratio": 0.523,
-   "colors": 39,
+   "deco_density": 0.175,
+   "empty_ratio": 0.438,
+   "colors": 41,
    "hierarchy": 1.05,
-   "min_contrast": 3.79,
+   "min_contrast": 3.71,
    "low_contrast": 2,
    "overlaps": 0
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.341,
-   "empty_ratio": 0.561,
-   "colors": 30,
+   "deco_density": 0.285,
+   "empty_ratio": 0.641,
+   "colors": 47,
    "hierarchy": 1.4,
-   "min_contrast": 2.59,
-   "low_contrast": 1,
+   "min_contrast": 5.7,
+   "low_contrast": 0,
    "overlaps": 1
   }
  },
  "summary": {
-  "deco_density": 0.207,
-  "empty_ratio": 0.534,
-  "colors": 38.5,
+  "deco_density": 0.164,
+  "empty_ratio": 0.441,
+  "colors": 42.5,
   "hierarchy": 1.4,
-  "min_contrast": 3.79,
+  "min_contrast": 3.71,
   "overlaps": 0,
-  "title_empty_ratio": 0.662,
-  "title_deco_density": 0.215,
+  "title_empty_ratio": 0.665,
+  "title_deco_density": 0.173,
   "plain_cards": 0
  },
  "verdict": "WARN",
@@ -67,5 +67,24 @@
    "sea"
   ],
   "bad": []
- }
+ },
+ "mechanic": "match",
+ "layout": {
+  "family": "pastel-cute",
+  "style": "pastel-cute",
+  "css": "pastel",
+  "seed": 11,
+  "mechanic": "match",
+  "layout": "split",
+  "mech": "shelf",
+  "choice": "pill",
+  "card": "round",
+  "score": "sticker",
+  "title": "underline",
+  "titleScale": "lg",
+  "tpos": "left",
+  "transition": "fade"
+ },
+ "fingerprint": "000000000000000000000000000000000000000000000000000000000011110000000000001111111111111111111100001111111111111111111100001111111111111111111100000000000000000000000000001111111111111111111100001111111111111111111100000000000000000000000000001111111111111111111100001111111111111111111100001111111111111111111100000000000000000000000000",
+ "similar_to": []
 }

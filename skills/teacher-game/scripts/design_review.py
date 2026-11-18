@@ -271,8 +271,8 @@ def summarise(metrics: dict) -> dict:
     return out
 
 
-def judge(summary: dict) -> tuple[str, list[str]]:
-    """Compare with the legacy baseline; return (PASS|WARN|FAIL, hints in plain Korean)."""
+def judge(summary: dict, style: str = "") -> tuple[str, list[str]]:
+    """Hints in plain Korean. design-baseline.json is only a MINIMUM floor (measured on older skins), not the target: the target is the commercial-quality traits in design-rubric.md."""
     hints: list[str] = []
     fail = False
     base = json.loads(BASELINE.read_text(encoding="utf-8")) if BASELINE.exists() else None
@@ -285,15 +285,55 @@ def judge(summary: dict) -> tuple[str, list[str]]:
         hints.append("글자 상자가 서로(또는 도우미 캐릭터와) 겹쳐요 → 문제·보기 글을 줄이거나 보기 수를 줄여 보세요")
     if summary.get("hierarchy", 9) < 1.25:
         hints.append("가장 큰 글자와 보통 글자 크기 차이가 작아 시선이 흩어져요 → 문제를 더 짧게 하거나 design.large를 켜 보세요")
-    if base:
+    if base and style != "minimal-premium":  # minimal-premium: whitespace is the design, so only the minimum floor is skipped
         t = base["thresholds"]
         if summary.get("deco_density", 1) < t["deco_density_min"]:
-            hints.append("배경 장식이 옛 스킨보다 적어요 → design.theme를 auto(+분위기 낱말)나 이야기에 맞는 이식 테마로 바꿔 보세요")
+            hints.append("배경 장식이 최소 기준보다 적어요 → 장면이 있는 스타일(design.style: 네온·글래스·팝·파스텔 …)이나 분위기 낱말을 더해 보세요")
         if summary.get("empty_ratio", 0) > t["empty_ratio_max"]:
             hints.append("화면이 휑해요(빈 면이 넓음) → 장면이 있는 테마(auto/이식 테마)로 바꾸거나 소품이 많은 분위기 낱말을 넣어 보세요")
         if summary.get("colors", 99) < t["colors_min"]:
             hints.append("색이 너무 적어 밋밋해요 → mood를 바꿔 다른 색 세트를 쓰거나 theme:auto의 분위기 낱말을 추가해 보세요")
     return ("FAIL" if fail else ("WARN" if hints else "PASS")), hints
+
+
+def fingerprint(probe: dict, cols: int = 24, rows: int = 14) -> str:
+    """Layout fingerprint: which cells of a 24x14 grid are covered by cards/text boxes on the question screen (string of 0/1)."""
+    boxes = list(probe.get("cards", [])) + [t["r"] for t in probe.get("texts", []) if t["fs"] >= 34]
+    out = []
+    for cy in range(rows):
+        for cx in range(cols):
+            x, y = (cx + 0.5) * 1920 / cols, (cy + 0.5) * 1080 / rows
+            out.append("1" if any(b[0] <= x <= b[0] + b[2] and b[1] <= y <= b[1] + b[3] for b in boxes) else "0")
+    return "".join(out)
+
+
+def similarity(a: str, b: str) -> float:
+    inter = sum(1 for x, y in zip(a, b) if x == "1" and y == "1")
+    union = sum(1 for x, y in zip(a, b) if x == "1" or y == "1")
+    return inter / union if union else 0.0
+
+
+def game_spec(html: Path) -> dict:
+    m = re.search(r"window\.GAME = (\{.*?\n\});", html.read_text(encoding="utf-8"), re.S)
+    try:
+        return (json.loads(m.group(1)).get("spec") or {}) if m else {}
+    except ValueError:
+        return {}
+
+
+def sameness(out_dir: Path, me: str, mech: str, fp: str) -> list[tuple[str, float]]:
+    """Other reviewed games of the same mechanic in the output folder whose layout looks (nearly) the same."""
+    out = []
+    for f in out_dir.glob("*-metrics.json"):
+        if f.name == f"{me}-metrics.json":
+            continue
+        try:
+            o = json.loads(f.read_text(encoding="utf-8"))
+        except ValueError:
+            continue
+        if o.get("mechanic") == mech and o.get("fingerprint"):
+            out.append((o.get("file", f.name), round(similarity(fp, o["fingerprint"]), 2)))
+    return sorted(out, key=lambda x: -x[1])
 
 
 def prop_relevance(html: Path) -> dict:
@@ -326,18 +366,27 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
     sheet = out_dir / f"{html.stem}-sheet.png"
     contact_sheet(shots, backs, metrics, sheet)
     summ = summarise(metrics)
-    verdict, hints = judge(summ)
+    verdict, hints = judge(summ, ((game_spec(html).get("layoutCfg") or {}).get("style") or ""))
     rel = prop_relevance(html)
     if rel["bad"]:
         verdict = "WARN" if verdict == "PASS" else verdict
         hints.append("이야기와 상관없는 소품이 있어요: " + ", ".join(rel["bad"]) + " → design.words에 주제 낱말(바다·우주·역사 …)을 넣어 소품을 다시 고르게 하세요")
+    gs = game_spec(html)
+    mech = gs.get("mechanic", "")
+    fp = fingerprint(probes["question"]) if "question" in probes else ""
+    same = sameness(out_dir, html.stem, mech, fp) if fp else []
+    close = [(n, v) for n, v in same if v >= 0.86]
+    if close:
+        verdict = "WARN" if verdict == "PASS" else verdict
+        hints.append("배치가 " + ", ".join(f"{n}({v})" for n, v in close[:3]) + " 와 거의 같아요 → 다른 배치로 다시: design.seed를 바꾸거나 design.layout(split·bento·news·poster)을 지정하세요")
     plain = max((m.get("plain_cards", 0) for k, m in metrics.items() if k != "title"), default=0)
     summ["plain_cards"] = plain
     if plain >= 3:
         verdict = "WARN" if verdict == "PASS" else verdict
         hints.append(f"기호만 있는 밋밋한 흰 카드가 {plain}장 보여요 → 카드 뒷면/카드에 무늬·그림을 넣으세요(자동 테마는 기본으로 넣어요, theme를 auto로 바꿔 보세요)")
     res = {"file": html.name, "sheet": str(sheet), "screens": metrics, "summary": summ, "verdict": verdict, "hints": hints,
-           "missing_screens": [k for k in ("correct", "wrong") if k not in shots], "prop_relevance": rel}
+           "missing_screens": [k for k in ("correct", "wrong") if k not in shots], "prop_relevance": rel,
+           "mechanic": mech, "layout": gs.get("layoutCfg"), "fingerprint": fp, "similar_to": same[:3]}
     (out_dir / f"{html.stem}-metrics.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     return res
 

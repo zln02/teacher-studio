@@ -4,18 +4,18 @@
  "screens": {
   "title": {
    "plain_cards": 0,
-   "deco_density": 0.22,
-   "empty_ratio": 0.661,
-   "colors": 22,
+   "deco_density": 0.215,
+   "empty_ratio": 0.626,
+   "colors": 27,
    "hierarchy": 1.0,
-   "min_contrast": 9.53,
+   "min_contrast": 8.22,
    "low_contrast": 0,
    "overlaps": 0
   },
   "question": {
    "plain_cards": 0,
-   "deco_density": 0.245,
-   "empty_ratio": 0.56,
+   "deco_density": 0.194,
+   "empty_ratio": 0.602,
    "colors": 25,
    "hierarchy": 1.23,
    "min_contrast": 9.53,
@@ -24,9 +24,9 @@
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.225,
-   "empty_ratio": 0.479,
-   "colors": 24,
+   "deco_density": 0.224,
+   "empty_ratio": 0.375,
+   "colors": 26,
    "hierarchy": 1.23,
    "min_contrast": 8.68,
    "low_contrast": 0,
@@ -34,9 +34,9 @@
   },
   "wrong": {
    "plain_cards": 0,
-   "deco_density": 0.237,
-   "empty_ratio": 0.454,
-   "colors": 23,
+   "deco_density": 0.209,
+   "empty_ratio": 0.437,
+   "colors": 34,
    "hierarchy": 1.23,
    "min_contrast": 2.27,
    "low_contrast": 1,
@@ -44,30 +44,29 @@
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.316,
-   "empty_ratio": 0.511,
-   "colors": 22,
+   "deco_density": 0.302,
+   "empty_ratio": 0.54,
+   "colors": 30,
    "hierarchy": 1.5,
-   "min_contrast": 8.78,
+   "min_contrast": 8.9,
    "low_contrast": 0,
    "overlaps": 1
   }
  },
  "summary": {
-  "deco_density": 0.236,
-  "empty_ratio": 0.498,
-  "colors": 24,
+  "deco_density": 0.209,
+  "empty_ratio": 0.471,
+  "colors": 28.333,
   "hierarchy": 1.5,
   "min_contrast": 2.27,
   "overlaps": 0,
-  "title_empty_ratio": 0.661,
-  "title_deco_density": 0.22,
+  "title_empty_ratio": 0.626,
+  "title_deco_density": 0.215,
   "plain_cards": 0
  },
  "verdict": "WARN",
  "hints": [
-  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요",
-  "색이 너무 적어 밋밋해요 → mood를 바꿔 다른 색 세트를 쓰거나 theme:auto의 분위기 낱말을 추가해 보세요"
+  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
  ],
  "missing_screens": [],
  "prop_relevance": {
@@ -76,5 +75,24 @@
    "luxe"
   ],
   "bad": []
- }
+ },
+ "mechanic": "quiz",
+ "layout": {
+  "family": "gold-luxury",
+  "style": "gold-luxury",
+  "css": "gold",
+  "seed": 13,
+  "mechanic": "quiz",
+  "layout": "news",
+  "mech": "",
+  "choice": "tile",
+  "card": "ticket",
+  "score": "banner",
+  "title": "outline",
+  "titleScale": "md",
+  "tpos": "left",
+  "transition": "fade"
+ },
+ "fingerprint": "000000000000000000000000000000000000000000000000001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100000000000000000000000000000000000000000000000000000000000000000000000000",
+ "similar_to": []
 }

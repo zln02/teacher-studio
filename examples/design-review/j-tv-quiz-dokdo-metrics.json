@@ -4,64 +4,64 @@
  "screens": {
   "title": {
    "plain_cards": 0,
-   "deco_density": 0.38,
-   "empty_ratio": 0.529,
-   "colors": 38,
-   "hierarchy": 2.68,
+   "deco_density": 0.385,
+   "empty_ratio": 0.502,
+   "colors": 43,
+   "hierarchy": 2.3,
    "min_contrast": 12.63,
    "low_contrast": 0,
-   "overlaps": 0
+   "overlaps": 3
   },
   "question": {
    "plain_cards": 0,
-   "deco_density": 0.395,
-   "empty_ratio": 0.354,
+   "deco_density": 0.404,
+   "empty_ratio": 0.328,
    "colors": 39,
-   "hierarchy": 3.28,
-   "min_contrast": 5.01,
-   "low_contrast": 0,
+   "hierarchy": 1.33,
+   "min_contrast": 4.41,
+   "low_contrast": 2,
    "overlaps": 0
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.451,
-   "empty_ratio": 0.249,
-   "colors": 37,
-   "hierarchy": 5.53,
-   "min_contrast": 10.85,
-   "low_contrast": 0,
+   "deco_density": 0.417,
+   "empty_ratio": 0.202,
+   "colors": 45,
+   "hierarchy": 1.33,
+   "min_contrast": 4.41,
+   "low_contrast": 2,
    "overlaps": 0
   },
   "wrong": {
    "plain_cards": 0,
-   "deco_density": 0.425,
-   "empty_ratio": 0.353,
-   "colors": 45,
-   "hierarchy": 1.33,
+   "deco_density": 0.419,
+   "empty_ratio": 0.364,
+   "colors": 40,
+   "hierarchy": 5.53,
    "min_contrast": 3.55,
-   "low_contrast": 3,
+   "low_contrast": 1,
    "overlaps": 0
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.711,
-   "empty_ratio": 0.217,
-   "colors": 35,
+   "deco_density": 0.7,
+   "empty_ratio": 0.224,
+   "colors": 33,
    "hierarchy": 1.5,
-   "min_contrast": 11.51,
+   "min_contrast": 11.31,
    "low_contrast": 0,
    "overlaps": 1
   }
  },
  "summary": {
-  "deco_density": 0.424,
-  "empty_ratio": 0.319,
-  "colors": 40.333,
+  "deco_density": 0.413,
+  "empty_ratio": 0.298,
+  "colors": 41.333,
   "hierarchy": 5.53,
   "min_contrast": 3.55,
   "overlaps": 0,
-  "title_empty_ratio": 0.529,
-  "title_deco_density": 0.38,
+  "title_empty_ratio": 0.502,
+  "title_deco_density": 0.385,
   "plain_cards": 0
  },
  "verdict": "WARN",
@@ -72,5 +72,29 @@
  "prop_relevance": {
   "checked": false,
   "bad": []
- }
+ },
+ "mechanic": "quiz",
+ "layout": {
+  "family": "fun",
+  "style": "",
+  "css": "",
+  "seed": 21,
+  "mechanic": "quiz",
+  "layout": "stack",
+  "mech": "",
+  "choice": "stamp",
+  "card": "hex",
+  "score": "led",
+  "title": "stamp",
+  "titleScale": "sm",
+  "tpos": "top",
+  "transition": "iris"
+ },
+ "fingerprint": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111110000011111111111111111110000011111111101111111110000011111111101111111110000011111111101111111110000011111111101111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+ "similar_to": [
+  [
+   "i-party-quiz.html",
+   0.56
+  ]
+ ]
 }

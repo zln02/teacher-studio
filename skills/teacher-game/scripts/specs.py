@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import random
+import re
 
 QUIZ_LIKE = ("quiz", "escape", "board")
 LIMITS = {  # mechanic: (min items, max items)
@@ -98,9 +99,54 @@ def validate(spec: dict) -> list[str]:
         errs.append('libs: motion(움직임 부품)은 오래된 크롬에서 안 돌아가요 → 빼고 "anime"나 CSS를 쓰거나, 꼭 필요하면 allow_modern:true 를 함께 적어 주세요')
     if spec.get("allow_modern", False) not in (True, False) or spec.get("credit", False) not in (True, False):
         errs.append("allow_modern · credit: true 또는 false")
+    errs += validate_custom(spec)
     design = spec.get("design", {})
     if design and not isinstance(design, dict):
         errs.append("design: {subject, grade, mood, seed, theme} 객체")
+    return errs
+
+
+CUSTOM_CSS_MAX = 6000
+CUSTOM_SVG_MAX = 12000
+_BAD_COMMON = (
+    (re.compile(r"https?:|//|@import|expression\s*\(|javascript:|\?\.|\?\?", re.I), "바깥 주소(http, //), @import, javascript:, ?. ?? 는 쓸 수 없어요"),
+)
+
+
+def validate_custom(spec: dict) -> list[str]:
+    """custom_css / custom_svg: the AI's own extra flair. Sandboxed: size caps, no external resources, no scripts, plain old-Chrome syntax."""
+    errs: list[str] = []
+    css, svg = spec.get("custom_css"), spec.get("custom_svg")
+    if css is not None:
+        if not isinstance(css, str) or len(css) > CUSTOM_CSS_MAX:
+            errs.append(f"custom_css: 글자(문자열) {CUSTOM_CSS_MAX}자 이내")
+        else:
+            for pat, msg in _BAD_COMMON:
+                if pat.search(css.replace("/*", " ").replace("*/", " ")):
+                    errs.append("custom_css: " + msg)
+            if re.search(r"aspect-ratio|:has\(|\bdvh\b|behavior\s*:|-moz-binding", css):
+                errs.append("custom_css: aspect-ratio / :has() / dvh 는 오래된 크롬에서 안 돌아가요")
+            if re.search(r"url\(\s*['\"]?(?!data:image/svg)", css):
+                errs.append("custom_css: url(...)은 쓸 수 없어요 (그림은 custom_svg로)")
+    if svg is not None:
+        if not isinstance(svg, str) or len(svg) > CUSTOM_SVG_MAX:
+            errs.append(f"custom_svg: 글자(문자열) {CUSTOM_SVG_MAX}자 이내")
+        else:
+            if re.search(r"<\s*(script|foreignObject|iframe|image|use)\b|\son\w+\s*=|javascript:|https?:|//|\bhref\s*=", svg, re.I) and not re.search(r"xmlns\s*=\s*[\"']http://www\.w3\.org/2000/svg[\"']", svg):
+                errs.append("custom_svg: script·foreignObject·image·use·onclick·href·바깥 주소는 쓸 수 없어요")
+            elif re.search(r"<\s*(script|foreignObject|iframe|image|use)\b|\son\w+\s*=|javascript:|\bhref\s*=", svg, re.I):
+                errs.append("custom_svg: script·foreignObject·image·use·onclick·href는 쓸 수 없어요")
+            elif re.search(r"https?:", svg.replace("http://www.w3.org/2000/svg", "")):
+                errs.append("custom_svg: 바깥 주소(http)는 쓸 수 없어요")
+            if re.search(r"\?\.|\?\?", svg):
+                errs.append("custom_svg: ?. ?? 는 쓸 수 없어요")
+            try:
+                import xml.etree.ElementTree as ET
+                root = ET.fromstring(svg)
+                if not root.tag.endswith("svg"):
+                    errs.append('custom_svg: 맨 바깥은 <svg viewBox="0 0 1920 1080"> 이어야 해요')
+            except Exception as exc:  # malformed
+                errs.append(f"custom_svg: SVG 형식 오류 ({str(exc)[:60]})")
     return errs
 
 

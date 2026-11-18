@@ -64,7 +64,7 @@ H.ask = function(el, it, o){
     body += '</div>';
   }
   var top = o.top == null ? 150 : o.top;
-  el.insertAdjacentHTML("beforeend", '<div class="ts-wrap" style="top:' + top + 'px;height:' + (1020 - top) + 'px">' + chips + qhtml + body + '<div class="ts-expl"></div></div>');
+  el.insertAdjacentHTML("beforeend", '<div class="ts-wrap ts-ask" style="top:' + top + 'px;height:' + (1020 - top) + 'px">' + chips + qhtml + body + '<div class="ts-expl"></div></div>');
   var wrap = el.lastElementChild, all = wrap.querySelectorAll(".choice");
   function rightText(){ return n.isOX ? (n.answer === 0 ? "O" : "X") : MARKS[n.answer] + ". " + n.choices[n.answer]; }
   function choose(i, btn, timeout){
@@ -165,6 +165,8 @@ H.mountLayer = function(){
     var pd = document.createElement("div"); pd.className = "ts-podiums"; d.appendChild(pd); H.podiumEl = pd; S.hits = [];
   } else H.podiumEl = null;
   if (th.sfx) th.sfx();
+  if (SPEC.customSvg){ var cu = document.createElement("div"); cu.className = "ts-custom"; cu.innerHTML = SPEC.customSvg; d.appendChild(cu); }
+  H.applyLayout();
 };
 H.updatePodiums = function(){
   var pd = H.podiumEl; if (!pd) return;
@@ -177,6 +179,17 @@ H.updatePodiums = function(){
     h += '<div class="ts-pod' + (n && NG.state.turn === i ? " on" : "") + '" style="--tc:' + tm.color + '"><b>' + H.esc(tm.icon) + " " + H.esc(tm.name) + '</b><span class="ts-lamps">' + lamps + "</span></div>";
   });
   pd.innerHTML = h;
+};
+/* layout + component variants (scripts/layout_auto.py -> SPEC.layoutCfg): body[data-*] attributes read by assets/layouts/layouts.css */
+H.lay = function(){ return SPEC.layoutCfg || {}; };
+H.applyLayout = function(){
+  var c = H.lay(), b = document.body; if (!b) return;
+  function set(k, v){ if (v && v !== "default" && v !== "center" && v !== "md") b.setAttribute(k, v); else b.removeAttribute(k); }
+  set("data-layout", c.layout === "stack" ? "" : c.layout); set("data-choice", c.choice); set("data-card", c.card); set("data-score", c.score);
+  set("data-title", c.title); set("data-title-scale", c.titleScale); set("data-tpos", c.tpos);
+  b.setAttribute("data-mech", SPEC.mechanic); set("data-style", c.css);
+  set("data-lockpos", SPEC.mechanic === "escape" && c.mech === "side" && b.getAttribute("data-hostcol") !== "1" ? "side" : "");
+  set("data-sv", SPEC.mechanic === "survival" ? c.mech : ""); set("data-sortv", SPEC.mechanic === "sort" ? c.mech : "");
 };
 H.applyTheme = function(){
   var th = H.theme();
@@ -206,6 +219,7 @@ H.applyTheme = function(){
     var sn = NG.sceneName || "";
     if (sn !== last){
       last = sn; var d = document.getElementById("ts-deco"); if (d) d.setAttribute("data-scene", sn);
+      document.body.setAttribute("data-scene", sn);
       if (sn === "title" || sn === "countdown"){ S.win = 0; S.lose = 0; S.progress = 0; S.misses = 0; S.hits = []; H.mood("idle"); H.sayHost(""); }
       if (sn === "title" && H.theme().host) NG.after(500, function(){ H.sayHost(H.lines("title"), 4000); });
     }

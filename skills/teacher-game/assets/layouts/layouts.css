@@ -1,0 +1,126 @@
+/* LAYOUTS + COMPONENT VARIANTS - chosen by scripts/layout_auto.py (SPEC.layoutCfg), applied as body[data-*] attributes by core.js.
+   Zones: the content area is x = --lx .. --lx+--lw, y = --ty .. 880 (the explanation card sits below at y 900-1020), so text never overlaps. */
+body{--lx:160px;--lw:1600px;--ty:190px}
+body[data-mech=escape]{--ty:340px}
+body[data-hostcol="1"],body[data-lockpos=side]{--lx:340px;--lw:1460px}
+body[data-lockpos=side] .ts-wrap{left:340px;width:1460px}
+body[data-lockpos=side] .ts-q,body[data-lockpos=side] .ts-grid,body[data-lockpos=side] .ts-expl{width:1460px}
+body[data-lockpos=side] .ts-lockstrip{left:50px;top:150px;width:250px;flex-direction:column;gap:8px;align-items:flex-start}
+body[data-lockpos=side] .ts-lockstrip .ts-lock{width:200px;height:128px}
+/* ---- quiz-like screens (quiz, escape, board question): five compositions ---- */
+body[data-layout=split] .ts-wrap.ts-ask,body[data-layout=bento] .ts-wrap.ts-ask,body[data-layout=news] .ts-wrap.ts-ask,body[data-layout=poster] .ts-wrap.ts-ask{left:0!important;top:0!important;width:1920px!important;height:1080px!important;margin:0!important;display:block}
+body[data-layout=split] .ts-ask>*,body[data-layout=bento] .ts-ask>*,body[data-layout=news] .ts-ask>*,body[data-layout=poster] .ts-ask>*{margin:0!important}
+body[data-layout] .ts-ask .ts-expl{left:var(--lx)!important;bottom:60px!important;width:var(--lw)!important}
+/* split: tall question left, answers stacked right */
+body[data-layout=split] .ts-ask .ts-chips{position:absolute;left:var(--lx);top:calc(var(--ty) - 62px)}
+body[data-layout=split] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.46);height:calc(880px - var(--ty));min-height:0;text-align:left}
+body[data-layout=split] .ts-ask .ts-grid{position:absolute;left:calc(var(--lx) + var(--lw)*.49);top:var(--ty);width:calc(var(--lw)*.51);height:calc(880px - var(--ty));display:flex;flex-direction:column;gap:16px}
+body[data-layout=split] .ts-ask .ts-choice{flex:1 1 0;min-height:var(--btn-h)}
+body[data-layout=split] .ts-ask .ts-oxrow{position:absolute;left:calc(var(--lx) + var(--lw)*.49);top:var(--ty);width:calc(var(--lw)*.51);height:calc(880px - var(--ty));flex-direction:column;gap:20px;justify-content:center}
+body[data-layout=split] .ts-ask .ts-ox{width:100%;height:calc((880px - var(--ty) - 20px)/2)}
+/* bento: wide question tile + info tile + tall answer tiles in one row */
+body[data-layout=bento] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:14px;justify-content:flex-start}
+body[data-layout=bento] .ts-ask .ts-chip{text-align:center}
+body[data-layout=bento] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.46);min-height:0}
+body[data-mech=escape][data-layout=bento] .ts-ask .ts-q{width:var(--lw)}
+body[data-layout=bento] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);display:grid;grid-gap:18px}
+body[data-layout=bento] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
+body[data-layout=bento] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
+body[data-layout=bento] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
+body[data-layout=bento] .ts-ask .ts-choice{flex-direction:column;justify-content:center;text-align:center;height:100%;min-height:0}
+body[data-layout=bento] .ts-ask .ts-choice .mark{margin-bottom:8px}
+body[data-layout=bento] .ts-ask .ts-sym{padding:0;margin:6px 0 0}
+body[data-layout=bento] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);gap:40px}
+body[data-layout=bento] .ts-ask .ts-ox{width:48%;height:100%}
+/* news: answers on top, question as a lower-third banner */
+body[data-layout=news] .ts-ask .ts-chips{position:absolute;left:var(--lx);top:calc(var(--ty) - 62px)}
+body[data-layout=news] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:var(--ty);width:var(--lw);height:calc((880px - var(--ty))*.52);display:grid;grid-gap:16px 24px;grid-template-columns:1fr 1fr}
+body[data-layout=news] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
+body[data-layout=news] .ts-ask .ts-choice{height:100%;min-height:0}
+body[data-layout=news] .ts-ask .ts-q{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);min-height:0;text-align:left;justify-content:flex-start;border-radius:8px;border-left:30px solid var(--primary)}
+body[data-layout=news] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:var(--ty);width:var(--lw);height:calc((880px - var(--ty))*.52);gap:40px}
+body[data-layout=news] .ts-ask .ts-ox{width:48%;height:100%;font-size:150px}
+/* poster: giant question on the paper, answers as a pill row */
+body[data-layout=poster] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;gap:14px;align-items:stretch}
+body[data-layout=poster] .ts-ask .ts-chip{text-align:center}
+body[data-layout=poster] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.5);min-height:0;text-align:left;justify-content:flex-start;background:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;color:var(--text)!important;border-bottom:14px solid var(--primary)!important;border-radius:0!important;padding-left:8px}
+body[data-mech=escape][data-layout=poster] .ts-ask .ts-q{width:var(--lw)}
+body[data-layout=poster] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);display:grid;grid-gap:18px}
+body[data-layout=poster] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
+body[data-layout=poster] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
+body[data-layout=poster] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
+body[data-layout=poster] .ts-ask .ts-choice{border-radius:999px;justify-content:center;text-align:center;height:100%;min-height:0;padding:10px 20px}
+body[data-layout=poster] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);gap:40px}
+body[data-layout=poster] .ts-ask .ts-ox{width:48%;height:100%;font-size:140px}
+/* ---- answer button styles ---- */
+body[data-choice=pill] .choice{border-radius:999px}
+body[data-choice=tile] .choice{border-radius:10px;border-bottom-width:14px}
+body[data-choice=stamp] .choice{border-style:dashed;border-width:6px;border-radius:14px;transform:rotate(-.8deg)}
+body[data-choice=stamp] .choice:nth-child(even){transform:rotate(.9deg)}
+body[data-choice=neon] .choice{border-color:var(--accent);box-shadow:0 0 0 3px var(--primary) inset,0 0 26px var(--accent);border-radius:20px}
+body[data-choice=note] .choice{border-radius:6px 6px 6px 46px;border-width:3px;transform:rotate(-.7deg);box-shadow:0 12px 0 rgba(0,0,0,.2)}
+body[data-choice=note] .choice:nth-child(even){transform:rotate(.8deg)}
+body[data-choice] .choice.correct,body[data-choice] .choice.wrong{transform:none}
+/* ---- card styles (question card, match/bingo tiles, sort bins) ---- */
+body[data-card=round] .ts-q,body[data-card=round] .ts-tile{border-radius:40px}
+body[data-card=ticket] .ts-q,body[data-card=ticket] .ts-tile{border-radius:12px;clip-path:polygon(0 0,100% 0,100% 38%,99% 50%,100% 62%,100% 100%,0 100%,0 62%,1% 50%,0 38%)}
+body[data-card=polaroid] .ts-q,body[data-card=polaroid] .ts-tile{border:12px solid #fffdf5;border-bottom-width:40px;transform:rotate(-.6deg);box-shadow:0 10px 0 rgba(0,0,0,.25)}
+body[data-card=hex] .ts-tile{clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}
+body[data-card=hex] .ts-q{clip-path:polygon(2% 0,98% 0,100% 50%,98% 100%,2% 100%,0 50%)}
+/* ---- scoreboards (HUD) ---- */
+body[data-score=led] .team{border-radius:6px;background:#080808;border:3px solid #444}
+body[data-score=led] .team .tscore{color:#ffb000;font-family:"Courier New",monospace;text-shadow:0 0 12px #ffb000}
+body[data-score=led] .team .tname{color:#e8e8e8}
+body[data-score=chalk] .team{border-radius:14px;background:rgba(255,255,255,.07);border:3px dashed rgba(255,255,255,.75)}
+body[data-score=sticker] .team{background:var(--primary);color:var(--btnText);border-radius:14px;transform:rotate(-2deg);box-shadow:0 6px 0 rgba(0,0,0,.35)}
+body[data-score=sticker] .team:nth-child(even){transform:rotate(2deg)}
+body[data-score=banner] .team{border-radius:0 30px 30px 0;background:var(--card);color:var(--cardText);border-left:14px solid var(--primary)}
+/* ---- title treatments ---- */
+body[data-title=outline] .title{-webkit-text-stroke:3px var(--accent);text-shadow:none}
+body[data-title=stack3d] .title{text-shadow:0 4px 0 var(--accent),0 9px 0 rgba(0,0,0,.35),0 16px 26px rgba(0,0,0,.4)}
+body[data-title=stamp] .title{transform:rotate(-3deg);border:10px solid var(--primary);padding:6px 54px;border-radius:16px;background:rgba(0,0,0,.28)}
+body[data-title=underline] .title:after{content:"";display:block;height:16px;margin:10px auto 0;width:72%;background:var(--primary);border-radius:8px}
+body[data-title-scale=lg] .title{font-size:calc(var(--t-title)*1.18)}
+body[data-title-scale=sm] .title{font-size:calc(var(--t-title)*.86)}
+body[data-scene=title][data-tpos=left] #scene .screen{align-items:flex-start;padding-left:230px;text-align:left}
+body[data-scene=title][data-tpos=left] #scene .row{justify-content:flex-start}
+body[data-scene=title][data-tpos=top] #scene .screen{justify-content:flex-start;padding-top:200px}
+/* ---- survival team row variants ---- */
+body[data-sv=bridge] .ts-teambox:nth-child(odd){transform:translateY(-30px)}
+body[data-sv=bridge] .ts-teambox:nth-child(even){transform:translateY(30px)}
+body[data-sv=stagger] .ts-teambox:nth-child(odd){transform:rotate(-2deg)}
+body[data-sv=stagger] .ts-teambox:nth-child(even){transform:rotate(2deg)}
+body[data-sv=arena] .ts-teamrow{background:rgba(0,0,0,.2);border:6px dashed var(--cardBorder);border-radius:150px;padding:26px 40px}
+/* ---- shelves, belts ---- */
+.ts-plank{position:absolute;height:16px;border-radius:6px;background:linear-gradient(var(--cardBorder),rgba(0,0,0,.45));box-shadow:0 8px 0 rgba(0,0,0,.25)}
+.ts-belt{position:absolute;left:150px;top:190px;width:1300px;height:26px;border-radius:14px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.55) 0 40px,rgba(255,255,255,.22) 40px 80px);box-shadow:0 8px 0 rgba(0,0,0,.3);animation:tsbelt 1.4s linear infinite}
+@keyframes tsbelt{to{background-position:80px 0}}
+.ts-slidein{animation:tsslide .7s cubic-bezier(.22,1,.36,1) both}
+@keyframes tsslide{from{margin-left:-900px;opacity:0}to{margin-left:0;opacity:1}}
+body[data-sortv=shelves] .ts-bin{border-radius:6px!important;border-top-width:14px!important;background-image:repeating-linear-gradient(0deg,transparent 0 84px,rgba(0,0,0,.18) 84px 90px)}
+body[data-sortv=shelves] .ts-bin:before{display:none}
+.ts-custom{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+.ts-custom svg{width:100%;height:100%}
+
+/* ---- style packs: one per entry of the general style taxonomy (scripts/style_auto.py) ---- */
+body[data-style=neon] .ts-q,body[data-style=neon] .ts-tile,body[data-style=neon] .ts-bin,body[data-style=neon] .choice{border-color:var(--primary)!important;box-shadow:0 0 0 2px rgba(0,229,255,.25),0 0 22px var(--primary)!important}
+body[data-style=neon] .title{text-shadow:0 0 22px var(--accent),0 0 56px var(--primary)}
+body[data-style=gold] .ts-q,body[data-style=gold] .ts-tile{border:5px double var(--primary)!important}
+body[data-style=gold] .title{letter-spacing:6px}
+body[data-style=pop] .card,body[data-style=pop] .ts-tile,body[data-style=pop] .choice,body[data-style=pop] .ts-bin{border:6px solid var(--cardBorder)!important;box-shadow:10px 10px 0 var(--cardBorder)!important}
+body[data-style=pop] .title{text-shadow:6px 6px 0 var(--primary),12px 12px 0 rgba(27,18,48,.35)}
+body[data-style=party] .ts-q,body[data-style=party] .ts-tile{border-style:dotted!important;border-width:8px!important}
+body[data-style=show] .ts-q{border:4px solid var(--primary)!important;box-shadow:0 0 0 8px rgba(0,0,0,.3),0 0 0 11px var(--primary)!important}
+body[data-style=glass] .card,body[data-style=glass] .ts-tile,body[data-style=glass] .choice,body[data-style=glass] .ts-bin,body[data-style=glass] .ts-explcard{background:rgba(255,255,255,.14)!important;background-image:none!important;border:2px solid rgba(255,255,255,.45)!important;box-shadow:0 12px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:36px}
+body[data-style=glass] .choice.correct,body[data-style=glass] .ts-tile.done{background:var(--good)!important;color:#0b0b0b}
+body[data-style=glass] .choice.wrong,body[data-style=glass] .ts-tile.bad{background:var(--bad)!important;color:#0b0b0b}
+body[data-style=anime] .card,body[data-style=anime] .ts-tile,body[data-style=anime] .choice,body[data-style=anime] .ts-bin{border:7px solid #0b1b3a!important;box-shadow:8px 8px 0 #0b1b3a!important;border-radius:14px}
+body[data-style=anime] .title{-webkit-text-stroke:3px #0b1b3a;text-shadow:7px 7px 0 var(--primary)}
+body[data-style=pastel] .card,body[data-style=pastel] .ts-tile,body[data-style=pastel] .choice,body[data-style=pastel] .ts-bin{border-radius:44px!important;box-shadow:0 10px 0 rgba(166,61,143,.18)!important}
+body[data-style=pixel] .card,body[data-style=pixel] .ts-tile,body[data-style=pixel] .choice,body[data-style=pixel] .ts-bin,body[data-style=pixel] .btn{border-radius:0!important;border-width:6px!important;box-shadow:8px 8px 0 #000!important;clip-path:none}
+body[data-style=pixel] .title{letter-spacing:3px;text-shadow:6px 6px 0 #000}
+body[data-style=minimal] .card,body[data-style=minimal] .ts-tile,body[data-style=minimal] .choice,body[data-style=minimal] .ts-bin{border-width:2px!important;box-shadow:none!important;border-radius:2px!important}
+body[data-style=minimal] .title{letter-spacing:5px;font-weight:700;text-shadow:none}
+body[data-style=minimal] .btn{box-shadow:none;border-radius:2px}
+body[data-style=chalk] .card,body[data-style=chalk] .ts-tile,body[data-style=chalk] .choice,body[data-style=chalk] .ts-bin{border:4px dashed rgba(245,245,239,.85)!important;border-radius:18px;box-shadow:none!important;background-image:none!important}
+body[data-style=nature] .card,body[data-style=nature] .ts-tile,body[data-style=nature] .choice,body[data-style=nature] .ts-bin{border-radius:34px!important;box-shadow:0 8px 0 rgba(35,122,67,.2)!important}

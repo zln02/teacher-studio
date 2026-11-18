@@ -59,7 +59,8 @@ AI는 **짧은 기획(spec) 한 장**만 쓴다. 엔진·부품·디자인·점�
 python3 scripts/build.py --spec spec.json --out game.html
 ```
 (= 디자인 값 계산 `scripts/design.py` → 엔진+부품+테마 조립 → `scripts/check_game.py`. 한 번에 안 되면 출력이 **spec의 고칠 곳**으로 알려 준다.)
-- **모양은 기본이 `theme:"auto"`**: spec의 `design.words`(우주·바다·동화·긴장감·따뜻하게·고급스럽게·역사 …)와 `mood`로 `scripts/theme_auto.py`가 배경 장면·도우미 캐릭터·소품·축하 연출·제목 글꼴·음악을 **조합**해요 (같은 말 → 같은 결과). 요청이 한 세계를 분명히 가리킬 때만(예: 「방송국 퀴즈쇼」→ tv-studio, 「거북선」→ joseon-war-room, 「분리배출」→ recycle-robot) 이식 테마 한 벌이 그대로 나와요. 기본 3종(default·notebook·spotlight)은 `design.theme`로 직접 고를 때만.
+- **모양은 기본이 `theme:"auto"` + 매번 새 조합**: 12가지 스타일(`design.style`: 네온·골드 럭셔리·팝·파티·TV 게임쇼·글래스·애니·파스텔·레트로 픽셀·미니멀·칠판·자연)과 배치 5종·버튼/카드/점수판/제목 변형이 seed로 새로 뽑혀요(같은 요청도 매번 다른 구성, 뽑힌 seed가 출력돼 「아까 그거 다시」가 돼요). AI는 그 위에 `design.words`·`custom_css`·`custom_svg`로 요청만의 한 끗을 더해요. 옛 스킨 9개(이식 테마)는 요청이 그 세계를 직접 부를 때만 써요.
+- **세계 조합**: spec의 `design.words`(우주·바다·동화·긴장감·따뜻하게·고급스럽게·역사 …)와 `mood`로 `scripts/theme_auto.py`가 배경 장면·도우미 캐릭터·소품·축하 연출·제목 글꼴·음악을 **조합**해요 (같은 말 → 같은 결과). 요청이 한 세계를 분명히 가리킬 때만(예: 「방송국 퀴즈쇼」→ tv-studio, 「거북선」→ joseon-war-room, 「분리배출」→ recycle-robot) 이식 테마 한 벌이 그대로 나와요. 기본 3종(default·notebook·spotlight)은 `design.theme`로 직접 고를 때만.
 - 같은 말로 다른 모양: `design.seed`를 바꾼다.
 - FAIL이 있으면 spec을 고쳐 다시 실행. WARN은 이유가 있으면 둔다. 이어서 `references/qa-checklist.md`.
 

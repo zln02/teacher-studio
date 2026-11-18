@@ -13,6 +13,9 @@ COMP.mech.board = function(items){
   function nextQ(){ qi++; if (qi >= pool.length){ pool = U.shuffle(pool); qi = 0; } return pool[qi]; }
   function place(i){
     var r = Math.floor(i / cols), c = i % cols, x = 160 + (r % 2 ? cols - 1 - c : c) * 200, y = 300 + r * 200;
+    var bv = H.lay().mech || "snake";
+    if (bv === "wave") y += (c % 2 ? 26 : -10);
+    if (bv === "stair") x += r * 56;
     return { x: x, y: y };
   }
 

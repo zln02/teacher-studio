@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import copy
 import json
+import random
 import subprocess
 import sys
 import tempfile
@@ -33,6 +34,7 @@ SKILL = HERE.parent
 sys.path.insert(0, str(HERE))
 import design  # noqa: E402  (shim -> shared/design/design.py)
 import specs  # noqa: E402
+import layout_auto  # noqa: E402
 import theme_auto  # noqa: E402
 
 for _sub in ("fonts", "vendor", "tools"):
@@ -43,6 +45,7 @@ from build_game import build  # noqa: E402
 
 COMP = SKILL / "assets" / "components"
 THEMES = SKILL / "assets" / "themes"
+LAYOUTS = SKILL / "assets" / "layouts"
 HEAD = "window.GAME_LOGIC = (function(){\nvar G = window.GAME, SPEC = G.spec, TK = SPEC.tokens, U = NG.util;\n"
 FOOT = "\nreturn COMP.boot();\n})();\n"
 
@@ -83,7 +86,7 @@ def make_tokens(spec: dict) -> dict:
         au = theme_auto.compose(spec, tk)
         if au.get("palette"):
             tk["colors"].update(au["palette"])
-            tk["palette"] = "auto-" + au["recipe"]
+            tk["palette"] = "auto-" + au["style"]
             tk["contrast"] = {"text_on_bg": round(min(design.contrast(tk["colors"]["text"], tk["colors"]["bg1"]), design.contrast(tk["colors"]["text"], tk["colors"]["bg2"])), 2),
                               "cardText_on_card": round(design.contrast(tk["colors"]["cardText"], tk["colors"]["card"]), 2),
                               "btnText_on_primary": round(design.contrast(tk["colors"]["btnText"], tk["colors"]["primary"]), 2)}
@@ -131,6 +134,14 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     teams = spec.get("teams", 0)
     spec_out = {k: v for k, v in spec.items() if k not in ("items", "title", "subtitle")}
     spec_out["tokens"] = tokens
+    _th = theme_for(tokens, spec)
+    _au = theme_auto.compose(spec, tokens) if _th == "auto" else None
+    lay = layout_auto.compose(spec, tokens, (_au["recipe"] if _au else _th), (_au["style"] if _au else ""))
+    spec_out["layoutCfg"] = lay
+    if spec.get("custom_svg"):
+        spec_out["customSvg"] = spec["custom_svg"]
+    spec_out.pop("custom_css", None)
+    spec_out.pop("custom_svg", None)
     music = theme_meta(theme_for(tokens, spec)).get("music")
     if theme_for(tokens, spec) == "auto":
         au = theme_auto.compose(spec, tokens)
@@ -143,7 +154,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         "themeOverride": {"primary": c["primary"], "accent": c["accent"], "bg1": c["bg1"], "bg2": c["bg2"], "text": c["text"], "muted": c["text"],
                           "card": c["card"], "cardBorder": c["cardBorder"], "cardText": c["cardText"], "btnText": c["btnText"],
                           "good": c["good"], "bad": c["bad"], "font": '"%s"' % tokens["fonts"]["display"], "glow": "none", **({"mood": music} if music else {})},
-        "credit": spec.get("credit") is True, "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
+        "transition": lay["transition"], "credit": spec.get("credit") is True, "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
         "music": bool(tokens["sound"]["music"]) and spec.get("music", True), "calm": tokens["motion"] == "calm",
         "mascots": device != "phone" and use == "class" and theme not in ("auto",) and not theme_meta(theme).get("host"), "items": items, "spec": spec_out,
     }
@@ -156,8 +167,11 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         parts.append((THEMES / f"{theme}.js").read_text(encoding="utf-8"))
     logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
     css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8")
+    css += "\n" + (LAYOUTS / "layouts.css").read_text(encoding="utf-8")
     if (THEMES / f"{theme}.css").exists():
         css += "\n" + (THEMES / f"{theme}.css").read_text(encoding="utf-8")
+    if spec.get("custom_css"):  # AI-written extra flair; validated by specs.validate, scanned by check_game like all other css
+        css += "\n/* custom_css */\n" + spec["custom_css"]
     css += "\n/* TS:CSS END */\n"
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)
@@ -174,11 +188,18 @@ def main() -> int:
     ap.add_argument("--spec", required=True, type=Path)
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--tokens", type=Path)
+    ap.add_argument("--seed", type=int, default=None, help="reproduce a look (same as design.seed in the spec); default = a fresh random look")
     ap.add_argument("--no-check", action="store_true")
     ap.add_argument("--no-fonts", action="store_true", help="keep the Google Fonts link instead of embedding Noto KR")
     ap.add_argument("--yes", action="store_true", help="agree to install the small font tool (fonttools) if it is missing")
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
+    d0 = spec.setdefault("design", {})
+    if a.seed is not None:
+        d0["seed"] = a.seed
+    elif "seed" not in d0:  # variety by default: a fresh combination every build; the seed is printed and stored in the page
+        d0["seed"] = random.SystemRandom().randrange(1, 100000)
+        print(f"design.seed={d0['seed']} (같은 모양으로 다시 만들려면 spec의 design.seed에 이 숫자를 적어요)")
     errs = specs.validate(spec)
     if errs:
         print("SPEC FIX NEEDED:\n - " + "\n - ".join(errs))
@@ -206,6 +227,7 @@ def main() -> int:
             note += ", fonts: " + frep.get("reason", "not embedded")
             if frep.get("prompt"):
                 print("ASK TEACHER: " + frep["prompt"] + "  (agree -> rerun with --yes)")
+    html = html.replace("<head>", f'<head>\n<meta name="ts-seed" content="{d0["seed"]}">', 1) if "<head>" in html else html
     a.out.write_text(html, encoding="utf-8")
     size = len(html.encode("utf-8"))
     print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)}{note})")

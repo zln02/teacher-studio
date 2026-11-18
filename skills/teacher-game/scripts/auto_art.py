@@ -82,6 +82,8 @@ def _pat_body(kind: str, c: str, a: float) -> str:
 
 
 def pattern_uri(kind: str, color: str, alpha: float) -> str:
+    if kind == "none":
+        return "none"
     svg = f'<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 40 40">{_pat_body(kind, color, alpha)}</svg>'
     return 'url("data:image/svg+xml,' + urllib.parse.quote(svg, safe="/:=\"' ()") .replace('"', "%22") + '")'
 
@@ -129,3 +131,39 @@ def animal_host(species: str) -> str:
             f'<path d="M276 240 Q304 214 294 190 Q266 204 260 236Z" fill="#ff9a3c" stroke="{INK}" stroke-width="6" stroke-linejoin="round"/>'
             f'<path d="M90 140 Q150 100 210 140" fill="none" stroke="#ff9a3c" stroke-width="12" stroke-linecap="round"/>')
     return f'<svg viewBox="0 0 300 440" width="300" height="440" xmlns="http://www.w3.org/2000/svg">{shadow}{body}{_face(150, 235)}</svg>'
+
+
+def _wrap(body: str, face: str) -> str:
+    shadow = '<ellipse cx="150" cy="430" rx="100" ry="11" fill="rgba(0,0,0,.3)"/>'
+    return f'<svg viewBox="0 0 300 440" width="300" height="440" xmlns="http://www.w3.org/2000/svg">{shadow}{body}{face}</svg>'
+
+
+def creature_host(species: str) -> str:
+    """More original round characters (4 moods): astro (space), bunny, owl, fox."""
+    if species == "astro":
+        body = (f'<rect x="206" y="236" width="52" height="108" rx="22" fill="#c9d3e6" stroke="{INK}" stroke-width="7"/>'
+                f'<rect x="90" y="300" width="120" height="120" rx="54" fill="#f4f7ff" stroke="{INK}" stroke-width="8"/>'
+                f'<circle cx="150" cy="352" r="12" fill="#ff5c5c" stroke="{INK}" stroke-width="4"/><circle cx="118" cy="352" r="9" fill="#5cc8ff" stroke="{INK}" stroke-width="4"/>'
+                f'<ellipse cx="150" cy="210" rx="124" ry="132" fill="#f4f7ff" stroke="{INK}" stroke-width="8"/>'
+                f'<ellipse cx="150" cy="216" rx="98" ry="100" fill="#22305f" stroke="{INK}" stroke-width="7"/>'
+                f'<path d="M82 170 Q104 128 150 122" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="10" stroke-linecap="round"/>'
+                f'<rect x="120" y="76" width="60" height="22" rx="10" fill="#ff5c5c" stroke="{INK}" stroke-width="5"/>')
+        face = _face(150, 222, 38).replace('stroke="' + INK + '"', 'stroke="#ffffff"')
+        return _wrap(body, face)
+    if species == "bunny":
+        body = (f'<ellipse cx="104" cy="90" rx="30" ry="86" transform="rotate(-8 104 90)" fill="#fff" stroke="{INK}" stroke-width="7"/><ellipse cx="104" cy="96" rx="14" ry="58" transform="rotate(-8 104 96)" fill="#ffb3c9"/>'
+                f'<ellipse cx="196" cy="90" rx="30" ry="86" transform="rotate(8 196 90)" fill="#fff" stroke="{INK}" stroke-width="7"/><ellipse cx="196" cy="96" rx="14" ry="58" transform="rotate(8 196 96)" fill="#ffb3c9"/>'
+                f'<ellipse cx="150" cy="290" rx="120" ry="130" fill="#fff" stroke="{INK}" stroke-width="8"/><ellipse cx="150" cy="350" rx="66" ry="56" fill="#ffe9f1"/>'
+                f'<circle cx="150" cy="246" r="9" fill="#ff8fb0" stroke="{INK}" stroke-width="3"/>')
+        return _wrap(body, _face(150, 232, 44))
+    if species == "owl":
+        body = (f'<path d="M52 150 L72 76 L124 128Z M248 150 L228 76 L176 128Z" fill="#8a5a3c" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+                f'<ellipse cx="150" cy="270" rx="122" ry="150" fill="#a8714a" stroke="{INK}" stroke-width="8"/><ellipse cx="150" cy="330" rx="76" ry="84" fill="#f3d9b4"/>'
+                f'<path d="M110 300 q10 10 20 0 M140 300 q10 10 20 0 M170 300 q10 10 20 0 M120 335 q10 10 20 0 M150 335 q10 10 20 0" fill="none" stroke="#a8714a" stroke-width="5" stroke-linecap="round"/>'
+                f'<path d="M136 252 L164 252 L150 276Z" fill="#ffb02e" stroke="{INK}" stroke-width="5" stroke-linejoin="round"/>')
+        return _wrap(body, _face(150, 214, 46))
+    body = (f'<path d="M262 330 Q330 300 296 232 Q280 290 236 310Z" fill="#ff8a3d" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+            f'<path d="M50 152 L66 62 L130 120Z M250 152 L234 62 L170 120Z" fill="#ff8a3d" stroke="{INK}" stroke-width="7" stroke-linejoin="round"/>'
+            f'<ellipse cx="150" cy="268" rx="122" ry="150" fill="#ff8a3d" stroke="{INK}" stroke-width="8"/>'
+            f'<path d="M150 252 Q60 250 58 318 Q100 410 150 410 Q200 410 242 318 Q240 250 150 252Z" fill="#fff4e6"/><ellipse cx="150" cy="262" rx="11" ry="8" fill="{INK}"/>')
+    return _wrap(body, _face(150, 226, 46))

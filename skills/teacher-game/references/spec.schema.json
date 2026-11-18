@@ -30,10 +30,13 @@
     "mood": {"type": "string", "description": "긴장감 | 신남 | 차분 | 따뜻함 | 밝음 | 자연 ..."},
     "seed": {"type": "integer", "description": "change to get another look from the same words"},
     "theme": {"enum": ["auto", "tv-studio", "auditorium-bell", "space-station", "joseon-war-room", "antidote-lab", "sun-temple", "post-office-night", "cell-feeding", "recycle-robot", "default", "notebook", "spotlight"], "default": "auto", "description": "auto (default) composes scene + host + props + celebration from words/mood; a named theme only when the request clearly names that world"},
+    "style": {"enum": ["neon-cyber", "gold-luxury", "pop-colorful", "festival-party", "tv-gameshow", "glass-3d", "anime-cartoon", "pastel-cute", "retro-pixel", "minimal-premium", "chalk-paper", "nature-calm"], "description": "general style taxonomy: each style has its own palette, background, composition and component look (default: picked from words/world/seed)"},
+    "layout": {"enum": ["stack", "split", "bento", "news", "poster"]}, "choice": {"enum": ["pill", "tile", "stamp", "neon", "note"]}, "card": {"enum": ["round", "ticket", "polaroid", "hex"]}, "score": {"enum": ["led", "chalk", "sticker", "banner"]}, "title_style": {"enum": ["outline", "stack3d", "stamp", "underline"]},
     "words": {"type": "array", "items": {"type": "string"}, "description": "mood/scene words for theme:auto, e.g. [\"우주\",\"동화\",\"바다\",\"긴장감\",\"따뜻하게\",\"고급스럽게\"]"},
     "large": {"type": "boolean", "description": "personal use only: class-size type (grandparents, far screens)"}
    }
   },
+  "custom_css": {"type": "string", "maxLength": 6000, "description": "AI extra flair (sandboxed: no external urls, no ?. ??)"}, "custom_svg": {"type": "string", "maxLength": 12000, "description": "full-stage svg decoration, viewBox 0 0 1920 1080 (no script/href/external)"},
   "world": {"type": "object", "description": "optional texts: qLabel, lockName, goodText, speak (bingo read-aloud), lang"},
   "items": {
    "type": "array",

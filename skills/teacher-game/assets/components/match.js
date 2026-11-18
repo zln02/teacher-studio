@@ -7,15 +7,21 @@ COMP.mech.match = function(items){
   pairs.forEach(function(p, i){ cards.push({ pair: i, text: p.a }); cards.push({ pair: i, text: p.b }); });
   cards = U.shuffle(cards);
   var cols = cards.length <= 6 ? 3 : 4, rows = Math.ceil(cards.length / cols), gap = 24, areaW = 1600, areaH = 800;
+  var V = H.lay().mech || "grid";
+  if (V === "shelf") gap = 44;
   var cw = Math.floor((areaW - gap * (cols - 1)) / cols), ch = Math.min(220, Math.floor((areaH - gap * (rows - 1)) / rows));
+  if (V === "brick") cw = Math.floor((areaW - gap * (cols - 1)) / (cols + 0.5));
 
   NG.scene("ts-match", function(el){
     var html = '<div class="ts-wrap" style="top:140px;height:880px"><div class="ts-chips enter">' + H.chip("짝 " + found + " / " + pairs.length) + H.teamChip(NG.currentTeam()) + H.chip("시도 " + tries) + '</div>' +
       '<div style="position:relative;width:' + areaW + 'px;height:' + (rows * ch + (rows - 1) * gap) + 'px;margin-top:26px">';
     cards.forEach(function(c, i){
-      var x = (i % cols) * (cw + gap), y = Math.floor(i / cols) * (ch + gap);
-      html += '<button class="ts-tile enter' + (c.done ? "" : " back") + '" data-i="' + i + '" data-fit="1" style="left:' + x + 'px;top:' + y + 'px;width:' + cw + 'px;height:' + ch + 'px;font-size:var(--t-b);padding:10px 16px;animation-delay:' + (i * 0.03) + 's">' + (c.done ? "✔ " + H.esc(c.text) : H.back()) + '</button>';
+      var x = (i % cols) * (cw + gap), y = Math.floor(i / cols) * (ch + gap), rot = "";
+      if (V === "brick" && Math.floor(i / cols) % 2) x += (cw + gap) / 2;
+      if (V === "scatter"){ x += ((i * 37) % 11 - 5) * 2; y += ((i * 53) % 9 - 4) * 2; rot = "transform:rotate(" + (((i * 29) % 7 - 3) * 1.3).toFixed(1) + "deg);"; }
+      html += '<button class="ts-tile enter' + (c.done ? "" : " back") + '" data-i="' + i + '" data-fit="1" style="' + rot + 'left:' + x + 'px;top:' + y + 'px;width:' + cw + 'px;height:' + ch + 'px;font-size:var(--t-b);padding:10px 16px;animation-delay:' + (i * 0.03) + 's">' + (c.done ? "✔ " + H.esc(c.text) : H.back()) + '</button>';
     });
+    if (V === "shelf") for (var r = 0; r < rows; r++) html += '<div class="ts-plank" style="left:-10px;width:' + (areaW + 20) + 'px;top:' + (r * (ch + gap) + ch + 8) + 'px"></div>';
     el.insertAdjacentHTML("beforeend", html + "</div></div>"); wrap = el.lastElementChild;
     Array.prototype.forEach.call(wrap.querySelectorAll(".ts-tile"), function(b){ NG.button(b, function(){ flip(+b.getAttribute("data-i"), b); }); });
   });

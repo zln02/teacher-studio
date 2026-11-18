@@ -28,6 +28,7 @@ for _s in (sys.stdout, sys.stderr):
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import auto_art  # noqa: E402
+import style_auto  # noqa: E402
 ASSETS = HERE.parent / "shared" / "assets"
 if not ASSETS.exists():  # running from the repo root copy
     ASSETS = HERE.parent.parent.parent / "shared" / "assets"
@@ -40,7 +41,7 @@ RECIPES: dict[str, dict] = {
               "pal": {"bg1": "#070b24", "bg2": "#1d1655", "text": "#ffffff", "card": "#17204f", "cardText": "#ffffff", "cardBorder": "#8fa8ff",
                       "primary": "#ffd23f", "btnText": "#1a1a1a", "accent": "#5ce1ff", "good": "#43e8a0", "bad": "#ff6b7a"},
               "lines": {"title": ["우주 탐험 출발!"], "start": ["발사 준비 완료!"], "correct": ["별처럼 반짝!", "굿 샷!"], "wrong": ["궤도 수정!", "다시 도전!"], "win": ["임무 성공!"], "lose": ["다음엔 꼭!"]}},
-    "sea": {"kw": ["바다", "물고기", "해양", "파도", "섬", "배", "항해", "수족관", "해변", "동물"], "bg": "waves", "pattern": "dots",
+    "sea": {"kw": ["독도", "울릉도", "바다", "물고기", "해양", "파도", "섬", "배", "항해", "수족관", "해변", "동물"], "bg": "waves", "pattern": "dots",
             "props": ["whale", "fish", "shell", "starfish", "anchor", "seaweed", "bubble", "crab"], "chars": ["thumbs", "lorelei", "shapes"],
             "cel": "bubbles", "font": "Jua", "music": "nature", "motion": "normal", "base": "ocean",
             "pal": {"bg1": "#0b5a96", "bg2": "#0a3d73", "text": "#ffffff", "card": "#ffffff", "cardText": "#0b2a4a", "cardBorder": "#5cc8ff",
@@ -122,6 +123,21 @@ HOST_BY_WORD = {"역사": "joseon-war-room", "조선": "joseon-war-room", "실�
                 "편지": "post-office-night", "방송": "tv-studio", "고대": "sun-temple", "송년": "tv-studio", "시상": "tv-studio"}
 
 
+# signature element: one request-specific picture drawn procedurally by auto.js (keywords from title/words/items -> drawing id)
+SIGNATURES = {"island": ["독도", "울릉", "섬", "동해", "영토", "해양"], "clock": ["송년", "새해", "연말", "시계", "시간", "12시", "카운트다운"],
+              "solar": ["태양계", "행성", "우주", "태양", "천체", "목성", "화성"], "pyramid": ["이집트", "피라미드", "사막", "고대 문명", "메소포타미아"],
+              "mountain": ["한라산", "백두산", "산맥", "산", "지형", "등산"], "palace": ["조선", "경복궁", "한옥", "왕", "궁", "전통", "삼국", "고려"]}
+
+
+def pick_signature(text: str) -> str:
+    best, n = "", 0
+    for sid, words in SIGNATURES.items():
+        c = sum(text.count(w) for w in words)
+        if c > n:
+            best, n = sid, c
+    return best
+
+
 def named_theme(text: str) -> str:
     for tid, words in NAMED.items():
         if any(w in text for w in words):
@@ -157,7 +173,8 @@ def _svg_inner(svg: str) -> tuple[str, str]:
     m = re.match(r"\s*<svg[^>]*viewBox=\"([^\"]+)\"[^>]*>(.*)</svg>\s*$", svg, re.S)
     if not m:
         raise ValueError("unexpected avatar svg")
-    return m.group(1), m.group(2)
+    inner = re.sub(r'<rect fill="#[0-9a-fA-F]{3,8}" width="\d+" height="\d+" x="0" y="0" />', "", m.group(2))  # drop the avatar's square backdrop
+    return m.group(1), inner
 
 
 def _avatar_def(sid: str, svg: str) -> tuple[str, str]:
@@ -213,27 +230,38 @@ def icon_svg(name: str) -> str:
     return re.sub(r"\s+", " ", s).strip()
 
 
+# hosts for auto looks are ORIGINAL generated characters (DiceBear CC0, animals, creatures) or none. Hosts of the older ported
+# skins are never used here; they appear only when the request explicitly names that world (NAMED -> the whole ported theme).
+RECIPE_HOSTS = {"space": ["creature:astro", "dice", "none"], "sea": ["animal:whale", "animal:octopus", "animal:puffer"], "fairy": ["creature:bunny", "dice", "creature:fox"],
+                "tense": ["creature:owl", "dice", "none"], "luxe": ["none", "dice", "creature:owl"], "warm": ["creature:bunny", "creature:fox", "dice"],
+                "forest": ["creature:fox", "creature:owl", "creature:bunny"], "hanok": ["creature:owl", "dice", "none"], "sports": ["dice", "creature:fox", "none"],
+                "science": ["creature:owl", "creature:astro", "dice"]}
+
+
 def compose(spec: dict, tokens: dict | None = None) -> dict:
-    """Return {config, palette, fonts, motion, music, baseTheme, recipe, matched}. Pure function of the spec words + seed."""
+    """Return {config, palette, fonts, motion, music, baseTheme, recipe, style, matched}. Pure function of the spec words + seed."""
     d = spec.get("design") or {}
     words = " ".join(map(str, d.get("words") or [])) if isinstance(d.get("words"), list) else str(d.get("words") or "")
     text = " ".join([words, str(d.get("mood", "")), str(spec.get("title", "")), str(spec.get("subtitle", "")), str(d.get("subject", ""))])
     rid, matched = pick_recipe(text, str(d.get("subject", "")), str(d.get("mood", "")))
     r = RECIPES.get(rid, DEFAULT)
     seed = int(d.get("seed", 0))
-    key = f"{rid}|{text}|{seed}"
-    style = r["chars"][_h(key + "c") % len(r["chars"])]
+    sid, why = style_auto.pick_style(text, rid or "generic", seed, str(d.get("style", "")))
+    st = style_auto.STYLES[sid]
+    key = f"{rid}|{sid}|{text}|{seed}"
+    dstyle = r["chars"][_h(key + "c") % len(r["chars"])]
     letter = "abcdefghijkl"[_h(key + "l") % 12]
-    if style == "lorelei":
+    if dstyle == "lorelei":
         letter = "abcdef"[_h(key + "l") % 6]
+    itemtxt = " ".join(" ".join(str(v) for k, v in it.items() if k in ("q", "a", "b", "word", "clue", "exp")) for it in (spec.get("items") or [])[:40] if isinstance(it, dict))
+    sig = pick_signature(text + " " + itemtxt)
     named = named_theme(text)
-    host_id = next((v for k, v in HOST_BY_WORD.items() if k in text), "")
-    if not host_id:
-        cands = RECIPE_HOSTS.get(rid, ["dice"])
-        host_id = cands[_h(key + "h") % len(cands)]
-    stage = RECIPE_STAGE.get(rid, "") if (rid in RECIPE_STAGE and _h(key + "s") % 3) else ""
-    animal = host_id.startswith("animal:")
-    pal = r["pal"] or dict((tokens or {}).get("colors") or {})
+    cands = RECIPE_HOSTS.get(rid, ["dice", "creature:owl", "none"])
+    host_id = cands[_h(key + "h") % len(cands)]
+    if sid == "minimal-premium":
+        host_id = "none"
+    animal, creature, dice = host_id.startswith("animal:"), host_id.startswith("creature:"), host_id == "dice"
+    pal = st["pal"]
     accent = pal.get("accent", "#ffd23f")
     props = list(r["props"])
     order = sorted(range(len(props)), key=lambda i: _h(f"{key}p{i}"))
@@ -244,32 +272,32 @@ def compose(spec: dict, tokens: dict | None = None) -> dict:
         icons[n] = auto_art.SEA_PROPS[n] if n in auto_art.SEA_PROPS else auto_art.sticker(icon_svg(n), cyc[i % len(cyc)])
     wtags = auto_art.WORLD_TAGS.get(rid or "generic", {"generic"})
     ptags = {n: sorted(auto_art.PROP_TAGS.get(n, set())) for n in chosen}
-    bg_light = sum(int(pal.get("bg1", "#000000")[i:i + 2], 16) for i in (1, 3, 5)) > 380
-    pat_col = pal.get("text", "#ffffff") if bg_light else pal.get("accent", "#ffffff")
+    pat_col = pal.get("text", "#ffffff") if not st["dark"] else pal.get("accent", "#ffffff")
     emblem = icons[chosen[0]]
+    shown = chosen if st["props"] else []
+    if animal:
+        host_svg_s = auto_art.animal_host(host_id[7:])
+    elif creature:
+        host_svg_s = auto_art.creature_host(host_id[9:])
+    elif dice:
+        host_svg_s = host_svg(dstyle, letter, accent, "#1a1020")
+    else:
+        host_svg_s = ""
     cfg = {
-        "recipe": rid or "generic", "bg": r["bg"], "pattern": r["pattern"], "cel": r["cel"], "seed": _h(key) % 10000,
-        "icons": icons, "props": chosen, "propTags": ptags, "worldTags": sorted(wtags), "emblem": emblem,
-        "pat": auto_art.pattern_uri(r["pattern"], pat_col, 0.14), "patBack": auto_art.pattern_uri(r["pattern"], "#ffffff", 0.32),
-        "hostCol": stage == "tv-studio",
-        "host": {"svg": host_svg(style, letter, accent, "#1a1020") if host_id == "dice" else (auto_art.animal_host(host_id[7:]) if animal else ""),
-                 "theme": "" if (host_id == "dice" or animal) else host_id,
-                 "name": "도우미", "style": f"dicebear-{style}" if host_id == "dice" else host_id, "lines": r["lines"]},
-        "stage": stage, "partThemes": sorted({x for x in (stage, "" if (host_id == "dice" or animal) else host_id) if x}),
+        "recipe": rid or "generic", "style": sid, "bg": st["bg"], "pattern": st["pattern"], "cel": r["cel"], "seed": _h(key) % 10000,
+        "icons": icons, "props": shown, "propTags": {n: ptags[n] for n in shown}, "worldTags": sorted(wtags), "emblem": emblem,
+        "pat": auto_art.pattern_uri(st["pattern"], pat_col, 0.14), "patBack": auto_art.pattern_uri(st["pattern"], "#ffffff", 0.32),
+        "hostCol": False, "sig": sig,
+        "host": {"svg": host_svg_s, "theme": "", "name": "도우미", "style": host_id if host_id != "dice" else f"dicebear-{dstyle}", "lines": r["lines"]} if host_svg_s else None,
+        "stage": "", "partThemes": [],
         "palette": [pal.get(k) for k in ("primary", "accent", "bg1", "bg2", "card")],
     }
-    out = {"named": named, "parts": {"background": r["bg"] + "+" + r["pattern"], "host": host_id if host_id != "dice" else f"dicebear-{style}/{letter}", "stage": stage or "-",
-                                    "props": chosen, "celebration": r["cel"], "font": r["font"] or "(palette font)", "music": r["music"]},
-           "config": cfg, "recipe": rid or "generic", "matched": matched, "character": f"dicebear-{style}/{letter}", "props": chosen}
-    if r["pal"]:
-        out["palette"] = r["pal"]
-    if r["font"]:
-        out["fonts"] = {"display": r["font"], "body": "Noto Serif KR" if r["font"] in ("Song Myung", "Noto Serif KR") else "Noto Sans KR"}
-    for k in ("motion", "music"):
-        if r[k]:
-            out[k] = r[k]
-    if r["base"]:
-        out["baseTheme"] = r["base"]
+    out = {"named": named, "style": sid, "style_why": why,
+           "parts": {"style": sid, "background": st["bg"] + "+" + st["pattern"], "host": host_id if not dice else f"dicebear-{dstyle}/{letter}", "stage": "-",
+                     "props": shown or "(none: minimal)", "signature": sig or "-", "celebration": r["cel"], "font": st["font"], "music": st["music"]},
+           "config": cfg, "recipe": rid or "generic", "matched": matched, "character": host_id if not dice else f"dicebear-{dstyle}/{letter}", "props": shown,
+           "palette": st["pal"], "fonts": {"display": st["font"], "body": "Noto Serif KR" if st["font"] in ("Song Myung", "Noto Serif KR") else "Noto Sans KR"},
+           "motion": st["motion"], "music": st["music"], "baseTheme": "arcade" if st["dark"] else "fairytale"}
     return out
 
 

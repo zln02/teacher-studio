@@ -17,13 +17,14 @@ COMP.mech.bingo = function(items){
     try { TSVoice.speak(it.say || it.word, {lang: H.world("lang", "en-US")}); } catch (e) {}
   }
   NG.scene("ts-bingo", function(el){
-    var cur = order[ci], gap = 20, areaW = 1500, cw = Math.floor((areaW - gap * (n - 1)) / n), chh = n === 3 ? 190 : 140;
+    var V = H.lay().mech || "grid", cur = order[ci], gap = V === "shelf" ? 34 : 20, areaW = 1500, cw = Math.floor((areaW - gap * (n - 1)) / n), chh = n === 3 ? 190 : 140;
     var html = '<div class="ts-wrap" style="top:130px;height:890px"><div class="ts-chips enter">' + H.chip("빙고 " + lines + "줄") + H.teamChip(NG.currentTeam()) + H.chip("남은 낱말 " + (order.length - ci)) + '</div>' +
       '<div class="card enter ts-q" data-fit="1" style="margin-top:16px;min-height:150px;font-size:' + H.qSize(cur.clue) + 'px">' + H.esc(cur.clue) + '</div>' +
       '<div style="position:relative;margin-top:22px;width:' + areaW + 'px;height:' + (n * chh + (n - 1) * gap) + 'px">';
     cells.forEach(function(c, i){
-      html += '<button class="ts-tile' + (marked[i] ? " done" : "") + '" data-i="' + i + '" data-fit="1" style="left:' + (i % n) * (cw + gap) + 'px;top:' + Math.floor(i / n) * (chh + gap) + 'px;width:' + cw + 'px;height:' + chh + 'px;font-size:var(--t-c);padding:8px 14px">' + (marked[i] ? "✔ " : "") + H.esc(c.word) + '</button>';
+      html += '<button class="ts-tile' + (marked[i] ? " done" : "") + '" data-i="' + i + '" data-fit="1" style="' + (V === "tilt" ? "transform:rotate(" + (((i * 31) % 7 - 3) * 0.9).toFixed(1) + "deg);" : "") + 'left:' + (i % n) * (cw + gap) + 'px;top:' + Math.floor(i / n) * (chh + gap) + 'px;width:' + cw + 'px;height:' + chh + 'px;font-size:var(--t-c);padding:8px 14px">' + (marked[i] ? "✔ " : "") + H.esc(c.word) + '</button>';
     });
+    if (V === "shelf") for (var r = 0; r < n; r++) html += '<div class="ts-plank" style="left:-10px;width:' + (areaW + 20) + 'px;top:' + (r * (chh + gap) + chh + 6) + 'px"></div>';
     el.insertAdjacentHTML("beforeend", html + '</div></div>'); wrap = el.lastElementChild;
     Array.prototype.forEach.call(wrap.querySelectorAll(".ts-tile"), function(b){ NG.button(b, function(){ pick(+b.getAttribute("data-i"), b); }); });
   });

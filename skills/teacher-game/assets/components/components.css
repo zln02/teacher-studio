@@ -89,3 +89,5 @@ body[data-hostcol="1"] #ts-deco .ts-host{transform:scale(.82)}
 body[data-hostcol="1"] #ts-deco[data-scene=title] .ts-host,body[data-hostcol="1"] #ts-deco[data-scene=countdown] .ts-host{transform:scale(1.02)}
 body[data-hostcol="1"] #ts-deco[data-scene=result] .ts-host{transform:scale(.9)}
 body[data-hostcol="1"] #ts-bubble{left:70px;bottom:370px}
+/* animation must not pin the end transform (variants rotate cards/buttons) */
+.enter{animation-fill-mode:backwards}
