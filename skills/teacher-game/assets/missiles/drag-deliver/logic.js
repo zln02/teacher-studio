@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* drag-deliver missile · 끌어서 보내기
    Drag (or tap) the item to the right destination. All text comes from GAME.items + GAME.world.
    items: [{q, a, wrong?:[..], exp?, say?}]   world.skin: post-office | cell-feed | recycle
@@ -30,10 +31,9 @@ window.GAME_LOGIC = (function(){
   function say(text){
     if (!text) return;
     try {
-      if (NG.audio.muted || !window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      var u = new window.SpeechSynthesisUtterance(text); u.lang = T("lang", "en-US"); u.rate = +T("rate", 0.85) || 0.85;
-      window.speechSynthesis.speak(u);
+      if (NG.audio.muted || !window.TSVoice || !TSVoice.supported) return;
+      var rt = +T("rate", 0);
+      TSVoice.speak(text, rt ? {lang: T("lang", "en-US"), rate: rt} : {lang: T("lang", "en-US")});
     } catch (e) {}
   }
 

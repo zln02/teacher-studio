@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Shared design system for Teacher Studio: deterministic design tokens (no AI needed).
 
 One generator for games, slides, motion, posters, invitations, print and web pages, so a mood word

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* 미사일: escape-room (반 전체 협동 방탈출, 자물쇠 3~6개, 위기 게이지)
    - 글자는 전부 GAME.items + GAME.world 에서 온다. 그림은 GAME.world.skin 으로 고른다.
    - 스킨: joseon(조선 수군 작전실) · lab(폭주하는 실험실) · temple(고대 신전)

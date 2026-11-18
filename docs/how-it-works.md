@@ -14,7 +14,8 @@ teacher-studio/
 │  ├─ design/                      ← 디자인 생성기(design.py) · palettes.json · tokens.schema.json
 │  ├─ vendor/                      ← 고정 버전 라이브러리(motion·confetti·chartjs·katex·lucide·phaser·animejs·axe-core) + LICENSE + manifest.json + inline.py
 │  ├─ fonts/                       ← Noto Sans/Serif KR 기본 글자 모음(base/) + embed.py + OFL 문서
-│  └─ tools/ensure.py              ← 처음 필요할 때 동의 받고 설치(fonttools, python-pptx, imageio-ffmpeg, playwright …)
+│  ├─ voice/voice.js               ← 가장 자연스러운 브라우저 목소리 고르기 + 문장별 읽기(게임에 자동 포함)
+│  └─ tools/                       ← ensure.py(처음 필요할 때 동의 받고 설치) · stamp.py(결과 파일의 보이지 않는 만든이 표시)
 ├─ scripts/setup.py             ← 설치: 스킬 등록(Claude Code ~/.claude/skills, Codex ~/.agents/skills) + doctor
 ├─ tools/                       ← 개발 도구: sync_shared.py(공통 파일 동기화 + dist zip), build_assets.py(그림 팩)
 ├─ dist/                        ← Claude 앱 업로드용 zip

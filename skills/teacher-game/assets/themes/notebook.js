@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* THEME notebook — ruled-paper look for personal / writing-heavy games (static, no motion). Colors from tokens. */
 COMP.themes.notebook = { paint: function(ctx, t, dt, W, Hh, TK){
   ctx.fillStyle = TK.colors.bg1; ctx.fillRect(0, 0, W, Hh);

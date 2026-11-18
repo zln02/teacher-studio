@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* THEME spotlight — stage-light beams for show-style games. Beam count follows tokens.motion; colors from tokens. */
 COMP.themes.spotlight = { paint: function(ctx, t, dt, W, Hh, TK){
   var g = ctx.createRadialGradient(W / 2, Hh * 0.15, 80, W / 2, Hh * 0.5, Hh); g.addColorStop(0, TK.colors.bg2); g.addColorStop(1, TK.colors.bg1);

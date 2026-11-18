@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* EXAMPLE: 정답 블록 점프 — 에셋 팩(kenney-platformer-core) 사용 플랫포머형 퀴즈
    세계관: 언덕길 모험 / 동작: 정답이 적힌 ? 블록을 눌러 캐릭터가 달려가 머리로 치기 / 배치: 횡스크롤 지형
    시그니처: 정답 블록에서 코인이 튀어 올라 HUD 코인함으로 날아감, 끝에 깃발이 펄럭이며 도착

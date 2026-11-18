@@ -94,6 +94,9 @@ python3 scripts/build.py --spec spec.json --out game.html
 5. **오래된 크롬 대응(ES2017)**: `?.` `??` `replaceAll` `.at(` `#private` `structuredClone` 금지. CSS `aspect-ratio` `:has` `dvh` 금지.
 6. **선생님 메뉴·소리 끄기·전체 화면 버튼은 지우지 않는다.**
 7. 팀전 기본: 팀 점수만, 넉넉한 타이머(20초+), 역전 요소(보너스), 오답 망신 금지.
+8. 「만든 표시」: 파일 속 보이지 않는 정보와 선생님 메뉴 맨 아래 「만든 도구」 줄은 자동. 학생 화면(결과 화면)에 「교사 스튜디오로 만듦」을 보이려면 spec에 `credit:true` — **선생님이 원할 때만**, 먼저 권하지 않는다.
+9. 영어 읽어 주기(`speak`)는 공용 목소리 고르기(`shared/voice/voice.js`)가 기기에서 가장 자연스러운 목소리를 자동으로 골라요. 선생님 메뉴에 쓰는 목소리가 보여요(Edge 브라우저가 더 자연스러워요).
+10. `motion` 부품은 오래된 크롬에서 안 돌아가요 → 넣지 말고 anime.js·CSS를 쓴다. 꼭 필요하면 `libs:["motion"]` + `allow_modern:true` 둘 다 (점검기는 주의로 표시, 없이 들어가면 실패).
 
 ## 파일 안내 (필요할 때만 읽기)
 | 파일 | 언제 |
@@ -105,4 +108,4 @@ python3 scripts/build.py --spec spec.json --out game.html
 | `references/classroom.md` · `qa-checklist.md` · `legal-advisory.md` | 크기 기준 / 최종 점검 / 저작권 권고 |
 | `references/engine-api.md` | 직접 코드 때만 |
 | `scripts/design.py` · `build.py` · `check_game.py` | 디자인 값 / 조립 / 점검 |
-| `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |
+| `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 목소리 `voice/voice.js`(자동 포함), 보이지 않는 만든이 표시 `tools/stamp.py`(자동), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |

@@ -97,4 +97,5 @@ FAIL이 있으면 고친다. 가능하면 브라우저로 전 장을 넘기며(�
 | `assets/missiles/lesson-deck/skins/*.json` | 스킨별 완성 예시(칠판 과학 수업 / 교원 연수 / 학부모 설명회) |
 | `references/legal-advisory.md` | 글꼴·이미지·인용 권고 문장 |
 | `scripts/build_stage.py` · `check_page.py` · `render_mp4.py` | 조립 / 자동 점검 / MP4 |
-| `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 고급스럽게`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·Motion·CSS) |
+| `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 고급스럽게`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·CSS. Motion은 2020년 이전 크롬에서 안 돌아가서 `--allow-modern`을 줄 때만 들어가요) |
+| 「만든 표시」 | 파일 속 보이지 않는 정보로 `교사 스튜디오 · 박진영`이 자동으로 들어가요(화면에는 안 보임). **선생님이 원할 때만** `build_stage.py --credit`으로 마지막 화면에 작게 「교사 스튜디오로 만듦」을 넣어요 (기본은 끔, 먼저 권하지 않아요) |

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT escape — staged lock progression. Each item is one lock guarded by a question; wrong answers cost time
    (and the wrong choice is struck out, answer not revealed); all locks open before the clock ends = escape.
    items: [{q, choices|type:"ox", answer, clue?, exp?}]   spec: seconds (total time, default 60 per lock), penalty (sec, default 10) */

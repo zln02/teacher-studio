@@ -1,7 +1,9 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Copy shared runtime files into every skill that uses them, then zip each skill.
 
 shared/ is the source of truth. Each skill must stay self-contained when zipped, so its own copy lives in
-skills/<skill>/shared/ (design, fonts, tools, vendor) and, for the stage skills, assets/ + scripts/.
+skills/<skill>/shared/ (design, fonts, tools, vendor, voice) and, for the stage skills, assets/ + scripts/.
 
 Usage:
     python3 tools/sync_shared.py            # copy shared -> skills, then rebuild dist/*.zip
@@ -25,7 +27,7 @@ STAGE_SKILLS = ("teacher-motion", "teacher-slides")
 
 # what each skill gets under skills/<skill>/shared/  (vendor = ids from shared/vendor/manifest.json)
 PLAN = {
-    "teacher-game": {"design": True, "fonts": True, "tools": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
+    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
     "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti"]},
     "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
     "teacher-studio": {"design": False, "fonts": False, "tools": True, "vendor": []},
@@ -60,7 +62,10 @@ def expected() -> dict[Path, bytes]:
             for f in _files(SHARED / "fonts"):
                 add(f, base / "fonts" / f.relative_to(SHARED / "fonts"))
         if cfg["tools"]:
-            add(SHARED / "tools" / "ensure.py", base / "tools" / "ensure.py")
+            for tool in ("ensure.py", "stamp.py"):
+                add(SHARED / "tools" / tool, base / "tools" / tool)
+        if cfg.get("voice"):
+            add(SHARED / "voice" / "voice.js", base / "voice" / "voice.js")
         if cfg["vendor"]:
             man = json.loads((SHARED / "vendor" / "manifest.json").read_text(encoding="utf-8"))
             libs = {k: v for k, v in man["libs"].items() if k in cfg["vendor"]}

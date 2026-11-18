@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Fill the one-page printable legal notice (A4 HTML) from a JSON file.
 
 Usage: python3 make_notice.py --data notice.json [--out ~/TeacherStudio/law-notice-<date>.html]

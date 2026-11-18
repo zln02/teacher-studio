@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT survival — OX survival by team: every team answers each question at once, wrong = lose a life,
    last team standing (or most lives at the end) wins. Solo play = one player with lives.
    items: [{q, answer:0|1, exp?}]   spec: lives (default 3) */

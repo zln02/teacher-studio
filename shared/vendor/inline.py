@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Put only the vendored libraries a page really uses into that page (one self-contained HTML file).
 
     from inline import apply
     html, report = apply(html, libs=["confetti"], auto=True)
 
+- allow_modern : motion (Chrome 80+) is refused unless this is True (then the page carries <meta name="ts-allow-modern">).
 - libs : ids from manifest.json (anime, motion, confetti, chartjs, katex, lucide, phaser) added explicitly.
 - auto : also add libs the page's own code clearly uses (Motion., new Chart(, confetti(, katex., anime.).
          phaser is never added automatically (large): ask for it in libs.
@@ -34,6 +37,9 @@ USAGE = {
     "katex": re.compile(r"\bkatex\.(?:render|renderToString)\b"),
     "anime": re.compile(r"(?<![\w.])anime\.(?:animate|createTimeline|stagger|utils)\b"),
 }
+MODERN = {"motion"}  # libs that need Chrome 80+ (use ?. / ??): only with an explicit opt-in
+MODERN_MSG = ("Motion(움직임 부품)은 2020년 이전 크롬·오래된 학교 PC에서 안 돌아가요. 대신 anime.js(libs에 'anime')나 CSS 움직임을 쓰세요. "
+              "꼭 필요하면 spec에 libs:[\"motion\"] 와 allow_modern:true 를 함께 적거나(스테이지는 --allow-modern) 선생님께 확인받으세요.")
 ICON_USE = re.compile(r"#lucide-([a-z0-9-]+)")
 KATEX_BASIC = ("Main-Regular", "Main-Bold", "Main-Italic", "Math-Italic", "AMS-Regular", "Size1-Regular", "Size2-Regular")
 
@@ -96,7 +102,7 @@ def detect(html: str) -> list[str]:
     return found
 
 
-def apply(html: str, libs: list[str] | None = None, auto: bool = True, katex_fonts: str = "basic") -> tuple[str, dict]:
+def apply(html: str, libs: list[str] | None = None, auto: bool = True, katex_fonts: str = "basic", allow_modern: bool = False) -> tuple[str, dict]:
     """Inline the requested (and, with auto, the clearly used) libraries. Returns (html, report)."""
     man = manifest()
     want: list[str] = list(libs or [])
@@ -120,8 +126,14 @@ def apply(html: str, libs: list[str] | None = None, auto: bool = True, katex_fon
             raise KeyError(f"library '{w}' is not available here (have: {', '.join(sorted(man))})")
         if lib.get("checker_only"):
             raise ValueError(f"{w} is checker-only and is never inlined into an output page")
+        if w in MODERN and not allow_modern:
+            raise ValueError(MODERN_MSG)
         if f"TS:VENDOR {w} " in html:
             continue
+        if w in MODERN and 'name="ts-allow-modern"' not in html:
+            tag = '<meta name="ts-allow-modern" content="%s">' % w
+            mm = re.search(r"<meta\s+charset[^>]*>", html, re.I)
+            html = html[:mm.end()] + "\n" + tag + html[mm.end():] if mm else html.replace("<head>", "<head>\n" + tag, 1)
         if w == "lucide":
             block = icon_sprite(names or [], lib)
             html = re.sub(r"<!--TS:ICONS[^>]*-->", "", html)
@@ -146,13 +158,14 @@ def main() -> int:
     ap.add_argument("--no-auto", action="store_true")
     ap.add_argument("--out", type=Path)
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--allow-modern", action="store_true", help="allow Motion (needs Chrome 80+)")
     a = ap.parse_args()
     if a.list or not a.page:
         for k, v in manifest().items():
             flag = " [only when asked]" if v.get("on_request_only") else (" [checker only]" if v.get("checker_only") else "")
             print(f"{k:9} {v['name']} {v['version']} {v['license']} {v['bytes'] // 1024} KB{flag} - {v['use']}")
         return 0
-    html, rep = apply(a.page.read_text(encoding="utf-8"), [x for x in a.libs.split(",") if x], not a.no_auto)
+    html, rep = apply(a.page.read_text(encoding="utf-8"), [x for x in a.libs.split(",") if x], not a.no_auto, allow_modern=a.allow_modern)
     (a.out or a.page).write_text(html, encoding="utf-8")
     print(rep)
     return 0

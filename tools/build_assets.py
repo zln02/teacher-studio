@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Build a Teacher Studio asset pack (JS file with base64 data URIs) from Kenney CC0 sources.
 
 Usage: python3 build_assets.py <kenney_root> <out.js>

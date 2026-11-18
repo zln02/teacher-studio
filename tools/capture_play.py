@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Play a finished game page with a scripted 'student' and record a GIF (used by capture_example.py).
 
 The player reads each question from the page, looks the right answer up in the same

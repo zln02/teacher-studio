@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT sort — drag-and-drop targets (works by touch): drag each card into the right bin; tap the card then a bin also works.
    items: [{q:"카드 글자", a:"정답 통 이름", exp?}]  spec: bins (optional order, 2-4; default = distinct a values) */
 COMP.mech.sort = function(items){

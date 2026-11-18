@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Install Teacher Studio skills for Claude Code and/or Codex, then report what works.
 
 Usage:

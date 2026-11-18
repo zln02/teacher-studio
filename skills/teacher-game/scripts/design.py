@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Entry point kept for the game skill: the design generator itself lives in shared/design/design.py.
 
 (tools/sync_shared.py copies shared/design into this skill's shared/ folder so the skill stays self-contained.)

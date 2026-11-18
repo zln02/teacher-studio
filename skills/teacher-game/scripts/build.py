@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Build a game from a short spec.json (content + mechanic + design direction). Additive to fire.py.
 
 Usage:
@@ -94,7 +96,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         "themeOverride": {"primary": c["primary"], "accent": c["accent"], "bg1": c["bg1"], "bg2": c["bg2"], "text": c["text"], "muted": c["text"],
                           "card": c["card"], "cardBorder": c["cardBorder"], "cardText": c["cardText"], "btnText": c["btnText"],
                           "good": c["good"], "bad": c["bad"], "font": '"%s"' % tokens["fonts"]["display"], "glow": "none"},
-        "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
+        "credit": spec.get("credit") is True, "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
         "music": bool(tokens["sound"]["music"]) and spec.get("music", True), "calm": tokens["motion"] == "calm",
         "mascots": device != "phone" and use == "class", "items": items, "spec": spec_out,
     }
@@ -138,7 +140,11 @@ def main() -> int:
     html = a.out.read_text(encoding="utf-8")
     note = ""
     if spec.get("libs"):
-        html, lrep = inline.apply(html, list(spec["libs"]), auto=True)
+        try:
+            html, lrep = inline.apply(html, list(spec["libs"]), auto=True, allow_modern=spec.get("allow_modern") is True)
+        except ValueError as exc:
+            print("SPEC FIX NEEDED:\n - " + str(exc))
+            return 2
         note += f", libs={'+'.join(lrep['inlined'])}"
     if not a.no_fonts:
         html, frep = embed.embed(html, consent=a.yes)

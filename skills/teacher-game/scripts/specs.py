@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Spec rules shared by build.py and check_game.py. Messages are written as spec-fix hints (what to change in spec.json)."""
 from __future__ import annotations
 
@@ -92,6 +94,10 @@ def validate(spec: dict) -> list[str]:
     libs = spec.get("libs", [])
     if not isinstance(libs, list) or any(x not in LIBS for x in libs):
         errs.append(f"libs: 쓸 수 있는 부품만 → {', '.join(LIBS)} (예: [\"confetti\"])")
+    if "motion" in (libs if isinstance(libs, list) else []) and spec.get("allow_modern") is not True:
+        errs.append('libs: motion(움직임 부품)은 오래된 크롬에서 안 돌아가요 → 빼고 "anime"나 CSS를 쓰거나, 꼭 필요하면 allow_modern:true 를 함께 적어 주세요')
+    if spec.get("allow_modern", False) not in (True, False) or spec.get("credit", False) not in (True, False):
+        errs.append("allow_modern · credit: true 또는 false")
     design = spec.get("design", {})
     if design and not isinstance(design, dict):
         errs.append("design: {subject, grade, mood, seed, theme} 객체")

@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT board — dice board game: roll, move along a snake path, quiz tiles ask a question (right = 1 extra step).
    items: quiz items (same as quiz). spec: tiles (default 24), maxTurns (turns per team, default 8) */
 COMP.mech.board = function(items){

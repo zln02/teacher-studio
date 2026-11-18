@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT quiz — multiple choice / OX, solo or team turns, timer, bonus rounds, retry-wrong.
    items: [{q, choices:[..2-4], answer, exp?} | {type:"ox", q, answer:0|1, exp?}] */
 COMP.mech.quiz = function(items){

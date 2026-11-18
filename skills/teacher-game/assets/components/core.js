@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT core — shared runtime for spec-built games (rounds, question/answer flow, timer, reveal, finish).
    Uses only the engine API (NG.*). All sizes/colors come from tokens (CSS variables --t-*, --good ...).
    Mechanics register as COMP.mech.<name> = function(items){ return {start, toText, auto}; }  */

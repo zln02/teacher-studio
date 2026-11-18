@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Capture a short GIF of a finished Teacher Studio page (for docs/gallery).
 
 Usage:

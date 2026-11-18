@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* KIT: quiz-show — 팀 퀴즈쇼 / 골든벨 / OX (객관식·OX 혼합)
    GAME.items = [{ type:"mc"|"ox", q:"문제", choices:["보기1",...], answer:0, exp:"해설" }]
    OX는 choices 생략 가능 (answer: 0=O, 1=X). 보너스: GAME.bonusEvery (기본 4문제마다 2배)

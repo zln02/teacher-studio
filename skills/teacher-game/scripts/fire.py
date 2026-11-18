@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Fire a missile: finished game template + skin + the teacher's content -> one playable HTML.
 
 Usage:

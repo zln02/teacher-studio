@@ -24,7 +24,9 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `design.subject/grade/mood` | 과목·학년·분위기 | 분위기: 긴장감·신남·차분·따뜻함·밝음 (「따뜻하게」「고급스럽게」 같은 말도 알아들어요) |
 | `design.large` | false | 어르신·먼 화면 → true (personal에서 칠판 수준 글자) |
 | `design.theme` | default | notebook(필기 느낌·개인), spotlight(쇼 느낌) |
-| `libs` | 없음 | 필요한 부품만 파일에 넣기: confetti(꽃가루)·motion·katex(수식)·lucide(아이콘)·chartjs·anime·phaser(크다, 정말 필요할 때만) |
+| `libs` | 없음 | 필요한 부품만 파일에 넣기: confetti(꽃가루)·katex(수식)·lucide(아이콘)·chartjs·anime·phaser(크다, 정말 필요할 때만). `motion`은 2020년 이전 크롬에서 안 돌아가서 `allow_modern:true`를 함께 적어야만 들어가요(아니면 만들기가 멈추고 anime.js를 권해요) |
+| `allow_modern` | false | `libs`에 `motion`을 꼭 넣어야 할 때만 true (점검기는 주의로 표시) |
+| `credit` | false | **선생님이 원할 때만** true → 결과 화면에 작게 「교사 스튜디오로 만듦」. 기본은 화면에 아무 표시도 없어요 (파일 속 보이지 않는 정보와 선생님 메뉴 맨 아래 「만든 도구」 줄만 있어요) |
 
 ## 3. 교실 기본 vs 개인 용도
 - **class**: 문제 60px·보기 48px·작은 글 34px 이상, 버튼 110px 이상, 선생님 메뉴, 학생 정보 칸 없음.

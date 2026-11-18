@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT bingo — word bingo: a clue is called, tap the matching word on the grid. Lines give bonus points.
    items: [{word, clue, say?}]  needs >= grid*grid items.  spec: grid (3 or 4), world.speak (read word aloud), world.lang */
 COMP.mech.bingo = function(items){
@@ -12,8 +13,8 @@ COMP.mech.bingo = function(items){
     return c + (d1 ? 1 : 0) + (d2 ? 1 : 0);
   }
   function speak(it){
-    if (!H.world("speak", false) || !window.speechSynthesis) return;
-    try { var u = new SpeechSynthesisUtterance(it.say || it.word); u.lang = H.world("lang", "en-US"); u.rate = 0.9; window.speechSynthesis.speak(u); } catch (e) {}
+    if (!H.world("speak", false) || !window.TSVoice || !TSVoice.supported) return;
+    try { TSVoice.speak(it.say || it.word, {lang: H.world("lang", "en-US")}); } catch (e) {}
   }
   NG.scene("ts-bingo", function(el){
     var cur = order[ci], gap = 20, areaW = 1500, cw = Math.floor((areaW - gap * (n - 1)) / n), chh = n === 3 ? 190 : 140;

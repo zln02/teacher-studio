@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* THEME default — generic look derived only from design tokens (no skin art): gradient + soft drifting shapes.
    Theme contract: COMP.themes.<id> = { paint(ctx, t, dt, W, H, TK) } drawn every frame on the engine background canvas. */
 COMP.themes["default"] = (function(){

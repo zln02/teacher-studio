@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Install-on-first-need helper: check a tool, ask in plain Korean, install only with consent.
 
     from ensure import ensure, ensure_ffmpeg, ensure_playwright

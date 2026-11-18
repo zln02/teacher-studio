@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* lesson-deck — keynote-quality slide deck. One DOC.items entry = one slide.
    Every word comes from DOC (items + world). Skins change type, art, painter and transitions.
    Keys: → Space PageDown Enter = next build/slide · ← PageUp Backspace = back · Home/End · digits+Enter = jump
@@ -737,6 +738,8 @@ function go(i, k, mode){
     S.timeline(fade, 280);
   }
   cur = {i:i, k:k, el:el, tl:tl};
+  S.creditManual = true;
+  if (S.credit) S.credit(i === ITEMS.length - 1 && k >= buildsOf(ITEMS[i]));
   updateChrome();
 }
 function next(){

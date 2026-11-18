@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Static quality check for a Teacher Studio game HTML game.
 
 Usage: python3 check_game.py game.html [--no-play]
@@ -231,7 +233,10 @@ def main(path: Path, play: bool = True) -> int:
     # Vendored libraries (shared/vendor, pinned + license-checked) are third-party code: not linted line by line.
     for kind, lib, ver in re.findall(r"<(script|style)>/\* TS:VENDOR (\S+) (\S+)", html):
         if lib in MODERN_LIBS and kind == "script":
-            add("WARN", f"{lib} {ver} needs Chrome 80+ (2020); fine on current school Chrome, use anime.js/CSS for very old PCs")
+            if "ts-allow-modern" in html:
+                add("WARN", f"{lib} {ver} needs Chrome 80+ (2020); allowed on purpose (allow_modern), use anime.js/CSS for very old PCs")
+            else:
+                add("FAIL", f"{lib} {ver} needs Chrome 80+ but was not allowed -> remove it (use anime.js/CSS) or opt in with allow_modern:true / --allow-modern")
     html = re.sub(r"<(script|style)>/\* TS:VENDOR .*?</\1>", r"<\1></\1>", html, flags=re.S)
     scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S)
     js = "\n".join(scripts)

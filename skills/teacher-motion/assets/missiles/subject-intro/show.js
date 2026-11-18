@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* subject-intro — 과목 소개 영상 (35~45s, 16:9)
    Beats: hook → subject reveal → "만날 것" keyword scenes (2~6) → teacher message → closing card.
    Skins are separate worlds: science-neon · korean-brush · english-news (own painter, art, type, transitions).

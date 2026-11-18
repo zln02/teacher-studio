@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* lesson-opening — 수업 시작 화면 (10~15s)
    Countdown N→1 (kinetic numbers) → 「오늘의 주제」 title + one-line goal (+ optional step chips)
    → holds with a subtle idle loop until click / Space / Enter / → / PageDown, then folds into a header.

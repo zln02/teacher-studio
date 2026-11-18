@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* COMPONENT match — memory-style pair matching: flip two cards, a matching pair stays open.
    items: [{a:"낱말", b:"짝(뜻·그림·바른 표기)"}]  3-8 pairs. Team turns rotate on a miss. */
 COMP.mech.match = function(items){

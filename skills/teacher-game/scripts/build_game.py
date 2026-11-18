@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Assemble a finished game from the engine without re-typing it.
 
 Usage:
@@ -14,10 +16,14 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 SKILL = Path(__file__).resolve().parent.parent
 ENGINE = SKILL / "assets" / "engine.html"
+VOICE = SKILL / "shared" / "voice" / "voice.js"
+sys.path.insert(0, str(SKILL / "shared" / "tools"))
+from stamp import stamp  # noqa: E402  (shared/tools/stamp.py: invisible author mark)
 DATA_RE = re.compile(r"window\.GAME = \{.*?\n\};", re.S)
 LOGIC_RE = re.compile(r"(/\* ===================== GAME LOGIC.*?\*/\n).*?(\n</script>\n<script>NG\.boot)", re.S)
 
@@ -41,6 +47,10 @@ def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | No
             for name in packs
         )
         html = html.replace("<!--ASSET_PACKS-->", pack_js, 1)
+    if "<!--TS:VOICE-->" in html and VOICE.exists():
+        voice_js = "<script>/* TS:VOICE */\n" + VOICE.read_text(encoding="utf-8") + "</script>"
+        html = html.replace("<!--TS:VOICE-->", voice_js, 1)
+    html = stamp(html)
     title = data.get("title")
     if title:
         html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{title}</title>", html, count=1)

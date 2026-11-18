@@ -1,3 +1,4 @@
+/* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* MISSILE: quiz-show — 팀 퀴즈쇼 / 골든벨 / OX (객관식·OX 혼합) + 세계관 무대
    Based on assets/kits/quiz-show.js (kit itself is untouched).
    GAME.items = [{ type:"mc"|"ox", q:"문제", choices:["보기1",...], answer:0, exp:"해설" }]

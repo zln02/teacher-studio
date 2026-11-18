@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Find out what works in this environment and say it in teacher language.
 
 Usage: python3 doctor.py [--agent claude-app|claude-code|codex|other] [--json]

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Embed Korean fonts into one HTML file so it looks right offline.
 
 Noto Sans KR and Noto Serif KR (SIL OFL 1.1) are cut down to the characters the page really uses

@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """One command for everything in Teacher Studio (fast path for Claude / Codex).
 
 Usage:

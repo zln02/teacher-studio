@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 박진영 (zln02)
 """Render a stage page (motion / typography) to an exact-frame MP4.
 
 Usage:

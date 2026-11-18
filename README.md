@@ -354,6 +354,12 @@ Claude 앱에서는 「게시」로 링크·QR을, 그 밖에는 HTML 파일을 
 - 🐞 [안 되는 부분 알리기](../../issues/new?template=bug.yml) — 캡처 한 장이면 충분해요
 - 🛠 개발 참여: [docs/how-it-works.md](docs/how-it-works.md) · [CHANGELOG](CHANGELOG.md)
 
+## 👤 만든 사람
+
+박진영 ([zln02](https://github.com/zln02))
+
+이 이름과 배너는 원작자 허락 없이 원본처럼 쓸 수 없어요 (Apache-2.0 제6조 — 상표 사용권은 주지 않아요).
+
 ## 📜 라이선스·고마운 분들
 
 - 코드: [Apache-2.0](LICENSE) · 제3자 고지: [NOTICE](NOTICE)
