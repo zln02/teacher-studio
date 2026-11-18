@@ -22,6 +22,11 @@ import time
 import webbrowser
 from pathlib import Path
 
+# Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(errors="replace")
+
 HERE = Path(__file__).resolve().parent
 SKILLS = HERE.parent.parent  # .../skills
 KINDS = {"game": "teacher-game", "slides": "teacher-slides", "motion": "teacher-motion"}

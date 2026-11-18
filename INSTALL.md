@@ -36,6 +36,7 @@ python3 scripts/setup.py --agent <AGENT>        # Windows: py scripts/setup.py -
 ```bash
 python3 ~/.claude/skills/teacher-studio/scripts/studio.py fire motion/lesson-opening/bold-pop --open
 # Codex는 ~/.agents/skills/... 경로
+# Windows(PowerShell): py "$env:USERPROFILE\.claude\skills\teacher-studio\scripts\studio.py" fire motion/lesson-opening/bold-pop --open
 ```
 - `READY` 가 나오면 성공. 크롬에 「수업 시작 화면」이 열린다.
 

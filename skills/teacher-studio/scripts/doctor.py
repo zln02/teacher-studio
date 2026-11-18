@@ -14,6 +14,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(errors="replace")
+
 SKILLS = Path(__file__).resolve().parent.parent.parent
 CACHE = Path.home() / ".teacher-studio" / "env.json"
 NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면"}

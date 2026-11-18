@@ -13,6 +13,11 @@ import sys
 import tempfile
 from pathlib import Path
 
+# Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(errors="replace")
+
 ALLOWED_HOSTS = ("cdnjs.cloudflare.com", "cdn.jsdelivr.net/npm/", "unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com")
 FORBIDDEN_JS = {
     r"\?\.(?=[A-Za-z_$\[(])": "optional chaining ?. (old Chrome)",
