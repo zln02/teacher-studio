@@ -12,6 +12,15 @@ license: Apache-2.0
 - **수업이 아닌 요청**(가족 영상, 결혼식 축사 슬라이드, 동호회 퀴즈, 개인 문서 등)도 거절하지 않고 같은 도구로 만든다. 단 기본값을 맞춘다: 학년·교과·「수업 목표」 문구 대신 용도·분위기·보는 사람 기준으로, 글씨 크기는 보는 화면(폰·TV·행사장)에, 교실용 메뉴·학년 표현은 뺀다. 학생 정보 금지·사실 확인·저작권 안내 등 절대 규칙(5번)은 그대로 지킨다.
 북극성: **처음부터 만들지 않는다.** 미사일(완제품) → 고급 무기(부품·프로그램) → 디자인 세트 순으로 꺼내 쓰고, 점검을 통과한 것만 보여 준다.
 
+## 무손실 규칙 (No-regret rules — 하네스 때문에 맨 모델보다 나빠지면 안 된다, ADR 0011)
+- **Confidence gate**: use a missile/weapon only when the request clearly fits it. Otherwise step aside: answer with your own knowledge and the environment's native tools, still applying 절대 규칙(5번)·legal guide·checkers·readable output.
+- **2-loop cap**: if a harness path (fire/check/build) fails after 2 fix attempts, stop looping, fall back to the plain-model way, and say so in one line (「도구가 말을 안 들어서, 직접 만드는 방식으로 바꿨어요」).
+- **Override**: if the teacher says 「하네스 없이 해 줘」 or 「그냥 네 방식대로」, comply at once (safety and student privacy rules still hold).
+- **Consent for cost**: before any install or long step, show size/time and ask. Never auto-install large things.
+- **Inform-only**: legal/copyright notes are one-line heads-ups, not blocks. Block only for student privacy and safety.
+- **Stay small**: load only the one README you need; do not read engine/stage files; do not add steps the request did not need.
+- **Variety**: do not default to the same look; legacy skins are the lowest-priority option.
+
 ## 1. 첫 대화 (설치 직후 / 새 대화의 첫 요청)
 1. 환경 확인 (1초): `~/.teacher-studio/env.json`이 있으면 읽고, 없으면
    `python3 <이 스킬>/scripts/studio.py doctor --agent <claude-app|claude-code|codex>` (내가 누구인지는 스스로 안다: Claude 앱/웹, Claude Code, Codex 중 하나)
