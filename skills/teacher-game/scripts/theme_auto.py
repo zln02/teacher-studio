@@ -26,6 +26,8 @@ for _s in (sys.stdout, sys.stderr):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+import auto_art  # noqa: E402
 ASSETS = HERE.parent / "shared" / "assets"
 if not ASSETS.exists():  # running from the repo root copy
     ASSETS = HERE.parent.parent.parent / "shared" / "assets"
@@ -39,7 +41,7 @@ RECIPES: dict[str, dict] = {
                       "primary": "#ffd23f", "btnText": "#1a1a1a", "accent": "#5ce1ff", "good": "#43e8a0", "bad": "#ff6b7a"},
               "lines": {"title": ["우주 탐험 출발!"], "start": ["발사 준비 완료!"], "correct": ["별처럼 반짝!", "굿 샷!"], "wrong": ["궤도 수정!", "다시 도전!"], "win": ["임무 성공!"], "lose": ["다음엔 꼭!"]}},
     "sea": {"kw": ["바다", "물고기", "해양", "파도", "섬", "배", "항해", "수족관", "해변", "동물"], "bg": "waves", "pattern": "dots",
-            "props": ["fish", "ship", "sun", "cloud", "butterfly", "umbrella", "flag-3", "stars"], "chars": ["thumbs", "lorelei", "shapes"],
+            "props": ["whale", "fish", "shell", "starfish", "anchor", "seaweed", "bubble", "crab"], "chars": ["thumbs", "lorelei", "shapes"],
             "cel": "bubbles", "font": "Jua", "music": "nature", "motion": "normal", "base": "ocean",
             "pal": {"bg1": "#0b5a96", "bg2": "#0a3d73", "text": "#ffffff", "card": "#ffffff", "cardText": "#0b2a4a", "cardBorder": "#5cc8ff",
                     "primary": "#ffd23f", "btnText": "#1a1a1a", "accent": "#5cf0e0", "good": "#0f7d45", "bad": "#c62828"},
@@ -75,7 +77,7 @@ RECIPES: dict[str, dict] = {
                        "primary": "#237a43", "btnText": "#ffffff", "accent": "#f2b134", "good": "#1a7a43", "bad": "#b8322d"},
                "lines": {"title": ["숲으로 떠나요!"], "start": ["살금살금 시작!"], "correct": ["싱그러워요!", "쑥쑥 자라요!"], "wrong": ["다시 살펴봐요", "천천히!"], "win": ["숲이 활짝 폈어요!"], "lose": ["다음엔 꼭!"]}},
     "hanok": {"kw": ["역사", "조선", "전통", "한옥", "고려", "삼국", "한복", "궁", "왕", "옛날", "국악", "한글"], "bg": "ink", "pattern": "waves",
-              "props": ["flag", "sword", "map", "book", "compass", "pennant", "building-castle", "mountain"], "chars": ["shapes", "thumbs"],
+              "props": ["flag", "sword", "map", "book", "compass", "mountain", "brush", "writing"], "chars": ["shapes", "thumbs"],
               "cel": "petals", "font": "Song Myung", "music": "korean", "motion": "normal", "base": "hanok",
               "pal": {"bg1": "#f4ead5", "bg2": "#e0cfaa", "text": "#2b1d12", "card": "#fffaf0", "cardText": "#2b1d12", "cardBorder": "#8b5a2b",
                       "primary": "#a83232", "btnText": "#ffffff", "accent": "#2f5d8a", "good": "#1f7a43", "bad": "#b3261e"},
@@ -107,7 +109,7 @@ MOOD_HINT = {"긴장감": "tense", "신남": "sports", "따뜻함": "warm", "차
 HOST_PARTS = {"tv-studio": "미스터 Q (정장 진행자)", "auditorium-bell": "강당 선생님 진행자", "space-station": "로봇 코비", "joseon-war-room": "조선 수군 장교",
               "antidote-lab": "연구원", "sun-temple": "탐험가", "recycle-robot": "재활용 로봇", "post-office-night": "고양이 집배원", "cell-feeding": "세포 몽글이"}
 STAGE_PARTS = {"tv-studio": "ON AIR · APPLAUSE 간판 + 박수 소리"}
-RECIPE_HOSTS = {"space": ["space-station", "dice", "tv-studio"], "sea": ["dice", "post-office-night", "cell-feeding"], "fairy": ["dice", "post-office-night", "cell-feeding"],
+RECIPE_HOSTS = {"space": ["space-station", "dice", "tv-studio"], "sea": ["animal:whale", "animal:octopus", "animal:puffer"], "fairy": ["dice", "post-office-night", "cell-feeding"],
                 "tense": ["antidote-lab", "sun-temple", "dice"], "luxe": ["tv-studio", "auditorium-bell", "dice"], "warm": ["auditorium-bell", "post-office-night", "dice"],
                 "forest": ["recycle-robot", "sun-temple", "dice"], "hanok": ["joseon-war-room", "auditorium-bell", "dice"], "sports": ["tv-studio", "dice", "recycle-robot"],
                 "science": ["antidote-lab", "recycle-robot", "space-station"]}
@@ -230,18 +232,30 @@ def compose(spec: dict, tokens: dict | None = None) -> dict:
         cands = RECIPE_HOSTS.get(rid, ["dice"])
         host_id = cands[_h(key + "h") % len(cands)]
     stage = RECIPE_STAGE.get(rid, "") if (rid in RECIPE_STAGE and _h(key + "s") % 3) else ""
+    animal = host_id.startswith("animal:")
     pal = r["pal"] or dict((tokens or {}).get("colors") or {})
     accent = pal.get("accent", "#ffd23f")
     props = list(r["props"])
     order = sorted(range(len(props)), key=lambda i: _h(f"{key}p{i}"))
     chosen = [props[i] for i in order][:7]
-    icons = {n: icon_svg(n) for n in chosen}
+    cyc = [pal.get("primary", "#ffd23f"), pal.get("accent", "#5ce1ff"), auto_art._mix(pal.get("accent", "#5ce1ff"), "#ff6b8a", 0.5), auto_art._mix(pal.get("primary", "#ffd23f"), "#3ccf7e", 0.5)]
+    icons = {}
+    for i, n in enumerate(chosen):
+        icons[n] = auto_art.SEA_PROPS[n] if n in auto_art.SEA_PROPS else auto_art.sticker(icon_svg(n), cyc[i % len(cyc)])
+    wtags = auto_art.WORLD_TAGS.get(rid or "generic", {"generic"})
+    ptags = {n: sorted(auto_art.PROP_TAGS.get(n, set())) for n in chosen}
+    bg_light = sum(int(pal.get("bg1", "#000000")[i:i + 2], 16) for i in (1, 3, 5)) > 380
+    pat_col = pal.get("text", "#ffffff") if bg_light else pal.get("accent", "#ffffff")
+    emblem = icons[chosen[0]]
     cfg = {
         "recipe": rid or "generic", "bg": r["bg"], "pattern": r["pattern"], "cel": r["cel"], "seed": _h(key) % 10000,
-        "icons": icons, "props": chosen,
-        "host": {"svg": host_svg(style, letter, accent, "#1a1020") if host_id == "dice" else "", "theme": "" if host_id == "dice" else host_id,
+        "icons": icons, "props": chosen, "propTags": ptags, "worldTags": sorted(wtags), "emblem": emblem,
+        "pat": auto_art.pattern_uri(r["pattern"], pat_col, 0.14), "patBack": auto_art.pattern_uri(r["pattern"], "#ffffff", 0.32),
+        "hostCol": stage == "tv-studio",
+        "host": {"svg": host_svg(style, letter, accent, "#1a1020") if host_id == "dice" else (auto_art.animal_host(host_id[7:]) if animal else ""),
+                 "theme": "" if (host_id == "dice" or animal) else host_id,
                  "name": "도우미", "style": f"dicebear-{style}" if host_id == "dice" else host_id, "lines": r["lines"]},
-        "stage": stage, "partThemes": sorted({x for x in (stage, "" if host_id == "dice" else host_id) if x}),
+        "stage": stage, "partThemes": sorted({x for x in (stage, "" if (host_id == "dice" or animal) else host_id) if x}),
         "palette": [pal.get(k) for k in ("primary", "accent", "bg1", "bg2", "card")],
     }
     out = {"named": named, "parts": {"background": r["bg"] + "+" + r["pattern"], "host": host_id if host_id != "dice" else f"dicebear-{style}/{letter}", "stage": stage or "-",

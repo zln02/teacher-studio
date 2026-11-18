@@ -58,9 +58,11 @@ COMP.themes.auto = (function(){
   }
 
   function loadIcons(TK){
-    var C = colors(TK), col = lum(C.bg1) < 0.5 ? "#ffffff" : C.text;
+    try { document.body.setAttribute("data-auto", "1"); document.body.style.setProperty("--ts-pat", A.pat || "none"); document.body.style.setProperty("--ts-pat-back", A.patBack || "none"); } catch (e) {}
+    COMP.emblem = A.emblem || "";
     A.props.forEach(function(n){
-      var svg = String(A.icons[n] || "").split("currentColor").join(col).replace(/ width="24" height="24"/, ' width="96" height="96"').replace(/stroke-width="2"/, 'stroke-width="1.6"');
+      var svg = String(A.icons[n] || "");
+      if (!/<svg[^>]* width=/.test(svg)) svg = svg.replace("<svg ", '<svg width="96" height="96" ');
       var im = new Image(); im.onload = function(){ imgs[n] = im; }; im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
     });
   }
@@ -170,6 +172,7 @@ COMP.themes.auto = (function(){
   var built = false;
   return {
     host: host,
+    hostCol: !!A.hostCol, podiums: !!(stage && stage.podiums),
     deco: function(TK){ return stage && stage.deco ? stage.deco(TK) : ""; },
     sfx: function(){ if (stage && stage.sfx) stage.sfx(); if (hostSrc && A.host.theme && COMP.themes[A.host.theme].sfx) COMP.themes[A.host.theme].sfx(); },
     onReact: function(k, St, TK){ if (stage && stage.onReact) stage.onReact(k, St, TK); },

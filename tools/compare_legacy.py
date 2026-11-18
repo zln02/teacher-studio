@@ -37,15 +37,7 @@ def shots(p, path: Path) -> list[Image.Image]:
     pg.wait_for_timeout(3700)
     pg.evaluate("advanceTime(1500)")
     pg.wait_for_timeout(800)
-    has_auto = pg.evaluate("!!(window.GAME_LOGIC && window.GAME_LOGIC.auto)")
-    if has_auto:
-        pg.evaluate("window.GAME_LOGIC.auto()")
-        pg.wait_for_timeout(300)
-        pg.evaluate("advanceTime(900)")
-        pg.wait_for_timeout(700)
-    else:
-        pg.evaluate("advanceTime(2500)")
-        pg.wait_for_timeout(500)
+    pg.wait_for_timeout(400)
     out.append(Image.open(io.BytesIO(pg.screenshot())).convert("RGB"))
     b.close()
     return out

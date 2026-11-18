@@ -59,3 +59,33 @@
 #ts-deco[data-scene=title]~#ts-bubble{display:none}
 #ts-deco[data-scene=countdown]~#ts-bubble{left:1180px;bottom:480px}
 #ts-deco[data-scene=result]~#ts-bubble{left:200px;bottom:430px}
+/* ---- no flat title shine box on dark themes ---- */
+.title.shine:after{display:none}
+/* ---- themed cards: pattern + coloured edge (auto theme sets --ts-pat), card backs with emblem ---- */
+body[data-auto] .card,body[data-auto] .ts-tile,body[data-auto] .ts-bin,body[data-auto] .choice{background-image:var(--ts-pat);background-size:44px 44px}
+body[data-auto] .choice.correct,body[data-auto] .choice.wrong,body[data-auto] .ts-tile.done{background-image:none}
+.ts-tile.back{background-color:var(--primary);background-image:var(--ts-pat-back,none);background-size:44px 44px;border-color:var(--text);box-shadow:inset 0 0 0 7px rgba(255,255,255,.4),0 8px 0 rgba(0,0,0,.28)}
+.ts-emblem{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.ts-emblem svg{width:112px;height:112px;max-height:86%;filter:drop-shadow(0 4px 0 rgba(0,0,0,.28))}
+/* ---- sort: big bins with a coloured lid, counters and a dragging cue ---- */
+.ts-bin{position:relative;border-radius:14px 14px 44px 44px!important;border-style:solid!important;border-color:var(--bc,var(--cardBorder))!important;border-top-width:40px!important;border-bottom-width:12px!important;box-shadow:0 10px 0 rgba(0,0,0,.28);transition:transform .2s}
+.ts-bin:before{content:"";position:absolute;left:50%;top:-58px;width:90px;height:14px;margin-left:-45px;border-radius:8px;background:var(--bc,var(--cardBorder))}
+.ts-bin .ts-bin-n{position:absolute;right:14px;bottom:8px;font-size:var(--t-s);font-weight:900;opacity:.85}
+.ts-bin.done{transform:scale(1.04)}
+.ts-hand{position:absolute;left:50%;margin-left:340px;top:100px;font-size:var(--t-c);animation:tsdrag 1.6s ease-in-out infinite;pointer-events:none}
+@keyframes tsdrag{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,50px)}}
+/* ---- TV parts: team podium row (bottom band) and wide host column (quiz/survival/escape on a board) ---- */
+.ts-podiums{position:absolute;left:330px;bottom:0;width:1300px;height:56px;display:flex;gap:16px;justify-content:center}
+.ts-pod{flex:1;max-width:340px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px;border-radius:14px 14px 0 0;background:rgba(10,6,32,.82);border:3px solid var(--tc);border-bottom:0;color:#fff;font-size:var(--t-s);font-weight:900;line-height:1;overflow:hidden;white-space:nowrap}
+.ts-pod.on{box-shadow:0 0 24px var(--tc);background:rgba(40,20,70,.95)}
+.ts-lamps{display:flex;gap:5px}
+.ts-lamps i{display:block;width:12px;height:18px;border-radius:3px;background:#2d2440}
+.ts-lamps i.lit{background:var(--tc);box-shadow:0 0 10px var(--tc)}
+#ts-deco[data-scene=title] .ts-podiums,#ts-deco[data-scene=countdown] .ts-podiums,#ts-deco[data-scene=result] .ts-podiums{display:none}
+body[data-hostcol="1"] .ts-wrap{left:340px;width:1460px}
+body[data-hostcol="1"] .ts-q,body[data-hostcol="1"] .ts-grid,body[data-hostcol="1"] .ts-expl,body[data-hostcol="1"] .ts-teamrow,body[data-hostcol="1"] .ts-lockstrip{width:1460px}
+body[data-hostcol="1"] .ts-lockstrip{left:340px}
+body[data-hostcol="1"] #ts-deco .ts-host{transform:scale(.82)}
+body[data-hostcol="1"] #ts-deco[data-scene=title] .ts-host,body[data-hostcol="1"] #ts-deco[data-scene=countdown] .ts-host{transform:scale(1.02)}
+body[data-hostcol="1"] #ts-deco[data-scene=result] .ts-host{transform:scale(.9)}
+body[data-hostcol="1"] #ts-bubble{left:70px;bottom:370px}

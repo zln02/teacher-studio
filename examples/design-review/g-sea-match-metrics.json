@@ -3,36 +3,40 @@
  "sheet": "examples\\design-review\\g-sea-match-sheet.png",
  "screens": {
   "title": {
-   "deco_density": 0.194,
-   "empty_ratio": 0.673,
-   "colors": 37,
+   "plain_cards": 0,
+   "deco_density": 0.215,
+   "empty_ratio": 0.662,
+   "colors": 35,
    "hierarchy": 1.0,
    "min_contrast": 2.59,
    "low_contrast": 1,
    "overlaps": 0
   },
   "question": {
-   "deco_density": 0.202,
-   "empty_ratio": 0.548,
-   "colors": 33,
+   "plain_cards": 0,
+   "deco_density": 0.208,
+   "empty_ratio": 0.546,
+   "colors": 38,
    "hierarchy": 1.0,
    "min_contrast": 11.86,
    "low_contrast": 0,
    "overlaps": 0
   },
   "correct": {
-   "deco_density": 0.226,
-   "empty_ratio": 0.546,
-   "colors": 30,
+   "plain_cards": 0,
+   "deco_density": 0.207,
+   "empty_ratio": 0.523,
+   "colors": 39,
    "hierarchy": 1.05,
    "min_contrast": 3.79,
    "low_contrast": 2,
    "overlaps": 0
   },
   "result": {
-   "deco_density": 0.3,
-   "empty_ratio": 0.608,
-   "colors": 29,
+   "plain_cards": 0,
+   "deco_density": 0.341,
+   "empty_ratio": 0.561,
+   "colors": 30,
    "hierarchy": 1.4,
    "min_contrast": 2.59,
    "low_contrast": 1,
@@ -40,14 +44,15 @@
   }
  },
  "summary": {
-  "deco_density": 0.214,
-  "empty_ratio": 0.547,
-  "colors": 31.5,
+  "deco_density": 0.207,
+  "empty_ratio": 0.534,
+  "colors": 38.5,
   "hierarchy": 1.4,
   "min_contrast": 3.79,
   "overlaps": 0,
-  "title_empty_ratio": 0.673,
-  "title_deco_density": 0.194
+  "title_empty_ratio": 0.662,
+  "title_deco_density": 0.215,
+  "plain_cards": 0
  },
  "verdict": "WARN",
  "hints": [
@@ -55,5 +60,12 @@
  ],
  "missing_screens": [
   "wrong"
- ]
+ ],
+ "prop_relevance": {
+  "checked": true,
+  "world": [
+   "sea"
+  ],
+  "bad": []
+ }
 }

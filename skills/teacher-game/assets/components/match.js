@@ -14,7 +14,7 @@ COMP.mech.match = function(items){
       '<div style="position:relative;width:' + areaW + 'px;height:' + (rows * ch + (rows - 1) * gap) + 'px;margin-top:26px">';
     cards.forEach(function(c, i){
       var x = (i % cols) * (cw + gap), y = Math.floor(i / cols) * (ch + gap);
-      html += '<button class="ts-tile enter" data-i="' + i + '" data-fit="1" style="left:' + x + 'px;top:' + y + 'px;width:' + cw + 'px;height:' + ch + 'px;font-size:var(--t-b);padding:10px 16px;animation-delay:' + (i * 0.03) + 's">' + (c.done ? "✔ " + H.esc(c.text) : "❓") + '</button>';
+      html += '<button class="ts-tile enter' + (c.done ? "" : " back") + '" data-i="' + i + '" data-fit="1" style="left:' + x + 'px;top:' + y + 'px;width:' + cw + 'px;height:' + ch + 'px;font-size:var(--t-b);padding:10px 16px;animation-delay:' + (i * 0.03) + 's">' + (c.done ? "✔ " + H.esc(c.text) : H.back()) + '</button>';
     });
     el.insertAdjacentHTML("beforeend", html + "</div></div>"); wrap = el.lastElementChild;
     Array.prototype.forEach.call(wrap.querySelectorAll(".ts-tile"), function(b){ NG.button(b, function(){ flip(+b.getAttribute("data-i"), b); }); });
@@ -22,7 +22,7 @@ COMP.mech.match = function(items){
   function chips(){ var c = wrap.querySelector(".ts-chips"); if (c) c.innerHTML = H.chip("짝 " + found + " / " + pairs.length) + H.teamChip(NG.currentTeam()) + H.chip("시도 " + tries); }
   function flip(i, b){
     var c = cards[i]; if (busy || c.done || first === i) return;
-    b.textContent = c.text; b.classList.add("sel"); NG.sfx("flip");
+    b.textContent = c.text; b.classList.remove("back"); b.classList.add("sel"); NG.sfx("flip");
     if (first === null){ first = i; return; }
     busy = true; tries++; var a = first, ab = wrap.querySelector('[data-i="' + a + '"]'); first = null;
     NG.after(750, function(){
@@ -34,7 +34,7 @@ COMP.mech.match = function(items){
         if (found >= pairs.length) finish(); else chips();
       } else {
         NG.sfx("flip"); NG.fx.wobble(ab); NG.fx.wobble(b);
-        NG.after(650, function(){ [ab, b].forEach(function(x){ x.classList.remove("sel"); x.textContent = "❓"; }); NG.nextTurn(); chips(); busy = false; });
+        NG.after(650, function(){ [ab, b].forEach(function(x){ x.classList.remove("sel"); x.classList.add("back"); x.innerHTML = H.back(); }); NG.nextTurn(); chips(); busy = false; });
       }
     });
   }

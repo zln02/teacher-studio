@@ -161,7 +161,7 @@ COMP.themes["tv-studio"] = (function(){
   }
 
   return {
-    paint: paint, deco: deco, sfx: sfx, onReact: onReact,
+    paint: paint, deco: deco, sfx: sfx, onReact: onReact, hostCol: true, podiums: true,
     host: { svg: hostSvg, name: "미스터 Q", lines: {
       title: ["생방송 3초 전!", "준비됐나요?"], start: ["첫 문제 나갑니다!"],
       correct: ["정답! 박수!", "대단해요!", "완벽해요!"], wrong: ["아쉬워요! 다음엔!", "괜찮아요, 힘내요"],

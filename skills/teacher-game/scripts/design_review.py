@@ -42,7 +42,7 @@ BASELINE = SKILL / "assets" / "design-baseline.json"
 
 PROBE_JS = r"""
 (function(){
-  var out = {texts: [], cards: [], host: null}, sc = document.querySelector('#scene .screen, #scene');
+  var out = {texts: [], cards: [], host: null, plain: 0}, sc = document.querySelector('#scene .screen, #scene');
   function bgs(e){ var l = []; while (e && e.nodeType === 1){ var c = getComputedStyle(e); var bi = c.backgroundImage, mm = bi && bi !== 'none' ? bi.match(/rgba?\([^)]*\)/) : null; l.push(mm ? mm[0] : c.backgroundColor); if (e.id === 'scene') break; e = e.parentElement; } return l; }
   var els = (sc || document.body).querySelectorAll('*');
   for (var i = 0; i < els.length; i++){
@@ -52,6 +52,7 @@ PROBE_JS = r"""
     txt = txt.replace(/\s+/g, ' ').trim();
     var bg = (cs.backgroundImage !== 'none' && /rgba?\(/.test(cs.backgroundImage)) ? cs.backgroundImage.match(/rgba?\([^)]*\)/)[0] : cs.backgroundColor, a = bg.indexOf('rgba') === 0 ? parseFloat(bg.split(',')[3]) : (bg === 'transparent' ? 0 : 1);
     if (a > 0.6 && r.width > 120 && r.height > 60) out.cards.push([r.left, r.top, r.width, r.height]);
+    if (a > 0.6 && r.width * r.height > 15000 && cs.backgroundImage === 'none' && !e.querySelector('svg, img') && txt.replace(/[^가-힣A-Za-z0-9]/g, '').length === 0 && /[\S]/.test(e.textContent || '') && (e.textContent || '').trim().length <= 2) out.plain++;
     if (txt && /[가-힣A-Za-z0-9]/.test(txt)) out.texts.push({t: txt.slice(0, 20), r: [r.left, r.top, r.width, r.height], fs: parseFloat(cs.fontSize), color: cs.color, bgs: bgs(e)});
   }
   var h = document.querySelector('#ts-deco .ts-host'); if (h){ var q = h.getBoundingClientRect(); out.host = [q.left, q.top, q.width, q.height]; }
@@ -154,7 +155,7 @@ def measure(shot, backdrop, probe: dict) -> dict:
     if probe.get("host"):
         h = probe["host"]
         host_ov = sum(1 for r in rects if r[0] < h[0] + h[2] * 0.55 and h[0] < r[0] + r[2] and r[1] < h[1] + h[3] and h[1] < r[1] + r[3] and r[0] < 120 and r[1] > h[1])
-    return {"deco_density": round(bt / bn, 3), "empty_ratio": round(empty, 3), "colors": colors, "hierarchy": hier,
+    return {"plain_cards": probe.get("plain", 0), "deco_density": round(bt / bn, 3), "empty_ratio": round(empty, 3), "colors": colors, "hierarchy": hier,
             "min_contrast": round(mins if mins < 99 else 21, 2), "low_contrast": lows, "overlaps": ov + host_ov}
 
 
@@ -216,6 +217,9 @@ def capture(path: Path) -> tuple[dict, dict, dict]:
                 snap(pg, "wrong")
             seen_c, seen_w = st.get("correct", 0), st.get("wrong", 0)
             steps += 1
+            if ("correct" in shots and "wrong" in shots) or steps >= 24:  # fast-forward inside the page (no waits)
+                pg.evaluate("(function(){for(var i=0;i<400;i++){var s=JSON.parse(render_game_to_text());if(s.scene==='result')break;try{window.GAME_LOGIC.auto();}catch(e){}advanceTime(1500);}})()")
+                break
         for _ in range(6):
             pg.evaluate("advanceTime(1200)")
             pg.wait_for_timeout(250)
@@ -292,6 +296,19 @@ def judge(summary: dict) -> tuple[str, list[str]]:
     return ("FAIL" if fail else ("WARN" if hints else "PASS")), hints
 
 
+def prop_relevance(html: Path) -> dict:
+    """auto theme: every prop must carry a tag of the world's tag set (props that do not fit the story are listed)."""
+    m = re.search(r"window\.GAME = (\{.*?\n\});", html.read_text(encoding="utf-8"), re.S)
+    try:
+        cfg = (json.loads(m.group(1)).get("spec") or {}).get("autoTheme") or {} if m else {}
+    except ValueError:
+        cfg = {}
+    tags, world = cfg.get("propTags") or {}, set(cfg.get("worldTags") or [])
+    if not tags or not world:
+        return {"checked": False, "bad": []}
+    return {"checked": True, "world": sorted(world), "bad": [n for n, t in tags.items() if not (set(t) & world)]}
+
+
 def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
     try:
         import PIL  # noqa: F401
@@ -310,8 +327,17 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
     contact_sheet(shots, backs, metrics, sheet)
     summ = summarise(metrics)
     verdict, hints = judge(summ)
+    rel = prop_relevance(html)
+    if rel["bad"]:
+        verdict = "WARN" if verdict == "PASS" else verdict
+        hints.append("이야기와 상관없는 소품이 있어요: " + ", ".join(rel["bad"]) + " → design.words에 주제 낱말(바다·우주·역사 …)을 넣어 소품을 다시 고르게 하세요")
+    plain = max((m.get("plain_cards", 0) for k, m in metrics.items() if k != "title"), default=0)
+    summ["plain_cards"] = plain
+    if plain >= 3:
+        verdict = "WARN" if verdict == "PASS" else verdict
+        hints.append(f"기호만 있는 밋밋한 흰 카드가 {plain}장 보여요 → 카드 뒷면/카드에 무늬·그림을 넣으세요(자동 테마는 기본으로 넣어요, theme를 auto로 바꿔 보세요)")
     res = {"file": html.name, "sheet": str(sheet), "screens": metrics, "summary": summ, "verdict": verdict, "hints": hints,
-           "missing_screens": [k for k in ("correct", "wrong") if k not in shots]}
+           "missing_screens": [k for k in ("correct", "wrong") if k not in shots], "prop_relevance": rel}
     (out_dir / f"{html.stem}-metrics.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     return res
 

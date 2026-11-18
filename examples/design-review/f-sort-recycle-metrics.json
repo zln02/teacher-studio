@@ -3,45 +3,50 @@
  "sheet": "examples\\design-review\\f-sort-recycle-sheet.png",
  "screens": {
   "title": {
-   "deco_density": 0.367,
-   "empty_ratio": 0.557,
-   "colors": 49,
+   "plain_cards": 0,
+   "deco_density": 0.371,
+   "empty_ratio": 0.559,
+   "colors": 47,
    "hierarchy": 1.0,
    "min_contrast": 8.57,
    "low_contrast": 0,
    "overlaps": 0
   },
   "question": {
-   "deco_density": 0.344,
-   "empty_ratio": 0.502,
-   "colors": 46,
+   "plain_cards": 0,
+   "deco_density": 0.341,
+   "empty_ratio": 0.452,
+   "colors": 45,
    "hierarchy": 1.33,
    "min_contrast": 13.99,
    "low_contrast": 0,
    "overlaps": 0
   },
   "correct": {
-   "deco_density": 0.354,
-   "empty_ratio": 0.479,
-   "colors": 42,
+   "plain_cards": 0,
+   "deco_density": 0.35,
+   "empty_ratio": 0.431,
+   "colors": 46,
    "hierarchy": 1.33,
    "min_contrast": 13.99,
    "low_contrast": 0,
-   "overlaps": 0
+   "overlaps": 1
   },
   "wrong": {
-   "deco_density": 0.352,
-   "empty_ratio": 0.483,
-   "colors": 44,
+   "plain_cards": 0,
+   "deco_density": 0.351,
+   "empty_ratio": 0.423,
+   "colors": 43,
    "hierarchy": 1.33,
-   "min_contrast": 9.06,
+   "min_contrast": 8.78,
    "low_contrast": 0,
-   "overlaps": 0
+   "overlaps": 1
   },
   "result": {
-   "deco_density": 0.394,
-   "empty_ratio": 0.466,
-   "colors": 36,
+   "plain_cards": 0,
+   "deco_density": 0.39,
+   "empty_ratio": 0.467,
+   "colors": 40,
    "hierarchy": 1.65,
    "min_contrast": 6.2,
    "low_contrast": 0,
@@ -49,16 +54,23 @@
   }
  },
  "summary": {
-  "deco_density": 0.35,
-  "empty_ratio": 0.488,
-  "colors": 44,
+  "deco_density": 0.347,
+  "empty_ratio": 0.435,
+  "colors": 44.667,
   "hierarchy": 1.65,
-  "min_contrast": 9.06,
-  "overlaps": 0,
-  "title_empty_ratio": 0.557,
-  "title_deco_density": 0.367
+  "min_contrast": 8.78,
+  "overlaps": 1,
+  "title_empty_ratio": 0.559,
+  "title_deco_density": 0.371,
+  "plain_cards": 0
  },
- "verdict": "PASS",
- "hints": [],
- "missing_screens": []
+ "verdict": "WARN",
+ "hints": [
+  "글자 상자가 서로(또는 도우미 캐릭터와) 겹쳐요 → 문제·보기 글을 줄이거나 보기 수를 줄여 보세요"
+ ],
+ "missing_screens": [],
+ "prop_relevance": {
+  "checked": false,
+  "bad": []
+ }
 }

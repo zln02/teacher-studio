@@ -29,6 +29,11 @@ H.norm = function(it){
   return { isOX: isOX, choices: isOX ? ["O", "X"] : it.choices, answer: it.answer | 0 };
 };
 
+/* themed card back (match): emblem on a patterned colour card; plain "?" only when no emblem exists */
+H.back = function(){
+  var e = COMP.emblem || '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="' + TK.colors.accent + '" stroke="#1a1030" stroke-width="1.2"/><path d="M12 5 L14 10 L19 10.4 L15.2 13.6 L16.4 18.6 L12 16 L7.6 18.6 L8.8 13.6 L5 10.4 L10 10Z" fill="#fff"/></svg>';
+  return '<span class="ts-emblem">' + e + '</span>';
+};
 H.top = function(){ return SPEC.timer ? 200 : 150; };  /* leave room for the engine timer bar */
 H.chip = function(text, extra){ return '<div class="card ts-chip' + (extra || "") + '">' + text + '</div>'; };
 
@@ -153,6 +158,25 @@ H.mountLayer = function(){
     var b = document.createElement("div"); b.id = "ts-bubble"; b.className = "empty"; b.innerHTML = "<span></span>"; stage.appendChild(b);
   }
   if (th.sfx) th.sfx();
+  /* optional staging parts: wide host column, team podium row */
+  var col = th.host && (th.hostCol || (SPEC.design && SPEC.design.hostCol)) && ["quiz", "survival", "escape"].indexOf(SPEC.mechanic) >= 0 && SPEC.device === "board";
+  document.body.setAttribute("data-hostcol", col ? "1" : "");
+  if (th.podiums || (SPEC.design && SPEC.design.podiums)){
+    var pd = document.createElement("div"); pd.className = "ts-podiums"; d.appendChild(pd); H.podiumEl = pd; S.hits = [];
+  } else H.podiumEl = null;
+  if (th.sfx) th.sfx();
+};
+H.updatePodiums = function(){
+  var pd = H.podiumEl; if (!pd) return;
+  var t = NG.state.teams, n = t.length, key = n + ":" + NG.state.turn + ":" + (S.hits || []).join(",");
+  if (pd._key === key) return; pd._key = key;
+  var list = n ? t : [{ name: "도전자", icon: "🎤", color: TK.colors.primary }], cap = Math.max(3, Math.min(10, Math.ceil((NG.state.total || 8) / list.length))), h = "";
+  list.forEach(function(tm, i){
+    var hits = (S.hits && S.hits[i]) || 0, lamps = "";
+    for (var k = 0; k < cap; k++) lamps += '<i class="' + (k < hits ? "lit" : "") + '"></i>';
+    h += '<div class="ts-pod' + (n && NG.state.turn === i ? " on" : "") + '" style="--tc:' + tm.color + '"><b>' + H.esc(tm.icon) + " " + H.esc(tm.name) + '</b><span class="ts-lamps">' + lamps + "</span></div>";
+  });
+  pd.innerHTML = h;
 };
 H.applyTheme = function(){
   var th = H.theme();
@@ -164,7 +188,10 @@ H.applyTheme = function(){
   var orig = NG.setTheme;
   NG.setTheme = function(n, o){ orig(n, o); H.applyTheme(); };
   var fb = NG.feedback;
-  NG.feedback = function(ok){ var r = fb.apply(NG, arguments); H.react(ok ? "correct" : "wrong"); return r; };
+  NG.feedback = function(ok){
+    if (ok){ var ti = NG.state.teams.length ? NG.state.turn : 0; S.hits = S.hits || []; S.hits[ti] = (S.hits[ti] || 0) + 1; }
+    var r = fb.apply(NG, arguments); H.react(ok ? "correct" : "wrong"); return r;
+  };
   var fin = NG.finish;
   NG.finish = function(d){
     var ok = d && d.ratio != null ? d.ratio >= 0.5 : (NG.state.correct >= NG.state.wrong);
@@ -174,11 +201,12 @@ H.applyTheme = function(){
   NG.hud.setProgress = function(p){ S.progress = p; return sp.apply(NG.hud, arguments); };
   var last = "";
   NG.onUpdate(function(dt){
+    H.updatePodiums();
     S.cheer = Math.max(0, S.cheer - dt * 0.42); S.miss = Math.max(0, S.miss - dt * 0.5);
     var sn = NG.sceneName || "";
     if (sn !== last){
       last = sn; var d = document.getElementById("ts-deco"); if (d) d.setAttribute("data-scene", sn);
-      if (sn === "title" || sn === "countdown"){ S.win = 0; S.lose = 0; S.progress = 0; S.misses = 0; H.mood("idle"); H.sayHost(""); }
+      if (sn === "title" || sn === "countdown"){ S.win = 0; S.lose = 0; S.progress = 0; S.misses = 0; S.hits = []; H.mood("idle"); H.sayHost(""); }
       if (sn === "title" && H.theme().host) NG.after(500, function(){ H.sayHost(H.lines("title"), 4000); });
     }
   });
