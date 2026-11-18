@@ -1,0 +1,10 @@
+KaTeX fonts (fonts/*.woff2) are distributed under the SIL Open Font License 1.1.
+Notice read from the name table of KaTeX_Main-Regular.woff2 (nameID 0):
+
+  Copyright (c) 2009-2010, Design Science, Inc. (<www.mathjax.org>)
+  Copyright (c) 2014-2018 Khan Academy (<www.khanacademy.org>),
+  with Reserved Font Name KaTeX_Main.
+
+The fonts are embedded unmodified (the Reserved Font Names are not used for any modified font).
+The full license text of the SIL OFL 1.1 is in shared/fonts/OFL-NotoSerifKR.txt (same standard text)
+and at https://openfontlicense.org

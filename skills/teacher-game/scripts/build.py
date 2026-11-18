@@ -6,8 +6,11 @@ Usage:
 
 spec.json (see references/spec-schema.md): {title, subtitle, mechanic, use, device, teams, timer, rounds,
   design:{subject,grade,mood,seed,theme,large}, world:{...}, items:[...], <mechanic options>}
-Steps: validate spec -> design tokens (scripts/design.py, or --tokens) -> assemble engine + core + the chosen
-mechanic component + theme + tokens CSS -> check_game.py. The engine is copied byte-for-byte (never retyped).
+Steps: validate spec -> design tokens (shared design system via scripts/design.py, or --tokens) -> assemble engine +
+core + the chosen mechanic component + theme + tokens CSS -> inline only the libraries the spec asks for ("libs":
+["confetti","katex",...], see shared/vendor) -> embed Korean fonts (Noto Sans/Serif KR cut to the page's characters;
+skipped with --no-fonts or when fonttools is missing) -> check_game.py. The engine is copied byte-for-byte.
+Options: --no-fonts  --yes (agree to install the small font tool when it is missing)
 """
 from __future__ import annotations
 
@@ -26,8 +29,13 @@ for _s in (sys.stdout, sys.stderr):
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
 sys.path.insert(0, str(HERE))
-import design  # noqa: E402
+import design  # noqa: E402  (shim -> shared/design/design.py)
 import specs  # noqa: E402
+
+for _sub in ("fonts", "vendor", "tools"):
+    sys.path.insert(0, str(SKILL / "shared" / _sub))
+import embed  # noqa: E402  (shared/fonts/embed.py)
+import inline  # noqa: E402  (shared/vendor/inline.py)
 from build_game import build  # noqa: E402
 
 COMP = SKILL / "assets" / "components"
@@ -53,8 +61,16 @@ def make_tokens(spec: dict) -> dict:
 def tokens_css(tk: dict) -> str:
     """CSS variables + font pair from the tokens (appended after the engine styles)."""
     t = tk["type"]
-    return ("/* TS:CSS BEGIN */\n:root{--t-title:%dpx;--t-q:%dpx;--t-c:%dpx;--t-b:%dpx;--t-s:%dpx;--btn-h:%dpx;--font-body:\"%s\",\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif}\n"
-            % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"], tk["fonts"]["body"])
+    f = tk["fonts"]
+    serif = {"Gowun Batang", "Noto Serif KR", "Nanum Myeongjo", "Song Myung"}
+    body_fb = '"Noto Serif KR","Noto Sans KR"' if f["body"] in serif else '"Noto Sans KR"'
+    disp_fb = '"Noto Serif KR"' if f["display"] in serif else '"Noto Sans KR"'
+    sys_fb = '"Apple SD Gothic Neo","Malgun Gothic",sans-serif'
+    # the embedded Noto fonts come right after the chosen font and before system fonts, so it also looks right offline
+    return ("/* TS:CSS BEGIN */\n:root{--t-title:%dpx;--t-q:%dpx;--t-c:%dpx;--t-b:%dpx;--t-s:%dpx;--btn-h:%dpx;"
+            "--font-body:\"%s\",%s,%s;--font-display:\"%s\",%s,%s!important}\n"
+            % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"],
+               f["body"], body_fb, sys_fb, f["display"], disp_fb, sys_fb)
             + ".title{font-size:var(--t-title)}\n")
 
 
@@ -105,6 +121,8 @@ def main() -> int:
     ap.add_argument("--out", required=True, type=Path)
     ap.add_argument("--tokens", type=Path)
     ap.add_argument("--no-check", action="store_true")
+    ap.add_argument("--no-fonts", action="store_true", help="keep the Google Fonts link instead of embedding Noto KR")
+    ap.add_argument("--yes", action="store_true", help="agree to install the small font tool (fonttools) if it is missing")
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
     errs = specs.validate(spec)
@@ -117,7 +135,22 @@ def main() -> int:
         print("TOKENS FIX NEEDED:\n - " + "\n - ".join(terr))
         return 2
     size, info = assemble(spec, tokens, a.out)
-    print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)})")
+    html = a.out.read_text(encoding="utf-8")
+    note = ""
+    if spec.get("libs"):
+        html, lrep = inline.apply(html, list(spec["libs"]), auto=True)
+        note += f", libs={'+'.join(lrep['inlined'])}"
+    if not a.no_fonts:
+        html, frep = embed.embed(html, consent=a.yes)
+        if frep.get("embedded"):
+            note += f", fonts embedded ({frep['before_bytes'] // 1024} KB -> {frep['after_bytes'] // 1024} KB)"
+        else:
+            note += ", fonts: " + frep.get("reason", "not embedded")
+            if frep.get("prompt"):
+                print("ASK TEACHER: " + frep["prompt"] + "  (agree -> rerun with --yes)")
+    a.out.write_text(html, encoding="utf-8")
+    size = len(html.encode("utf-8"))
+    print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)}{note})")
     if a.no_check:
         return 0
     r = subprocess.run([sys.executable, str(HERE / "check_game.py"), str(a.out)], capture_output=True, text=True, encoding="utf-8", errors="replace")

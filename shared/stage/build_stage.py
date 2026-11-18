@@ -5,16 +5,32 @@ Usage:
     python3 build_stage.py --missile subject-intro --skin science --content content.json --out page.html
 
 The runtime (stage.html) and anime.js are copied byte-for-byte; only DOC, SHOW and CSS change.
+After that: --libs motion,chartjs,katex,lucide,confetti inlines extra libraries (shared/vendor, only what you name or
+the page clearly uses), and Noto Sans/Serif KR are embedded cut to the page's characters (--no-fonts to skip; needs
+fonttools, otherwise the Google Fonts link stays).
 """
 from __future__ import annotations
 
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
+SHARED = SKILL / "shared" if (SKILL / "shared").exists() else HERE.parent  # skill copy, or the repo's shared/ itself
+for _sub in ("fonts", "vendor", "tools"):
+    if (SHARED / _sub).exists():
+        sys.path.insert(0, str(SHARED / _sub))
+try:
+    import embed  # shared/fonts/embed.py
+except ImportError:
+    embed = None
+try:
+    import inline  # shared/vendor/inline.py
+except ImportError:
+    inline = None
 RUNTIME = SKILL / "assets" / "stage.html" if (SKILL / "assets" / "stage.html").exists() else HERE / "stage.html"
 VENDOR_DIR = RUNTIME.parent / "vendor"
 MISSILES = SKILL / "assets" / "missiles"
@@ -22,8 +38,8 @@ DOC_RE = re.compile(r"window\.DOC = \{.*?\n\};", re.S)
 SHOW_RE = re.compile(r"(/\* ===================== SHOW .*?\*/\n).*?(\n</script>\n<script>STAGE\.boot)", re.S)
 
 
-def build(doc: dict, show_js: str, out: Path, css: str = "") -> int:
-    """Inject DOC, SHOW, CSS and anime.js into the runtime; return size in bytes."""
+def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None = None, fonts: bool = True) -> int:
+    """Inject DOC, SHOW, CSS and anime.js into the runtime (+ optional libs, embedded fonts); return size in bytes."""
     html = RUNTIME.read_text(encoding="utf-8")
     if not DOC_RE.search(html) or not SHOW_RE.search(html):
         raise SystemExit("stage markers not found - stage.html was modified")
@@ -36,6 +52,16 @@ def build(doc: dict, show_js: str, out: Path, css: str = "") -> int:
     title = doc.get("title")
     if title:
         html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{title}</title>", html, count=1)
+    if libs and inline:
+        html, _ = inline.apply(html, [x for x in libs if x != "anime"], auto=True)
+    if fonts and embed:
+        html, rep = embed.embed(html)
+        if not rep.get("embedded"):
+            print("fonts: " + rep.get("reason", "not embedded"))
+            if rep.get("prompt"):
+                print("ASK TEACHER: " + rep["prompt"])
+        else:
+            print(f"fonts embedded: {rep['before_bytes'] // 1024} KB -> {rep['after_bytes'] // 1024} KB")
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
     return len(html.encode("utf-8"))
@@ -58,6 +84,8 @@ def main() -> None:
     ap.add_argument("--skin")
     ap.add_argument("--content", type=Path)
     ap.add_argument("--list", action="store_true")
+    ap.add_argument("--libs", default="", help="comma list: motion,chartjs,katex,lucide,confetti")
+    ap.add_argument("--no-fonts", action="store_true")
     ap.add_argument("--out", type=Path)
     a = ap.parse_args()
     if a.list:
@@ -79,7 +107,7 @@ def main() -> None:
         css = a.css.read_text(encoding="utf-8") if a.css else ""
     if not a.out:
         ap.error("--out is required")
-    size = build(doc, show, a.out, css)
+    size = build(doc, show, a.out, css, [x for x in a.libs.split(",") if x], not a.no_fonts)
     print(f"built {a.out} ({size // 1024} KB)")
 
 

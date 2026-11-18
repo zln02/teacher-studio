@@ -47,7 +47,16 @@
 ## 5. 어디서든 쓰기 (이식성 규칙)
 - 형식: 모든 칸은 **Agent Skills 표준(SKILL.md)** 폴더 → Claude(웹·앱·Claude Code), Codex, Gemini CLI, Cursor 등 SKILL.md 지원 도구에서 그대로 읽힌다.
 - 설치: claude.ai는 「설정 > 스킬」에 칸별 zip 올리기 또는 작업 공간에서 내려받기 / Claude Code·Codex는 skills 폴더에 복사(또는 `npx skills add <repo>`).
-- 결과물은 **파일 하나(HTML)**: 고급 프로그램(anime.js 등)은 파일 안에 넣어 인터넷·설치 없이 크롬만 있으면 열린다. 글꼴만 Google Fonts(없으면 기본 글꼴로 자동 대체).
+- 결과물은 **파일 하나(HTML)**: 고급 프로그램(anime.js 등)과 한글 글꼴(Noto Sans/Serif KR, 쓰는 글자만)은 파일 안에 넣어 인터넷·설치 없이 크롬만 있으면 열린다. 장식 글꼴(검은고딕 등)만 Google Fonts(없으면 넣어 둔 Noto로 대체).
 - 무거운 도구는 있을 때만: MP4 정확 렌더(Playwright+ffmpeg), HyperFrames(Apache-2.0, 0.9.x 매일 바뀜 → 쓰면 버전 고정). 없으면 페이지의 🎥 버튼(크롬 탭 녹화 → .webm).
-- 라이선스: 넣는 프로그램은 MIT·Apache·OFL·CC0만. GSAP은 무료지만 재배포 조항이 불명확 → 파일에 넣지 않고 필요 시 CDN 링크로만.
+- 라이선스: 넣는 프로그램은 MIT·ISC·Apache·OFL·CC0만 (axe-core MPL-2.0은 점검기 전용·수정 없이). GSAP은 저장소에 넣지 않고, 「더 화려하게」가 필요할 때만 공식 CDN에서 보는 순간 불러온다 (GSAP 자체 약관).
 - 오래된 학교 크롬 대응: `?.` `??` 등 금지 문법 점검기로 자동 검사 (넣는 프로그램도 같은 검사, anime.js는 1곳 패치).
+
+## 6. 공용 도구함 `shared/` (모든 칸이 같이 쓴다. 고치면 `python3 tools/sync_shared.py`, 점검은 `--check`)
+| 폴더 | 내용 | 쓰는 법 |
+|---|---|---|
+| `shared/design/` | 디자인 생성기 `design.py` + 팔레트 15 + 글자 크기표 (게임·발표·포스터·초대장·인쇄·웹) | `design.py --use present --mood 고급스럽게` → 색·글꼴·글자 크기 한 세트 |
+| `shared/vendor/` | Motion · canvas-confetti · Chart.js · KaTeX · Lucide · Phaser · anime.js · axe-core(점검기 전용) | `inline.py`로 쓴 것만 파일에 넣기 (`manifest.json`에 버전·라이선스) |
+| `shared/fonts/` | Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
+| `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |
+| `shared/stage/` | 슬라이드·영상 공통 무대 | 기존대로 |

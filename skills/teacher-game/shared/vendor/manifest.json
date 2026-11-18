@@ -1,0 +1,80 @@
+{
+ "_note": "Vendored libraries. Each LICENSE was read from the downloaded npm package. Fetched with npm pack (no install scripts run).",
+ "libs": {
+  "motion": {
+   "name": "Motion (motion.dev, vanilla)",
+   "version": "14.14.0",
+   "license": "MIT",
+   "dir": "motion",
+   "js": "motion-14.14.0.umd.min.js",
+   "global": "Motion",
+   "es": "modern",
+   "use": "부드러운 움직임·스크롤·스프링",
+   "notes": "uses ?. and ?? (Chrome 80+); the page checker reports it as a warning, default animations stay anime.js/CSS",
+   "source": "npm:motion@14.14.0",
+   "license_file": "motion/LICENSE",
+   "bytes": 191561,
+   "sha256": "521cfef8910fdd997463ea9881d4b790e017331e3d2f79c02adfc4d5fe1f2cae"
+  },
+  "confetti": {
+   "name": "canvas-confetti",
+   "version": "1.9.4",
+   "license": "ISC",
+   "dir": "canvas-confetti",
+   "js": "confetti-1.9.4.browser.js",
+   "global": "confetti",
+   "es": "es2017",
+   "use": "축하 꽃가루",
+   "source": "npm:canvas-confetti@1.9.4",
+   "license_file": "canvas-confetti/LICENSE",
+   "bytes": 24914,
+   "sha256": "49f4bcbc56e7ceb5c3d25d13db1d0da965b6cd1c8a54a707bb055be0685b0a95"
+  },
+  "katex": {
+   "name": "KaTeX",
+   "version": "0.19.1",
+   "license": "MIT (fonts: SIL OFL 1.1)",
+   "dir": "katex",
+   "js": "katex-0.19.1.min.js",
+   "css": "katex-0.19.1.min.css",
+   "fonts_dir": "fonts",
+   "global": "katex",
+   "es": "es2017",
+   "use": "수식 (분수·제곱근·식)",
+   "notes": "css gets the 7 common fonts inlined as base64 WOFF2; inline(..., katex_fonts='all') for all 20",
+   "source": "npm:katex@0.19.1",
+   "license_file": "katex/LICENSE",
+   "bytes": 273081,
+   "sha256": "fa140498b8cfc8302cbe5e7cb1bdbc1f952bc38b3fa258ede09e73edbf9a74bc"
+  },
+  "lucide": {
+   "name": "Lucide icons (sprite)",
+   "version": "1.75.0",
+   "license": "ISC (some icons MIT, Feather)",
+   "dir": "lucide",
+   "sprite": "lucide-1.75.0-sprite.svg",
+   "es": "n/a",
+   "use": "아이콘 (사용한 것만 symbol로 넣음)",
+   "notes": "use <svg><use href=\"#lucide-NAME\"/></svg>",
+   "source": "npm:lucide-static@1.75.0",
+   "license_file": "lucide/LICENSE",
+   "bytes": 609666,
+   "sha256": "4ea2fefdd70cf1f5460f4ccb64c1bc9c2b0ec8848bf841a6caa842a5e2d2a0aa"
+  },
+  "phaser": {
+   "name": "Phaser",
+   "version": "4.2.1",
+   "license": "MIT",
+   "dir": "phaser",
+   "js": "phaser-4.2.1.min.js",
+   "global": "Phaser",
+   "es": "es2017",
+   "on_request_only": true,
+   "use": "2D 게임 엔진 (크다: 스펙이 요청할 때만)",
+   "source": "npm:phaser@4.2.1",
+   "license_file": "phaser/LICENSE",
+   "bytes": 1375976,
+   "sha256": "66348b1b5141e49b7d5ebbe688cddcb502eab1cb00f21c538686a5b2c5abe4de"
+  }
+ }
+}

@@ -7,9 +7,10 @@
 
 ## 결정
 - 저장소 코드는 **Apache-2.0**.
-- 파일 안에 **번들하는 것은 허용적 라이선스만**: MIT / BSD / ISC / Apache-2.0 / OFL / CC0. 현재: anime.js(MIT), Kenney 그림·소리(CC0), 글씨체는 Google Fonts(OFL, 열 때 불러옴). 제3자 고지는 `NOTICE`.
+- 파일 안에 **번들하는 것은 허용적 라이선스만**: MIT / BSD / ISC / Apache-2.0 / OFL / CC0. 현재: anime.js·Motion·Chart.js·KaTeX·Phaser(MIT), canvas-confetti·Lucide(ISC), Kenney 그림·소리(CC0), Noto Sans/Serif KR(OFL, 페이지에 쓰는 글자만 잘라 넣음), 그 밖의 글씨체는 Google Fonts(OFL, 열 때 불러옴). 제3자 고지는 `NOTICE`.
 - **CC-BY 자료는 번들하지 않고 필요할 때 받아 쓰며** 출처 표기를 자동으로 붙인다 — 「계획」.
 - **NC·SA·재배포 제한 자료는 피한다**: Remotion, unDraw, Blush, Quaternius, pyhwpxlib 등.
+- **예외 하나: axe-core(MPL-2.0)** — 점검기 전용으로 수정 없이 파일 그대로 `shared/vendor/`에 두고, 선생님이 받는 결과물에는 넣지 않는다 (파일 단위 약한 카피레프트라, 수정하거나 결과물에 넣지만 않으면 추가 의무가 없다).
 - **GSAP은 번들하지 않는다**: 자체 Standard License(재배포·경쟁 도구 조항)가 불명확. 필요하면 선택적 CDN 사용.
 - **ffmpeg는 번들하지 않는다**: GPL이 섞인 빌드가 있어 배포 시 의무가 생긴다. 처음 필요할 때 사용자 동의를 받아 설치한다(ADR 0008).
 

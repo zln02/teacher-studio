@@ -20,6 +20,12 @@ for _s in (sys.stdout, sys.stderr):
         _s.reconfigure(errors="replace")
 
 SKILLS = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
+try:
+    import ensure  # shared/tools/ensure.py (install-on-first-need helper)
+except ImportError:
+    ensure = None
+DOC_SKILLS = {"pptx": "PPT", "docx": "워드", "xlsx": "엑셀", "pdf": "PDF"}
 CACHE = Path.home() / ".teacher-studio" / "env.json"
 NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면", "teacher-law": "⚖️ 법률 안내"}
 
@@ -43,11 +49,35 @@ def _has_playwright() -> bool:
     except ImportError:
         return False
     try:
+        channel = ensure.find_system_browser() if ensure else ""
         with sync_playwright() as pw:
-            pw.chromium.launch().close()
+            (pw.chromium.launch(channel=channel) if channel else pw.chromium.launch()).close()
         return True
     except Exception:
         return False
+
+
+def official_doc_skills() -> dict:
+    """Which of Claude's official document skills (pptx / docx / xlsx / pdf) are installed in this environment's skill folders."""
+    home = Path.home()
+    roots = [home / ".claude" / "skills", home / ".claude" / "plugins", home / ".codex" / "skills", home / ".agents" / "skills",
+             Path("/mnt/skills"), Path("/mnt/user-data/skills"), SKILLS]
+    found: dict = {k: False for k in DOC_SKILLS}
+    for root in roots:
+        if not root.exists():
+            continue
+        base = len(root.parts)
+        for dirpath, dirs, files in os.walk(root):
+            if len(Path(dirpath).parts) - base > 6:
+                dirs[:] = []
+                continue
+            dirs[:] = [d for d in dirs if d not in (".git", "node_modules", "__pycache__")]
+            name = Path(dirpath).name
+            if name in DOC_SKILLS and "SKILL.md" in files:
+                found[name] = True
+        if all(found.values()):
+            break
+    return found
 
 
 def _codex_network_on() -> bool:
@@ -73,7 +103,7 @@ def report(agent: str = "") -> dict:
         "os": platform.system(),
         "python": sys.version.split()[0],
         "node": node_ver,
-        "ffmpeg": bool(shutil.which("ffmpeg")),
+        "ffmpeg": bool(shutil.which("ffmpeg")) or bool(ensure and ensure.is_present("imageio-ffmpeg")),
         "playwright": _has_playwright(),
         "skills": sorted(p.name for p in SKILLS.iterdir() if (p / "SKILL.md").exists()),
     }
@@ -85,7 +115,7 @@ def report(agent: str = "") -> dict:
     if mp4_ready:
         video = "MP4 영상 파일까지 바로 만들어요"
     elif agent in ("claude-code", "codex"):
-        video = "MP4는 처음 요청할 때 필요한 도구(약 150MB)를 설치해 드려요 (먼저 물어볼게요)"
+        video = "MP4는 처음 요청할 때 필요한 작은 도구(합쳐서 약 80MB, 크롬이 있으면 그걸 써요)를 설치해 드려요 (먼저 물어볼게요)"
         if agent == "codex" and not codex_net:
             video += " — 인터넷이 꺼져 있으면 먼저 켜야 해요"
     else:
@@ -98,6 +128,13 @@ def report(agent: str = "") -> dict:
     else:
         law = "공식 출처에서 최신 법을 찾아 근거와 함께 답해요"
     check = "끝까지 자동으로 플레이해 보고 점검해요" if caps["playwright"] else "글자·문법 자동 점검까지 해요 (자동 플레이는 없음)"
+    tools = ensure.status() if ensure else {"present": [], "on_first_need": []}
+    caps["tools"] = {"present": [t["name"] for t in tools["present"]], "on_first_need": [t["name"] for t in tools["on_first_need"]],
+                     "ffmpeg": tools.get("ffmpeg", ""), "browser": tools.get("browser", "")}
+    caps["official_doc_skills"] = official_doc_skills()
+    docs = [DOC_SKILLS[k] for k, v in caps["official_doc_skills"].items() if v]
+    doc_line = (f"Claude 공식 문서 스킬({', '.join(docs)})이 있어서 파일 만들기는 그쪽에 맡기고, 디자인·구성·점검은 교사 스튜디오가 얹어요" if docs
+                else "PPT·워드·엑셀·PDF 파일은 공식 문서 스킬이 안 보여서, 처음 필요할 때 작은 도구를 설치해 드려요 (먼저 물어볼게요)")
     ready = [label for name, label in NAMES.items() if name in caps["skills"]]
     lines = [
         "🎉 교사 스튜디오 준비 완료!",
@@ -108,6 +145,8 @@ def report(agent: str = "") -> dict:
         f"· 점검: {check}",
         f"· 법률 안내: {law}",
         f"· 나누기: {share}",
+        f"· 문서 파일: {doc_line}",
+        f"· 처음 필요할 때 설치되는 도구: {', '.join(caps['tools']['on_first_need']) or '없음 (모두 준비됨)'}",
         "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집, 🧰 수업 도구",
     ]
     if not caps["python"].startswith("3"):

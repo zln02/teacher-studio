@@ -9,7 +9,9 @@
 - 선생님께는 개발 용어를 쓰지 않는다 (`skills/teacher-game/references/teacher-language.md`).
 
 ## 개발할 때 (저장소 자체를 고칠 때)
-- 공통 무대(`shared/stage/`)를 고쳤으면 `python3 tools/sync_shared.py`(Windows는 `py tools/sync_shared.py`)로 각 스킬에 복사 + `dist/` zip 갱신.
+- 공통 무대·공용 도구함(`shared/stage` · `shared/design` · `shared/vendor` · `shared/fonts` · `shared/tools`)을 고쳤으면 `python3 tools/sync_shared.py`(Windows는 `py tools/sync_shared.py`)로 각 스킬에 복사 + `dist/` zip 갱신. 끝나면 `python3 tools/sync_shared.py --check`로 어긋남이 없는지 확인한다 (스킬 안의 `shared/` 복사본은 직접 고치지 않는다).
+- 새 라이브러리·글꼴을 넣을 때는 npm pack / pip download로 받아 **실제 LICENSE 파일을 읽고** `shared/vendor/manifest.json`과 `NOTICE`에 적는다 (허용: MIT·ISC·Apache·OFL·CC0, axe-core만 점검기 전용 예외). GSAP·ffmpeg는 넣지 않는다.
+- 디자인(색·글꼴·글자 크기)은 `shared/design/design.py`로 정한다. 스킬마다 따로 만들지 않는다.
 - 엔진·무대·미사일을 고친 뒤에는 모든 스킨을 `studio.py fire`로 다시 만들고 `check`가 PASS인지 확인한다.
 - 결과물 규칙: HTML 한 파일, 외부 이미지 금지, ES2017 문법(`?.` `??` 금지), 학생 정보 칸 금지.
 - 이 문서의 `python3`는 Windows에서 `py`로 바꿔 실행한다.

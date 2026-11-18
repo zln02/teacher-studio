@@ -105,3 +105,4 @@ python3 scripts/build.py --spec spec.json --out game.html
 | `references/classroom.md` · `qa-checklist.md` · `legal-advisory.md` | 크기 기준 / 최종 점검 / 저작권 권고 |
 | `references/engine-api.md` | 직접 코드 때만 |
 | `scripts/design.py` · `build.py` · `check_game.py` | 디자인 값 / 조립 / 점검 |
+| `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |

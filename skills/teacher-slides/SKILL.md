@@ -85,7 +85,7 @@ FAIL이 있으면 고친다. 가능하면 브라우저로 전 장을 넘기며(�
 1. **학생 정보 금지**: 학생 이름·사진·성적·학번을 화면에 넣지 않는다. 예시 이름은 가상(모둠1, 학생A).
 2. **사실 확인**: 교과 내용·통계·날짜가 확실하지 않으면 구성표에 「확인 필요」. 숫자 장(bignumber)은 출처를 선생님 메모에 적는다.
 3. **저작권은 막지 말고 권고만**: 선생님 이미지·글꼴·인용은 넣고 한 줄 권고(`references/legal-advisory.md`). 실존 인물 인용은 선생님이 준 문장만 쓴다.
-4. **외부 자원 금지**: 그림 파일·외부 이미지 없이 내장 아이콘(SVG)·이모지·도형으로. 글꼴은 Google Fonts만. 없어도 동작하게.
+4. **외부 자원 금지**: 그림 파일·외부 이미지 없이 내장 아이콘(SVG)·이모지·도형으로. 글꼴은 파일에 넣은 Noto Sans/Serif KR(build가 자동)과 Google Fonts. 없어도 동작하게.
 5. **오래된 크롬 대응**: `?.` `??` `replaceAll` `.at(` `#private` `structuredClone` 금지. CSS `aspect-ratio` `:has` `dvh` 금지.
 6. 전체 화면·🎥 버튼·선생님 메모(N)는 지우지 않는다. 메모는 기본으로 숨긴다.
 
@@ -97,3 +97,4 @@ FAIL이 있으면 고친다. 가능하면 브라우저로 전 장을 넘기며(�
 | `assets/missiles/lesson-deck/skins/*.json` | 스킨별 완성 예시(칠판 과학 수업 / 교원 연수 / 학부모 설명회) |
 | `references/legal-advisory.md` | 글꼴·이미지·인용 권고 문장 |
 | `scripts/build_stage.py` · `check_page.py` · `render_mp4.py` | 조립 / 자동 점검 / MP4 |
+| `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 고급스럽게`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·Motion·CSS) |

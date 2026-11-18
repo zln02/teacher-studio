@@ -39,9 +39,9 @@ python3 scripts/setup.py --agent <AGENT>
 
 ## 3. 영상 MP4·자동 플레이 점검 도구 — 처음 요청할 때 설치
 **설치 중에는 묻지 않는다.** 선생님이 처음으로 MP4 파일(또는 자동 플레이 점검)이 필요한 요청을 했을 때 이렇게 말한다:
-「MP4로 받으려면 프로그램을 하나 더 깔아야 해요(약 150MB, 2~3분). 지금 깔까요? (예 / 나중에)」
+「MP4로 받으려면 프로그램을 하나 더 깔아야 해요(약 80MB, 크롬이 이미 있으면 그걸 써요). 지금 깔까요? (예 / 나중에)」
 - **예** → `python3 scripts/setup.py --agent <AGENT> --video` (직접 미리 깔고 싶을 때 쓰는 수동 방법이기도 하다)
-  - ffmpeg가 없다고 나오면 운영체제에 맞는 설치 명령 한 줄 (Windows `winget install ffmpeg`, Mac `brew install ffmpeg`). 실패하면 「영상은 화면의 🎥 버튼으로 받으시면 돼요」로 마무리.
+  - 영상 도구(ffmpeg)는 `shared/tools/ensure.py`가 컴퓨터에 있는 것을 먼저 쓰고, 없으면 `pip install --user imageio-ffmpeg`(약 40MB)로 받는다. 직접 깔려면 Windows `winget install ffmpeg`, Mac `brew install ffmpeg`. 실패하면 「영상은 화면의 🎥 버튼으로 받으시면 돼요」로 마무리.
 - **Claude Code**: 바로 가능 (인터넷 제한 없음).
 - **Codex**: 인터넷이 켜져 있어야 한다. 꺼져 있으면 위 표의 `network_access = true` 안내를 먼저 하고, 그래도 어려우면 🎥 녹화로 대신한다.
 - **Claude 앱·웹**: 인터넷 제한 때문에 도구 설치가 안 될 가능성이 크다 → 처음부터 크롬 녹화(.webm) 방법으로 안내한다.

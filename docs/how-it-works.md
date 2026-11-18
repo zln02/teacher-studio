@@ -9,7 +9,12 @@ teacher-studio/
 │  ├─ teacher-game/         ← 게임: engine.html + missiles/(quiz-show, escape-room, drag-deliver)
 │  ├─ teacher-slides/              ← 슬라이드: stage.html + missiles/lesson-deck
 │  └─ teacher-motion/              ← 영상·화면: stage.html + missiles/(subject-intro, lesson-opening)
-├─ shared/stage/                ← 슬라이드·모션 공통 무대 원본 (tools/sync_shared.py로 각 스킬에 복사)
+├─ shared/                      ← 공용 도구함 원본 (tools/sync_shared.py로 각 스킬의 shared/에 복사, --check로 어긋남 점검)
+│  ├─ stage/                       ← 슬라이드·모션 공통 무대
+│  ├─ design/                      ← 디자인 생성기(design.py) · palettes.json · tokens.schema.json
+│  ├─ vendor/                      ← 고정 버전 라이브러리(motion·confetti·chartjs·katex·lucide·phaser·animejs·axe-core) + LICENSE + manifest.json + inline.py
+│  ├─ fonts/                       ← Noto Sans/Serif KR 기본 글자 모음(base/) + embed.py + OFL 문서
+│  └─ tools/ensure.py              ← 처음 필요할 때 동의 받고 설치(fonttools, python-pptx, imageio-ffmpeg, playwright …)
 ├─ scripts/setup.py             ← 설치: 스킬 등록(Claude Code ~/.claude/skills, Codex ~/.agents/skills) + doctor
 ├─ tools/                       ← 개발 도구: sync_shared.py(공통 파일 동기화 + dist zip), build_assets.py(그림 팩)
 ├─ dist/                        ← Claude 앱 업로드용 zip

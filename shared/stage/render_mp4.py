@@ -3,8 +3,9 @@
 Usage:
     python3 render_mp4.py page.html out.mp4 [--fps 30] [--max-mb 30] [--seconds N]
 
-Needs: Python Playwright with Chromium, and ffmpeg. Where these are missing (e.g. a plain
-chat sandbox), use the page's own 🎥 button instead: it records the tab in Chrome to .webm.
+Needs: Python Playwright with a browser, and ffmpeg. Both are found automatically (system Chrome/Edge first, system
+ffmpeg first, else imageio-ffmpeg) via shared/tools/ensure.py; add --yes once the teacher agrees to the small installs.
+Where they cannot be had (e.g. a plain chat sandbox), use the page's own 🎥 button: it records the tab in Chrome to .webm.
 Frames are captured by seeking the page's registered timelines (window.__stage.seek),
 so the video is smooth even on a slow machine.
 """
@@ -16,18 +17,36 @@ import subprocess
 import sys
 from pathlib import Path
 
+_HERE = Path(__file__).resolve().parent
+for _p in (_HERE.parent / "shared" / "tools", _HERE.parent / "tools"):
+    if _p.exists():
+        sys.path.insert(0, str(_p))
+try:
+    import ensure  # shared/tools/ensure.py
+except ImportError:
+    ensure = None
 
-def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None) -> None:
+
+def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None, consent: bool = False) -> None:
     """Capture every frame with Playwright and encode with ffmpeg under a size budget."""
+    channel, ffmpeg = "", shutil.which("ffmpeg")
+    if ensure:
+        pw_res = ensure.ensure_playwright(consent)
+        if not pw_res["ok"]:
+            raise SystemExit("ASK TEACHER: " + pw_res["prompt"] + "  (agree -> rerun with --yes; or use the 🎥 button in the page)")
+        channel = pw_res["channel"]
+        ff = ensure.ensure_ffmpeg(consent)
+        if not ff["ok"]:
+            raise SystemExit("ASK TEACHER: " + ff["prompt"] + "  (agree -> rerun with --yes; or use the 🎥 button in the page)")
+        ffmpeg = ff["path"]
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
         raise SystemExit("Playwright not installed: use the 🎥 button in the page (Chrome) instead.")
-    ffmpeg = shutil.which("ffmpeg")
     if not ffmpeg:
         raise SystemExit("ffmpeg not found: use the 🎥 button in the page (Chrome) instead.")
     with sync_playwright() as pw:
-        browser = pw.chromium.launch()
+        browser = pw.chromium.launch(channel=channel) if channel else pw.chromium.launch()
         tab = browser.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=1)
         tab.goto(page.resolve().as_uri())
         tab.wait_for_function("window.__stage && window.__stage.ready", timeout=15000)
@@ -61,8 +80,9 @@ def main() -> None:
     ap.add_argument("--fps", type=int, default=30)
     ap.add_argument("--max-mb", type=float, default=30)
     ap.add_argument("--seconds", type=float)
+    ap.add_argument("--yes", action="store_true", help="the teacher agreed to install the small tools that are missing")
     a = ap.parse_args()
-    render(a.page, a.out, a.fps, a.max_mb, a.seconds)
+    render(a.page, a.out, a.fps, a.max_mb, a.seconds, a.yes)
 
 
 if __name__ == "__main__":

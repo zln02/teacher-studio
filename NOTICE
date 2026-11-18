@@ -13,10 +13,49 @@ This product includes third-party components:
    Location: skills/teacher-game/assets/packs/ (see KENNEY-LICENSE.txt)
    Images were color-quantized and sounds re-encoded.
 
-3. Fonts are loaded at view time from Google Fonts; no font files are redistributed.
-   Families used: Black Han Sans, Do Hyeon, Jua, Gowun Batang, Gowun Dodum, Nanum Myeongjo,
-   Noto Sans KR, Song Myung — each licensed under the SIL Open Font License 1.1.
-   Generated pages request these fonts from Google when opened; without internet they fall back to system fonts.
+3. Motion (motion.dev, vanilla build) 14.14.0 — Copyright (c) 2024 Motion B.V. — MIT License
+   Location: shared/vendor/motion/ (copied into skills that use it). Unmodified. License text: LICENSE in that folder.
+
+4. canvas-confetti 1.9.4 — Copyright (c) 2020 Kiril Vatev — ISC License
+   Location: shared/vendor/canvas-confetti/. Unmodified.
+
+5. Chart.js 4.6.1 — Copyright (c) 2014-2024 Chart.js Contributors — MIT License
+   Location: shared/vendor/chartjs/. Unmodified.
+
+6. KaTeX 0.19.1 — Copyright (c) 2013-2020 Khan Academy and other contributors — MIT License
+   Location: shared/vendor/katex/. Unmodified. Its fonts (KaTeX_*.woff2) are under the SIL Open Font License 1.1
+   (Design Science, Inc. / Khan Academy; Reserved Font Names KaTeX_*; see OFL-KATEX-FONTS.txt); they are embedded unmodified.
+
+7. Lucide icons (lucide-static sprite) 1.75.0 — Copyright (c) 2026 Lucide Icons and Contributors — ISC License
+   (icons derived from Feather: Copyright (c) 2013-present Cole Bemis — MIT License; both texts are in the LICENSE file)
+   Location: shared/vendor/lucide/. Unmodified; a page receives only the icons it uses.
+
+8. Phaser 4.2.1 — Copyright (c) 2026 Richard Davey, Phaser Studio Inc. — MIT License
+   Location: shared/vendor/phaser/. Unmodified. Inlined into a page only when a spec asks for it.
+
+9. axe-core 4.14.1 — Copyright (c) 2015-2026 Deque Systems, Inc. — Mozilla Public License 2.0
+   Location: shared/vendor/axe-core/. UNMODIFIED, for the page checkers only; never inlined into generated pages.
+   Source code: https://github.com/dequelabs/axe-core (the file is the unmodified upstream release).
+
+10. Noto Sans KR and Noto Serif KR — SIL Open Font License 1.1
+    Noto Sans KR: Copyright 2014-2021 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'.
+    Noto Serif KR: Copyright 2012 Google Inc. / 2017-2024 Adobe.
+    Location: shared/fonts/base/ (KS X 1001 subsets of the official variable fonts, weights 400-900) and, in each generated
+    page, a further subset embedded as base64 WOFF2. The family names stay "Noto Sans KR" / "Noto Serif KR"; the Reserved
+    Font Name 'Source' is not used as a name. License texts: shared/fonts/OFL-NotoSansKR.txt, OFL-NotoSerifKR.txt.
+    Source of the fonts: github.com/google/fonts (ofl/notosanskr, ofl/notoserifkr).
+
+11. Other fonts are loaded at view time from Google Fonts; no font files of these are redistributed.
+    Families used: Black Han Sans, Do Hyeon, Jua, Gowun Batang, Gowun Dodum, Nanum Myeongjo, Song Myung —
+    each licensed under the SIL Open Font License 1.1. Generated pages request them from Google when opened;
+    without internet they fall back to the embedded Noto fonts, then system fonts.
+
+12. GSAP is NOT part of this repository and is not bundled. An optional "더 화려하게" path may load GSAP from its official CDN
+    at view time; GSAP is governed by GSAP's own Standard License (gsap.com/standard-license), not by this project's license.
+    Default animations use Motion, anime.js and CSS.
+
+Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
+user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 
 Teacher Studio is an unofficial open-source project. It is not affiliated with, endorsed by, or sponsored by
 Anthropic or OpenAI. "Claude" and "Codex" are trademarks of their respective owners.

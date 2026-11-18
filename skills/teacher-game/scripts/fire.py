@@ -23,6 +23,10 @@ MISSILES = SKILL / "assets" / "missiles"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_game import build  # noqa: E402
 
+sys.path.insert(0, str(SKILL / "shared" / "fonts"))
+sys.path.insert(0, str(SKILL / "shared" / "tools"))
+import embed  # noqa: E402  (shared/fonts/embed.py: Noto KR cut to this page, offline-safe)
+
 
 def list_missiles() -> None:
     """Print every missile and its skins."""
@@ -55,7 +59,14 @@ def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> None:
         json.dump(data, tmp, ensure_ascii=False)
     css = base / "style.css"
     size = build(Path(tmp.name), base / "logic.js", out, css if css.exists() else None)
-    print(f"fired {missile}/{skin} -> {out} ({size // 1024} KB)")
+    html, rep = embed.embed(out.read_text(encoding="utf-8"))
+    note = ""
+    if rep.get("embedded"):
+        out.write_text(html, encoding="utf-8")
+        size, note = len(html.encode("utf-8")), f", fonts embedded (+{(rep['after_bytes'] - rep['before_bytes']) // 1024} KB)"
+    elif rep.get("prompt"):
+        note = ", fonts not embedded - ASK TEACHER: " + rep["prompt"]
+    print(f"fired {missile}/{skin} -> {out} ({size // 1024} KB{note})")
     result = subprocess.run([sys.executable, str(SKILL / "scripts" / "check_game.py"), str(out)], capture_output=True, text=True)
     print(result.stdout.strip().splitlines()[-1] if result.stdout.strip() else result.stderr)
     if result.returncode:

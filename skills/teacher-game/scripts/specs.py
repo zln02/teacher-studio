@@ -36,6 +36,8 @@ def _quiz_item(i: int, it: dict, errs: list[str], ox_only: bool = False) -> None
             errs.append(f"{p}.choices: 보기가 너무 길어요(40자 이내) → '{str(c)[:12]}…'")
             break
 
+LIBS = ("anime", "motion", "confetti", "chartjs", "katex", "lucide", "phaser")  # shared/vendor ids a spec may ask for
+
 
 def validate(spec: dict) -> list[str]:
     """Return a list of spec-fix hints (empty = spec is valid)."""
@@ -87,6 +89,9 @@ def validate(spec: dict) -> list[str]:
         errs.append("teams: 서바이벌은 0(혼자) 또는 2~4팀")
     if spec.get("teams", 0) not in (0, 2, 3, 4):
         errs.append("teams: 0(개인) 또는 2~4")
+    libs = spec.get("libs", [])
+    if not isinstance(libs, list) or any(x not in LIBS for x in libs):
+        errs.append(f"libs: 쓸 수 있는 부품만 → {', '.join(LIBS)} (예: [\"confetti\"])")
     design = spec.get("design", {})
     if design and not isinstance(design, dict):
         errs.append("design: {subject, grade, mood, seed, theme} 객체")

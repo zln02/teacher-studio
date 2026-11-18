@@ -1,11 +1,11 @@
 {
  "$schema": "http://json-schema.org/draft-07/schema#",
- "title": "Teacher Studio design tokens (output of scripts/design.py)",
+ "title": "Teacher Studio design tokens (output of shared/design/design.py)",
  "type": "object",
  "required": ["version", "use", "palette", "colors", "fonts", "type", "motion", "sound"],
  "properties": {
   "version": {"const": 1},
-  "use": {"enum": ["class", "personal"]},
+  "use": {"enum": ["class", "personal", "present", "poster", "invite", "print", "web"]},
   "palette": {"type": "string"},
   "seed": {"type": "integer"},
   "colors": {
@@ -18,19 +18,20 @@
    "type": "object",
    "required": ["title", "question", "choice", "body", "small", "floor"],
    "properties": {
-    "title": {"type": "integer", "minimum": 90},
-    "question": {"type": "integer", "minimum": 40},
-    "choice": {"type": "integer", "minimum": 32},
-    "body": {"type": "integer", "minimum": 26},
-    "small": {"type": "integer", "minimum": 24},
+    "title": {"type": "integer", "minimum": 40},
+    "question": {"type": "integer", "minimum": 24},
+    "choice": {"type": "integer", "minimum": 18},
+    "body": {"type": "integer", "minimum": 16},
+    "small": {"type": "integer", "minimum": 12},
     "floor": {"type": "object", "required": ["question", "choice", "body", "small", "button_h"]}
    }
   },
+  "canvas": {"type": "string", "description": "reference canvas the type sizes are written for"},
   "motion": {"enum": ["high", "normal", "calm"]},
   "sound": {"type": "object", "required": ["sfx", "music"], "properties": {"sfx": {"type": "boolean"}, "music": {"type": "boolean"}}},
   "baseTheme": {"type": "string"},
   "bgType": {"type": "string"},
-  "theme": {"type": "string", "description": "theme module id under assets/themes/"},
+  "theme": {"type": "string", "description": "game theme module id (teacher-game assets/themes/)"},
   "contrast": {"type": "object", "description": "measured ratios, informational"}
  }
 }

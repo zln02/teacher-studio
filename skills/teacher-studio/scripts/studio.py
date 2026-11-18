@@ -7,7 +7,7 @@ Usage:
     python3 studio.py fire motion/subject-intro/science-neon --content c.json --mp4
     python3 studio.py build game --spec spec.json [--out file.html] [--open]   # any game from a short spec
     python3 studio.py check file.html
-    python3 studio.py render file.html out.mp4               # needs Playwright + ffmpeg
+    python3 studio.py render file.html out.mp4 [--yes]       # finds Chrome/ffmpeg itself; --yes = installs small tools after consent
     python3 studio.py doctor                                 # what works in this environment
 
 Missile ids are <kind>/<missile>/<skin>; kind = game | slides | motion.
@@ -110,9 +110,9 @@ def cmd_check(path: Path) -> None:
     raise SystemExit(_run([str(_skill("game") / "scripts" / "check_game.py"), str(path)]))
 
 
-def cmd_render(page: Path, out: Path) -> None:
-    """Render a stage page to MP4."""
-    raise SystemExit(_run([str(_skill("motion") / "scripts" / "render_mp4.py"), str(page), str(out)]))
+def cmd_render(page: Path, out: Path, yes: bool = False) -> None:
+    """Render a stage page to MP4 (--yes = the teacher agreed to install the missing small tools)."""
+    raise SystemExit(_run([str(_skill("motion") / "scripts" / "render_mp4.py"), str(page), str(out)] + (["--yes"] if yes else [])))
 
 
 def main() -> None:
@@ -135,6 +135,7 @@ def main() -> None:
     r = sub.add_parser("render")
     r.add_argument("page", type=Path)
     r.add_argument("out", type=Path)
+    r.add_argument("--yes", action="store_true")
     d = sub.add_parser("doctor")
     d.add_argument("--agent", default="")
     d.add_argument("--json", action="store_true")
@@ -148,7 +149,7 @@ def main() -> None:
     elif a.cmd == "check":
         cmd_check(a.path)
     elif a.cmd == "render":
-        cmd_render(a.page, a.out)
+        cmd_render(a.page, a.out, a.yes)
     elif a.cmd == "doctor":
         sys.path.insert(0, str(HERE))
         from doctor import report  # noqa: E402

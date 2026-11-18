@@ -38,6 +38,7 @@ FORBIDDEN_CSS = {
     r":has\(": ":has() (old Chrome)",
     r"\b\d+(\.\d+)?dvh\b": "dvh unit (old Chrome)",
 }
+MODERN_LIBS = {"motion"}  # vendored libs that use ?. / ?? (reported as a warning, not a failure)
 STUDENT_DATA = re.compile(r"(학번|이름을?\s*입력|실명|student\s*name|전화번호)", re.I)
 
 
@@ -227,6 +228,11 @@ def main(path: Path, play: bool = True) -> int:
     for marker, label in markers:
         add("PASS" if marker in html else "FAIL", label)
 
+    # Vendored libraries (shared/vendor, pinned + license-checked) are third-party code: not linted line by line.
+    for kind, lib, ver in re.findall(r"<(script|style)>/\* TS:VENDOR (\S+) (\S+)", html):
+        if lib in MODERN_LIBS and kind == "script":
+            add("WARN", f"{lib} {ver} needs Chrome 80+ (2020); fine on current school Chrome, use anime.js/CSS for very old PCs")
+    html = re.sub(r"<(script|style)>/\* TS:VENDOR .*?</\1>", r"<\1></\1>", html, flags=re.S)
     scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S)
     js = "\n".join(scripts)
     js_nostr = re.sub(r"//[^\n]*|/\*.*?\*/", "", js, flags=re.S)

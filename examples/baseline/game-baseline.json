@@ -2,55 +2,55 @@
  {
   "skin": "drag-deliver/cell-feed",
   "result": "PASS",
-  "sha256": "801054230459aefef526083ff7eef7eafb30dc3ebeba37c9faccd1ae434ba0da",
-  "bytes": 159344
+  "sha256": "9a942e1f944a82711abbbb022982543a11492f1eda8802bab37a20b52556891d",
+  "bytes": 216280
  },
  {
   "skin": "drag-deliver/post-office",
   "result": "PASS",
-  "sha256": "626f013bf5514c7cd6553bef3d7d45ac8a87fa892a582df5d7d74f997a8eae6b",
-  "bytes": 156638
+  "sha256": "ff0de1531b5c0341c2fcfbab78d95c74b02838210624141220930902ecc6f5c6",
+  "bytes": 207778
  },
  {
   "skin": "drag-deliver/recycle",
   "result": "PASS",
-  "sha256": "692f8925619d87e001b5bd9545ba1898b36ef65984c845e6a76c69bf73bb5a1e",
-  "bytes": 157772
+  "sha256": "c42604f4441a4820e7dfb8376202656b104e549a767043523b6fba0bd6de98ea",
+  "bytes": 212564
  },
  {
   "skin": "escape-room/joseon",
   "result": "PASS",
-  "sha256": "e1bee43d2850aa9fe200b253b3cf5439d00e23070830034895afffcdf178ac46",
-  "bytes": 158013
+  "sha256": "829a57f489f795d44859a1a55fbc163bffa0e9b126d9d841ccfbdcd081cd4e84",
+  "bytes": 224305
  },
  {
   "skin": "escape-room/lab",
   "result": "PASS",
-  "sha256": "ff8f4c87ea5c3673be6152c6a50913f909bca1c71c3317a51bc52298c2ed3398",
-  "bytes": 158405
+  "sha256": "55d8c36990b56d5ff9b9f8758b77ba7d25538ea7446ecc4fa961f022ee6d83d7",
+  "bytes": 224405
  },
  {
   "skin": "escape-room/temple",
   "result": "PASS",
-  "sha256": "fd1499a2c2ae9e8f17f55e6fd41bdfe42fd5cedb0c1b44ec52b79507ccdc0d7d",
-  "bytes": 157639
+  "sha256": "20ff8110883d7c21039936ef252c7bdefbf87031d1a6753f70715fc20111f7ec",
+  "bytes": 218439
  },
  {
   "skin": "quiz-show/golden-bell",
   "result": "PASS",
-  "sha256": "5087f654bb918ae85a91d383699f5fc5e22355c0ccd02d96fc2dadc1bb4d5f91",
-  "bytes": 153568
+  "sha256": "52bf590da85a7607b0dab0afd5367e26cf22ab50a11767aa9ace3e37d5b7cd6d",
+  "bytes": 211280
  },
  {
   "skin": "quiz-show/space-quiz",
   "result": "PASS",
-  "sha256": "de429ad0dbe681640264d32c0b5a5e6c474a9be139ba8f2e8473a0714ea0897d",
-  "bytes": 153344
+  "sha256": "5ae8f8a1542c0d0b5a8a38f9b2e0b8273c59c3177b98c9d5e70cef0fdfdf435e",
+  "bytes": 211080
  },
  {
   "skin": "quiz-show/tv-studio",
   "result": "PASS",
-  "sha256": "6b3a8ca676d7e4c68aac551ae060fba19618316ec69f4fb207abc231bf709a59",
-  "bytes": 153575
+  "sha256": "a478baa508755e5d7d28f57735e70d37cd1ab67f257c4e3239d95effb8c8314a",
+  "bytes": 209647
  }
 ]
