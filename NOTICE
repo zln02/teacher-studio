@@ -13,4 +13,10 @@ This product includes third-party components:
    Location: skills/teacher-game/assets/packs/ (see KENNEY-LICENSE.txt)
    Images were color-quantized and sounds re-encoded.
 
-3. Fonts are loaded at view time from Google Fonts (SIL Open Font License 1.1); no font files are redistributed.
+3. Fonts are loaded at view time from Google Fonts; no font files are redistributed.
+   Families used: Black Han Sans, Do Hyeon, Jua, Gowun Batang, Gowun Dodum, Nanum Myeongjo,
+   Noto Sans KR, Song Myung — each licensed under the SIL Open Font License 1.1.
+   Generated pages request these fonts from Google when opened; without internet they fall back to system fonts.
+
+Teacher Studio is an unofficial open-source project. It is not affiliated with, endorsed by, or sponsored by
+Anthropic or OpenAI. "Claude" and "Codex" are trademarks of their respective owners.

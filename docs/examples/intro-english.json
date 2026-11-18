@@ -1,0 +1,14 @@
+{
+  "title": "중학교 1학년 영어 소개",
+  "subject": {
+    "name": "영어",
+    "en": "ENGLISH",
+    "sub": "1학년 영어 시간"
+  },
+  "closing": {
+    "school": "",
+    "grade": "1학년",
+    "teacher": "영어 선생님",
+    "line": "첫 수업에서 만나요"
+  }
+}

@@ -1,6 +1,6 @@
 ---
 name: teacher-motion
-description: Makes keynote-quality motion videos and animated class screens (subject intro video, lesson-start countdown) as one HTML page, exportable to webm/MP4. Use for any teacher video or motion request.
+description: Makes keynote-quality motion videos and animated screens (subject intro, lesson-start countdown, personal videos) as one HTML page, exportable to webm/MP4. Use for any video or motion request.
 license: Apache-2.0
 ---
 
@@ -70,6 +70,7 @@ python3 scripts/check_page.py page.html
 ### 5단계 · 보여 주기 + 고치기 + 공유/보관/영상 저장
 - 완성 HTML을 결과물 화면으로 띄운다. 안내: 「오른쪽 위 ⏯ 재생/멈춤, ↺ 처음부터, ⛶ 전체 화면(F). 수업 시작 화면은 화면을 누르거나 Space로 넘어가요.」
 - 고치기 제안 3개(예: 「글씨 더 크게」「분위기 더 차분하게(다른 스킨)」「장면 하나 추가」).
+- 자료에 남의 그림·글·음악이나 학생 정보가 있으면, 링크로 공개하기 전에 한 번 확인해요 (궁금하면 '법률 안내'에 물어보세요).
 - 공유: 「오른쪽 위 '게시(Publish)' → 링크 복사. 학생·다른 선생님은 로그인 없이 봐요.」
 - 보관: 「'다운로드'로 HTML 파일도 받아 두세요. 인터넷이 없어도 크롬에서 열려요(글씨체만 기본 글꼴로 바뀜).」
 - **영상 파일로 받기** (유튜브·학교 홈페이지·단톡방용):

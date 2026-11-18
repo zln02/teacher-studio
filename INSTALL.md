@@ -20,17 +20,31 @@ git clone --depth 1 https://github.com/zln02/teacher-studio.git ~/teacher-studio
 ## 2. 등록 + 환경 확인
 ```bash
 cd ~/teacher-studio
-python3 scripts/setup.py --agent <AGENT>        # Windows: py scripts/setup.py --agent <AGENT>
+python3 scripts/setup.py --agent <AGENT>
 ```
-- 스킬 4개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`)를 등록한다.
-  - Claude Code → `~/.claude/skills/` · Codex → `~/.agents/skills/`
-- 끝에 「🎉 준비 완료」 요약이 나온다.
-- `claude-app`이면 등록 대신: 작업 공간에 받은 폴더의 `skills/teacher-studio/scripts/studio.py doctor --agent claude-app`을 실행하고, 선생님께 「설정 → 스킬에서 `dist/` zip 4개를 올리면 다음 대화부터 자동으로 켜져요」라고 안내한다.
+- 파이썬 실행 이름은 환경마다 다르다. 이 문서의 `python3`는 Windows에서 `py`(없으면 `python`)로 바꿔 실행한다. 예: `py scripts/setup.py --agent <AGENT>`
+- 스킬 5개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`)를 등록한다.
 
-## 3. (선택) 영상 MP4·자동 플레이 점검 도구
-선생님께 먼저 묻는다: 「영상을 MP4 파일로도 받으시려면 프로그램을 하나 더 깔아야 해요(약 150MB, 2~3분). 지금 깔까요? (예 / 나중에)」
-- 예 → `python3 scripts/setup.py --agent <AGENT> --video`
-- ffmpeg가 없다고 나오면 운영체제에 맞는 설치 명령 한 줄을 실행한다 (Windows `winget install ffmpeg`, Mac `brew install ffmpeg`). 실패하면 「영상은 화면의 🎥 버튼으로 받으시면 돼요」로 마무리.
+### 환경별 설치
+| 환경 | 설치 방법 | 알아 둘 점 |
+|---|---|---|
+| **Claude Code** | 위 명령 → `~/.claude/skills/`에 등록 | 내 컴퓨터에서 실행, 인터넷 제한 없음. 웹 검색·페이지 읽기 내장 (최신 법 확인 OK). Claude 구독 또는 API 키 필요 |
+| **Codex** (앱·CLI·IDE) | 위 명령 → `~/.agents/skills/`에 등록 | 내 컴퓨터에서 실행. 작업 폴더 밖에 쓸 때는 **승인 창**이 뜨니 허용하도록 안내. **인터넷은 기본 꺼짐**: `~/.codex/config.toml`에 `[sandbox_workspace_write]` 아래 `network_access = true`를 켜야 도구 설치·최신 법 확인이 된다. 웹 검색은 `--search`(live)로 켠다. 무료·Go 요금제에도 포함 |
+| **Claude 앱·웹** | 등록 대신 zip 올리기 (아래) | 클라우드 컨테이너에서 실행 → 내 컴퓨터 폴더·크롬에 접근 못 함, 결과는 미리보기·다운로드. 인터넷은 PyPI·npm·GitHub 정도만 허용. 무료 요금제 포함 |
+
+**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 5개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
+- 설정 → Capabilities에서 **코드 실행·파일 만들기**가 켜져 있어야 한다 (기본 켜짐). 최신 법 확인에는 **웹 검색**도 켠다.
+- AI가 이미 코드 실행 환경에 저장소를 받았다면 `python3 skills/teacher-studio/scripts/studio.py doctor --agent claude-app`로 환경만 확인한다.
+- 끝에 「🎉 준비 완료」 요약이 나온다 (Claude Code·Codex).
+
+## 3. 영상 MP4·자동 플레이 점검 도구 — 처음 요청할 때 설치
+**설치 중에는 묻지 않는다.** 선생님이 처음으로 MP4 파일(또는 자동 플레이 점검)이 필요한 요청을 했을 때 이렇게 말한다:
+「MP4로 받으려면 프로그램을 하나 더 깔아야 해요(약 150MB, 2~3분). 지금 깔까요? (예 / 나중에)」
+- **예** → `python3 scripts/setup.py --agent <AGENT> --video` (직접 미리 깔고 싶을 때 쓰는 수동 방법이기도 하다)
+  - ffmpeg가 없다고 나오면 운영체제에 맞는 설치 명령 한 줄 (Windows `winget install ffmpeg`, Mac `brew install ffmpeg`). 실패하면 「영상은 화면의 🎥 버튼으로 받으시면 돼요」로 마무리.
+- **Claude Code**: 바로 가능 (인터넷 제한 없음).
+- **Codex**: 인터넷이 켜져 있어야 한다. 꺼져 있으면 위 표의 `network_access = true` 안내를 먼저 하고, 그래도 어려우면 🎥 녹화로 대신한다.
+- **Claude 앱·웹**: 인터넷 제한 때문에 도구 설치가 안 될 가능성이 크다 → 처음부터 크롬 녹화(.webm) 방법으로 안내한다.
 
 ## 4. 시험 발사 (30초)
 ```bash
@@ -49,10 +63,10 @@ python3 ~/.claude/skills/teacher-studio/scripts/studio.py fire motion/lesson-ope
 ## 문제가 생기면
 | 상황 | 할 일 |
 |---|---|
-| `python3` 없음 | Windows: `py` 사용, 없으면 `winget install Python.Python.3.12` / Mac: `xcode-select --install` |
+| `python3` 없음 (Windows는 `py`) | Windows: `py` 사용, 없으면 `winget install Python.Python.3.12` / Mac: `xcode-select --install` |
 | 권한 오류 | 사용자 폴더(`~`) 안에서만 설치한다. 관리자 권한을 요구하지 않는다 |
 | 회사·학교 네트워크로 git 차단 | zip 받기 경로로 |
 | 그래도 안 됨 | 선생님께 「캡처 한 장 보내 주세요」, 오류 문장은 직접 해석해서 한 줄로 설명 |
 
 ## 업데이트
-`cd ~/teacher-studio && git pull && python3 scripts/setup.py --agent <AGENT>`
+`cd ~/teacher-studio && git pull && python3 scripts/setup.py --agent <AGENT>` (Windows: `py scripts/setup.py --agent <AGENT>`)

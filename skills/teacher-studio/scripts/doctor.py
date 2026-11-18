@@ -21,7 +21,7 @@ for _s in (sys.stdout, sys.stderr):
 
 SKILLS = Path(__file__).resolve().parent.parent.parent
 CACHE = Path.home() / ".teacher-studio" / "env.json"
-NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면"}
+NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면", "teacher-law": "⚖️ 법률 안내"}
 
 
 def guess_agent() -> str:
@@ -50,6 +50,19 @@ def _has_playwright() -> bool:
         return False
 
 
+def _codex_network_on() -> bool:
+    """Read-only check of ~/.codex/config.toml for network_access = true (never prints file contents)."""
+    try:
+        text = (Path.home() / ".codex" / "config.toml").read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return False
+    for line in text.splitlines():
+        key, _, val = line.partition("=")
+        if key.strip() == "network_access" and val.split("#")[0].strip().lower() == "true":
+            return True
+    return False
+
+
 def report(agent: str = "") -> dict:
     """Probe tools, decide capabilities, cache and return them with a Korean summary."""
     agent = agent or guess_agent()
@@ -67,8 +80,23 @@ def report(agent: str = "") -> dict:
     preview = {"claude-app": "오른쪽 화면에 바로 떠요", "claude-code": "크롬 창으로 자동으로 열어요", "codex": "크롬 창으로 열어요"}.get(agent, "파일로 저장해 크롬으로 열어요")
     share = ("오른쪽 위 '게시(Publish)' → 링크·QR" if agent == "claude-app"
              else "파일을 학교 드라이브에 올리거나 USB로 옮겨요 (링크가 필요하면 Claude 앱에서 '게시')")
-    video = ("MP4 영상 파일까지 바로 만들어요" if caps["playwright"] and caps["ffmpeg"]
-             else "영상은 화면의 🎥 버튼으로 크롬에서 녹화해 받아요 (MP4 자동 변환은 이 환경에 없음)")
+    mp4_ready = caps["playwright"] and caps["ffmpeg"]
+    codex_net = _codex_network_on() if agent == "codex" else None
+    if mp4_ready:
+        video = "MP4 영상 파일까지 바로 만들어요"
+    elif agent in ("claude-code", "codex"):
+        video = "MP4는 처음 요청할 때 필요한 도구(약 150MB)를 설치해 드려요 (먼저 물어볼게요)"
+        if agent == "codex" and not codex_net:
+            video += " — 인터넷이 꺼져 있으면 먼저 켜야 해요"
+    else:
+        video = "영상은 화면의 🎥 버튼으로 크롬에서 녹화(.webm)해 받아요 (이 환경에선 MP4 변환 도구를 깔기 어려워요)"
+    if agent == "codex":
+        law = ("최신 법 확인이 가능해요" if codex_net else
+               "⚠️ 인터넷이 꺼져 있어 최신 법 확인·도구 설치가 막힐 수 있어요 — ~/.codex/config.toml에 [sandbox_workspace_write] 아래 network_access = true를 넣고, 웹 검색은 --search(live)로 켜 주세요")
+    elif agent == "claude-app":
+        law = "공식 출처에서 최신 법을 찾아 답해요 (웹 검색이 켜져 있어야 해요)"
+    else:
+        law = "공식 출처에서 최신 법을 찾아 근거와 함께 답해요"
     check = "끝까지 자동으로 플레이해 보고 점검해요" if caps["playwright"] else "글자·문법 자동 점검까지 해요 (자동 플레이는 없음)"
     ready = [label for name, label in NAMES.items() if name in caps["skills"]]
     lines = [
@@ -78,12 +106,13 @@ def report(agent: str = "") -> dict:
         f"· 결과 보기: {preview}",
         f"· 영상: {video}",
         f"· 점검: {check}",
+        f"· 법률 안내: {law}",
         f"· 나누기: {share}",
         "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집, 🧰 수업 도구",
     ]
     if not caps["python"].startswith("3"):
         lines.append("⚠️ 파이썬이 없어 조립 도구 대신 Claude가 직접 파일을 써요 (느려질 수 있어요)")
-    caps["capabilities"] = {"preview": preview, "share": share, "video": video, "check": check}
+    caps["capabilities"] = {"preview": preview, "share": share, "video": video, "check": check, "law": law}
     caps["summary"] = "\n".join(lines)
     try:
         CACHE.parent.mkdir(parents=True, exist_ok=True)

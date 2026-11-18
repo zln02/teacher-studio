@@ -1,6 +1,6 @@
 ---
 name: teacher-slides
-description: Makes keynote-quality web slide decks for lessons, teacher training and parent meetings (builds, quiz reveal, notes, PDF print, MP4). Use for any PPT, slide or presentation request.
+description: Makes keynote-quality web slide decks for lessons, teacher training, parent meetings or personal talks (builds, quiz reveal, notes, PDF, MP4). Use for any PPT, slide or presentation request.
 license: Apache-2.0
 ---
 
@@ -64,6 +64,7 @@ FAIL이 있으면 고친다. 가능하면 브라우저로 전 장을 넘기며(�
 ### 5단계 · 보여 주기 + 고치기 + 공유/보관/영상 저장
 - 결과물 화면으로 띄우고 짧게 안내: 「→·스페이스·리모컨으로 넘겨요. 화면 오른쪽을 누르면 다음, 왼쪽은 뒤로. N은 내 메모, B는 화면 끄기, 숫자 누르고 Enter는 그 장으로.」
 - 고치기 제안 3개를 선생님 말로 (예: 「글자 더 크게」「퀴즈 한 장 더」「학교 색으로」).
+- 자료에 남의 그림·글·음악이나 학생 정보가 있으면, 링크로 공개하기 전에 한 번 확인해요 (궁금하면 '법률 안내'에 물어보세요).
 - 공유: 「오른쪽 위 '게시' → 링크 복사. 다른 선생님은 로그인 없이 링크로 볼 수 있어요.」
 - 보관: 「'다운로드'로 파일도 받아 두세요. 인터넷이 없어도 크롬에서 열려요(USB·학교 드라이브).」
 - 인쇄·PDF: 「크롬에서 Ctrl+P → 대상 'PDF로 저장' → '배경 그래픽' 켜기. 한 장이 가로 한 쪽, 정답까지 다 보인 상태로 나와요.」

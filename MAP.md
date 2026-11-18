@@ -20,14 +20,15 @@
 | 포스터, 카드뉴스, 캔바, 피그마 | 🎨 디자인 | `skills/teacher-design` (예정) 📋 |
 | 자료 찾아 줘, 논문 요약, 비교해 줘 | 🔎 조사 | `skills/teacher-research` (예정) 📋 |
 | 3D, 분자 모형, 학교 둘러보기 | 🧊 3D | `skills/teacher-3d` (예정) 📋 |
+| 써도 돼요?, 올려도 돼요?, 저작권, 개인정보, AI 규정, 생기부 | ⚖️ 법률 안내 | `skills/teacher-law` ✅ (최신 법을 직접 찾아 근거와 함께 답 카드·인쇄용 안내문) |
 | 링크로 보내기, QR, 학교 모음에 올리기 | 📤 나누기 | `skills/teacher-studio` ✅ (게시·QR·파일 안내) |
 | 처음 설정, 안 돼요, 여기서 되나요? | ⚙️ 시작·설정 | `skills/teacher-studio` ✅ (준비 카드·환경 확인) |
 
 두 칸에 걸치면(예: 「게임 + 그걸 소개하는 PPT」) 두 칸만 받는다.
 
 ## 2. 설치·내려받기
-- Claude Code / Codex: 저장소의 `INSTALL.md`를 따라 `python3 scripts/setup.py --agent <claude-code|codex>` (스킬 4개 등록 + 환경 확인)
-- Claude 앱·웹: `dist/`의 zip 4개를 스킬로 올리기
+- Claude Code / Codex: 저장소의 `INSTALL.md`를 따라 `python3 scripts/setup.py --agent <claude-code|codex>` (스킬 5개 등록 + 환경 확인)
+- Claude 앱·웹: `dist/`의 zip 5개를 스킬로 올리기
 - 모든 요청의 첫 관문은 `skills/teacher-studio` (준비 카드 → 칸 고르기 → `studio.py fire`)
 
 ## 3. 부품 등급
