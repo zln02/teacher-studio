@@ -1,0 +1,236 @@
+{
+ "title": "AI에게 주문하는 법",
+ "skin": "clean-keynote",
+ "vars": {
+  "bg1": "#fbfbfd",
+  "bg2": "#f2f2f5",
+  "text": "#1d1d1f",
+  "muted": "#6e6e73",
+  "primary": "#0a66ff",
+  "accent": "#00a99d",
+  "card": "#f1f2f5",
+  "soft": "#e8f0ff",
+  "line": "rgba(0,0,0,.12)",
+  "glyph": "rgba(10,102,255,.06)",
+  "ic-fill": "#d9e7ff",
+  "glow1": "rgba(10,102,255,.10)",
+  "glow2": "rgba(0,169,157,.08)",
+  "font-display": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
+  "font-body": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
+  "font-serif": "\"Nanum Myeongjo\",serif"
+ },
+ "world": {
+  "labels": {
+   "question": "생각해 볼까요?",
+   "hint": "힌트",
+   "quiz": "QUIZ",
+   "answer": "정답",
+   "correctMark": "✔ 정답",
+   "vs": "VS",
+   "thanks": "감사합니다",
+   "notes": "선생님 메모",
+   "noNote": "이 장에는 메모가 없어요.",
+   "lastSlide": "마지막 장이에요",
+   "qr": "QR"
+  },
+  "builds": true
+ },
+ "items": [
+  {
+   "layout": "cover",
+   "kicker": "○○중학교 교원 연수 · 2026. 11. 23.",
+   "title": "AI에게 **주문**하는 법",
+   "subtitle": "말로 만들고, 말로 고치고, 링크로 나눕니다",
+   "meta": "AI교육 코디네이터 · 60분 실습 연수",
+   "note": "인사 후 바로 우리 학교 게임(독도 OX) 한 판으로 시작. 「이거 코딩 안 하고 말로 만들었습니다」 한 문장만."
+  },
+  {
+   "layout": "question",
+   "title": "AI가 엉뚱한 걸 만들었다면,",
+   "q": "AI가 엉뚱한 걸 만들었다면, **누구의 문제**일까요?",
+   "hint": "대부분은 주문이 짧아서예요. 오늘은 '잘 주문하는 법'을 연습합니다.",
+   "note": "손들기: 'AI 써 봤는데 이상하게 나왔다' 경험. 2~3명 짧게 듣고 힌트 열기."
+  },
+  {
+   "layout": "bigtext",
+   "kicker": "오늘의 한 문장",
+   "text": "AI는 **눈치**가 없습니다. 대신 **말한 만큼** 정확합니다.",
+   "sub": "그래서 주문에는 대상 · 형식 · 조건이 들어가야 해요",
+   "note": "이 문장을 오늘 세 번 반복한다고 예고."
+  },
+  {
+   "layout": "cards",
+   "kicker": "오늘 쓰는 도구",
+   "title": "도구 세 개, 역할은 하나씩",
+   "cards": [
+    {
+     "icon": "chat",
+     "title": "ChatGPT",
+     "text": "문제와 내용을 만들어요"
+    },
+    {
+     "icon": "game",
+     "title": "Claude",
+     "text": "게임 화면을 만들고 「게시」로 링크를 만들어요"
+    },
+    {
+     "icon": "robot",
+     "title": "Codex",
+     "text": "이미 있는 큰 게임을 통째로 고쳐요 (강사 시연)"
+    }
+   ],
+   "note": "클릭할 때마다 카드가 하나씩 나옴. Codex는 시연만 한다고 미리 말하기."
+  },
+  {
+   "layout": "section",
+   "kicker": "PART 1",
+   "title": "좋은 주문의\n**세 가지 재료**",
+   "sub": "대상 · 형식 · 조건",
+   "note": "여기서부터 '문제 문장' 설명."
+  },
+  {
+   "layout": "compare",
+   "kicker": "BEFORE / AFTER",
+   "title": "같은 부탁, 다른 결과",
+   "a": {
+    "label": "막연한 주문",
+    "icon": "question"
+   },
+   "b": {
+    "label": "구체적인 주문",
+    "icon": "target"
+   },
+   "rows": [
+    {
+     "k": "대상",
+     "a": "퀴즈 만들어 줘",
+     "b": "중1 과학 「생물의 구성 단계」 복습용"
+    },
+    {
+     "k": "형식",
+     "a": "(말하지 않음)",
+     "b": "객관식 7개 + OX 3개, **표로**"
+    },
+    {
+     "k": "조건",
+     "a": "(말하지 않음)",
+     "b": "정답이 확실하지 않은 문제는 빼 줘"
+    },
+    {
+     "k": "결과",
+     "a": "매번 다르고 고칠 게 많음",
+     "b": "바로 수업에 쓰는 문제 10개"
+    }
+   ],
+   "note": "한 줄씩 넘기며 '대상-형식-조건' 강조. 마지막 줄에서 실제 결과 화면 캡처를 보여 주면 좋음."
+  },
+  {
+   "layout": "steps",
+   "kicker": "오늘의 순서",
+   "title": "문제 → 게임 → 링크",
+   "steps": [
+    {
+     "icon": "chat",
+     "title": "문제 만들기",
+     "text": "ChatGPT에 「문제 문장」 붙여 넣기"
+    },
+    {
+     "icon": "check",
+     "title": "눈으로 확인",
+     "text": "정답은 선생님이 꼭 확인"
+    },
+    {
+     "icon": "game",
+     "title": "게임 만들기",
+     "text": "Claude에 「시작 문장」 + 문제"
+    },
+    {
+     "icon": "pencil",
+     "title": "고치기",
+     "text": "「글자 더 크게」처럼 한 번에 하나씩"
+    },
+    {
+     "icon": "phone",
+     "title": "링크로 나누기",
+     "text": "「게시」 → 링크 복사 → QR"
+    }
+   ],
+   "note": "단계마다 클릭. 2단계 '확인'을 가장 오래 강조."
+  },
+  {
+   "layout": "bignumber",
+   "kicker": "오늘 연수의 목표",
+   "value": "60",
+   "unit": "분",
+   "caption": "60분 안에 **내 과목 게임 1개**를 링크로 들고 나갑니다",
+   "note": "목표를 숫자로 못 박기. 뒤처지면 시연 게임 링크에서 '고치기'부터 합류 가능하다고 안내."
+  },
+  {
+   "layout": "timeline",
+   "kicker": "진행표",
+   "title": "60분은 이렇게 흘러갑니다",
+   "events": [
+    {
+     "when": "0분",
+     "title": "오프닝",
+     "text": "우리 학교 게임 한 판"
+    },
+    {
+     "when": "10분",
+     "title": "라이브 시연",
+     "text": "학습지 → 게임 → QR"
+    },
+    {
+     "when": "18분",
+     "title": "직접 만들기",
+     "text": "문제 · 게임 · 고치기 · 게시"
+    },
+    {
+     "when": "44분",
+     "title": "Codex 시연",
+     "text": "큰 게임 통째로 고치기"
+    },
+    {
+     "when": "51분",
+     "title": "나눔 · 정리",
+     "text": "한 판씩 + 설문"
+    }
+   ],
+   "note": "시간이 밀리면 Codex 시연을 3분으로 줄이고 나눔은 유지."
+  },
+  {
+   "layout": "quiz",
+   "kicker": "QUIZ",
+   "q": "AI가 만든 퀴즈, 수업에 쓰기 전에 꼭 할 일은?",
+   "choices": [
+    "그대로 바로 쓴다",
+    "정답을 선생님이 확인한다",
+    "학생 이름을 넣어 본다",
+    "문제 수를 더 늘린다"
+   ],
+   "answer": 1,
+   "explain": "AI가 만든 정답은 **선생님 확인 후** 사용해요. 학생 이름·성적·사진은 넣지 않아요.",
+   "note": "손가락으로 번호 들기 → 클릭해서 정답 공개."
+  },
+  {
+   "layout": "image",
+   "icon": "shield",
+   "kicker": "첫 화면 주의 3줄",
+   "title": "확인하고, **넣지 않고**, 링크로",
+   "text": "① AI 정답은 선생님이 확인 ② 학생 이름·성적·사진은 넣지 않기 ③ Claude는 만 18세 이상 — 학생은 링크로 플레이만",
+   "note": "3줄을 소리 내어 읽기. 개인 계정 사용 안내."
+  },
+  {
+   "layout": "end",
+   "title": "이제 직접 **주문**해 볼까요?",
+   "sub": "붙여 넣을 문장 3종은 A4 한 장으로 나눠 드려요",
+   "next": [
+    "내 과목 단원 하나 고르기",
+    "ChatGPT에 「문제 문장」",
+    "Claude에 「시작 문장」 → 게시"
+   ],
+   "qr": "설문 · 링크 제출 QR (게시 후 넣기)",
+   "note": "실습 시작. 막히면 손 들기, 화면이 깨지면 스크린샷 붙여 넣기."
+  }
+ ]
+}

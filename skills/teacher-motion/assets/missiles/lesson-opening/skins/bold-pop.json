@@ -1,0 +1,32 @@
+{
+  "title": "수업 시작 화면",
+  "skin": "bold-pop",
+  "vars": {
+    "bg1": "#ffd23a",
+    "bg2": "#ff6b3d",
+    "ink": "#141414",
+    "text": "#141414",
+    "primary": "#2f4bff",
+    "accent": "#ff3d8b",
+    "mint": "#19d39e",
+    "font-display": "\"Black Han Sans\",\"Do Hyeon\",\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif",
+    "font-body": "\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif"
+  },
+  "count": 5,
+  "label": "오늘의 주제",
+  "topic": "식물은 어떻게 스스로 양분을 만들까?",
+  "goal": "광합성에 필요한 것과 만들어지는 것을 말할 수 있다",
+  "meta": "2학년 과학 · 광합성",
+  "items": [
+    { "text": "생각 열기" },
+    { "text": "실험 관찰" },
+    { "text": "정리 퀴즈" }
+  ],
+  "world": {
+    "ready": "곧 수업이 시작돼요!",
+    "goalLabel": "목표",
+    "stepsLabel": "오늘의 순서",
+    "hint": "화면을 누르면 수업 시작",
+    "start": "수업 시작!"
+  }
+}

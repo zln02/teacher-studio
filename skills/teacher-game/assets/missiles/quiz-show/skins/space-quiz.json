@@ -1,0 +1,227 @@
+{
+ "title": "별빛 정거장 퀴즈",
+ "subtitle": "중3 과학 · 태양계와 별",
+ "theme": "space",
+ "themeOverride": {
+  "primary": "#5cf2ff",
+  "accent": "#ff9f43",
+  "bg1": "#03061a",
+  "bg2": "#1a0f3d",
+  "card": "#0e1d3a",
+  "cardBorder": "#5cf2ff",
+  "text": "#ffffff",
+  "good": "#4dffb8",
+  "bad": "#ff6b8b",
+  "mood": "space"
+ },
+ "teams": 2,
+ "teamChoice": true,
+ "timer": 30,
+ "music": true,
+ "calm": false,
+ "mascots": false,
+ "bonusEvery": 4,
+ "world": {
+  "qLabel": "문제",
+  "turnText": "차례",
+  "bonusText": "⭐ 보너스 2배",
+  "bonusBadge": "보너스 문제!",
+  "answerLabel": "정답",
+  "nextText": "다음 ▶",
+  "resultText": "결과 보기 ▶",
+  "timeoutText": "시간 초과!",
+  "timeoutToast": "⏰ 시간 끝!",
+  "revealText": "정답 공개",
+  "skin": "space-quiz",
+  "hostName": "로봇 진행자 코비",
+  "stationName": "우주 정거장 별빛호",
+  "howto": "정답마다 정거장 모듈에 불이 켜져요",
+  "powerLabel": "⚡ 전력",
+  "lastNextText": "워프 준비 ▶",
+  "finaleTitle": "임무 완료!",
+  "finaleSub": "{total}개 모듈 중 {n}개 가동 — 워프 출발!",
+  "lines": {
+   "title": [
+    "삐빅! 별빛호에 온 걸 환영해요"
+   ],
+   "start": [
+    "첫 모듈을 켜 봐요!"
+   ],
+   "q": [
+    "정답으로 전력을 모아요",
+    "신호 수신 중…"
+   ],
+   "teamQ": [
+    "{team} 조종석으로!"
+   ],
+   "bonus": [
+    "보너스 신호! 2배!"
+   ],
+   "last": [
+    "마지막 모듈이에요!"
+   ],
+   "retry": [
+    "다시 점검해 봐요!"
+   ],
+   "wait": [
+    "분석 중… 삐삐삐"
+   ],
+   "correct": [
+    "모듈 가동! 삐빅!",
+    "전력 충전 완료!"
+   ],
+   "wrong": [
+    "괜찮아요, 기록해 둘게요",
+    "다음 모듈에서 만회해요"
+   ],
+   "timeout": [
+    "시간 초과! 해설 봐요"
+   ],
+   "reveal": [
+    "정답 데이터 공개!"
+   ],
+   "finale": [
+    "정거장 점검 끝!"
+   ],
+   "launch": [
+    "워프 엔진 점화!"
+   ]
+  },
+  "colors": {
+   "outline": "#0d1626",
+   "hostMain": "#dfe7f2",
+   "hostSub": "#8fa3c0",
+   "glow": "#5cf2ff",
+   "prop": "#ff9f43",
+   "bubble": "#0b1530",
+   "bubbleText": "#e8fbff",
+   "bubbleLine": "#5cf2ff",
+   "chip": "#0b1530",
+   "chipText": "#e8fbff",
+   "chipLine": "#5cf2ff",
+   "qBg": "#0b1736",
+   "qText": "#ffffff",
+   "qLine": "#5cf2ff",
+   "choiceBg": "#13224a",
+   "choiceText": "#ffffff",
+   "choiceLine": "#4a78c8",
+   "explBg": "#081430",
+   "explText": "#e8fbff",
+   "explLine": "#5cf2ff",
+   "ansColor": "#ffd36b",
+   "modOn": "#1b8fa8",
+   "oColor": "#5cf2ff",
+   "xColor": "#ff7a9a",
+   "wall": "#1a2233",
+   "space1": "#03061a",
+   "space2": "#1a0f3d",
+   "planet1": "#ffd28a",
+   "planet2": "#c2672b",
+   "ring": "rgba(255,230,180,.75)",
+   "earth1": "#1d6fd1",
+   "earth2": "#59c3ff",
+   "frame": "#3a4a66",
+   "floor": "#222c40",
+   "finText": "#ffffff",
+   "plateText": "#5cf2ff"
+  }
+ },
+ "items": [
+  {
+   "type": "mc",
+   "q": "태양계에서 태양에 가장 가까운 행성은?",
+   "choices": [
+    "수성",
+    "금성",
+    "지구",
+    "화성"
+   ],
+   "answer": 0,
+   "exp": "수성은 태양에서 가장 가까운 행성이에요."
+  },
+  {
+   "type": "ox",
+   "q": "토성은 태양계에서 가장 큰 행성이다.",
+   "answer": 1,
+   "exp": "가장 큰 행성은 목성이에요. 토성은 두 번째로 커요."
+  },
+  {
+   "type": "mc",
+   "q": "다음 중 목성형 행성이 아닌 것은?",
+   "choices": [
+    "목성",
+    "토성",
+    "화성",
+    "해왕성"
+   ],
+   "answer": 2,
+   "exp": "화성은 지구형 행성이에요. 목성형 행성은 목성·토성·천왕성·해왕성이에요."
+  },
+  {
+   "type": "ox",
+   "q": "지구형 행성은 목성형 행성보다 평균 밀도가 크다.",
+   "answer": 0,
+   "exp": "지구형 행성은 주로 암석으로 이루어져 평균 밀도가 커요."
+  },
+  {
+   "type": "mc",
+   "q": "별의 연주 시차가 클수록 그 별까지의 거리는?",
+   "choices": [
+    "가깝다",
+    "멀다",
+    "변함없다",
+    "알 수 없다"
+   ],
+   "answer": 0,
+   "exp": "연주 시차는 거리에 반비례해요. 시차가 클수록 가까운 별이에요."
+  },
+  {
+   "type": "mc",
+   "q": "1등급 별은 6등급 별보다 약 몇 배 밝을까요?",
+   "choices": [
+    "약 2.5배",
+    "약 6배",
+    "약 100배",
+    "약 1000배"
+   ],
+   "answer": 2,
+   "exp": "5등급 차이는 약 100배예요. 1등급 차이는 약 2.5배예요."
+  },
+  {
+   "type": "ox",
+   "q": "등급의 숫자가 작을수록 더 밝은 별이다.",
+   "answer": 0,
+   "exp": "등급 숫자가 작을수록 밝아요. 0등급, -1등급처럼 음수도 있어요."
+  },
+  {
+   "type": "mc",
+   "q": "표면 온도가 가장 높은 별의 색은?",
+   "choices": [
+    "붉은색",
+    "노란색",
+    "흰색",
+    "파란색"
+   ],
+   "answer": 3,
+   "exp": "별은 표면 온도가 높을수록 파란색, 낮을수록 붉은색을 띠어요."
+  },
+  {
+   "type": "mc",
+   "q": "절대 등급은 별이 몇 pc 거리에 있다고 가정한 밝기일까요?",
+   "choices": [
+    "1pc",
+    "10pc",
+    "100pc",
+    "1000pc"
+   ],
+   "answer": 1,
+   "exp": "절대 등급은 별을 10pc(약 32.6광년) 거리에 두었을 때의 등급이에요."
+  },
+  {
+   "type": "ox",
+   "q": "태양은 우리은하의 중심에 있다.",
+   "answer": 1,
+   "exp": "태양계는 우리은하 중심에서 약 3만 광년 떨어진 나선팔 쪽에 있어요."
+  }
+ ]
+}

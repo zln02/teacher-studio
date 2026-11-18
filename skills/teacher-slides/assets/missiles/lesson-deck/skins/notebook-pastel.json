@@ -1,0 +1,177 @@
+{
+ "title": "우리 아이 AI 수업 안내",
+ "skin": "notebook-pastel",
+ "vars": {
+  "bg1": "#fffdf6",
+  "bg2": "#efe9db",
+  "text": "#3b3a4a",
+  "muted": "#6d6a7c",
+  "primary": "#ff7a9c",
+  "primary-ink": "#e2557b",
+  "accent": "#6cb8f0",
+  "pc1": "#fff0a6",
+  "pc2": "#c8f1dc",
+  "pc3": "#d3e9ff",
+  "pc4": "#ffd7e2",
+  "hl": "rgba(255,224,102,.85)",
+  "tape": "#ffd7e2",
+  "stamp": "#e2557b",
+  "doodle": "#8a86a0",
+  "grid": "rgba(120,170,220,.30)",
+  "margin": "rgba(240,120,130,.55)",
+  "ic-fill": "rgba(255,255,255,.75)",
+  "line": "rgba(60,60,80,.25)",
+  "card": "#ffffff",
+  "font-display": "\"Gaegu\",\"Jua\",\"Noto Sans KR\",sans-serif",
+  "font-body": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
+  "font-serif": "\"Gaegu\",serif"
+ },
+ "world": {
+  "labels": {
+   "question": "생각해 볼까요?",
+   "hint": "힌트",
+   "quiz": "QUIZ",
+   "answer": "정답",
+   "correctMark": "정답!",
+   "vs": "VS",
+   "thanks": "고맙습니다",
+   "notes": "선생님 메모",
+   "noNote": "이 장에는 메모가 없어요.",
+   "lastSlide": "마지막 장이에요",
+   "qr": "QR"
+  },
+  "builds": true,
+  "extraFonts": "Gaegu:wght@400;700"
+ },
+ "items": [
+  {
+   "layout": "cover",
+   "kicker": "2026 학부모 설명회",
+   "title": "우리 아이 **AI 수업**, 이렇게 진행해요",
+   "subtitle": "걱정 대신, 함께 지켜볼 수 있도록",
+   "meta": "○○초등학교 · 11월 학부모 설명회",
+   "note": "인사 · 오늘 순서 소개(5분)."
+  },
+  {
+   "layout": "bigtext",
+   "text": "AI는 **정답 기계**가 아니라 **생각 도우미**예요",
+   "sub": "질문하고, 확인하고, 내 말로 다시 쓰는 연습을 합니다",
+   "note": "학부모 걱정 1순위: '숙제를 AI가 대신 하지 않나'. 여기서 먼저 답하기."
+  },
+  {
+   "layout": "cards",
+   "kicker": "수업에서는",
+   "title": "아이들이 하는 네 가지",
+   "cards": [
+    {
+     "icon": "chat",
+     "title": "질문 연습",
+     "text": "좋은 질문을 만드는 법을 배워요"
+    },
+    {
+     "icon": "search",
+     "title": "사실 확인",
+     "text": "AI 답을 교과서·자료와 비교해요"
+    },
+    {
+     "icon": "game",
+     "title": "직접 만들기",
+     "text": "배운 내용으로 퀴즈 게임을 만들어요"
+    },
+    {
+     "icon": "people",
+     "title": "함께 나누기",
+     "text": "모둠 발표와 서로 피드백"
+    }
+   ],
+   "note": ""
+  },
+  {
+   "layout": "timeline",
+   "kicker": "2학기 일정",
+   "title": "한 학기 동안 이렇게",
+   "events": [
+    {
+     "when": "9월",
+     "title": "AI와 첫 만남",
+     "text": "사용 약속 정하기"
+    },
+    {
+     "when": "10월",
+     "title": "질문 연습",
+     "text": "과목별 활동"
+    },
+    {
+     "when": "11월",
+     "title": "게임 만들기",
+     "text": "모둠 프로젝트"
+    },
+    {
+     "when": "12월",
+     "title": "발표회",
+     "text": "작품 나눔"
+    }
+   ],
+   "note": "일정은 학교 사정에 따라 바뀔 수 있다고 안내."
+  },
+  {
+   "layout": "compare",
+   "kicker": "가정에서",
+   "title": "집에서는 이렇게 도와주세요",
+   "a": {
+    "label": "이렇게 말하기보다",
+    "icon": "warning"
+   },
+   "b": {
+    "label": "이렇게 물어봐 주세요",
+    "icon": "heart"
+   },
+   "rows": [
+    {
+     "a": "AI로 숙제 다 했니?",
+     "b": "AI한테 **뭐라고** 물어봤어?"
+    },
+    {
+     "a": "AI가 한 거니까 맞겠지",
+     "b": "그 답, **어디서** 확인했어?"
+    },
+    {
+     "a": "휴대폰 그만 봐!",
+     "b": "오늘 만든 거 **나도** 보여 줄래?"
+    }
+   ],
+   "note": "한 줄씩 넘기며 공감 얻기."
+  },
+  {
+   "layout": "bignumber",
+   "kicker": "수업 중 학생 개인정보 입력",
+   "value": "0",
+   "unit": "건",
+   "caption": "이름·사진·성적은 **입력하지 않아요**. 학생은 선생님이 만든 링크로만 참여해요",
+   "note": "개인정보 질문이 나오면 이 장으로 돌아오기(숫자 키 6)."
+  },
+  {
+   "layout": "quiz",
+   "kicker": "함께 풀어 봐요",
+   "q": "AI가 알려 준 답, 가장 먼저 할 일은?",
+   "choices": [
+    "그대로 베껴 쓴다",
+    "교과서나 자료로 확인한다"
+   ],
+   "answer": 1,
+   "explain": "**확인하는 습관**이 AI 시대에 가장 중요한 공부예요",
+   "note": "학부모님께 손들기로 참여 유도."
+  },
+  {
+   "layout": "end",
+   "title": "함께해 주셔서 **고맙습니다**",
+   "sub": "궁금한 점은 언제든 담임 선생님께",
+   "next": [
+    "가정통신문 확인하기",
+    "아이와 'AI 사용 약속' 이야기 나누기"
+   ],
+   "qr": "설문 QR (게시 후 넣기)",
+   "note": "질의응답."
+  }
+ ]
+}

@@ -1,0 +1,16 @@
+Teacher Studio
+Copyright 2026 박진영 (github.com/zln02) and contributors
+Licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes third-party components:
+
+1. anime.js 4.5.0 — Copyright (c) 2026 Julian Garnier — MIT License
+   Location: skills/teacher-slides/assets/vendor/, skills/teacher-motion/assets/vendor/, shared/stage/vendor/
+   Modification: one optional-chaining expression replaced for older Chrome compatibility.
+   License text: ANIME-LICENSE.md in the same folders.
+
+2. Kenney asset packs (sprites and sounds) — by Kenney (kenney.nl) — CC0 1.0 Universal (public domain)
+   Location: skills/teacher-game/assets/packs/ (see KENNEY-LICENSE.txt)
+   Images were color-quantized and sounds re-encoded.
+
+3. Fonts are loaded at view time from Google Fonts (SIL Open Font License 1.1); no font files are redistributed.

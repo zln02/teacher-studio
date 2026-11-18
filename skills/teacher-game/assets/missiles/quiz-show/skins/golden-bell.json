@@ -1,0 +1,235 @@
+{
+ "title": "품사 골든벨",
+ "subtitle": "중2 국어 · 문법 — 아홉 가지 품사",
+ "theme": "gameshow",
+ "themeOverride": {
+  "primary": "#ffcf3a",
+  "accent": "#c8372d",
+  "bg1": "#2a140a",
+  "bg2": "#5a2f17",
+  "card": "#3b2412",
+  "cardBorder": "#e0a84a",
+  "text": "#fff7e6",
+  "good": "#3ddc84",
+  "bad": "#ff5a5a",
+  "mood": "cute"
+ },
+ "teams": 0,
+ "teamChoice": true,
+ "timer": 20,
+ "music": true,
+ "calm": false,
+ "mascots": false,
+ "bonusEvery": 4,
+ "world": {
+  "qLabel": "문제",
+  "turnText": "차례",
+  "bonusText": "⭐ 보너스 2배",
+  "bonusBadge": "보너스 문제!",
+  "answerLabel": "정답",
+  "nextText": "다음 ▶",
+  "resultText": "결과 보기 ▶",
+  "timeoutText": "시간 초과!",
+  "timeoutToast": "⏰ 시간 끝!",
+  "revealText": "정답 공개",
+  "skin": "golden-bell",
+  "hostName": "진행 · 종소리 선생님",
+  "howto": "맞힐 때마다 골든벨이 울리고 점점 밝아져요",
+  "boardText": "O",
+  "lastNextText": "골든벨 울리기 ▶",
+  "rainIcon": "✨",
+  "finaleTitle": "골든벨이 울렸어요!",
+  "finaleSub": "{total}문제 중 {n}문제 정답 — 모두 멋진 도전!",
+  "lines": {
+   "title": [
+    "도전! 골든벨, 시작해요!"
+   ],
+   "start": [
+    "첫 문제! 집중해요"
+   ],
+   "q": [
+    "잘 읽고 골라요",
+    "천천히 생각해요",
+    "품사 뜻을 떠올려요"
+   ],
+   "teamQ": [
+    "{team} 차례예요!"
+   ],
+   "bonus": [
+    "보너스! 점수 2배!"
+   ],
+   "last": [
+    "마지막 문제예요!"
+   ],
+   "retry": [
+    "틀린 문제 다시 도전!"
+   ],
+   "wait": [
+    "정답은…"
+   ],
+   "correct": [
+    "딩동댕! 종이 울려요!",
+    "정답이에요!",
+    "훌륭해요!"
+   ],
+   "wrong": [
+    "아쉬워요, 칠판 봐요",
+    "괜찮아요! 같이 봐요"
+   ],
+   "timeout": [
+    "시간 끝! 칠판 봐요"
+   ],
+   "reveal": [
+    "정답을 칠판에 쓸게요"
+   ],
+   "finale": [
+    "모두 멋진 도전이었어요!"
+   ]
+  },
+  "colors": {
+   "outline": "#2b1a0e",
+   "skin": "#ffdcbc",
+   "cheek": "#ff8fa3",
+   "hostMain": "#3f8f5a",
+   "hostSub": "#2c6a41",
+   "hair": "#5a3420",
+   "prop": "#c8372d",
+   "skirt": "#3b3f6b",
+   "glasses": "#7a3b1e",
+   "ink": "#1d3c8f",
+   "uniform": "#2f4f8f",
+   "bell": "#ffd54a",
+   "bellDeep": "#c98a12",
+   "bellLine": "#6b3f05",
+   "bellGlow": "rgba(255,230,120,.95)",
+   "bubble": "#fffaf0",
+   "bubbleText": "#2b1a0e",
+   "bubbleLine": "#5a3420",
+   "chip": "#3b2412",
+   "chipText": "#fff4dc",
+   "chipLine": "#e0a84a",
+   "qBg": "#fffaf0",
+   "qText": "#2b1a0e",
+   "qLine": "#8a5a2b",
+   "choiceBg": "#ffffff",
+   "choiceText": "#1d2a4a",
+   "choiceLine": "#8a5a2b",
+   "markBg": "#c8372d",
+   "explBg": "#24452f",
+   "explBg2": "#1b3624",
+   "explText": "#f4f1e6",
+   "explLine": "#8a5a2b",
+   "ansColor": "#ffe36b",
+   "oColor": "#1f6fd1",
+   "xColor": "#d23a2a",
+   "wallTop": "#2a140a",
+   "wall": "#5a2f17",
+   "floor": "#c98b4c",
+   "floorDeep": "#7a4b22",
+   "trim": "#e0a84a",
+   "curtain": "#b3202d",
+   "curtainDark": "#5e0d14",
+   "glow": "rgba(255,215,90,.7)",
+   "finText": "#fff4c2",
+   "plateText": "#ffe36b"
+  }
+ },
+ "items": [
+  {
+   "type": "mc",
+   "q": "국어의 품사는 모두 몇 개일까요?",
+   "choices": [
+    "5개",
+    "7개",
+    "9개",
+    "11개"
+   ],
+   "answer": 2,
+   "exp": "명사·대명사·수사·조사·동사·형용사·관형사·부사·감탄사, 모두 9개예요."
+  },
+  {
+   "type": "mc",
+   "q": "'새 옷을 샀다'에서 '새'의 품사는?",
+   "choices": [
+    "형용사",
+    "관형사",
+    "부사",
+    "명사"
+   ],
+   "answer": 1,
+   "exp": "'새'는 체언 '옷'을 꾸미고 모양이 바뀌지 않는 관형사예요."
+  },
+  {
+   "type": "ox",
+   "q": "'빨리 달린다'에서 '빨리'는 부사이다.",
+   "answer": 0,
+   "exp": "'빨리'는 용언 '달린다'를 꾸며 주는 부사예요."
+  },
+  {
+   "type": "mc",
+   "q": "다음 중 형용사는 무엇일까요?",
+   "choices": [
+    "달리다",
+    "예쁘다",
+    "먹다",
+    "읽다"
+   ],
+   "answer": 1,
+   "exp": "'예쁘다'는 성질·상태를 나타내는 형용사예요. 나머지는 움직임을 나타내는 동사예요."
+  },
+  {
+   "type": "ox",
+   "q": "조사는 다른 말에 붙지 않고 혼자 쓰일 수 있다.",
+   "answer": 1,
+   "exp": "조사는 혼자 쓰이지 못하고 주로 체언 뒤에 붙어 쓰여요."
+  },
+  {
+   "type": "mc",
+   "q": "'하나, 둘, 첫째'처럼 수량이나 순서를 나타내는 품사는?",
+   "choices": [
+    "수사",
+    "관형사",
+    "명사",
+    "부사"
+   ],
+   "answer": 0,
+   "exp": "수량이나 순서를 나타내는 체언은 수사예요."
+  },
+  {
+   "type": "ox",
+   "q": "'아이고, 깜짝이야!'에서 '아이고'는 감탄사이다.",
+   "answer": 0,
+   "exp": "'아이고'는 느낌이나 놀람을 나타내는 감탄사로, 독립언이에요."
+  },
+  {
+   "type": "mc",
+   "q": "다음 중 체언에 속하지 않는 품사는?",
+   "choices": [
+    "명사",
+    "대명사",
+    "수사",
+    "부사"
+   ],
+   "answer": 3,
+   "exp": "체언은 명사·대명사·수사예요. 부사는 수식언이에요."
+  },
+  {
+   "type": "ox",
+   "q": "동사와 형용사는 쓰임에 따라 형태가 바뀐다.",
+   "answer": 0,
+   "exp": "용언인 동사·형용사는 '먹다→먹고, 먹으니'처럼 어미가 바뀌며 활용해요."
+  },
+  {
+   "type": "mc",
+   "q": "'나는 학교에 간다'에서 '나'의 품사는?",
+   "choices": [
+    "명사",
+    "대명사",
+    "조사",
+    "관형사"
+   ],
+   "answer": 1,
+   "exp": "'나'는 사람의 이름을 대신 가리키는 인칭 대명사예요."
+  }
+ ]
+}

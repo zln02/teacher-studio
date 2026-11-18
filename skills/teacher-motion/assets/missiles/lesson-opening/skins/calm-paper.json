@@ -1,0 +1,36 @@
+{
+  "title": "수업 시작 화면",
+  "skin": "calm-paper",
+  "vars": {
+    "bg1": "#f6f0e4",
+    "bg2": "#ebe2cf",
+    "text": "#3b3a36",
+    "ink": "#3b3a36",
+    "paper": "#fffdf8",
+    "paperDark": "#c9b79a",
+    "primary": "#7aa794",
+    "accent": "#eaa384",
+    "mint": "#bcd9c4",
+    "sky": "#a9c6d8",
+    "font-display": "\"Jua\",\"Do Hyeon\",\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif",
+    "font-serif": "\"Gowun Batang\",\"Nanum Myeongjo\",\"Noto Serif CJK KR\",serif",
+    "font-body": "\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif"
+  },
+  "count": 5,
+  "label": "오늘의 주제",
+  "topic": "우리 동네를 지도로 그려 볼까요?",
+  "goal": "방위·기호·축척을 써서 우리 동네 지도를 그릴 수 있다",
+  "meta": "1학년 사회 · 지도 읽기",
+  "items": [
+    { "text": "지도 요소 찾기" },
+    { "text": "동네 지도 그리기" },
+    { "text": "서로 소개하기" }
+  ],
+  "world": {
+    "ready": "숨을 고르고, 천천히 시작해요",
+    "goalLabel": "목표",
+    "stepsLabel": "오늘의 순서",
+    "hint": "준비되면 화면을 눌러 주세요",
+    "start": "함께 시작해요"
+  }
+}

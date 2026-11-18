@@ -1,0 +1,27 @@
+{
+  "title": "중학교 국어 소개",
+  "skin": "korean-brush",
+  "vars": {
+    "bg1": "#f2e8d3",
+    "bg2": "#e3d3b4",
+    "text": "#1c1712",
+    "muted": "rgba(28,23,18,.68)",
+    "primary": "#1c1712",
+    "accent": "#b3261e",
+    "line": "rgba(28,23,18,.2)",
+    "font-display": "\"Song Myung\",\"Nanum Myeongjo\",\"Noto Serif CJK KR\",\"Batang\",serif",
+    "font-serif": "\"Nanum Myeongjo\",\"Gowun Batang\",\"Noto Serif CJK KR\",\"Batang\",serif",
+    "font-body": "\"Nanum Myeongjo\",\"Noto Serif CJK KR\",serif"
+  },
+  "hook": { "kicker": "한 문장의 힘", "text": "말 한마디로 마음을 움직일 수 있을까?" },
+  "subject": { "name": "국어", "en": "읽고 쓰고 말하는 시간", "sub": "중학교 1학년 국어" },
+  "items": [
+    { "icon": "book", "word": "문학", "line": "시와 소설 속 인물의 마음을 함께 읽어요" },
+    { "icon": "speech", "word": "말하기", "line": "내 생각을 또렷하게, 친구의 말은 귀 기울여" },
+    { "icon": "brush", "word": "쓰기", "line": "나만의 문장으로 하루를 기록해요" },
+    { "icon": "paper", "word": "문법", "line": "우리말이 움직이는 규칙을 탐구해요" }
+  ],
+  "message": { "label": "선생님의 한마디", "text": "좋은 글은 잘 쓴 글이 아니라 진심이 담긴 글입니다. 한 해 동안 여러분의 목소리를 들려주세요." },
+  "closing": { "school": "", "grade": "1학년", "teacher": "국어 선생님", "line": "첫 장을 함께 펼쳐요" },
+  "world": { "seal": "國語", "meet": "이 과목에서 만날 것", "numerals": ["一", "二", "三", "四", "五", "六"] }
+}

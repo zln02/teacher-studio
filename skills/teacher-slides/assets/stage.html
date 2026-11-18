@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>교사 스튜디오</title>
+<!--
+  TEACHER STUDIO STAGE runtime — 1920x1080 stage for slides, motion graphics and typography.
+  - Put content in window.DOC (DOC block) and the show logic in window.SHOW (SHOW block).
+  - Animation: anime.js 4.5.0 (MIT) is inlined below as window.anime. ES2017-safe runtime.
+  - Deterministic time: shows register timelines with STAGE.timeline(tl, durationMs);
+    window.__stage.seek(ms) / .duration let scripts/render_mp4.py capture exact frames.
+-->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Batang:wght@400;700&family=Jua&family=Nanum+Myeongjo:wght@400;800&family=Noto+Sans+KR:wght@400;700;900&family=Song+Myung&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0e1726;--bg2:#1c2b45;--text:#ffffff;--muted:rgba(255,255,255,.72);--primary:#ffd23f;--accent:#3ee6ff;--card:#16233a;--line:rgba(255,255,255,.18);
+  --font-display:"Black Han Sans","Do Hyeon","Noto Sans KR",sans-serif;--font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--font-serif:"Nanum Myeongjo","Gowun Batang",serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#000;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font-body);color:var(--text)}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+#bg{position:absolute;inset:0;width:1920px;height:1080px}
+#scene{position:absolute;inset:0}
+.layer{position:absolute;inset:0}
+.word-break{word-break:keep-all;overflow-wrap:break-word}
+#ui{position:fixed;right:14px;top:14px;display:flex;gap:10px;z-index:50;transition:opacity .4s}
+#ui.hide{opacity:0;pointer-events:none}
+#ui button{width:52px;height:52px;border-radius:14px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:24px;cursor:pointer;backdrop-filter:blur(6px)}
+#ui button:hover{background:rgba(0,0,0,.7)}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 22px;border-radius:12px;font-size:18px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none}
+#toast.show{opacity:1}
+#rec-dot{position:fixed;left:16px;top:16px;width:18px;height:18px;border-radius:50%;background:#ff3045;box-shadow:0 0 12px #ff3045;display:none;z-index:60}
+body.recording #rec-dot{display:block}
+body.recording #ui{display:none}
+body.rendering #rec-dot{display:none}
+@media (prefers-reduced-motion:reduce){.motion-soft{animation:none!important}}
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="bg" width="1920" height="1080"></canvas><div id="scene"></div></div>
+<div id="ui">
+  <button id="b-play" title="재생/멈춤 (Space)">⏯</button>
+  <button id="b-restart" title="처음부터 (R)">↺</button>
+  <button id="b-rec" title="영상으로 저장">🎥</button>
+  <button id="b-full" title="전체 화면 (F)">⛶</button>
+</div>
+<div id="rec-dot"></div>
+<div id="toast"></div>
+
+<!--VENDOR-->
+
+<script>
+/* ===================== DOC (Claude edits this block) ===================== */
+window.DOC = {
+  title: "제목",
+  skin: "default",
+  items: []
+};
+</script>
+
+<script>
+/* ===================== STAGE RUNTIME (do not edit) ===================== */
+(function(){
+"use strict";
+var W = 1920, H = 1080;
+var stage = document.getElementById("stage"), scene = document.getElementById("scene"), bgCanvas = document.getElementById("bg"), ctx = bgCanvas.getContext("2d");
+var S = window.STAGE = {W:W, H:H, el:{stage:stage, scene:scene, bg:bgCanvas}, ctx:ctx, scale:1, timelines:[], playing:true, recording:false};
+
+function fit(){
+  var vw = window.innerWidth, vh = window.innerHeight, s = Math.min(vw / W, vh / H);
+  S.scale = s;
+  stage.style.transform = "translate(" + ((vw - W * s) / 2) + "px," + ((vh - H * s) / 2) + "px) scale(" + s + ")";
+}
+window.addEventListener("resize", fit);
+window.addEventListener("orientationchange", function(){ setTimeout(fit, 200); });
+fit();
+
+/* helpers */
+S.h = function(tag, attrs, html){
+  var e = document.createElement(tag);
+  if (attrs) for (var k in attrs){ if (k === "class") e.className = attrs[k]; else if (k === "style") e.style.cssText = attrs[k]; else e.setAttribute(k, attrs[k]); }
+  if (html != null) e.innerHTML = html;
+  return e;
+};
+S.esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]; }); };
+S.clear = function(){ scene.innerHTML = ""; };
+S.setVars = function(vars){ for (var k in vars) document.documentElement.style.setProperty("--" + k, vars[k]); };
+S.toast = function(text, ms){ var t = document.getElementById("toast"); t.textContent = text; t.classList.add("show"); clearTimeout(S._tt); S._tt = setTimeout(function(){ t.classList.remove("show"); }, ms || 1800); };
+/* split text into spans for per-character / per-word animation (Korean-safe: keeps words together) */
+S.split = function(el, mode){
+  var text = el.textContent, out = "";
+  if (mode === "word"){ out = text.split(/(\s+)/).map(function(w){ return /^\s+$/.test(w) ? w : '<span class="w" style="display:inline-block">' + S.esc(w) + "</span>"; }).join(""); }
+  else { out = text.split(/(\s+)/).map(function(w){ if (/^\s+$/.test(w)) return w; return '<span class="wd" style="display:inline-block;white-space:nowrap">' + Array.prototype.map.call(w, function(c){ return '<span class="ch" style="display:inline-block">' + S.esc(c) + "</span>"; }).join("") + "</span>"; }).join(""); }
+  el.innerHTML = out;
+  return el.querySelectorAll(mode === "word" ? ".w" : ".ch");
+};
+/* fit text into a box by shrinking font-size until it does not overflow */
+S.fitText = function(el, maxPx, minPx){
+  var size = maxPx; el.style.fontSize = size + "px";
+  while (size > (minPx || 24) && (el.scrollWidth > el.clientWidth + 1 || el.scrollHeight > el.clientHeight + 1)){ size -= 2; el.style.fontSize = size + "px"; }
+  return size;
+};
+
+/* background painter: STAGE.bg(fn(ctx, t, W, H)) called every frame; deterministic t in seconds */
+S.painter = null;
+S.bg = function(fn){ S.painter = fn; };
+var clock = {t:0, manual:false};
+S.now = function(){ return clock.t; };
+
+/* timelines: register anime.js timelines/animations so play/pause/seek/record control them */
+S.timeline = function(tl, durationMs){
+  S.timelines.push({tl:tl, dur:durationMs || (tl && tl.duration) || 0});
+  S.duration = Math.max(S.duration || 0, durationMs || (tl && tl.duration) || 0);
+  if (S.recording || clock.manual) { try { tl.pause(); } catch(e){} }
+  return tl;
+};
+S.duration = 0;
+function each(fn){ S.timelines.forEach(function(x){ try { fn(x.tl); } catch(e){} }); }
+S.play = function(){ S.playing = true; each(function(tl){ tl.play(); }); };
+S.pause = function(){ S.playing = false; each(function(tl){ tl.pause(); }); };
+S.toggle = function(){ if (S.playing) S.pause(); else S.play(); };
+S.seek = function(ms){ clock.t = ms / 1000; each(function(tl){ tl.seek(Math.min(ms, tl.duration || ms)); }); paint(); };
+S.reset = function(){ each(function(tl){ try { tl.revert ? tl.revert() : tl.pause(); } catch(e){} }); S.timelines = []; S.duration = 0; clock.t = 0; };
+S.restart = function(){ S.reset(); S.clear(); if (window.SHOW && SHOW.start) SHOW.start(); };
+
+function paint(){ if (S.painter){ ctx.clearRect(0, 0, W, H); try { S.painter(ctx, clock.t, W, H); } catch(e){ console.error(e); S.painter = null; } } }
+var last = 0;
+function loop(ts){
+  if (!clock.manual){ var dt = last ? Math.min(50, ts - last) : 16; if (S.playing) clock.t += dt / 1000; paint(); }
+  last = ts; requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* deterministic hooks for frame-by-frame rendering (scripts/render_mp4.py) */
+window.__stage = {
+  get duration(){ return S.duration; },
+  manual: function(){ clock.manual = true; S.pause(); document.body.classList.add("recording"); document.body.classList.add("rendering"); },
+  seek: function(ms){ S.seek(ms); },
+  ready: false
+};
+
+/* UI */
+var ui = document.getElementById("ui"), idle;
+function poke(){ ui.classList.remove("hide"); clearTimeout(idle); idle = setTimeout(function(){ ui.classList.add("hide"); }, 2500); }
+document.addEventListener("pointermove", poke); poke();
+S.fullscreen = function(){ var d = document.documentElement; if (!document.fullscreenElement){ (d.requestFullscreen || d.webkitRequestFullscreen || function(){}).call(d); } else { (document.exitFullscreen || document.webkitExitFullscreen).call(document); } };
+document.getElementById("b-full").addEventListener("click", S.fullscreen);
+document.getElementById("b-play").addEventListener("click", function(){ S.toggle(); });
+document.getElementById("b-restart").addEventListener("click", function(){ S.restart(); });
+document.addEventListener("keydown", function(e){
+  if (e.key === "f" || e.key === "F") S.fullscreen();
+  else if (e.key === "r" || e.key === "R") S.restart();
+  else if (e.key === " "){ if (!(window.SHOW && SHOW.onKey && SHOW.onKey(e))) { e.preventDefault(); S.toggle(); } }
+  else if (window.SHOW && SHOW.onKey) SHOW.onKey(e);
+});
+
+/* "영상으로 저장": records this tab (Chrome asks once) and downloads a .webm — works anywhere Chrome runs */
+document.getElementById("b-rec").addEventListener("click", function(){
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia || !window.MediaRecorder){ S.toast("이 인터넷 창에서는 녹화가 안 돼요. 크롬에서 열어 주세요."); return; }
+  S.toast("「이 탭」을 고르고 '공유'를 눌러 주세요", 4000);
+  navigator.mediaDevices.getDisplayMedia({video:{frameRate:30}, audio:true, preferCurrentTab:true, selfBrowserSurface:"include"}).then(function(stream){
+    var chunks = [], type = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+    var rec = new MediaRecorder(stream, {mimeType:type, videoBitsPerSecond:8000000});
+    rec.ondataavailable = function(e){ if (e.data.size) chunks.push(e.data); };
+    rec.onstop = function(){
+      stream.getTracks().forEach(function(t){ t.stop(); });
+      document.body.classList.remove("recording"); S.recording = false;
+      var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(chunks, {type:"video/webm"}));
+      a.download = (window.DOC && DOC.title ? DOC.title : "영상") + ".webm"; document.body.appendChild(a); a.click(); a.remove();
+      S.toast("영상 파일을 받았어요 (다운로드 폴더)");
+    };
+    document.body.classList.add("recording"); S.recording = true;
+    if (!document.fullscreenElement) S.fullscreen();
+    setTimeout(function(){
+      S.restart(); rec.start();
+      var dur = S.duration || 10000;
+      setTimeout(function(){ if (rec.state !== "inactive") rec.stop(); }, dur + 800);
+    }, 900);
+  }).catch(function(){ S.toast("녹화를 취소했어요"); });
+});
+
+S.boot = function(){
+  var D = window.DOC || {};
+  document.title = D.title || document.title;
+  if (D.vars) S.setVars(D.vars);
+  document.body.setAttribute("data-skin", D.skin || "default");
+  if (window.SHOW && SHOW.start) SHOW.start(); else console.error("SHOW.start missing");
+  window.__stage.ready = true;
+};
+})();
+</script>
+
+<script>
+/* ===================== SHOW (Claude writes this block) =====================
+   Required: window.SHOW = { start(), onKey?(e)->handled, toText?() }
+   Use: STAGE.h/esc/split/fitText/setVars/bg/timeline/clear/toast, window.anime (anime.js 4.5.0)
+*/
+window.SHOW = {
+  start: function(){
+    var t = STAGE.h("div", {class:"layer", style:"display:flex;align-items:center;justify-content:center;font:120px var(--font-display)"}, STAGE.esc(DOC.title));
+    STAGE.el.scene.appendChild(t);
+    STAGE.timeline(anime.animate(t, {opacity:[0, 1], scale:[.8, 1], duration:900, ease:"outBack"}), 900);
+  }
+};
+</script>
+<script>STAGE.boot();</script>
+</body>
+</html>

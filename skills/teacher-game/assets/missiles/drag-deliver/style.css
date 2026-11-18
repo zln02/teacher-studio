@@ -1,0 +1,181 @@
+/* ===== drag-deliver missile (끌어서 보내기) — shared ===== */
+.dd-layer{position:absolute;left:0;top:0;width:0;height:0}
+.dd-banner{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;box-sizing:border-box;word-break:keep-all;z-index:2}
+.dd-dest{position:absolute;cursor:pointer;transition:transform .18s ease,filter .25s}
+.dd-dest>svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.dd-lab{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-family:var(--font-display);line-height:1.1;word-break:keep-all;box-sizing:border-box;padding:0 8px}
+.dd-hint{position:absolute;left:0;width:100%;text-align:center;font-weight:800;word-break:keep-all}
+.dd-mk{position:absolute;right:4px;top:-34px;width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:62px;color:#fff;border:6px solid #fff;z-index:3;box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.dd-mk.ok{background:#1f9d68}.dd-mk.no{background:#d93a3f}
+.dd-dest.tried{opacity:.72;cursor:default}
+.dd-dest.hover{transform:translateY(-12px) scale(1.04)}
+.dd-item{position:absolute;touch-action:none;cursor:grab;z-index:6}
+.dd-item-in{position:absolute;left:0;top:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;text-align:center}
+.dd-tag{position:relative;z-index:1;font-size:34px;font-weight:900;margin-bottom:8px;word-break:keep-all}
+.dd-q{position:relative;z-index:1;font-family:var(--font-display);line-height:1.2;word-break:keep-all;max-width:94%}
+.dd-say{position:absolute;right:-40px;top:-46px;width:110px;height:110px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:54px;background:#ff7a3d;border:6px solid #fff;box-shadow:0 8px 0 rgba(0,0,0,.3);z-index:2;cursor:pointer}
+.dd-item.sel .dd-item-in{animation:ddSel 1s ease-in-out infinite}
+.dd-item-in{transition:transform .15s ease}
+.dd-item.drag .dd-item-in{transform:scale(.7)}
+.dd-item.drag .dd-say{display:none}
+body[data-world="cell-feed"] .dd-item.drag .dd-item-in{transform:scale(.42)}
+body[data-world="recycle"] .dd-item.drag .dd-item-in{transform:scale(.6)}
+@keyframes ddSel{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.9)}50%{box-shadow:0 0 0 16px rgba(255,255,255,.35)}}
+.dd-hand{position:absolute;display:none;font-size:110px;pointer-events:none;z-index:30;filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.dd-hero{position:absolute;pointer-events:none;z-index:4}
+.dd-hero-in svg{display:block;animation:ddBob 1.8s ease-in-out infinite}
+@keyframes ddBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.dd-talk{position:absolute;box-sizing:border-box;text-align:center;font-weight:800;line-height:1.3;word-break:keep-all;z-index:5}
+.dd-after{position:absolute;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;padding:22px 36px;z-index:8}
+.dd-after-t{flex:1;margin-right:28px}
+.dd-after-h{font-family:var(--font-display);line-height:1.15;word-break:keep-all}
+.dd-after-s{font-weight:700;line-height:1.35;margin-top:10px;word-break:keep-all}
+.dd-next{flex:none}
+.dd-title{position:absolute;display:flex;flex-direction:column;z-index:2}
+.dd-title .title{line-height:1.05;margin:6px 0 12px;word-break:keep-all}
+.dd-ttag{font-family:var(--font-display);font-size:56px;letter-spacing:8px}
+.dd-tsub{font-size:46px;font-weight:800}
+.dd-how{margin-top:20px;font-size:38px;font-weight:700;line-height:1.5}
+.dd-rot{margin-top:10px;font-size:36px;font-weight:800}
+.dd-teams{margin-top:20px}
+.dd-title #t-start{margin-top:26px}
+.dd-tart>div{position:absolute;pointer-events:none}
+.dd-gn{position:absolute;font-weight:900;white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.dd-hero-in svg,.dd-item.sel .dd-item-in,.dd-belt-run{animation:none!important}}
+.reduce .dd-hero-in svg,.reduce .dd-item.sel .dd-item-in,.reduce .dd-belt-run{animation:none!important}
+
+/* ===== skin 1 · post-office — 달밤 우체국 마을 ===== */
+body[data-world="post-office"]{--muted:rgba(255,255,255,.85)}
+body[data-world="post-office"] .card{border-radius:24px;border:5px solid #8a5a2b;background:#fff4dc;color:#3b2412;box-shadow:0 8px 0 #8a5a2b}
+body[data-world="post-office"] .btn{background:#ff7a3d;color:#fff;box-shadow:0 10px 0 #a8431a,0 0 0 6px rgba(255,255,255,.2)}
+body[data-world="post-office"] .btn.secondary{background:#fff4dc;color:#3b2412;box-shadow:0 10px 0 #8a5a2b,inset 0 0 0 4px #8a5a2b}
+body[data-world="post-office"] .title{color:#ffd23f;text-shadow:0 8px 0 #b8431f,0 0 40px rgba(255,210,63,.7);letter-spacing:6px}
+body[data-world="post-office"] .badge.info{background:#ffd23f;color:#3b2412}
+body[data-world="post-office"] .team{background:rgba(20,10,50,.62)}
+body[data-world="post-office"] .dd-title{left:160px;top:110px;width:1600px;align-items:center;text-align:center;color:#fff}
+body[data-world="post-office"] .dd-ttag{color:#7cf0ff;text-shadow:0 4px 0 rgba(0,0,0,.35)}
+body[data-world="post-office"] .dd-tsub,body[data-world="post-office"] .dd-how{text-shadow:0 3px 0 rgba(0,0,0,.4)}
+body[data-world="post-office"] .dd-ta1{left:90px;top:640px}
+body[data-world="post-office"] .dd-ta2{left:1590px;top:660px}
+body[data-world="post-office"] .dd-banner{left:210px;top:290px;width:1500px;height:96px;font-size:50px;border-radius:24px;border:5px solid #8a5a2b;background:#fff4dc;color:#3b2412;box-shadow:0 8px 0 #8a5a2b}
+body[data-world="post-office"] .dd-gn{left:50px;top:196px;font-size:46px;color:#fff;text-shadow:0 3px 0 rgba(0,0,0,.4)}
+body[data-world="post-office"] .dd-lamps{position:absolute;top:188px;height:72px;display:flex;align-items:center;justify-content:space-between}
+body[data-world="post-office"] .lamp .win{fill:#2a2450}
+body[data-world="post-office"] .lamp.lit .win{fill:#ffe066}
+body[data-world="post-office"] .lamp.lit{filter:drop-shadow(0 0 8px #ffd23f)}
+body[data-world="post-office"] .dd-dest .win{fill:#3d2f78;stroke:#7a4a22;stroke-width:4}
+body[data-world="post-office"] .dd-dest.open .win{fill:#ffe066}
+body[data-world="post-office"] .dd-dest.open{filter:drop-shadow(0 0 26px #ffd23f)}
+body[data-world="post-office"] .dd-dest.hover{filter:drop-shadow(0 0 22px #7cf0ff)}
+body[data-world="post-office"] .dd-lab{left:30px;top:172px;width:340px;height:140px;color:#3b2412;background:#fffdf5;border:5px solid #7a4a22;border-radius:18px}
+body[data-world="post-office"] .dd-dest.open .dd-lab{background:#c9f7de;border-color:#1f8a5a}
+body[data-world="post-office"] .dd-item-in{background:linear-gradient(#e2b27a,#c98f52);border:6px solid #8a5a2b;border-radius:18px;box-shadow:0 12px 0 rgba(0,0,0,.28)}
+body[data-world="post-office"] .dd-item-in:before,body[data-world="post-office"] .dd-item-in:after{content:"";position:absolute;top:0;bottom:0;width:30px;background:#d93a3f;opacity:.9}
+body[data-world="post-office"] .dd-item-in:before{left:36px}
+body[data-world="post-office"] .dd-item-in:after{right:36px}
+body[data-world="post-office"] .dd-tag{color:#3b2412}
+body[data-world="post-office"] .dd-q{color:#3b2412;background:#fffdf5;border:4px solid #7a4a22;border-radius:14px;padding:0 26px}
+body[data-world="post-office"] .dd-item.gold .dd-item-in{background:linear-gradient(#ffe27a,#f2b01e);border-color:#a8730b;box-shadow:0 12px 0 rgba(0,0,0,.28),0 0 50px #ffd23f}
+body[data-world="post-office"] .dd-hero{left:40px;top:796px}
+body[data-world="post-office"] .dd-after-h{font-size:66px;color:#3b2412}
+body[data-world="post-office"] .dd-after-s{font-size:38px;color:#3b2412}
+body[data-world="post-office"] .dd-next{font-size:46px;padding:20px 40px}
+
+/* ===== skin 2 · cell-feed — 몸속 마을 먹이 주기 (tablet) ===== */
+body[data-world="cell-feed"]{--btnText:#fff;--muted:#6a3a5a;--cardText:#3b2a4a}
+body[data-world="cell-feed"] .card{background:#fffaf0;color:#3b2a4a;border:6px solid #5cc98a;border-radius:36px;box-shadow:0 10px 0 #bfe8cf}
+body[data-world="cell-feed"] .btn{background:#d93f7e;color:#fff;box-shadow:0 10px 0 #9c2257}
+body[data-world="cell-feed"] .btn.secondary{background:#fff;color:#d93f7e;box-shadow:0 10px 0 #f3b7cf,inset 0 0 0 4px #d93f7e}
+body[data-world="cell-feed"] .title{color:#d93f7e;text-shadow:0 6px 0 #fff,0 10px 0 #f3b7cf}
+body[data-world="cell-feed"] .team{background:rgba(255,255,255,.85);color:#3b2a4a}
+body[data-world="cell-feed"] .dd-title{left:110px;top:150px;width:1080px;align-items:flex-start;text-align:left;color:#3b2a4a}
+body[data-world="cell-feed"] .dd-ttag{color:#2f8a57;font-size:52px;letter-spacing:4px}
+body[data-world="cell-feed"] .dd-tsub{color:#6a3a5a}
+body[data-world="cell-feed"] .dd-rot{color:#8a2a58}
+body[data-world="cell-feed"] .dd-ta1{left:1250px;top:250px}
+body[data-world="cell-feed"] .dd-ta2{left:1650px;top:740px;opacity:.9}
+body[data-world="cell-feed"] .combo{right:auto;left:60px;top:126px;font-size:50px}
+body[data-world="cell-feed"] .dd-banner{left:540px;top:878px;width:920px;height:104px;font-size:34px;line-height:1.25;padding:0 24px;color:#8a2a58;background:#fff;border:5px dashed #e0709a;border-radius:30px}
+body[data-world="cell-feed"] .dd-tower{position:absolute;left:40px;top:0;width:460px;height:1000px}
+body[data-world="cell-feed"] .dd-roof{position:absolute;left:0;width:460px;height:140px}
+body[data-world="cell-feed"] .dd-roof svg{position:absolute;left:0;top:0}
+body[data-world="cell-feed"] .dd-roof-t{position:absolute;left:0;top:88px;width:460px;text-align:center;font-size:32px;font-weight:900;color:#8a2a58}
+body[data-world="cell-feed"] .dd-flag{position:absolute;left:206px;top:-40px;font-size:66px;opacity:0;transition:opacity .5s}
+body[data-world="cell-feed"] .dd-floor{position:absolute;left:0;width:460px;border:6px solid #3b2a4a;border-radius:26px;display:flex;align-items:center;padding:0 16px;box-sizing:border-box;background:#fff;transition:background .4s,box-shadow .4s}
+body[data-world="cell-feed"] .dd-fn{font-size:38px;font-weight:900;color:#3b2a4a;width:180px;line-height:1.05;word-break:keep-all}
+body[data-world="cell-feed"] .dd-slots{display:flex;gap:8px;flex-wrap:nowrap}
+body[data-world="cell-feed"] .dd-slot{border:5px dashed #b8a2b4;border-radius:16px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#3b2a4a;box-sizing:border-box}
+body[data-world="cell-feed"] .dd-slot.on{border:5px solid #3b2a4a}
+body[data-world="cell-feed"] .dd-floor.lit{background:#ffe88a;box-shadow:0 0 36px 6px rgba(255,214,77,.8)}
+body[data-world="cell-feed"] .dd-lab{left:10px;top:214px;width:280px;height:116px;color:#3b2a4a;background:#fff;border:6px solid #e0709a;border-radius:28px}
+body[data-world="cell-feed"] .dd-dest .hv-on{display:none}
+body[data-world="cell-feed"] .dd-dest.hover .hv-on,body[data-world="cell-feed"] .dd-dest.open .hv-on{display:inline}
+body[data-world="cell-feed"] .dd-dest.hover .hv-off,body[data-world="cell-feed"] .dd-dest.open .hv-off{display:none}
+body[data-world="cell-feed"] .dd-dest.open{filter:drop-shadow(0 0 24px #ffd84d)}
+body[data-world="cell-feed"] .dd-dest.open .dd-lab{background:#d9f7e3;border-color:#1f8f4f!important}
+body[data-world="cell-feed"] .dd-item-in{background:radial-gradient(circle at 30% 25%,#fff 0,#ffe3ee 22%,#ffc2d6 100%);border:7px solid #e0709a;border-radius:60px 60px 60px 18px;box-shadow:0 12px 0 #f3b7cf,0 20px 30px rgba(120,40,80,.25);padding:10px 40px}
+body[data-world="cell-feed"] .dd-item-in:before{content:"";position:absolute;right:46px;top:26px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.7)}
+body[data-world="cell-feed"] .dd-tag{color:#d93f7e;font-size:32px}
+body[data-world="cell-feed"] .dd-q{color:#3b2a4a;font-weight:900}
+body[data-world="cell-feed"] .dd-item.gold .dd-item-in{background:radial-gradient(circle at 30% 25%,#fff 0,#fff3b0 22%,#ffd84d 100%);border-color:#d99a2b;box-shadow:0 12px 0 #e8c25a,0 0 50px #ffd84d}
+body[data-world="cell-feed"] .dd-say{background:#5cc98a}
+body[data-world="cell-feed"] .dd-hero{left:1490px;top:486px;transition:transform .6s}
+body[data-world="cell-feed"] .dd-hero.big{transform:scale(1.12)}
+body[data-world="cell-feed"] .dd-talk{left:1480px;top:878px;width:400px;min-height:104px;padding:14px 20px;font-size:32px;color:#3b2a4a;background:#fff;border:6px solid #e0709a;border-radius:30px 30px 30px 8px}
+body[data-world="cell-feed"] .dd-after-h{font-size:50px;color:#1f6f45}
+body[data-world="cell-feed"] .dd-after-s{font-size:32px;color:#3b2a4a}
+body[data-world="cell-feed"] .dd-next{font-size:42px;padding:16px 34px;min-height:96px;min-width:0}
+
+/* ===== skin 3 · recycle — 분리수거 로봇 공장 ===== */
+body[data-world="recycle"]{--muted:rgba(233,255,251,.85)}
+body[data-world="recycle"] .card{background:#f4f8fb;color:#13293a;border:6px solid #3ecbb8;border-radius:22px;box-shadow:0 10px 0 #145e57}
+body[data-world="recycle"] .btn{background:#ff9f43;color:#2a1405;border-radius:22px;box-shadow:0 10px 0 #a3570f,0 0 0 6px rgba(255,255,255,.15)}
+body[data-world="recycle"] .btn.secondary{background:#e9fffb;color:#145e57;box-shadow:0 10px 0 #145e57,inset 0 0 0 4px #3ecbb8}
+body[data-world="recycle"] .title{color:#7cf7c8;text-shadow:0 8px 0 #145e57,0 0 34px rgba(124,247,200,.55);letter-spacing:4px}
+body[data-world="recycle"] .badge.info{background:#ffd23f;color:#13293a}
+body[data-world="recycle"] .team{background:rgba(10,24,34,.7)}
+body[data-world="recycle"] .dd-title{left:800px;top:140px;width:1060px;align-items:flex-start;text-align:left;color:#e9fffb}
+body[data-world="recycle"] .dd-ttag{color:#ffd23f;font-size:50px;letter-spacing:6px;background:repeating-linear-gradient(135deg,#13293a 0 18px,#1c3647 18px 36px);padding:4px 24px;border-radius:12px;border:4px solid #ffd23f}
+body[data-world="recycle"] .dd-tsub,body[data-world="recycle"] .dd-how{text-shadow:0 3px 0 rgba(0,0,0,.45)}
+body[data-world="recycle"] .dd-ta1{left:110px;top:300px}
+body[data-world="recycle"] .dd-ta2{left:430px;top:640px}
+body[data-world="recycle"] .dd-ta3{left:40px;top:780px;transform:scale(.62);transform-origin:left top}
+body[data-world="recycle"] .combo{right:40px;top:176px;font-size:58px;color:#ffd23f}
+body[data-world="recycle"] .dd-banner{left:470px;top:168px;width:1130px;height:90px;font-size:46px;color:#ffd23f;background:#0f2233;border:6px solid #3ecbb8;border-radius:20px;box-shadow:0 8px 0 #0a1820}
+body[data-world="recycle"] .dd-belt{position:absolute;left:180px;top:466px;width:1700px;height:64px;border-radius:32px;background:#2b3440;border:6px solid #11161d;overflow:hidden;box-shadow:0 10px 0 rgba(0,0,0,.3)}
+body[data-world="recycle"] .dd-belt-run{position:absolute;left:0;top:0;right:0;height:20px;background:repeating-linear-gradient(90deg,#8a96a6 0 40px,#5b6675 40px 80px);animation:ddBelt 1.1s linear infinite}
+body[data-world="recycle"] .dd-roll{position:absolute;left:0;top:0}
+@keyframes ddBelt{from{background-position:0 0}to{background-position:80px 0}}
+body[data-world="recycle"] .dd-bat{position:absolute;left:40px;width:124px;box-sizing:border-box;padding:4px 8px;display:flex;flex-direction:column-reverse;justify-content:flex-start;background:#0f2233;border:7px solid #e9fffb;border-radius:22px;box-shadow:0 8px 0 rgba(0,0,0,.35)}
+body[data-world="recycle"] .dd-bat-cap{position:absolute;left:30px;top:-30px;width:50px;height:24px;background:#e9fffb;border-radius:8px 8px 0 0}
+body[data-world="recycle"] .dd-seg{margin:4px 0;border-radius:10px;background:#1f3a4e;display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;transition:background .3s}
+body[data-world="recycle"] .dd-seg.first{background:#38e08a;box-shadow:0 0 14px #38e08a}
+body[data-world="recycle"] .dd-seg.second{background:#ffd23f;box-shadow:0 0 10px #ffd23f}
+body[data-world="recycle"] .dd-seg.miss,body[data-world="recycle"] .dd-seg.skip{background:#5b6675}
+body[data-world="recycle"] .dd-seg.flash{animation:ddFlash .5s ease-in-out 3}
+@keyframes ddFlash{50%{background:#fff;box-shadow:0 0 22px #fff}}
+body[data-world="recycle"] .dd-gn{left:22px;top:930px;width:160px;text-align:center;font-size:40px;color:#ffd23f;text-shadow:0 3px 0 rgba(0,0,0,.5)}
+body[data-world="recycle"] .dd-lid{transform-box:fill-box;transform-origin:0% 100%;transition:transform .2s ease}
+body[data-world="recycle"] .dd-dest.hover .dd-lid,body[data-world="recycle"] .dd-dest.open .dd-lid{transform:translate(-6px,-14px) rotate(-22deg)}
+body[data-world="recycle"] .dd-dest.hover{filter:drop-shadow(0 0 22px #7cf7c8)}
+body[data-world="recycle"] .dd-dest.open{filter:drop-shadow(0 0 26px #38e08a)}
+body[data-world="recycle"] .dd-lab{left:56px;top:112px;width:268px;height:136px;color:#13293a;background:#fff;border:6px solid #13293a;border-radius:18px}
+body[data-world="recycle"] .dd-dest.open .dd-lab{background:#c9f7de;border-color:#1f8a5a}
+body[data-world="recycle"] .dd-hint{top:310px;font-size:36px;color:#e9fffb;text-shadow:0 3px 0 rgba(0,0,0,.6)}
+body[data-world="recycle"] .dd-mk{right:10px;top:-40px}
+body[data-world="recycle"] .dd-item-in{background:linear-gradient(#f1f5f8,#c3ccd6);border:7px solid #3b4757;border-radius:28px;box-shadow:0 12px 0 rgba(0,0,0,.35);padding:0 34px}
+body[data-world="recycle"] .dd-item-in:before,body[data-world="recycle"] .dd-item-in:after{content:"";position:absolute;top:14px;width:16px;height:16px;border-radius:50%;background:#7a8696;box-shadow:0 142px 0 #7a8696}
+body[data-world="recycle"] .dd-item-in:before{left:14px}
+body[data-world="recycle"] .dd-item-in:after{right:14px}
+body[data-world="recycle"] .dd-tag{font-size:34px;color:#ffd23f;background:#13293a;border-radius:12px;padding:2px 20px;margin-bottom:6px}
+body[data-world="recycle"] .dd-q{color:#13293a}
+body[data-world="recycle"] .dd-item.gold .dd-item-in{background:linear-gradient(#fff3b0,#ffc83d);border-color:#a8730b;box-shadow:0 12px 0 rgba(0,0,0,.35),0 0 50px #ffd23f}
+body[data-world="recycle"] .dd-say{background:#3ecbb8}
+body[data-world="recycle"] .dd-hero{left:196px;top:150px}
+body[data-world="recycle"] .dd-hero .dd-flame{position:absolute;left:60px;top:286px;animation:ddFlame .15s linear infinite alternate}
+@keyframes ddFlame{from{transform:scaleY(.85)}to{transform:scaleY(1.15)}}
+body[data-world="recycle"] .dd-ant{animation:ddAnt 1.2s steps(2) infinite}
+@keyframes ddAnt{50%{fill:#ffd23f}}
+body[data-world="recycle"] .dd-after-h{font-size:60px;color:#13293a}
+body[data-world="recycle"] .dd-after-s{font-size:38px;color:#13293a}
+body[data-world="recycle"] .dd-next{font-size:46px;padding:20px 40px}

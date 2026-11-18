@@ -1,0 +1,30 @@
+name: 💡 만들어 주세요 (미사일·기능 요청)
+description: 수업이나 업무에 이런 게 있으면 좋겠어요
+title: "[요청] "
+labels: ["요청"]
+body:
+  - type: markdown
+    attributes:
+      value: "선생님 말로 편하게 적어 주세요. 개발 용어는 몰라도 돼요 🙂"
+  - type: dropdown
+    id: kind
+    attributes:
+      label: 어떤 종류인가요?
+      options: ["🎮 수업 게임", "🖥 슬라이드", "✨ 영상·화면", "📄 업무 문서(공문·가정통신문)", "📝 학습지", "🧰 수업 도구", "기타"]
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes:
+      label: 무엇을 만들고 싶으세요?
+      placeholder: "예) 보드게임처럼 주사위 굴려서 칸마다 문제 푸는 모둠 게임"
+    validations: { required: true }
+  - type: textarea
+    id: when
+    attributes:
+      label: 언제·어디서 쓰시나요?
+      placeholder: "예) 중2 사회, 전자칠판, 4모둠, 15분"
+  - type: textarea
+    id: feel
+    attributes:
+      label: 원하는 느낌이나 참고 자료
+      placeholder: "예) 차분하게 / 이 유튜브 영상처럼 (링크·사진 첨부 가능)"
