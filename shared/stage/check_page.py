@@ -105,6 +105,18 @@ OVERFLOW_JS = r"""
     if (!e.closest('.enter') && (r.right > st.right + 6 || r.left < st.left - 6 || r.bottom > st.bottom + 6 || r.top < st.top - 6)) out.push(['offstage', tag, txt.slice(0, 14)]);
     if (txt.length > 1 && /[가-힣A-Za-z0-9]/.test(txt)){ var fs = parseFloat(cs.fontSize); if (fs < floor - 0.5) out.push(['smalltext', tag + ' ' + fs + 'px', txt.slice(0, 14)]); }
   }
+  /* a Korean word split across two lines (line ends inside a word) */
+  var tw = document.createTreeWalker(scene, NodeFilter.SHOW_TEXT, null, false), nd;
+  while ((nd = tw.nextNode())){
+    var tx = nd.nodeValue; if (!tx || tx.length < 3 || !/[가-힣]/.test(tx)) continue;
+    var rg = document.createRange(), pTop = null, pCh = '';
+    for (var q = 0; q < tx.length; q++){
+      var c1 = tx.charAt(q); if (/\s/.test(c1)){ pTop = null; pCh = ''; continue; }
+      rg.setStart(nd, q); rg.setEnd(nd, q + 1); var rr = rg.getBoundingClientRect(); if (!rr.height) continue;
+      if (pTop !== null && rr.top > pTop + rr.height * 0.6 && /[가-힣]/.test(pCh) && /[가-힣]/.test(c1)){ out.push(['midword', 'text', tx.replace(/\s+/g, ' ').trim().slice(0, 14)]); break; }
+      pTop = rr.top; pCh = c1;
+    }
+  }
   return out;
 })(%d)
 """
@@ -202,6 +214,8 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     ov = [v for k, v in problems.items() if k.startswith(("overflow", "offstage"))]
     sm = [v for k, v in problems.items() if k.startswith("smalltext")]
     out.append(("FAIL" if ov else "PASS", "no text overflow / off-stage elements" + (f": {ov[:3]} -> shorten the text or use fewer choices" if ov else "")))
+    mw = [v for k, v in problems.items() if k.startswith("midword")]
+    out.append(("WARN" if mw else "PASS", "no Korean word broken across lines" + (f": {mw[:3]} -> shorten the text so words are not split" if mw else "")))
     out.append(("FAIL" if sm else "PASS", f"all in-game text >= {floor}px" + (f": {sm[:3]}" if sm else "")))
     return out
 

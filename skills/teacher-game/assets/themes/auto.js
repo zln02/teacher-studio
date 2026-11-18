@@ -226,7 +226,15 @@ COMP.themes.auto = (function(){
     var C = colors(TK), g, i, k = A.sig;
     if (!k) return;
     ctx.save();
-    if (k === "solar"){
+    if (k === "solar" && A.style === "minimal-premium"){
+      ctx.fillStyle = C.accent; ctx.beginPath(); ctx.arc(150, 1000, 120, 0, 6.283); ctx.fill();
+      ctx.strokeStyle = rgba(C.text, 0.55); ctx.lineWidth = 2;
+      var mr = [210, 320, 450, 600, 780];
+      for (i = 0; i < 5; i++){
+        ctx.beginPath(); ctx.ellipse(150, 1000, mr[i], mr[i] * 0.42, -0.1, 0, 6.283); ctx.stroke();
+        var ma = t * (0.25 - i * 0.035) + i * 1.7; ctx.fillStyle = C.text; ctx.beginPath(); ctx.arc(150 + Math.cos(ma) * mr[i], 1000 + Math.sin(ma) * mr[i] * 0.42, 7 + i * 2.5, 0, 6.283); ctx.fill();
+      }
+    } else if (k === "solar"){
       g = ctx.createRadialGradient(150, 1000, 40, 150, 1000, 340); g.addColorStop(0, "#fff3b0"); g.addColorStop(0.35, "#ffb02e"); g.addColorStop(1, "rgba(255,120,30,0)");
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(150, 1000, 340, 0, 6.283); ctx.fill();
       ctx.fillStyle = "#ffd25a"; ctx.beginPath(); ctx.arc(150, 1000, 210, 0, 6.283); ctx.fill();

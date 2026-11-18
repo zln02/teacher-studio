@@ -112,8 +112,8 @@ body[data-style=pop] .title{text-shadow:6px 6px 0 var(--primary),12px 12px 0 rgb
 body[data-style=party] .ts-q,body[data-style=party] .ts-tile{border-style:dotted!important;border-width:8px!important}
 body[data-style=show] .ts-q{border:4px solid var(--primary)!important;box-shadow:0 0 0 8px rgba(0,0,0,.3),0 0 0 11px var(--primary)!important}
 body[data-style=glass] .card,body[data-style=glass] .ts-tile,body[data-style=glass] .choice,body[data-style=glass] .ts-bin,body[data-style=glass] .ts-explcard{background:rgba(255,255,255,.14)!important;background-image:none!important;border:2px solid rgba(255,255,255,.45)!important;box-shadow:0 12px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:36px}
-body[data-style=glass] .choice.correct,body[data-style=glass] .ts-tile.done{background:var(--good)!important;color:#0b0b0b}
-body[data-style=glass] .choice.wrong,body[data-style=glass] .ts-tile.bad{background:var(--bad)!important;color:#0b0b0b}
+body[data-style=glass] .choice.correct,body[data-style=glass] .ts-tile.done{background:var(--good)!important;color:var(--on-good)}
+body[data-style=glass] .choice.wrong,body[data-style=glass] .ts-tile.bad{background:var(--bad)!important;color:var(--on-bad)}
 body[data-style=anime] .card,body[data-style=anime] .ts-tile,body[data-style=anime] .choice,body[data-style=anime] .ts-bin{border:7px solid #0b1b3a!important;box-shadow:8px 8px 0 #0b1b3a!important;border-radius:14px}
 body[data-style=anime] .title{-webkit-text-stroke:3px #0b1b3a;text-shadow:7px 7px 0 var(--primary)}
 body[data-style=pastel] .card,body[data-style=pastel] .ts-tile,body[data-style=pastel] .choice,body[data-style=pastel] .ts-bin{border-radius:44px!important;box-shadow:0 10px 0 rgba(166,61,143,.18)!important}

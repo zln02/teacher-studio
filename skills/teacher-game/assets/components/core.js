@@ -194,7 +194,11 @@ H.applyLayout = function(){
 H.applyTheme = function(){
   var th = H.theme();
   try { document.body.setAttribute("data-world", TK.theme); } catch (e) {}
-  NG.bg.custom(function(ctx, t, dt, W, Hh){ th.paint(ctx, t, dt, W, Hh, TK, S); });
+  if (!H._advWrapped && window.advanceTime){  /* test hook advanceTime() runs many virtual frames: skip the (costly) scenery paint inside it */
+    H._advWrapped = true; var adv = window.advanceTime;
+    window.advanceTime = function(ms){ S.fast = true; try { return adv.apply(window, arguments); } finally { S.fast = false; } };
+  }
+  NG.bg.custom(function(ctx, t, dt, W, Hh){ if (S.fast) return; th.paint(ctx, t, dt, W, Hh, TK, S); });
   H.mountLayer();
 };
 (function(){

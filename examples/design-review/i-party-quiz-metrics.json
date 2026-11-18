@@ -5,8 +5,8 @@
   "title": {
    "plain_cards": 0,
    "deco_density": 0.215,
-   "empty_ratio": 0.626,
-   "colors": 27,
+   "empty_ratio": 0.621,
+   "colors": 26,
    "hierarchy": 1.0,
    "min_contrast": 8.22,
    "low_contrast": 0,
@@ -15,8 +15,8 @@
   "question": {
    "plain_cards": 0,
    "deco_density": 0.194,
-   "empty_ratio": 0.602,
-   "colors": 25,
+   "empty_ratio": 0.606,
+   "colors": 26,
    "hierarchy": 1.23,
    "min_contrast": 9.53,
    "low_contrast": 0,
@@ -24,50 +24,48 @@
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.224,
-   "empty_ratio": 0.375,
+   "deco_density": 0.199,
+   "empty_ratio": 0.404,
    "colors": 26,
    "hierarchy": 1.23,
-   "min_contrast": 8.68,
+   "min_contrast": 9.53,
    "low_contrast": 0,
    "overlaps": 0
   },
   "wrong": {
    "plain_cards": 0,
-   "deco_density": 0.209,
-   "empty_ratio": 0.437,
+   "deco_density": 0.194,
+   "empty_ratio": 0.425,
    "colors": 34,
    "hierarchy": 1.23,
-   "min_contrast": 2.27,
-   "low_contrast": 1,
+   "min_contrast": 8.67,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.302,
-   "empty_ratio": 0.54,
-   "colors": 30,
+   "deco_density": 0.306,
+   "empty_ratio": 0.56,
+   "colors": 29,
    "hierarchy": 1.5,
-   "min_contrast": 8.9,
+   "min_contrast": 8.81,
    "low_contrast": 0,
    "overlaps": 1
   }
  },
  "summary": {
-  "deco_density": 0.209,
-  "empty_ratio": 0.471,
-  "colors": 28.333,
+  "deco_density": 0.196,
+  "empty_ratio": 0.478,
+  "colors": 28.667,
   "hierarchy": 1.5,
-  "min_contrast": 2.27,
+  "min_contrast": 8.67,
   "overlaps": 0,
-  "title_empty_ratio": 0.626,
+  "title_empty_ratio": 0.621,
   "title_deco_density": 0.215,
   "plain_cards": 0
  },
- "verdict": "WARN",
- "hints": [
-  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
- ],
+ "verdict": "PASS",
+ "hints": [],
  "missing_screens": [],
  "prop_relevance": {
   "checked": true,
@@ -94,5 +92,10 @@
   "transition": "fade"
  },
  "fingerprint": "000000000000000000000000000000000000000000000000001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100001111111111111111111100000000000000000000000000000000000000000000000000000000000000000000000000",
- "similar_to": []
+ "similar_to": [
+  [
+   "j-tv-quiz-dokdo.html",
+   0.56
+  ]
+ ]
 }

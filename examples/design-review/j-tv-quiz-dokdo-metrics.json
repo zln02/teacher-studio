@@ -4,9 +4,9 @@
  "screens": {
   "title": {
    "plain_cards": 0,
-   "deco_density": 0.385,
-   "empty_ratio": 0.502,
-   "colors": 43,
+   "deco_density": 0.386,
+   "empty_ratio": 0.5,
+   "colors": 44,
    "hierarchy": 2.3,
    "min_contrast": 12.63,
    "low_contrast": 0,
@@ -14,60 +14,58 @@
   },
   "question": {
    "plain_cards": 0,
-   "deco_density": 0.404,
-   "empty_ratio": 0.328,
-   "colors": 39,
+   "deco_density": 0.389,
+   "empty_ratio": 0.311,
+   "colors": 38,
    "hierarchy": 1.33,
-   "min_contrast": 4.41,
-   "low_contrast": 2,
+   "min_contrast": 4.82,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.417,
-   "empty_ratio": 0.202,
-   "colors": 45,
+   "deco_density": 0.395,
+   "empty_ratio": 0.234,
+   "colors": 40,
    "hierarchy": 1.33,
-   "min_contrast": 4.41,
-   "low_contrast": 2,
+   "min_contrast": 4.82,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "wrong": {
    "plain_cards": 0,
-   "deco_density": 0.419,
-   "empty_ratio": 0.364,
-   "colors": 40,
-   "hierarchy": 5.53,
-   "min_contrast": 3.55,
-   "low_contrast": 1,
+   "deco_density": 0.407,
+   "empty_ratio": 0.312,
+   "colors": 44,
+   "hierarchy": 1.33,
+   "min_contrast": 4.82,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.7,
-   "empty_ratio": 0.224,
-   "colors": 33,
+   "deco_density": 0.714,
+   "empty_ratio": 0.22,
+   "colors": 38,
    "hierarchy": 1.5,
-   "min_contrast": 11.31,
+   "min_contrast": 11.43,
    "low_contrast": 0,
    "overlaps": 1
   }
  },
  "summary": {
-  "deco_density": 0.413,
-  "empty_ratio": 0.298,
-  "colors": 41.333,
-  "hierarchy": 5.53,
-  "min_contrast": 3.55,
+  "deco_density": 0.397,
+  "empty_ratio": 0.286,
+  "colors": 40.667,
+  "hierarchy": 2.3,
+  "min_contrast": 4.82,
   "overlaps": 0,
-  "title_empty_ratio": 0.502,
-  "title_deco_density": 0.385,
+  "title_empty_ratio": 0.5,
+  "title_deco_density": 0.386,
   "plain_cards": 0
  },
- "verdict": "WARN",
- "hints": [
-  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
- ],
+ "verdict": "PASS",
+ "hints": [],
  "missing_screens": [],
  "prop_relevance": {
   "checked": false,
@@ -90,11 +88,11 @@
   "tpos": "top",
   "transition": "iris"
  },
- "fingerprint": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111110000011111111111111111110000011111111101111111110000011111111101111111110000011111111101111111110000011111111101111111110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+ "fingerprint": "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011111111111111111110000011111111111111111110000011111111111111111110000011111111101111111110000011111111101111111110000011111111101111111110000011111111101111111110000000000000000000000000000000000000000000000000000000000000000000000000",
  "similar_to": [
   [
    "i-party-quiz.html",
-   0.56
+   0.65
   ]
  ]
 }

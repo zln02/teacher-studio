@@ -104,6 +104,11 @@ def make_tokens(spec: dict) -> dict:
     return tk
 
 
+def _on(bg: str) -> str:
+    """Text colour (black or white) with the better contrast on a state colour (>= 4.5 when the palette allows it)."""
+    return "#0b0b0b" if design.contrast("#0b0b0b", bg) >= design.contrast("#ffffff", bg) else "#ffffff"
+
+
 def tokens_css(tk: dict) -> str:
     """CSS variables + font pair from the tokens (appended after the engine styles)."""
     t = tk["type"]
@@ -117,7 +122,8 @@ def tokens_css(tk: dict) -> str:
             "--font-body:\"%s\",%s,%s;--font-display:\"%s\",%s,%s!important}\n"
             % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"],
                f["body"], body_fb, sys_fb, f["display"], disp_fb, sys_fb)
-            + ".title{font-size:var(--t-title)}\n")
+            + ".title{font-size:var(--t-title)}\n"
+            + ":root{--on-good:%s;--on-bad:%s}\n" % (_on(tk["colors"]["good"]), _on(tk["colors"]["bad"])))
 
 
 def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:

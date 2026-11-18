@@ -5,8 +5,8 @@
   "title": {
    "plain_cards": 0,
    "deco_density": 0.173,
-   "empty_ratio": 0.665,
-   "colors": 52,
+   "empty_ratio": 0.663,
+   "colors": 51,
    "hierarchy": 1.0,
    "min_contrast": 5.7,
    "low_contrast": 0,
@@ -15,8 +15,8 @@
   "question": {
    "plain_cards": 0,
    "deco_density": 0.154,
-   "empty_ratio": 0.444,
-   "colors": 44,
+   "empty_ratio": 0.457,
+   "colors": 43,
    "hierarchy": 1.0,
    "min_contrast": 11.29,
    "low_contrast": 0,
@@ -24,19 +24,19 @@
   },
   "correct": {
    "plain_cards": 0,
-   "deco_density": 0.175,
-   "empty_ratio": 0.438,
-   "colors": 41,
+   "deco_density": 0.169,
+   "empty_ratio": 0.435,
+   "colors": 43,
    "hierarchy": 1.05,
-   "min_contrast": 3.71,
-   "low_contrast": 2,
+   "min_contrast": 5.3,
+   "low_contrast": 0,
    "overlaps": 0
   },
   "result": {
    "plain_cards": 0,
-   "deco_density": 0.285,
-   "empty_ratio": 0.641,
-   "colors": 47,
+   "deco_density": 0.306,
+   "empty_ratio": 0.621,
+   "colors": 45,
    "hierarchy": 1.4,
    "min_contrast": 5.7,
    "low_contrast": 0,
@@ -44,20 +44,18 @@
   }
  },
  "summary": {
-  "deco_density": 0.164,
-  "empty_ratio": 0.441,
-  "colors": 42.5,
+  "deco_density": 0.162,
+  "empty_ratio": 0.446,
+  "colors": 43,
   "hierarchy": 1.4,
-  "min_contrast": 3.71,
+  "min_contrast": 5.3,
   "overlaps": 0,
-  "title_empty_ratio": 0.665,
+  "title_empty_ratio": 0.663,
   "title_deco_density": 0.173,
   "plain_cards": 0
  },
- "verdict": "WARN",
- "hints": [
-  "글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요"
- ],
+ "verdict": "PASS",
+ "hints": [],
  "missing_screens": [
   "wrong"
  ],

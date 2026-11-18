@@ -4,8 +4,8 @@ body[data-world="tv-studio"] .ts-choice{border-radius:70px;box-shadow:0 6px 0 rg
 body[data-world="tv-studio"] .ts-choice .mark{border:4px solid #fff;color:#fff}
 body[data-world="tv-studio"] .ts-choice[data-i="0"] .mark{background:#d62e4d}
 body[data-world="tv-studio"] .ts-choice[data-i="1"] .mark{background:#1f6fd1}
-body[data-world="tv-studio"] .ts-choice[data-i="2"] .mark{background:#a86a00}
-body[data-world="tv-studio"] .ts-choice[data-i="3"] .mark{background:#0f8a4e}
+body[data-world="tv-studio"] .ts-choice[data-i="2"] .mark{background:#8f5900}
+body[data-world="tv-studio"] .ts-choice[data-i="3"] .mark{background:#0b7440}
 body[data-world="tv-studio"] .ts-ox{border-radius:50px}
 body[data-world="tv-studio"] .ts-explcard{border-radius:16px;border-left:16px solid #ffd23f;box-shadow:0 8px 0 rgba(0,0,0,.35)}
 body[data-world="tv-studio"] .ts-chip{border-radius:999px;box-shadow:0 6px 0 rgba(0,0,0,.3)}

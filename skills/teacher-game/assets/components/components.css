@@ -15,19 +15,19 @@
 .ts-explcard{display:flex;align-items:center;justify-content:space-between;padding:18px 34px;background:var(--card);color:var(--cardText)}
 .ts-expltext{font-size:var(--t-b);font-weight:700;line-height:1.35;flex:1;margin-right:28px}
 .ts-next{min-height:var(--btn-h);font-size:var(--t-b)}
-.choice.correct{background:var(--good);color:#0b0b0b;border-color:var(--text)}
-.choice.wrong{background:var(--bad);color:#0b0b0b;border-color:var(--text)}
+.choice.correct{background:var(--good);color:var(--on-good);border-color:var(--text)}
+.choice.wrong{background:var(--bad);color:var(--on-bad);border-color:var(--text)}
 .choice.dim{opacity:.45}
 .ts-center{position:absolute;left:0;top:0;width:1920px;height:1080px}
 .ts-tile{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;border:5px solid var(--cardBorder);background:var(--card);color:var(--cardText);border-radius:20px;box-shadow:0 8px 0 rgba(0,0,0,.25);font-family:var(--font-body);cursor:pointer}
-.ts-tile.done{background:var(--good);color:#0b0b0b;border-color:var(--text)}
+.ts-tile.done{background:var(--good);color:var(--on-good);border-color:var(--text)}
 .ts-tile.sel{outline:8px solid var(--primary)}
-.ts-tile.bad{background:var(--bad);color:#0b0b0b}
+.ts-tile.bad{background:var(--bad);color:var(--on-bad)}
 .ts-note{font-size:var(--t-s);font-weight:700;color:var(--text);text-align:center;line-height:1.35}
 .ts-pill{display:inline-flex;align-items:center;gap:10px;padding:6px 26px;border-radius:999px;background:var(--card);color:var(--cardText);border:4px solid var(--cardBorder);font-size:var(--t-s);font-weight:900}
 .ts-lock{width:230px;height:230px;border-radius:28px;border:6px solid var(--cardBorder);background:var(--card);color:var(--cardText);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:var(--t-s);font-weight:900;box-shadow:0 8px 0 rgba(0,0,0,.25)}
 .ts-lock .ico{font-size:96px;line-height:1.1}
-.ts-lock.open{background:var(--good);color:#0b0b0b;border-color:var(--text)}
+.ts-lock.open{background:var(--good);color:var(--on-good);border-color:var(--text)}
 .ts-lock.now{outline:8px solid var(--primary)}
 .ts-clue{padding:18px 36px;font-size:var(--t-b);font-weight:800;background:var(--card);color:var(--cardText);border-radius:20px;border:4px solid var(--cardBorder);line-height:1.35}
 .ts-life{font-size:var(--t-s);letter-spacing:4px}
@@ -54,11 +54,11 @@
 @keyframes tshop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(-46px) scale(.96,1.05)}55%{transform:translateY(0) scale(1.06,.94)}100%{transform:translateY(0) scale(1,1)}}
 #ts-deco[data-scene=title] .ts-host,#ts-deco[data-scene=countdown] .ts-host{left:1400px;bottom:20px;transform:scale(1.02)}
 #ts-deco[data-scene=result] .ts-host{left:70px;bottom:10px;transform:scale(.9)}
-#ts-bubble{position:absolute;left:30px;bottom:310px;max-width:560px;z-index:22;padding:12px 28px;border-radius:30px 30px 30px 6px;background:#fff;color:#1a1a1a;border:5px solid #1a1a1a;font-size:var(--t-s);font-weight:900;line-height:1.3;pointer-events:none;box-shadow:0 8px 0 rgba(0,0,0,.25);font-family:var(--font-body)}
+#ts-bubble{position:absolute;left:2px;bottom:318px;width:176px;max-width:176px;z-index:22;padding:10px 12px;border-radius:26px 26px 26px 6px;background:#fff;color:#1a1a1a;border:4px solid #1a1a1a;font-size:var(--t-s);font-weight:900;line-height:1.25;pointer-events:none;box-shadow:0 6px 0 rgba(0,0,0,.25);font-family:var(--font-body);text-align:center}
 #ts-bubble.empty{display:none}
 #ts-deco[data-scene=title]~#ts-bubble{display:none}
-#ts-deco[data-scene=countdown]~#ts-bubble{left:1180px;bottom:480px}
-#ts-deco[data-scene=result]~#ts-bubble{left:200px;bottom:430px}
+#ts-deco[data-scene=countdown]~#ts-bubble{left:1180px;bottom:480px;width:auto;max-width:480px}
+#ts-deco[data-scene=result]~#ts-bubble{left:200px;bottom:430px;width:auto;max-width:420px}
 /* ---- no flat title shine box on dark themes ---- */
 .title.shine:after{display:none}
 /* ---- themed cards: pattern + coloured edge (auto theme sets --ts-pat), card backs with emblem ---- */
@@ -91,3 +91,9 @@ body[data-hostcol="1"] #ts-deco[data-scene=result] .ts-host{transform:scale(.9)}
 body[data-hostcol="1"] #ts-bubble{left:70px;bottom:370px}
 /* animation must not pin the end transform (variants rotate cards/buttons) */
 .enter{animation-fill-mode:backwards}
+
+/* Korean line breaking: break between words (spaces), never inside a word; very long words may still wrap */
+#scene,#hud,#ts-bubble,.title,.subtitle,.btn,.choice,.card,.ts-tile{word-break:keep-all;overflow-wrap:break-word;word-wrap:break-word}
+/* answer-state text always readable on the state colour (the engine skins force white with !important, so the selector is made stronger) */
+body .choice.correct.correct.correct,body .ts-tile.done.done.done,body .ts-lock.open.open.open{color:var(--on-good)!important}
+body .choice.wrong.wrong.wrong,body .ts-tile.bad.bad.bad{color:var(--on-bad)!important}
