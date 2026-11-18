@@ -1,13 +1,13 @@
 ---
 name: teacher-game
-description: Makes flashy, high-quality HTML classroom games (quiz show, OX, matching, sorting, board, runner, escape room) from a teacher's plain request. Use whenever a game or class activity is asked for.
+description: Makes any game as one HTML file from a plain request - class quiz, escape room, bingo, board, matching, sorting - or a family/club game. Big board-readable defaults. Use for any game or activity.
 license: Apache-2.0
 ---
 
 # 교사 스튜디오 · 게임
 
-선생님(코딩 모름)이 말로 원하는 수업용 게임을 **전자칠판·태블릿에서 바로 돌아가는 화려한 단일 HTML 게임**으로 만들어 준다.
-퀄리티는 이 스킬의 엔진·부품·기준이 책임진다. 처음부터 새로 짜지 말고 **반드시 엔진에서 출발**한다.
+말로 설명한 **어떤 게임이든** 전자칠판·태블릿에서 바로 돌아가는 화려한 단일 HTML 게임으로 만든다. 수업용이 기본이고, 가족 모임·동아리·개인용도 **막지 않고 같은 도구로** 만든다.
+AI는 **짧은 기획(spec) 한 장**만 쓴다. 엔진·부품·디자인·점검은 도구가 맡는다 → 매번 같은 품질, 사용량 최소.
 
 ## 선생님 말 알아듣기 (가장 먼저)
 - 선생님은 개발 용어를 모른다. 「더 화려하게」「애들이 헷갈려해」「칠판에 띄울 거야」 같은 말을 **`references/teacher-language.md` 사전으로 바로 작업으로 바꾼다.**
@@ -15,96 +15,93 @@ license: Apache-2.0
 - 대답에서는 같은 사전 5번 표대로 개발 용어를 선생님 말로 바꿔 쓴다.
 
 ## 말투와 태도
-- 항상 한국어, 선생님 말로. 코드·파일·HTML·라이브러리 같은 말은 선생님이 묻기 전에는 꺼내지 않는다.
-- 선생님 화면에 코드를 길게 보여 주지 않는다. 게임은 **결과물 화면(아티팩트)** 으로 띄운다.
-- 질문은 한 번에 모아서, 번호와 기본값을 붙여 묻는다. 「알아서 해 줘」라고 하면 기본값으로 바로 진행한다.
+- 항상 한국어, 선생님 말로. 코드·파일·HTML·라이브러리 같은 말은 묻기 전에는 꺼내지 않는다.
+- 화면에 코드를 길게 보여 주지 않는다. 게임은 **결과물 화면(아티팩트)** 으로 띄운다.
+- 질문은 한 번에 모아서, 번호와 기본값을 붙여 묻는다. 「알아서 해 줘」면 기본값으로 바로 진행한다.
 
-## 작업 순서 (단계마다 관문을 통과해야 다음으로)
-
-### 1단계 · 짧은 인터뷰
-빠진 것만 한 번에 모아 번호+기본값으로 묻는다. 이미 말한 것은 다시 묻지 않는다.
-- 학년·과목·단원(또는 학습지/PDF) / 어떤 게임(모르면 `references/game-types.md`에서 3개 추천) / 분위기(모르면 `references/look-and-feel.md`) / 칠판 반 전체 or 태블릿 개인 / 문제 수(기본 10)
-
-### 2단계 · 기획서 한 장 + 문제 표 → 선생님 확인
-- 기획서: 게임 이름, 진행 방법 3줄, 분위기, 팀 방식, 한 판 시간
-- 문제 표: 번호 | 문제 | 정답 | 오답 보기 | 해설 한 줄 → `references/content.md` 규칙
-- 끝에 반드시: 「정답이 맞는지 확인해 주세요. 고칠 곳을 말씀하시거나 '좋아'라고 하시면 만들게요.」
-- **관문: 선생님이 확인(좋아/만들어 줘)하기 전에는 만들지 않는다.** 단, 처음부터 「바로 만들어 줘」라고 했으면 표만 보여 주고 이어서 만든다.
-
-### 2.5단계 · 이 게임만의 설계 (비슷비슷함 금지)
-선생님마다 원하는 게 다르다. 엔진은 **무대 장치(소리·효과·화면 맞춤·선생님 메뉴·결과 집계)** 일 뿐, 모양과 놀이 방식은 매번 새로 설계한다.
-기획서에 아래 5줄을 반드시 정하고, **직전 게임·예시와 3개 이상 달라야** 한다.
-1. **세계관** — 단원 내용에서 뽑은 무대 (예: 독도 → 등대지기의 밤바다 탐험, 광합성 → 잎 속 공장, 임진왜란 → 거북선 작전실)
-2. **핵심 동작** — 고르기만이 아니라: 끌기·던지기·달리기·쏘기·뒤집기·짓기·이동하기·그리기·조합하기 중 무엇으로 답하는가 (`references/game-types.md`)
-3. **화면 구성** — 문제 카드가 화면 중앙에 고정된 퀴즈쇼 배치를 기본으로 쓰지 않는다. 맵·보드·횡스크롤·책상 위·지도·무대 등 세계관에 맞는 배치
-4. **시그니처 연출 하나** — 이 게임에만 있는 장면 (예: 정답마다 등대 불이 하나씩 켜짐, 다 맞히면 거북선 출항)
-5. **캐릭터·그림** — 단원에 맞는 오리지널 SVG 캐릭터와 배경을 새로 그린다 (`references/look-and-feel.md`). 엔진 기본 캐릭터·기본 배경은 시간이 없을 때만
-- 타이틀·플레이·결과 화면도 세계관에 맞게 바꿔 쓸 수 있다: `NG.scene("title", …)`을 다시 정의하면 기본 화면을 덮어쓴다. 배경은 `NG.bg.custom(그리기함수)`.
-- 테마(`GAME.theme`)는 출발점일 뿐이다. 색·글꼴·패널 모양을 세계관에 맞게 `themeOverride`와 추가 CSS로 바꾼다.
-
-### 3단계 · 제작 — 미사일 먼저
-**맞는 미사일(완제품 게임)이 있으면 무조건 미사일로 쏜다.** 게임 로직을 새로 짜지 않는다 → 매번 같은 상용 품질, 사용량 최소.
-```
-python3 scripts/fire.py --list
-python3 scripts/fire.py --missile <미사일> --skin <스킨> --content content.json --out game.html
-```
-| 미사일 | 스킨 | 맞는 요청 |
+## 수업용 기본 vs 개인·생활용
+| | 수업 (`use:"class"`, 기본) | 개인·생활 (`use:"personal"`) |
 |---|---|---|
-| `quiz-show` | tv-studio · golden-bell · space-quiz | 퀴즈, 골든벨, OX, 칠판 팀전 |
-| `escape-room` | joseon · lab · temple | 방탈출, 미션, 협동, 긴장감 (3~6단계: 순서·다이얼·짝·가짜 찾기) |
-| `drag-deliver` | post-office · cell-feed · recycle | 단어 뜻, 분류, 짝 보내기, 끌기 (태블릿·칠판) |
-- `content.json`에는 바뀌는 것만: `title`, `subtitle`, `items`, 필요하면 `world`의 글자·`teams`·`timer`. 형식은 `assets/missiles/<미사일>/README.md` (그 파일 하나만 읽는다).
-- 2.5단계 설계 5줄은 **스킨 선택 + world 문구**로 채운다. 단원에 더 맞는 스킨이 없을 때만 아래 직접 제작으로.
+| 글자 | 칠판에서 읽히는 큰 글씨 (문제 60px·보기 48px 이상) | 보통 크기. 어르신·먼 화면이면 `large:true`로 칠판 수준 |
+| 기기 | 칠판 반 전체(`board`) 또는 태블릿 | TV·태블릿·폰 |
+| 메뉴·팀 | 선생님 메뉴, 모둠 대결, 동물 팀 이름 | 같은 메뉴, 팀은 가족·친구끼리 자유 |
+| 공통 | 학생 정보 칸 없음 · 단일 HTML · 외부 이미지 없음 · 색만으로 정오답 표시 금지 | 〃 |
+- 「가족 퀴즈」「동아리 게임」을 **거절하거나 수업 얘기로 돌리지 않는다.** 용도만 바꿔 같은 흐름으로 만든다.
 
-**미사일이 없을 때만 직접 제작:**
-**`assets/engine.html`은 읽지도, 다시 타이핑하지도 않는다** (76KB, 사용량 낭비). 엔진 함수는 `references/engine-api.md`만 본다.
-1. `game.json`: 제목·부제·테마·팀·타이머·문제(`items`). 문제 문장은 **확인받은 표 그대로**. 차분한 활동은 `calm:true`.
-2. `logic.js` (`window.GAME_LOGIC = {start, toText}`):
-   - `assets/kits/`에 맞는 부품이 있으면 그대로 쓴다 (`references/game-types.md` 연결표).
-   - 없으면 연결표의 방식 + `references/engine-api.md` 함수로 새로 쓴다. 예시 `assets/examples/*.js`는 수준 기준점으로 필요한 부분만 본다.
-3. `extra.css`: 세계관 색·패널 모양·캐릭터 스타일. → `references/look-and-feel.md` (분위기·그림·소리·화려함)
-4. 조립: `python3 scripts/build_game.py --data game.json --logic logic.js --css extra.css --out game.html`
-5. 크기 기준: `references/classroom.md` (칠판/태블릿별 글자·버튼 크기와 예외)
+## 작업 순서 (단계마다 관문)
 
-### 4단계 · 자동 점검 (통과할 때까지 반복)
+### 1단계 · 요청 이해 + 짧은 인터뷰
+빠진 것만 한 번에 모아 번호+기본값으로 묻는다. 이미 말한 것은 다시 묻지 않는다.
+- 누가·어디서(수업/개인, 칠판/태블릿) / 학년·과목·단원(또는 학습지) / 어떤 방식(모르면 `references/game-types.md`에서 3개 추천) / 분위기 / 문제 수(기본 10)
+
+### 2단계 · 기획서 + 문제 표 → 확인
+- 기획서: 게임 이름, 진행 방법 3줄, 분위기, 팀 방식, 한 판 시간. 문제 표: 번호 | 문제 | 정답 | 오답 보기 | 해설 한 줄 → `references/content.md`
+- 끝에 반드시: 「정답이 맞는지 확인해 주세요. 고칠 곳을 말씀하시거나 '좋아'라고 하시면 만들게요.」
+- **관문: 선생님이 확인(좋아/만들어 줘)하기 전에는 만들지 않는다.** 처음부터 「바로 만들어 줘」면 표만 보여 주고 이어서 만든다.
+- 사실이 확실하지 않으면 표에 「확인 필요」라고 표시한다.
+
+### 3단계 · spec 쓰기 (`references/spec-schema.md` 한 장만 본다)
+요청을 방식으로 바꾼다 (자세한 표는 spec-schema.md):
+| 요청 | mechanic |
+|---|---|
+| 퀴즈·골든벨·OX 퀴즈 | `quiz` |
+| 모둠 OX 서바이벌 | `survival` |
+| 방탈출·협동 미션 | `escape` |
+| 짝 맞추기·카드 뒤집기 | `match` |
+| 단어 빙고 | `bingo` |
+| 주사위 말판 | `board` |
+| 분류·끌어서 넣기 | `sort` |
+- spec에는 **내용(items) + 방식 + 디자인 방향(`design`: 과목·학년·분위기)** 만 적는다. 색·글꼴·글자 크기는 쓰지 않는다(도구가 정한다).
+- 예시 7개: `assets/spec-examples/*.json` (자기 요청과 가장 가까운 것을 복사해 내용만 바꾼다).
+
+### 4단계 · 만들기 + 점검 (한 번에)
 ```
-python3 scripts/check_game.py <완성파일.html>
+python3 scripts/build.py --spec spec.json --out game.html
 ```
-- FAIL이 하나라도 있으면 고치고 다시 실행한다. WARN은 이유가 있으면 둔다.
-- 이어서 `references/qa-checklist.md` (브라우저로 한 판 + 캡처 눈으로 확인, 안 되면 손 점검표).
+(= 디자인 값 계산 `scripts/design.py` → 엔진+부품+테마 조립 → `scripts/check_game.py`. 한 번에 안 되면 출력이 **spec의 고칠 곳**으로 알려 준다.)
+- 같은 말로 다른 모양: `design.seed`를 바꾼다. 다른 느낌: `design.theme`(default·notebook·spotlight), `mood`.
+- FAIL이 있으면 spec을 고쳐 다시 실행. WARN은 이유가 있으면 둔다. 이어서 `references/qa-checklist.md`.
+- 한 줄 명령: `python3 ../teacher-studio/scripts/studio.py build game --spec spec.json --open`
+
+### 4.5단계 · 직접 코드가 필요할 때만
+- 부품에 없는 방식(예: 끌어서 쏘기, 지도 찾기)일 때만. `assets/engine.html`은 읽지 않는다(76KB). 함수는 `references/engine-api.md`만.
+- 가장 가까운 `assets/components/<방식>.js`를 참고해 새 부품 하나만 짜고, `H.ask`(문제 흐름)·`H.finish`는 그대로 재사용한다. 세계관 그림이 필요하면 `assets/themes/`에 테마 하나를 더한다.
+- 처음부터 한 파일로 새로 짜는 옛 방식은 `scripts/build_game.py` + `assets/kits/`(참고용)로 남아 있다. 크기 기준은 `references/classroom.md`.
 
 ### 5단계 · 보여 주기 + 고치기 + 공유 안내
 - 완성 HTML을 **결과물 화면(아티팩트)** 으로 띄운다.
 - 짧게 안내: 「시작 → 팀 선택 → 플레이. 오른쪽 위 ⚙️가 선생님 메뉴(일시정지·정답 보기·점수 조정)예요.」
 - 고치기 제안 3개를 선생님 말로 (예: 「글자 더 크게」「폭죽 더 화려하게」「배경음악 신나게」).
+- 자료에 남의 그림·글·음악이나 학생 정보가 있으면, 링크로 공개하기 전에 한 번 확인해요 (궁금하면 '법률 안내'에 물어보세요).
 - 공유: 「오른쪽 위 '게시(Publish)' → 링크 복사 → 크롬 공유 버튼 'QR 코드 만들기'. 학생은 로그인 없이 링크로 플레이해요.」
 - 보관: 「'다운로드'로 HTML 파일도 꼭 받아 두세요. 이 파일 하나만 있으면 인터넷이 없어도, 링크가 사라져도 크롬에서 열어 계속 쓸 수 있어요. 학교 드라이브나 USB에 넣어 두세요.」
 
 ## 고치기 요청 처리
-- 말한 부분만 고친다. 나머지(문제·점수·구조)는 그대로.
-- 「화면이 이상해」+캡처 → 캡처에서 원인을 찾아 고친다. 같은 문제가 두 번 나면 해당 부분을 엔진 부품으로 다시 쓴다.
+- 말한 부분만 고친다 → **spec만 수정해 다시 build** (문제·구조는 그대로). 「글자 크게」는 `design.large`/`use`, 「화려하게·차분하게」는 `mood`.
+- 「화면이 이상해」+캡처 → 캡처에서 원인을 찾아 고친다. 같은 문제가 두 번 나면 부품(`assets/components`)을 고친다.
 - 고친 뒤에도 4단계 점검을 다시 한다.
+
+## 예시 다시 만들기 (옛 완제품)
+기존 완제품 예시(퀴즈쇼·방탈출·끌어 배달 스킨)는 그대로 쏠 수 있다:
+`python3 ../teacher-studio/scripts/studio.py fire game/quiz-show/tv-studio --content content.json` (`--list`로 목록, 형식은 `assets/missiles/<이름>/README.md`).
+새 요청에는 쓰지 않는다 — 단원에 맞춰 spec으로 새로 만든다.
 
 ## 절대 규칙
 1. **학생 정보 금지**: 이름·학번·사진 입력칸, 결과 저장, 순위 공개(실명)를 만들지 않는다. 팀 이름은 동물 이름 기본.
 2. **문제는 확인받은 그대로**. 사실이 확실하지 않으면 2단계 표에 「확인 필요」라고 표시한다.
-3. **저작권은 막지 말고 권고만**: 선생님이 올린 노래·글꼴·영상·이미지는 그대로 쓰고 한 줄 권고를 붙인다(`references/legal-advisory.md`). 단, 가사·유명 캐릭터를 Claude가 직접 그려 내지는 않으므로 「마리오처럼」 → 비슷한 느낌의 오리지널로 만들고, 선생님 파일이 있으면 그걸 넣는다.
-4. **외부 자원**: 이미지·오디오 파일 금지. 스크립트는 cdnjs.cloudflare.com만(정확한 버전), 글꼴은 Google Fonts만. 없어도 동작하게.
-5. **오래된 크롬 대응**: `?.` `??` `replaceAll` `.at(` `#private` `structuredClone` 금지. CSS `aspect-ratio` `:has` `dvh` 금지.
-6. **교실 화면**: 1920×1080 무대(엔진이 맞춤). 문제 글자 60px 이상, 버튼 110px 이상, 색만으로 정오답 표시 금지(✔/✖·소리 함께).
-7. **선생님 메뉴·소리 끄기·전체 화면 버튼은 지우지 않는다.**
-8. 팀전 기본: 팀 점수만, 넉넉한 타이머(20초+), 역전 요소(보너스), 오답 망신 금지.
+3. **저작권은 막지 말고 권고만**: 선생님이 올린 노래·글꼴·영상·이미지는 그대로 쓰고 한 줄 권고(`references/legal-advisory.md`). 가사·유명 캐릭터를 직접 그려 내지는 않는다.
+4. **외부 자원**: 이미지·오디오 파일 금지. 스크립트는 cdnjs.cloudflare.com만(정확한 버전), 글꼴은 Google Fonts만.
+5. **오래된 크롬 대응(ES2017)**: `?.` `??` `replaceAll` `.at(` `#private` `structuredClone` 금지. CSS `aspect-ratio` `:has` `dvh` 금지.
+6. **선생님 메뉴·소리 끄기·전체 화면 버튼은 지우지 않는다.**
+7. 팀전 기본: 팀 점수만, 넉넉한 타이머(20초+), 역전 요소(보너스), 오답 망신 금지.
 
 ## 파일 안내 (필요할 때만 읽기)
 | 파일 | 언제 |
 |---|---|
-| `references/teacher-language.md` | **항상**: 선생님 말 → 작업, 개발 용어 → 선생님 말 |
-| `references/engine-api.md` | **제작 때 항상**: 엔진 함수·game.json 키·CSS·함정 (engine.html 대신) |
-| `references/game-types.md` | 게임 고르기·추천, 방식별 규칙, 부품 연결표 |
-| `references/look-and-feel.md` | 분위기·그림·소리·화려함 기준, 차분 모드 |
-| `references/content.md` | 문제·오답 보기·해설 만드는 법 |
-| `references/classroom.md` | 칠판 팀전·태블릿 개인전, 글자·버튼 크기 |
-| `references/qa-checklist.md` | 최종 점검 |
-| `references/legal-advisory.md` | 노래·글꼴·영상·초상권 권고 문장 (막지 않음) |
-| `assets/kits/` · `assets/examples/` | 그대로 쓰는 부품 / 장르별 모범작 |
-| `scripts/build_game.py` · `scripts/check_game.py` | 조립 / 자동 점검 |
+| `references/teacher-language.md` | **항상**: 선생님 말 → 작업 |
+| `references/spec-schema.md` · `spec.schema.json` | **3단계 항상**: 요청 → 방식·spec |
+| `assets/spec-examples/` | spec 복사 출발점 |
+| `references/game-types.md` · `look-and-feel.md` · `content.md` | 게임 고르기 / 분위기 / 문제 만들기 |
+| `references/classroom.md` · `qa-checklist.md` · `legal-advisory.md` | 크기 기준 / 최종 점검 / 저작권 권고 |
+| `references/engine-api.md` | 직접 코드 때만 |
+| `scripts/design.py` · `build.py` · `check_game.py` | 디자인 값 / 조립 / 점검 |

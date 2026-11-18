@@ -1,0 +1,37 @@
+# 게임 기획 한 장 (spec) — 요청을 부품으로 바꾸는 표
+
+AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향). 엔진·부품·디자인·점검은 도구가 맡는다. 형식 전체는 `spec.schema.json`, 예시 7개는 `assets/spec-examples/`.
+
+## 1. 요청 → 방식(mechanic)
+| 선생님·사용자 말 | mechanic | items 한 칸 | 비고 |
+|---|---|---|---|
+| 퀴즈·골든벨·복습·OX 퀴즈 | `quiz` | `{q, choices[2~4], answer, exp}` 또는 `{type:"ox", q, answer:0/1}` | 팀 차례제, 보너스, 틀린 문제만 다시 |
+| 모둠 OX 서바이벌·탈락전 | `survival` | OX 문제만 | 팀마다 라이프, 마지막 생존 팀 우승 (`lives`) |
+| 방탈출·미션·협동 | `escape` | quiz 형식 + `clue`(단서 글자) | 자물쇠 3~6개, 제한 시간(`seconds`), 오답 시간 감점 |
+| 짝 맞추기·카드 뒤집기·받아쓰기 낱말 | `match` | `{a, b}` | 3~8쌍 |
+| 빙고(영어 단어·용어) | `bingo` | `{word, clue}` | `grid` 3/4, 낱말은 grid²개 이상, `world.speak`로 읽어 주기 |
+| 주사위 말판·보드게임 | `board` | quiz 형식 | `tiles`, `maxTurns`, 칸 문제는 items에서 |
+| 분류·끌어서 넣기·배달 | `sort` | `{q, a}` | `a`가 통 이름(2~4개) |
+| 위에 없는 방식 | (가장 가까운 mechanic + 부족한 부분만 직접 코드) | | `assets/components/*.js`를 복사해 새 부품 하나만 추가 → 아래 4번 |
+
+## 2. 정해야 할 것 (기본값)
+| 항목 | 기본 | 바꾸는 경우 |
+|---|---|---|
+| `use` | `class` | 가족·모임·동아리·개인용이면 `personal` (막지 않는다, 같은 도구) |
+| `device` | `board` | 학생 태블릿이면 `tablet`(팀 선택 숨김), 폰이면 `phone` |
+| `teams` | 0 | 모둠전이면 2~4 (survival은 2~4 권장) |
+| `rounds` / `timer` | 전부 / 없음 | 수업 시작 5분 → 문제 5~6개. 칠판 팀전은 timer 20~30 |
+| `design.subject/grade/mood` | 과목·학년·분위기 | 분위기: 긴장감·신남·차분·따뜻함·밝음 |
+| `design.large` | false | 어르신·먼 화면 → true (personal에서 칠판 수준 글자) |
+| `design.theme` | default | notebook(필기 느낌·개인), spotlight(쇼 느낌) |
+
+## 3. 교실 기본 vs 개인 용도
+- **class**: 문제 60px·보기 48px·작은 글 34px 이상, 버튼 110px 이상, 선생님 메뉴, 학생 정보 칸 없음.
+- **personal**: 같은 도구, 글자 바닥만 완화(문제 44px·보기 36px). `large:true`면 class 수준.
+- 둘 다: HTML 한 파일, 외부 이미지 없음, ES2017(`?.` `??` 금지), 입력칸 없음, 색만으로 정오답 표시 금지(✔/✖ 병행).
+
+## 4. 순서
+1. spec 쓰기 → 2. `python3 scripts/design.py --subject 과학 --grade 5 --mood 긴장감 [--use personal --large]` (build가 자동으로 호출하므로 보통 생략) →
+3. `python3 scripts/build.py --spec spec.json --out game.html` (spec 오류는 「고칠 곳」으로 알려 줌) →
+4. 점검 `python3 scripts/check_game.py game.html` (build가 자동 실행) → 5. 결과물로 보여 주기.
+- 직접 코드가 필요할 때: 엔진 API는 `engine-api.md`만 본다. 새 방식은 `assets/components/core.js`의 `H.ask`(문제 흐름)를 재사용해 `COMP.mech.<이름>`을 하나 추가하고 `scripts/specs.py`의 `LIMITS`와 검사 규칙 한 줄을 더한다.

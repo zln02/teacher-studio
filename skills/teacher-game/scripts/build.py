@@ -1,0 +1,129 @@
+#!/usr/bin/env python3
+"""Build a game from a short spec.json (content + mechanic + design direction). Additive to fire.py.
+
+Usage:
+    python3 build.py --spec spec.json --out game.html [--tokens tokens.json] [--no-check]
+
+spec.json (see references/spec-schema.md): {title, subtitle, mechanic, use, device, teams, timer, rounds,
+  design:{subject,grade,mood,seed,theme,large}, world:{...}, items:[...], <mechanic options>}
+Steps: validate spec -> design tokens (scripts/design.py, or --tokens) -> assemble engine + core + the chosen
+mechanic component + theme + tokens CSS -> check_game.py. The engine is copied byte-for-byte (never retyped).
+"""
+from __future__ import annotations
+
+import argparse
+import copy
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+for _s in (sys.stdout, sys.stderr):
+    if hasattr(_s, "reconfigure"):
+        _s.reconfigure(encoding="utf-8", errors="replace")
+
+HERE = Path(__file__).resolve().parent
+SKILL = HERE.parent
+sys.path.insert(0, str(HERE))
+import design  # noqa: E402
+import specs  # noqa: E402
+from build_game import build  # noqa: E402
+
+COMP = SKILL / "assets" / "components"
+THEMES = SKILL / "assets" / "themes"
+HEAD = "window.GAME_LOGIC = (function(){\nvar G = window.GAME, SPEC = G.spec, TK = SPEC.tokens, U = NG.util;\n"
+FOOT = "\nreturn COMP.boot();\n})();\n"
+
+
+def theme_for(tokens: dict, spec: dict) -> str:
+    """Pick the theme module: explicit design.theme, else default."""
+    t = (spec.get("design") or {}).get("theme") or tokens.get("theme") or "default"
+    return t if (THEMES / f"{t}.js").exists() else "default"
+
+
+def make_tokens(spec: dict) -> dict:
+    """Tokens from the design block (deterministic)."""
+    d = spec.get("design") or {}
+    tk = design.generate(d.get("subject", ""), int(d.get("grade", 5)), d.get("mood", ""), spec.get("use", "class"),
+                         int(d.get("seed", 0)), bool(d.get("large", False)), d.get("theme", "default"))
+    return tk
+
+
+def tokens_css(tk: dict) -> str:
+    """CSS variables + font pair from the tokens (appended after the engine styles)."""
+    t = tk["type"]
+    return ("/* TS:CSS BEGIN */\n:root{--t-title:%dpx;--t-q:%dpx;--t-c:%dpx;--t-b:%dpx;--t-s:%dpx;--btn-h:%dpx;--font-body:\"%s\",\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif}\n"
+            % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"], tk["fonts"]["body"])
+            + ".title{font-size:var(--t-title)}\n")
+
+
+def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
+    """Write the HTML. Returns (bytes, info)."""
+    spec = copy.deepcopy(spec)
+    info: dict = {}
+    mech = spec["mechanic"]
+    items = spec["items"]
+    if spec.get("shuffleChoices", True) and mech in specs.QUIZ_LIKE:
+        info["balanced"] = specs.balance_choices(items, int((spec.get("design") or {}).get("seed", 0)))
+    c = tokens["colors"]
+    use = spec.get("use", "class")
+    device = spec.get("device", "board" if use == "class" else "tablet")
+    teams = spec.get("teams", 0)
+    spec_out = {k: v for k, v in spec.items() if k not in ("items", "title", "subtitle")}
+    spec_out["tokens"] = tokens
+    spec_out["device"] = device
+    data = {
+        "title": spec["title"], "subtitle": spec.get("subtitle", ""), "theme": tokens["baseTheme"],
+        "themeOverride": {"primary": c["primary"], "accent": c["accent"], "bg1": c["bg1"], "bg2": c["bg2"], "text": c["text"], "muted": c["text"],
+                          "card": c["card"], "cardBorder": c["cardBorder"], "cardText": c["cardText"], "btnText": c["btnText"],
+                          "good": c["good"], "bad": c["bad"], "font": '"%s"' % tokens["fonts"]["display"], "glow": "none"},
+        "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
+        "music": bool(tokens["sound"]["music"]) and spec.get("music", True), "calm": tokens["motion"] == "calm",
+        "mascots": device != "phone" and use == "class", "items": items, "spec": spec_out,
+    }
+    theme = theme_for(tokens, spec)
+    parts = [(COMP / "core.js").read_text(encoding="utf-8"), (COMP / f"{mech}.js").read_text(encoding="utf-8"),
+             (THEMES / "default.js").read_text(encoding="utf-8")]
+    if theme != "default":
+        parts.append((THEMES / f"{theme}.js").read_text(encoding="utf-8"))
+    logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
+    css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8") + "\n/* TS:CSS END */\n"
+    with tempfile.TemporaryDirectory() as td:
+        td = Path(td)
+        (td / "d.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+        (td / "l.js").write_text(logic, encoding="utf-8")
+        (td / "s.css").write_text(css, encoding="utf-8")
+        size = build(td / "d.json", td / "l.js", out, td / "s.css")
+    info["theme"] = theme
+    return size, info
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--spec", required=True, type=Path)
+    ap.add_argument("--out", required=True, type=Path)
+    ap.add_argument("--tokens", type=Path)
+    ap.add_argument("--no-check", action="store_true")
+    a = ap.parse_args()
+    spec = json.loads(a.spec.read_text(encoding="utf-8"))
+    errs = specs.validate(spec)
+    if errs:
+        print("SPEC FIX NEEDED:\n - " + "\n - ".join(errs))
+        return 2
+    tokens = json.loads(a.tokens.read_text(encoding="utf-8")) if a.tokens else make_tokens(spec)
+    terr = design.validate_tokens(tokens)
+    if terr:
+        print("TOKENS FIX NEEDED:\n - " + "\n - ".join(terr))
+        return 2
+    size, info = assemble(spec, tokens, a.out)
+    print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)})")
+    if a.no_check:
+        return 0
+    r = subprocess.run([sys.executable, str(HERE / "check_game.py"), str(a.out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
+    print(r.stdout.strip())
+    return r.returncode
+
+
+if __name__ == "__main__":
+    sys.exit(main())

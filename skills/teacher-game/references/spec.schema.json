@@ -1,0 +1,43 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "Teacher Studio game spec (input of scripts/build.py)",
+ "type": "object",
+ "required": ["title", "mechanic", "items"],
+ "properties": {
+  "title": {"type": "string"},
+  "subtitle": {"type": "string"},
+  "mechanic": {"enum": ["quiz", "survival", "escape", "match", "bingo", "board", "sort"]},
+  "use": {"enum": ["class", "personal"], "default": "class", "description": "class = big board-readable type + teacher defaults; personal = normal type floor, same tools"},
+  "device": {"enum": ["board", "tablet", "phone"], "default": "board"},
+  "teams": {"enum": [0, 2, 3, 4], "default": 0, "description": "0 = solo / whole class cooperating"},
+  "rounds": {"type": "integer", "minimum": 1, "description": "use only the first N (shuffled) items"},
+  "timer": {"type": "integer", "minimum": 0, "description": "seconds per question (quiz, survival); 0 = none"},
+  "shuffle": {"type": "boolean", "default": true},
+  "shuffleChoices": {"type": "boolean", "default": true, "description": "spread correct answers over A-D (quiz, escape, board)"},
+  "bonusEvery": {"type": "integer", "description": "quiz: every Nth question is worth double (0 = off)"},
+  "lives": {"type": "integer", "description": "survival: lives per team (default 3)"},
+  "seconds": {"type": "integer", "description": "escape: total time (default 60 per lock)"},
+  "penalty": {"type": "integer", "description": "escape: seconds lost per wrong answer (default 10)"},
+  "grid": {"enum": [3, 4], "description": "bingo: grid size"},
+  "tiles": {"type": "integer", "minimum": 12, "maximum": 30, "description": "board: path length (default 24)"},
+  "maxTurns": {"type": "integer", "description": "board: turns per team before the game ends (default 8)"},
+  "bins": {"type": "array", "items": {"type": "string"}, "maxItems": 4, "description": "sort: bin names/order"},
+  "design": {
+   "type": "object",
+   "properties": {
+    "subject": {"type": "string", "description": "과학 | 수학 | 국어 | 영어 | 사회 | 역사 | 도덕 | 가족 ..."},
+    "grade": {"type": "integer"},
+    "mood": {"type": "string", "description": "긴장감 | 신남 | 차분 | 따뜻함 | 밝음 | 자연 ..."},
+    "seed": {"type": "integer", "description": "change to get another look from the same words"},
+    "theme": {"enum": ["default", "notebook", "spotlight"]},
+    "large": {"type": "boolean", "description": "personal use only: class-size type (grandparents, far screens)"}
+   }
+  },
+  "world": {"type": "object", "description": "optional texts: qLabel, lockName, goodText, speak (bingo read-aloud), lang"},
+  "items": {
+   "type": "array",
+   "description": "quiz/escape/board: {q, choices[2-4], answer, exp?, clue?} or {type:'ox', q, answer:0|1}; survival: OX only; match: {a,b}; bingo: {word,clue,say?}; sort: {q,a,exp?}",
+   "items": {"type": "object"}
+  }
+ }
+}

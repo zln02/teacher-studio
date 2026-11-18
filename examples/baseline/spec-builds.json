@@ -1,0 +1,92 @@
+[
+ {
+  "spec": "a-escape-light-wave.json",
+  "spec_bytes": 1801,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 99203,
+  "sha256": "80ca860c97a744600439e54a535c3354813a5b54830b58987f89c8af93f65fb6",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\a-escape-light-wave.html"
+ },
+ {
+  "spec": "b-match-dictation.json",
+  "spec_bytes": 611,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 98830,
+  "sha256": "4f7b7db88a30e51ba6e9e5797216cff52eec77424783e51fe1a870d981d67cff",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\b-match-dictation.html"
+ },
+ {
+  "spec": "c-survival-history.json",
+  "spec_bytes": 1683,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 101517,
+  "sha256": "0f37b2f4b1b284317bbc83b2c766e2cc6c00639535974fb655c921ea78c769bc",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\c-survival-history.html"
+ },
+ {
+  "spec": "d1-bingo-english.json",
+  "spec_bytes": 846,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 99400,
+  "sha256": "403e7eb82c990856a967bf299f9bb8875e701dde8e6dd7dfa0427d9fa704f228",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\d1-bingo-english.html"
+ },
+ {
+  "spec": "d2-board-dice-quiz.json",
+  "spec_bytes": 1733,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 102528,
+  "sha256": "a92be6a0a93b11dc4353a10bb3de55829ca762d1774383f5e6d4d576d259da57",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\d2-board-dice-quiz.html"
+ },
+ {
+  "spec": "e-family-quiz.json",
+  "spec_bytes": 1469,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 98486,
+  "sha256": "dc11e621316181243cfaa0973c78c2bea13f5070ddf3a3ee889e9d473f0dc1d5",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\e-family-quiz.html"
+ },
+ {
+  "spec": "f-sort-recycle.json",
+  "spec_bytes": 776,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 98845,
+  "sha256": "85a9ffa2b0d237b6443b7330a74c8b02d7233c8ad349ee8a80f4c923998a7cff",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\f-sort-recycle.html"
+ },
+ {
+  "spec": "legacy-quiz-tv-studio.json",
+  "spec_bytes": 2514,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 100368,
+  "sha256": "57077e2ccaf91fbf10a81a47270370467e3609e8b41836e39161437375353a8e",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\legacy-quiz-tv-studio.html"
+ },
+ {
+  "spec": "legacy-sort-recycle.json",
+  "spec_bytes": 740,
+  "result": "PASS",
+  "fails": [],
+  "warns": [],
+  "html_bytes": 99053,
+  "sha256": "89693ddd0ffaee9d7336d28e7f15764a351fca802df8378fbdadef97bf504443",
+  "path": "C:\\Users\\User\\AppData\\Local\\Temp\\ts\\legacy-sort-recycle.html"
+ }
+]

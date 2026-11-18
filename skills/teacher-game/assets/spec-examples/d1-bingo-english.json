@@ -1,0 +1,57 @@
+{
+ "title": "영어 단어 빙고",
+ "subtitle": "초3 영어 · 뜻을 듣고 알맞은 단어를 찾아요",
+ "mechanic": "bingo",
+ "use": "class",
+ "device": "board",
+ "teams": 2,
+ "grid": 3,
+ "world": {
+  "speak": true,
+  "lang": "en-US"
+ },
+ "design": {
+  "subject": "영어",
+  "grade": 3,
+  "mood": "신남",
+  "seed": 4
+ },
+ "items": [
+  {
+   "word": "apple",
+   "clue": "사과"
+  },
+  {
+   "word": "banana",
+   "clue": "바나나"
+  },
+  {
+   "word": "cat",
+   "clue": "고양이"
+  },
+  {
+   "word": "dog",
+   "clue": "강아지"
+  },
+  {
+   "word": "egg",
+   "clue": "달걀"
+  },
+  {
+   "word": "fish",
+   "clue": "물고기"
+  },
+  {
+   "word": "grape",
+   "clue": "포도"
+  },
+  {
+   "word": "hat",
+   "clue": "모자"
+  },
+  {
+   "word": "ice",
+   "clue": "얼음"
+  }
+ ]
+}

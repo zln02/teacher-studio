@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Static quality check for a Teacher Studio game HTML game.
 
-Usage: python3 check_game.py game.html
+Usage: python3 check_game.py game.html [--no-play]
+Games built by build.py (spec path) also get spec/token/text-size/bias checks and a headless autoplay (needs Playwright; --no-play skips it).
 Prints PASS/WARN/FAIL lines and exits 1 if any FAIL.
 """
 from __future__ import annotations
@@ -11,7 +12,11 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import json
 from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
@@ -75,7 +80,126 @@ def _top_level_objects(src: str) -> int:
     return n
 
 
-def main(path: Path) -> int:
+
+GAME_RE = re.compile(r"window\.GAME = (\{.*?\n\});", re.S)
+FONT_PX = re.compile(r"font-size\s*:\s*(\d+(?:\.\d+)?)px")
+
+OVERFLOW_JS = r"""
+(function(floor){
+  var out = [], st = document.getElementById('stage').getBoundingClientRect();
+  var scene = document.querySelector('#scene .screen'); if (!scene) return out;
+  var els = scene.querySelectorAll('*');
+  for (var i = 0; i < els.length; i++){
+    var e = els[i], r = e.getBoundingClientRect(); if (!r.width || !r.height) continue;
+    var cs = getComputedStyle(e); if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+    var tag = (typeof e.className === 'string' && e.className ? e.className : e.tagName).split(' ').slice(0, 2).join('.');
+    var txt = ''; for (var k = 0; k < e.childNodes.length; k++) if (e.childNodes[k].nodeType === 3) txt += e.childNodes[k].nodeValue;
+    txt = txt.replace(/\s+/g, ' ').trim();
+    if (e.hasAttribute('data-fit') && (e.scrollWidth > e.clientWidth + 3 || e.scrollHeight > e.clientHeight + 3)) out.push(['overflow', tag, txt.slice(0, 14)]);
+    if (!e.closest('.enter') && (r.right > st.right + 6 || r.left < st.left - 6 || r.bottom > st.bottom + 6 || r.top < st.top - 6)) out.push(['offstage', tag, txt.slice(0, 14)]);
+    if (txt.length > 1 && /[가-힣A-Za-z0-9]/.test(txt)){ var fs = parseFloat(cs.fontSize); if (fs < floor - 0.5) out.push(['smalltext', tag + ' ' + fs + 'px', txt.slice(0, 14)]); }
+  }
+  return out;
+})(%d)
+"""
+
+
+def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
+    """Checks for games built by build.py: spec rules, tokens, text floors, bias, forbidden input, autoplay."""
+    import design
+    import specs
+
+    out: list[tuple[str, str]] = []
+    m = GAME_RE.search(html)
+    if not m:
+        return [("FAIL", "GAME data not found (build.py output expected)")]
+    try:
+        game = json.loads(m.group(1))
+    except ValueError as exc:
+        return [("FAIL", f"GAME data is not valid JSON: {exc}")]
+    sp = dict(game.get("spec") or {})
+    tokens = sp.get("tokens")
+    if not tokens:
+        return [("FAIL", "spec.tokens missing -> rebuild with scripts/build.py")]
+    spec = {k: v for k, v in sp.items() if k != "tokens"}
+    spec["items"], spec["title"], spec["subtitle"] = game.get("items", []), game.get("title", ""), game.get("subtitle", "")
+    errs = specs.validate(spec)
+    out.append(("FAIL" if errs else "PASS", "spec rules" + ("" if not errs else ": " + " | ".join(errs[:4]))))
+    terr = design.validate_tokens(tokens)
+    out.append(("FAIL" if terr else "PASS", "design tokens: text contrast >= 4.5:1 and %s type floor" % tokens["use"] + ("" if not terr else ": " + " | ".join(terr[:4]))))
+    bias = specs.answer_bias(spec["items"])
+    out.append(("WARN" if bias else "PASS", "answer positions balanced" + (f": {bias}" if bias else "")))
+    fl = tokens["type"]["floor"]
+    comp = "\n".join(re.findall(r"/\* TS:COMPONENTS BEGIN \*/(.*?)/\* TS:COMPONENTS END \*/", html, re.S) + re.findall(r"/\* TS:CSS BEGIN \*/(.*?)/\* TS:CSS END \*/", html, re.S))
+    small = sorted({float(x) for x in FONT_PX.findall(comp) if float(x) < fl["small"]})
+    out.append(("FAIL" if small else "PASS", f"component text sizes >= {fl['small']}px" + (f": found {small} -> raise the type scale (design.large) or shorten the text" if small else "")))
+    if re.search(r"<input|<textarea|contenteditable", comp):
+        out.append(("FAIL", "no text input fields in game components (student-info rule)"))
+    if play:
+        out += autoplay(path, tokens)
+    else:
+        out.append(("WARN", "autoplay skipped (--no-play)"))
+    return out
+
+
+def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
+    """Play the game headlessly through GAME_LOGIC.auto(); report stalls, JS errors, overflow, small text."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return [("WARN", "Playwright not installed: autoplay skipped (static checks only)")]
+    problems: dict[str, str] = {}
+    errors: list[str] = []
+    final, steps, idle = "", 0, 0
+    floor = int(tokens["type"]["floor"]["small"])
+    try:
+        with sync_playwright() as p:
+            b = None
+            for kw in ({}, {"channel": "chrome"}, {"channel": "msedge"}):
+                try:
+                    b = p.chromium.launch(**kw)
+                    break
+                except Exception:
+                    continue
+            if b is None:
+                return [("WARN", "no headless browser found (playwright chromium / Chrome / Edge): autoplay skipped, static checks only")]
+            pg = b.new_page(viewport={"width": 1920, "height": 1080})
+            pg.on("pageerror", lambda e: errors.append(str(e)[:160]))
+            pg.goto(path.resolve().as_uri())
+            pg.wait_for_timeout(600)
+            pg.click("#t-start")
+            pg.wait_for_timeout(3700)
+            while steps < 500:
+                st = json.loads(pg.evaluate("render_game_to_text()"))
+                final = st["scene"]
+                if final == "result":
+                    break
+                acted = pg.evaluate("window.GAME_LOGIC.auto()")
+                idle = 0 if acted else idle + 1
+                if idle > 25:
+                    break
+                pg.wait_for_timeout(260)
+                pg.evaluate("advanceTime(600)")
+                pg.wait_for_timeout(260)
+                now = json.loads(pg.evaluate("render_game_to_text()"))["scene"]
+                if now == final and final not in ("title", "countdown", "result"):
+                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor):
+                        problems.setdefault(f"{kind}:{tag}:{txt}", f"{kind} in scene {final}: <{tag}> '{txt}'")
+                steps += 1
+            b.close()
+    except Exception as exc:  # browser missing etc.
+        return [("WARN", f"autoplay could not run ({str(exc).splitlines()[0][:100]}): static checks only")]
+    out: list[tuple[str, str]] = []
+    out.append(("PASS" if final == "result" else "FAIL", f"autoplay reaches the result screen ({steps} steps)" + ("" if final == "result" else f": stuck at scene '{final}' -> check item counts/answers in the spec")))
+    out.append(("FAIL" if errors else "PASS", "no JavaScript errors while playing" + (f": {errors[:2]}" if errors else "")))
+    ov = [v for k, v in problems.items() if k.startswith(("overflow", "offstage"))]
+    sm = [v for k, v in problems.items() if k.startswith("smalltext")]
+    out.append(("FAIL" if ov else "PASS", "no text overflow / off-stage elements" + (f": {ov[:3]} -> shorten the text or use fewer choices" if ov else "")))
+    out.append(("FAIL" if sm else "PASS", f"all in-game text >= {floor}px" + (f": {sm[:3]}" if sm else "")))
+    return out
+
+
+def main(path: Path, play: bool = True) -> int:
     """Run all checks and print a report. Returns process exit code."""
     if not path.exists():
         print(f"FAIL file not found: {path}")
@@ -146,6 +270,10 @@ def main(path: Path) -> int:
     else:
         add("WARN", "node not found; JavaScript syntax not checked")
 
+    if "TS:BUILD" in html:
+        for level, msg in spec_checks(html, path, play):
+            add(level, msg)
+
     for level, msg in results:
         print(f"{level:4} {msg}")
     fails = sum(1 for lv, _ in results if lv == "FAIL")
@@ -154,6 +282,7 @@ def main(path: Path) -> int:
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    args = [a for a in sys.argv[1:] if not a.startswith("--")]
+    if len(args) != 1:
         raise SystemExit(__doc__)
-    sys.exit(main(Path(sys.argv[1])))
+    sys.exit(main(Path(args[0]), play="--no-play" not in sys.argv))

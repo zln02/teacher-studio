@@ -1,0 +1,36 @@
+{
+ "$schema": "http://json-schema.org/draft-07/schema#",
+ "title": "Teacher Studio design tokens (output of scripts/design.py)",
+ "type": "object",
+ "required": ["version", "use", "palette", "colors", "fonts", "type", "motion", "sound"],
+ "properties": {
+  "version": {"const": 1},
+  "use": {"enum": ["class", "personal"]},
+  "palette": {"type": "string"},
+  "seed": {"type": "integer"},
+  "colors": {
+   "type": "object",
+   "required": ["bg1", "bg2", "text", "card", "cardText", "cardBorder", "primary", "btnText", "accent", "good", "bad"],
+   "additionalProperties": {"type": "string", "pattern": "^#[0-9a-fA-F]{6}$"}
+  },
+  "fonts": {"type": "object", "required": ["display", "body"], "properties": {"display": {"type": "string"}, "body": {"type": "string"}}},
+  "type": {
+   "type": "object",
+   "required": ["title", "question", "choice", "body", "small", "floor"],
+   "properties": {
+    "title": {"type": "integer", "minimum": 90},
+    "question": {"type": "integer", "minimum": 40},
+    "choice": {"type": "integer", "minimum": 32},
+    "body": {"type": "integer", "minimum": 26},
+    "small": {"type": "integer", "minimum": 24},
+    "floor": {"type": "object", "required": ["question", "choice", "body", "small", "button_h"]}
+   }
+  },
+  "motion": {"enum": ["high", "normal", "calm"]},
+  "sound": {"type": "object", "required": ["sfx", "music"], "properties": {"sfx": {"type": "boolean"}, "music": {"type": "boolean"}}},
+  "baseTheme": {"type": "string"},
+  "bgType": {"type": "string"},
+  "theme": {"type": "string", "description": "theme module id under assets/themes/"},
+  "contrast": {"type": "object", "description": "measured ratios, informational"}
+ }
+}

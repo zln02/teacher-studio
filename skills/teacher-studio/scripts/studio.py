@@ -5,6 +5,7 @@ Usage:
     python3 studio.py fire game/escape-room/lab --content c.json [--out file.html] [--open]
     python3 studio.py fire slides/lesson-deck/clean-keynote --content c.json --open
     python3 studio.py fire motion/subject-intro/science-neon --content c.json --mp4
+    python3 studio.py build game --spec spec.json [--out file.html] [--open]   # any game from a short spec
     python3 studio.py check file.html
     python3 studio.py render file.html out.mp4               # needs Playwright + ffmpeg
     python3 studio.py doctor                                 # what works in this environment
@@ -90,6 +91,20 @@ def cmd_fire(target: str, content: Path | None, out: Path | None, open_it: bool,
         webbrowser.open(out.resolve().as_uri())
 
 
+def cmd_build(kind: str, spec: Path, out: Path | None, open_it: bool) -> None:
+    """Build a game from a spec.json (engine + components + design tokens), check it, optionally open it."""
+    if kind != "game":
+        raise SystemExit("build currently supports: game")
+    skill = _skill("game")
+    out = out or OUT_DIR / f"game-{spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if _run([str(skill / "scripts" / "build.py"), "--spec", str(spec), "--out", str(out)]):
+        raise SystemExit(1)
+    print(f"READY {out}")
+    if open_it:
+        webbrowser.open(out.resolve().as_uri())
+
+
 def cmd_check(path: Path) -> None:
     """Check a game or stage page with the shared checker."""
     raise SystemExit(_run([str(_skill("game") / "scripts" / "check_game.py"), str(path)]))
@@ -110,6 +125,11 @@ def main() -> None:
     f.add_argument("--out", type=Path)
     f.add_argument("--open", action="store_true")
     f.add_argument("--mp4", action="store_true")
+    b = sub.add_parser("build")
+    b.add_argument("kind")
+    b.add_argument("--spec", required=True, type=Path)
+    b.add_argument("--out", type=Path)
+    b.add_argument("--open", action="store_true")
     c = sub.add_parser("check")
     c.add_argument("path", type=Path)
     r = sub.add_parser("render")
@@ -123,6 +143,8 @@ def main() -> None:
         cmd_list()
     elif a.cmd == "fire":
         cmd_fire(a.target, a.content, a.out, a.open, a.mp4)
+    elif a.cmd == "build":
+        cmd_build(a.kind, a.spec, a.out, a.open)
     elif a.cmd == "check":
         cmd_check(a.path)
     elif a.cmd == "render":
