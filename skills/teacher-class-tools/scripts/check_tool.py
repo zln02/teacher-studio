@@ -346,12 +346,27 @@ def wow_checks(path: Path, html: str, tool: str, use: str) -> list[tuple[str, st
     return out
 
 
+def color_blind_results(html: str) -> list[tuple[str, str]]:
+    """WARN (never FAIL) when colours that carry meaning (correct/wrong, teams, chart series) look alike to colour-blind eyes: shared/design/color_check.py."""
+    here = Path(__file__).resolve().parent
+    for d in (here.parent / "shared" / "design", here.parent / "design"):
+        if (d / "color_check.py").exists():
+            sys.path.insert(0, str(d))
+            try:
+                import color_check
+                return color_check.html_results(html)
+            except Exception as exc:  # a colour hint must never break a check
+                return [("WARN", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
+    return []
+
+
 def main(path: Path, play: bool = True) -> int:
     if not path.exists():
         print(f"FAIL file not found: {path}")
         return 1
     html = path.read_text(encoding="utf-8", errors="replace")
     res = static_checks(html, path)
+    res += color_blind_results(html)
     if play:
         res += play_checks(path, html)
         mm = re.search(r"window\.TOOL = (\{.*?\});</script>", html, re.S)

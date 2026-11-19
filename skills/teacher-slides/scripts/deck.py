@@ -150,6 +150,16 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     if merrs:
         rep["errors"] = merrs
         return rep
+    pf = (spec.get("design") or {}).get("palette_from")
+    if isinstance(pf, str) and pf.strip().lower() not in ("saved", "prefs"):  # the user's own colours: path relative to the spec file
+        pf = str((base / pf).resolve()) if not Path(pf).is_absolute() else pf
+        spec = {**spec, "design": {**spec["design"], "palette_from": pf}}
+    if pf:
+        try:
+            dstyle.design_core.load_user_palette(pf)
+        except ValueError as exc:
+            rep["errors"] = [f"design.palette_from: {exc}"]
+            return rep
     if seed is None:
         seed = spec.get("seed")
     if seed is None and avoid is None:  # fresh look: steer away from the styles used in the last few builds

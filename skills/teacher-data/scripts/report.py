@@ -3,7 +3,7 @@
 # Copyright 2026 박진영 (zln02)
 """Build a one-file offline HTML report from aggregates.json (made by analyze.py): conclusion first, 3 lines, then charts.
 
-    python3 report.py --agg agg.json --out report.html [--audience 초등|학부모|선생님|전문가] [--xlsx out.xlsx] [--csv out.csv] [--palette name] [--yes]
+    python3 report.py --agg agg.json --out report.html [--audience 초등|학부모|선생님|전문가] [--xlsx out.xlsx] [--csv out.csv] [--palette name | --palette-from my-palette.json] [--yes]
 
 Chart.js comes from shared/vendor (inlined), Korean fonts from shared/fonts (embedded when fonttools is available), colours from shared/design.
 Bar for comparing, line for change over time, pie only for <= 5 parts. Numbers are rounded and always carry their unit.
@@ -59,14 +59,15 @@ def _ensure(color: str, bg: str, ratio: float) -> str:
     return c
 
 
-def theme(aud: str, palette: str | None) -> dict:
-    pal = design.load()["palettes"][palette or PALETTE_BY_AUD[aud]]
+def theme(aud: str, palette: str | None, palette_from=None) -> dict:
+    """Report colours: a named built-in palette, or the user's own colours (palette_from: JSON from color_from.py | "saved")."""
+    pal = design.load_user_palette(palette_from) if palette_from else design.load()["palettes"][palette or PALETTE_BY_AUD[aud]]
     bg, card, ink = pal["bg1"], pal["card"], pal["text"]
     muted = _ensure(_mix(ink, card, 0.38), card, 4.8)
     muted = _ensure(muted, bg, 4.8)
     brand = _ensure(pal["primary"], card, 4.5)
     return {"bg": bg, "card": card, "ink": ink, "muted": muted, "brand": brand, "on_brand": pal["btnText"] if design.contrast(pal["btnText"], brand) >= 4.5 else "#ffffff",
-            "line": _mix(ink, card, 0.82), "name": pal.get("name", palette or PALETTE_BY_AUD[aud])}
+            "line": _mix(ink, card, 0.82), "name": "user" if palette_from else pal.get("name", palette or PALETTE_BY_AUD[aud])}
 
 
 # ---------- wording ----------
@@ -340,11 +341,11 @@ def _colors(kind: str, brand: str, card: str, n_series: int) -> list[str]:
     return [_ensure(c, card, 3.0) for c in base]
 
 
-def build(agg: dict, aud: str | None = None, palette: str | None = None, embed_fonts: bool = True, consent: bool = False) -> tuple[str, dict]:
+def build(agg: dict, aud: str | None = None, palette: str | None = None, embed_fonts: bool = True, consent: bool = False, palette_from=None) -> tuple[str, dict]:
     aud = aud or agg.get("audience") or "학부모"
     if aud not in AUDIENCES:
         raise ValueError(f"audience must be one of {', '.join(AUDIENCES)}")
-    th = theme(aud, palette)
+    th = theme(aud, palette, palette_from)
     story = build_story(agg, aud)
     meta = agg["meta"]
     px = BASE_PX[aud]
@@ -411,13 +412,18 @@ def main() -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--audience", choices=AUDIENCES)
     ap.add_argument("--palette")
+    ap.add_argument("--palette-from", help="the user's own colours: JSON from shared/design/color_from.py, or 'saved'")
     ap.add_argument("--xlsx")
     ap.add_argument("--csv")
     ap.add_argument("--no-fonts", action="store_true")
     ap.add_argument("--yes", action="store_true", help="install fonttools/openpyxl if missing")
     a = ap.parse_args()
     agg = json.loads(Path(a.agg).read_text(encoding="utf-8"))
-    page, info = build(agg, a.audience, a.palette, not a.no_fonts, a.yes)
+    try:
+        page, info = build(agg, a.audience, a.palette, not a.no_fonts, a.yes, a.palette_from)
+    except ValueError as exc:
+        print(f"FAIL {exc}")
+        return 1
     Path(a.out).write_text(page, encoding="utf-8")
     print(f"OK {a.out} ({len(page) // 1024}KB) 대상={info['audience']} 색={info['palette']}")
     print("결론:", info["headline"])

@@ -213,6 +213,11 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
     # ---- results
     results.append(("FAIL" if external else "PASS", "external requests = 0" + (f": {external[:3]}" if external else "")))
     results.append(("FAIL" if errors else "PASS", "no JavaScript errors" + (f": {errors[:2]}" if errors else "")))
+    try:  # colour-blind check: WARN only (shared/design/color_check.py via the page checker)
+        from check_page import color_blind_results
+        results += color_blind_results(Path(path).read_text(encoding="utf-8", errors="replace"))
+    except ImportError:
+        pass
 
     def agg(key, label, level="FAIL", fmt=None):
         bad = [(s["n"], s[key]) for s in slides if s.get(key)]

@@ -230,6 +230,8 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid)
     lang = dict(LANG[style])
     pal, pal_name = palette_for(style, mood, seed)
+    if d.get("palette_from"):  # the user's own colours (logo / template): they replace the style's palette; the style's composition stays
+        pal, pal_name = design_core.load_user_palette(d["palette_from"]), "user"
     bg1, bg2, tx = pal["bg1"], pal["bg2"], pal["text"]
     dark = is_dark(bg1)
     # restraint: bg + text + muted + ONE accent. The card is a quiet tint of the background (never a second colour), text on it is the normal text colour.

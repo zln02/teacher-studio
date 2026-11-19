@@ -247,6 +247,12 @@ def main() -> int:
     src = a.report.read_text(encoding="utf-8")
     agg = json.loads(a.agg.read_text(encoding="utf-8")) if a.agg else None
     static_checks(src, agg, a.source, a.yes)
+    try:  # colour-blind check: WARN only
+        import color_check
+        for lv, msg in color_check.html_results(src):
+            say(lv, msg)
+    except ImportError:
+        pass
     if not a.no_play:
         play_checks(a.report)
     print("결과:", "FAIL" if FAILS else "PASS")

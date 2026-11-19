@@ -104,6 +104,8 @@ def make_tokens(spec: dict) -> dict:
         tk["fonts"] = {"display": meta["fonts"]["display"], "body": meta["fonts"].get("body", tk["fonts"]["body"]), "embeddable": False}
     if meta.get("motion") and tk["motion"] != "calm":
         tk["motion"] = meta["motion"]
+    if d.get("palette_from"):  # the user's own logo/template colours win over the theme's (design.palette_from: file | "saved")
+        design.apply_palette_from(tk, d["palette_from"])
     return tk
 
 
@@ -225,7 +227,13 @@ def main() -> int:
     if errs:
         print("SPEC FIX NEEDED:\n - " + "\n - ".join(errs))
         return 2
-    tokens = json.loads(a.tokens.read_text(encoding="utf-8")) if a.tokens else make_tokens(spec)
+    if d0.get("palette_from"):
+        d0["palette_from"] = design.resolve_palette_from(d0["palette_from"], a.spec.resolve().parent)
+    try:
+        tokens = json.loads(a.tokens.read_text(encoding="utf-8")) if a.tokens else make_tokens(spec)
+    except ValueError as exc:  # e.g. design.palette_from file missing / unreadable colours
+        print(f"SPEC FIX NEEDED:\n - design.palette_from: {exc}")
+        return 2
     terr = design.validate_tokens(tokens)
     if terr:
         print("TOKENS FIX NEEDED:\n - " + "\n - ".join(terr))

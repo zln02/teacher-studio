@@ -273,6 +273,20 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     return out
 
 
+def color_blind_results(html: str) -> list[tuple[str, str]]:
+    """WARN (never FAIL) when colours that carry meaning (correct/wrong, teams, chart series) look alike to colour-blind eyes: shared/design/color_check.py."""
+    here = Path(__file__).resolve().parent
+    for d in (here.parent / "shared" / "design", here.parent / "design"):
+        if (d / "color_check.py").exists():
+            sys.path.insert(0, str(d))
+            try:
+                import color_check
+                return color_check.html_results(html)
+            except Exception as exc:  # a colour hint must never break a check
+                return [("WARN", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
+    return []
+
+
 def main(path: Path, play: bool = True) -> int:
     """Run all checks and print a report. Returns process exit code."""
     if not path.exists():
@@ -355,6 +369,9 @@ def main(path: Path, play: bool = True) -> int:
     if "TS:BUILD" in html:
         for level, msg in spec_checks(html, path, play):
             add(level, msg)
+
+    for level, msg in color_blind_results(html):
+        add(level, msg)
 
     for level, msg in results:
         print(f"{level:4} {msg}")

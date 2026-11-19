@@ -8,6 +8,7 @@ Usage:
     python3 prefs.py defaults                  # save the recommended defaults (중학교 / 전과목 / board)
     python3 prefs.py reset                     # forget (for 「설정 바꿔 줘」, then ask again); taste is kept
     python3 prefs.py taste-add "덜 화려하게" "글씨 크게" | taste-show | taste-reset   # 「취향 초기화」
+    python3 prefs.py palette-show | palette-reset   # the user's own colours (saved only when asked: shared/design/color_from.py --save-default)
 
 File: ~/.teacher-studio/prefs.json
 """
@@ -43,6 +44,53 @@ def _raw() -> dict:
     return data if isinstance(data, dict) else {}
 
 
+def load_palette() -> dict:
+    """The user's saved default palette ({palette, mode, colors{11 hex}, source}) or {}. Colours only, no personal data."""
+    p = _raw().get("palette")
+    if not isinstance(p, dict) or not isinstance(p.get("colors"), dict):
+        return {}
+    cols = {k: v for k, v in p["colors"].items() if isinstance(k, str) and isinstance(v, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", v)}
+    return {"palette": str(p.get("palette", "user"))[:40], "mode": p.get("mode") if p.get("mode") in ("light", "dark") else "light", "colors": cols,
+            "source": {k: str(v)[:60] for k, v in (p.get("source") or {}).items()} if isinstance(p.get("source"), dict) else {}}
+
+
+def _write(out: dict) -> None:
+    PATH.parent.mkdir(parents=True, exist_ok=True)
+    PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _extras() -> dict:
+    """Saved non-string-pref keys that every write must keep: taste and palette."""
+    out = {}
+    t = load_taste()
+    if t:
+        out["taste"] = t
+    pal = load_palette()
+    if pal:
+        out["palette"] = pal
+    return out
+
+
+def save_palette(pal: dict) -> None:
+    """Remember the user's own palette as the default (call only when the user asked for it)."""
+    keep = {"palette": str(pal.get("palette", "user"))[:40], "mode": pal.get("mode", "light"), "colors": pal.get("colors", {}), "source": pal.get("source", {})}
+    cols = keep["colors"]
+    if not isinstance(cols, dict) or not cols or not all(isinstance(v, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", v) for v in cols.values()):
+        raise ValueError("palette colours must be #rrggbb")
+    out = {k: v for k, v in load().items() if k in ALLOWED}
+    out.update(_extras())
+    out["palette"] = keep
+    _write(out)
+
+
+def clear_palette() -> None:
+    out = {k: v for k, v in load().items() if k in ALLOWED}
+    t = load_taste()
+    if t:
+        out["taste"] = t
+    _write(out)
+
+
 def load_taste() -> list:
     """Short style preferences (no personal data), newest last."""
     t = _raw().get("taste")
@@ -66,6 +114,9 @@ def add_taste(items) -> list:
     p = load()
     PATH.parent.mkdir(parents=True, exist_ok=True)
     out = {k: v for k, v in p.items() if k in ALLOWED}
+    pal = load_palette()
+    if pal:
+        out["palette"] = pal
     if taste:
         out["taste"] = taste
     PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -81,9 +132,7 @@ def load() -> dict:
 def save(prefs: dict) -> None:
     """Write prefs (allowed keys only); the taste list is kept."""
     out = {k: v for k, v in prefs.items() if k in ALLOWED}
-    taste = load_taste()
-    if taste:
-        out["taste"] = taste
+    out.update(_extras())
     PATH.parent.mkdir(parents=True, exist_ok=True)
     PATH.write_text(json.dumps(out, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -98,7 +147,7 @@ def summary(prefs: dict | None = None) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("cmd", choices=["show", "set", "defaults", "reset", "taste-add", "taste-show", "taste-reset"])
+    ap.add_argument("cmd", choices=["show", "set", "defaults", "reset", "taste-add", "taste-show", "taste-reset", "palette-show", "palette-reset"])
     ap.add_argument("items", nargs="*", help="taste phrases for taste-add")
     ap.add_argument("--level")
     ap.add_argument("--subject")
@@ -106,26 +155,35 @@ def main() -> None:
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
     if a.cmd == "reset":
-        taste = load_taste()
+        extras = _extras()  # taste and palette are kept
         try:
             PATH.unlink()
         except OSError:
             pass
-        if taste:
-            add_taste(taste)
+        if extras:
+            _write(extras)
         print("설정을 지웠어요.")
+    elif a.cmd == "palette-show":
+        print(json.dumps(load_palette(), ensure_ascii=False))
+    elif a.cmd == "palette-reset":
+        clear_palette()
+        print("내 색 팔레트를 지웠어요.")
     elif a.cmd == "taste-add":
         print("취향 기억:", " · ".join(add_taste(a.items)) or "없음")
     elif a.cmd == "taste-show":
         print(json.dumps(load_taste(), ensure_ascii=False))
     elif a.cmd == "taste-reset":
         p = load()
+        pal = load_palette()
         try:
             PATH.unlink()
         except OSError:
             pass
-        if p:
-            save(p)
+        out = dict(p)
+        if pal:
+            out["palette"] = pal
+        if out:
+            _write(out)
         print("취향을 초기화했어요.")
     elif a.cmd == "defaults":
         save(DEFAULTS)

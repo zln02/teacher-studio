@@ -103,6 +103,8 @@ def make_tokens(spec: dict) -> dict:
     tk = design.generate(d.get("subject", ""), int(d.get("grade", 5)), d.get("mood", ""), spec.get("use", "class"),
                          int(d.get("seed", 0)), bool(d.get("large", False)), "default")
     tk["fonts"].update(display="Noto Sans KR", body="Noto Sans KR", embeddable=True)  # one embeddable family: offline-safe
+    if d.get("palette_from"):  # the user's own colours (design.palette_from: file | "saved")
+        design.apply_palette_from(tk, d["palette_from"])
     return tk
 
 
@@ -158,6 +160,8 @@ def main() -> int:
     global USE_JUICE
     USE_JUICE = not a.no_juice
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
+    if (spec.get("design") or {}).get("palette_from"):
+        spec["design"]["palette_from"] = design.resolve_palette_from(spec["design"]["palette_from"], Path(a.spec).resolve().parent)
     try:
         html, rep = build(spec, not a.no_fonts, a.yes)
     except ValueError as exc:
