@@ -155,8 +155,61 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
         out.append(("FAIL", "no text input fields in game components (student-info rule)"))
     if play:
         out += autoplay(path, tokens)
+        out += wow_checks(path, tokens, html)
     else:
         out.append(("WARN", "autoplay skipped (--no-play)"))
+    return out
+
+
+def _juice_lint():
+    """shared/juice/juice_lint.py: inside the skill when installed, else the repo root."""
+    for d in (HERE.parent / "shared" / "juice", HERE.parent.parent.parent / "shared" / "juice"):
+        if (d / "juice_lint.py").exists():
+            sys.path.insert(0, str(d))
+            import juice_lint  # noqa: WPS433
+            return juice_lint
+    return None
+
+
+def _wow_drive(pg, audit) -> None:
+    """Play in REAL time (effects need real frames): countdown, up to 16 answers/nexts, then force the finale (reveal/podium/confetti)."""
+    pg.click("#t-start")
+    pg.wait_for_timeout(4000)
+    audit()
+    for i in range(16):
+        try:
+            if json.loads(pg.evaluate("render_game_to_text()"))["scene"] == "result":
+                break
+            pg.evaluate("window.GAME_LOGIC.auto()")
+        except Exception:
+            break
+        pg.wait_for_timeout(1100)
+        if i % 3 == 0:
+            audit()
+    try:
+        if json.loads(pg.evaluate("render_game_to_text()"))["scene"] != "result":
+            pg.evaluate("NG.finish({total: Math.max(1, NG.state.total || 1)})")
+    except Exception:
+        pass
+    pg.wait_for_timeout(8000)
+    audit()
+
+
+def wow_checks(path: Path, tokens: dict, html: str) -> list[tuple[str, str]]:
+    """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, fps, response time)."""
+    jl = _juice_lint()
+    if jl is None:
+        return [("WARN", "wow lint skipped: shared/juice not found")]
+    out = list(jl.static_checks(html, tokens.get("use", "class")))
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return out + [("WARN", "Playwright not installed: wow runtime lint skipped")]
+    try:
+        with sync_playwright() as p:
+            out += jl.runtime(p, path.resolve().as_uri(), _wow_drive, tokens.get("use", "class"))
+    except Exception as exc:
+        out.append(("WARN", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
     return out
 
 

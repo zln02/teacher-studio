@@ -1,0 +1,277 @@
+{
+ "file": "proof-parents.html",
+ "caps": {
+  "elements": 36,
+  "icons": 3,
+  "colors": 6,
+  "colors_media": 9
+ },
+ "slides": [
+  {
+   "n": 1,
+   "layout": "title.bottom",
+   "elements": 5,
+   "icons": 0,
+   "media": false,
+   "texts": 5,
+   "weight": 0.186,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 2,
+   "layout": "statement.split",
+   "elements": 4,
+   "icons": 0,
+   "media": false,
+   "texts": 4,
+   "weight": 0.129,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 3,
+   "layout": "bullets.stack",
+   "elements": 10,
+   "icons": 0,
+   "media": false,
+   "texts": 11,
+   "weight": 0.201,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 4,
+   "layout": "timeline.rail",
+   "elements": 23,
+   "icons": 0,
+   "media": false,
+   "texts": 18,
+   "weight": 0.153,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 5,
+   "layout": "bignumbers.duo",
+   "elements": 9,
+   "icons": 0,
+   "media": false,
+   "texts": 8,
+   "weight": 0.157,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 6,
+   "layout": "steps.list",
+   "elements": 18,
+   "icons": 0,
+   "media": false,
+   "texts": 15,
+   "weight": 0.137,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 7,
+   "layout": "compare.table",
+   "elements": 16,
+   "icons": 0,
+   "media": false,
+   "texts": 11,
+   "weight": 0.198,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 8,
+   "layout": "quote.big",
+   "elements": 2,
+   "icons": 0,
+   "media": false,
+   "texts": 2,
+   "weight": 0.13,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 9,
+   "layout": "chart.side",
+   "elements": 5,
+   "icons": 0,
+   "media": true,
+   "texts": 5,
+   "weight": 0.164,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 10,
+   "layout": "illustration.right",
+   "elements": 5,
+   "icons": 1,
+   "media": false,
+   "texts": 4,
+   "weight": 0.24,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 11,
+   "layout": "closing.split",
+   "elements": 5,
+   "icons": 0,
+   "media": false,
+   "texts": 5,
+   "weight": 0.186,
+   "colors": 3,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  }
+ ],
+ "fingerprint": [
+  "title.bottom",
+  "statement.split",
+  "bullets.stack",
+  "timeline.rail",
+  "bignumbers.duo",
+  "steps.list",
+  "compare.table",
+  "quote.big",
+  "chart.side",
+  "illustration.right",
+  "closing.split"
+ ],
+ "results": [
+  [
+   "PASS",
+   "external requests = 0"
+  ],
+  [
+   "PASS",
+   "no JavaScript errors"
+  ],
+  [
+   "PASS",
+   "all text >= 28px"
+  ],
+  [
+   "PASS",
+   "no text overflow"
+  ],
+  [
+   "PASS",
+   "everything inside the stage and the 96px safe margin"
+  ],
+  [
+   "PASS",
+   "keep-all line breaking on Korean text"
+  ],
+  [
+   "PASS",
+   "no Korean word split across lines"
+  ],
+  [
+   "PASS",
+   "contrast >= 4.5:1 on real pixels"
+  ],
+  [
+   "PASS",
+   "no empty-looking slide (visual weight >= 0.05)"
+  ],
+  [
+   "PASS",
+   "visual weight min 0.13 / mean 0.17"
+  ],
+  [
+   "PASS",
+   "CLUTTER colours: <= 6 big colour bins per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER elements: <= 36 per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER icons: <= 3 per slide"
+  ],
+  [
+   "PASS",
+   "no 3 consecutive identical layouts"
+  ],
+  [
+   "PASS",
+   "no identical layout twice in a row"
+  ],
+  [
+   "PASS",
+   "layout variety 11/11"
+  ]
+ ]
+}

@@ -8,6 +8,7 @@ Usage:
     python3 studio.py fire slides/lesson-deck/clean-keynote --content c.json --open
     python3 studio.py fire motion/subject-intro/science-neon --content c.json --mp4
     python3 studio.py build game --spec spec.json [--out file.html] [--open]   # any game from a short spec
+    python3 studio.py build slides --spec deck.json [--seed N] [--review DIR] [--open]  # designed slide deck from a short spec
     python3 studio.py check file.html
     python3 studio.py render file.html out.mp4 [--yes]       # finds Chrome/ffmpeg itself; --yes = installs small tools after consent
     python3 studio.py doctor                                 # what works in this environment
@@ -93,10 +94,19 @@ def cmd_fire(target: str, content: Path | None, out: Path | None, open_it: bool,
         webbrowser.open(out.resolve().as_uri())
 
 
-def cmd_build(kind: str, spec: Path, out: Path | None, open_it: bool) -> None:
-    """Build a game from a spec.json (engine + components + design tokens), check it, optionally open it."""
+def cmd_build(kind: str, spec: Path, out: Path | None, open_it: bool, extra: list[str] | None = None) -> None:
+    """Build a game or a slide deck from a spec.json (tools + design tokens), check it, optionally open it."""
+    if kind == "slides":
+        skill = _skill("slides")
+        out = out or OUT_DIR / f"deck-{spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        if _run([str(skill / "scripts" / "deck.py"), "--spec", str(spec), "--out", str(out)] + (extra or [])):
+            raise SystemExit(1)
+        if open_it:
+            webbrowser.open(out.resolve().as_uri())
+        return
     if kind != "game":
-        raise SystemExit("build currently supports: game")
+        raise SystemExit("build supports: game | slides")
     skill = _skill("game")
     out = out or OUT_DIR / f"game-{spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -132,6 +142,11 @@ def main() -> None:
     b.add_argument("--spec", required=True, type=Path)
     b.add_argument("--out", type=Path)
     b.add_argument("--open", action="store_true")
+    b.add_argument("--seed", type=int)
+    b.add_argument("--review", type=Path)
+    b.add_argument("--purpose", default="")
+    b.add_argument("--mood", default="")
+    b.add_argument("--style", default="")
     c = sub.add_parser("check")
     c.add_argument("path", type=Path)
     r = sub.add_parser("render")
@@ -147,7 +162,11 @@ def main() -> None:
     elif a.cmd == "fire":
         cmd_fire(a.target, a.content, a.out, a.open, a.mp4)
     elif a.cmd == "build":
-        cmd_build(a.kind, a.spec, a.out, a.open)
+        extra = []
+        for flag in ("seed", "review", "purpose", "mood", "style"):
+            if getattr(a, flag):
+                extra += [f"--{flag}", str(getattr(a, flag))]
+        cmd_build(a.kind, a.spec, a.out, a.open, extra)
     elif a.cmd == "check":
         cmd_check(a.path)
     elif a.cmd == "render":

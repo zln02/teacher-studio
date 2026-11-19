@@ -76,6 +76,9 @@ This product includes third-party components:
      Modification: one syntax-only change (`jump ||= 1` -> `jump = jump || 1`) for older Chrome; line endings CRLF -> LF.
      shared/assets/sfx/presets.json (the 16 named sound parameter lists) is original work of this project (Apache-2.0).
 
+18. QR Code generator library (Python) 1.8.0 — Copyright (c) Project Nayuki — MIT License
+   Location: shared/vendor/qrcodegen/ (copied into teacher-slides). Unmodified; runs at build time only (QR slides become inline SVG). License text: LICENSE in that folder.
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 

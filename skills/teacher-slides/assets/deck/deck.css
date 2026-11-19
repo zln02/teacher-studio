@@ -1,0 +1,129 @@
+/* Deck base CSS (structure + restrained defaults). Colours/fonts/card/title/emphasis rules per style are appended by deck.py. */
+#ui #b-play,#ui #b-restart,#ui #b-rec{display:none}
+#stage{background:var(--bg1)}
+#deck{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.sl{position:absolute;left:0;top:0;width:1920px;height:1080px;display:none;overflow:hidden;color:var(--tx);font-family:var(--fb);background:var(--bg1)}
+.sl.on{display:block}
+.bgart{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.bx{position:absolute;box-sizing:border-box}
+.grp{pointer-events:none}
+.va-t,.va-m,.va-b{display:flex;flex-direction:column}
+.va-t{justify-content:flex-start}.va-m{justify-content:center}.va-b{justify-content:flex-end}
+.tx{width:100%;word-break:keep-all;overflow-wrap:break-word}
+.h .tx{text-wrap:balance}
+.h{font-family:var(--fd);font-weight:var(--tw);letter-spacing:var(--tls);color:var(--tx)}
+.p{font-weight:500;color:var(--tx)}
+.mu{color:var(--mu)}
+.k{word-break:keep-all;font-weight:800;letter-spacing:.16em;color:var(--emc);display:flex;align-items:center;white-space:nowrap}
+.k.kc{justify-content:center}
+.k.big{font-size:64px!important;letter-spacing:.04em;height:90px!important}
+.k.on-panel{color:var(--bt)}
+em{font-style:normal}
+.deco{pointer-events:none;user-select:none}
+.rule{background:var(--line)}
+.rule.on-b{background:var(--bt);opacity:.35}
+.rule.strong{background:var(--tx);opacity:.4}
+.bar{background:var(--pr);border-radius:4px}
+.bar.alt,.bar-h.alt{background:var(--mu)}
+.bar-v{background:var(--pr);border-radius:6px}
+.bar-h{background:var(--pr);border-radius:20px}
+.stripe{background:var(--pr)}
+.panel{background:var(--pr)}
+.pa{pointer-events:none}.pa svg{display:block}
+.band{background:var(--pr)}
+.on-band,.on-panel,.on-b{color:var(--bt)}
+.on-band em,.on-panel em,.on-b em{color:inherit;background:none;box-shadow:inset 0 -0.12em 0 currentColor}
+.half-a{background:var(--card)}.half-b{background:var(--pr)}
+.on-b .unit{color:var(--bt)}
+.gnum{font-family:var(--fd);font-weight:900;color:var(--pr);opacity:.18;line-height:1;letter-spacing:-.05em}
+.idx{font-weight:800;color:var(--emc);letter-spacing:.08em;display:flex;align-items:center}
+.disc{background:var(--pr);color:var(--bt);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800}
+.dot,.dotb{background:var(--pr);border-radius:50%}
+.bignum{font-family:var(--fd);font-weight:900;color:var(--emc);display:flex;align-items:center}
+.chip{background:var(--tx);color:var(--bg1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;z-index:3}
+.acc{color:var(--emc)}
+.strongc{font-weight:800}
+.st{font-weight:800}
+.cl{font-weight:800}
+.big{font-family:var(--fd);font-weight:900;color:var(--tx);letter-spacing:-.04em}
+.big.acc{color:var(--emc)}
+.big.on-panel{color:var(--bt)}
+.big .tx{white-space:nowrap}
+.unit{font-weight:700;margin-left:.1em;color:var(--mu);letter-spacing:0}
+.big.on-panel .unit{color:var(--bt)}
+.q{font-weight:700}
+.lead{font-weight:700}
+.qmark{color:var(--pr);opacity:.28;font-family:Georgia,"Noto Serif KR",serif;line-height:1;font-weight:700}
+.qmark.kc{text-align:center}
+.cd{background:var(--card);border-radius:var(--rad)}
+.ch{background:var(--card);border:2px solid var(--line);border-radius:calc(var(--rad)*.6)}
+.chl{border:2px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--tx)}
+.solved .ch.ok{background:var(--pr);border-color:var(--pr)}
+.solved .chl.ok{background:var(--bt);color:var(--pr);border-color:var(--bt)}
+.solved .chx.ok{color:var(--bt);font-weight:800}
+.solved .ch:not(.ok){opacity:.55}
+.solved .chx:not(.ok){color:var(--mu)}
+.ex{border-left:8px solid var(--pr);padding-left:28px}
+.ex .bx{left:28px!important}
+.texbox{display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--tx)}
+.tex{font-size:96px;color:var(--tx);max-width:100%}
+.chartbox{padding:24px}.chartbox.plain{padding:0}.chartbox canvas{display:block}
+.tctl{display:flex;gap:24px;align-items:center}
+.tbtn{word-break:keep-all;white-space:nowrap;font:700 32px/1 var(--fb);height:84px;padding:0 44px;border-radius:calc(var(--rad)*.6 + 8px);border:2px solid var(--line);background:var(--card);color:var(--tx);cursor:pointer;min-width:150px}
+.tbtn.main{background:var(--pr);color:var(--bt);border-color:var(--pr);min-width:200px}
+.tbtn:hover{filter:brightness(1.08)}
+.tdisp{font-family:var(--fd);font-weight:900;font-variant-numeric:tabular-nums;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.tdisp.done{color:var(--emc);animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:.35}}
+.tbar{background:var(--line);border-radius:10px;overflow:hidden}.tbar i{display:block;height:100%;width:100%;background:var(--pr);transform-origin:left center}
+.tring .trk{fill:none;stroke:var(--line);stroke-width:28}.tring .tprog{fill:none;stroke:var(--pr);stroke-width:28;stroke-linecap:round}
+.qrcard{background:#fff;border-radius:calc(var(--rad) + 12px);display:flex;align-items:center;justify-content:center;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)}
+.qrbox{width:calc(100% - 72px)}.qrbox svg{display:block;width:100%;height:auto}
+.urltxt{font-weight:800;color:var(--emc);overflow-wrap:anywhere}
+.urltxt .tx{word-break:normal;overflow-wrap:anywhere}
+.imgfull{overflow:hidden}.imgfull img{display:block;width:100%;height:100%;object-fit:cover}
+.imgframe{overflow:hidden;border-radius:var(--rad);box-shadow:0 40px 80px -40px rgba(0,0,0,.5)}.imgframe img{display:block;width:100%;height:100%;object-fit:cover}
+.scrim{background:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,.82))}
+.on-img{color:#fff}
+.videobox{border-radius:var(--rad);overflow:hidden;background:var(--card)}
+.videobox video{display:block;width:100%;height:100%;background:#000}
+.vopen{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+.vbtn,.vhint,.vname{word-break:keep-all}
+.vname{font-size:36px;font-weight:700;color:var(--mu)}
+.vbtn{display:inline-block;font-weight:800;font-size:48px;padding:28px 72px;background:var(--pr);color:var(--bt);border-radius:calc(var(--rad)*.6 + 12px);text-decoration:none}
+.vhint{font-size:30px;color:var(--mu)}
+.flair{left:0;top:0;width:1920px;height:1080px;pointer-events:none}.flair svg{width:100%;height:100%}
+svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hero{display:block}
+/* builds + slide entrance */
+.b{opacity:0;transform:translateY(32px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .8s cubic-bezier(.22,1,.36,1)}
+.b.on{opacity:1;transform:none}
+.sl.on.tr-fade{animation:tFade .7s ease both}
+.sl.on.tr-wipe{animation:tWipe .8s cubic-bezier(.65,0,.35,1) both}
+.sl.on.tr-iris{animation:tIris .9s cubic-bezier(.65,0,.35,1) both}
+.sl.on.tr-rise{animation:tRise .8s cubic-bezier(.22,1,.36,1) both}
+@keyframes tFade{from{opacity:0}to{opacity:1}}
+@keyframes tWipe{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes tIris{from{clip-path:circle(0% at 50% 50%)}to{clip-path:circle(80% at 50% 50%)}}
+@keyframes tRise{from{opacity:0;transform:translateY(48px)}to{opacity:1;transform:none}}
+.noanim *,.noanim{transition:none!important;animation:none!important}
+.noanim .sl.on{clip-path:none!important}
+/* chrome */
+#chrome{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:20}
+#chrome .pn{position:absolute;right:48px;bottom:30px;font-size:28px;font-weight:600;color:var(--mu);letter-spacing:.04em}
+#chrome .prog{position:absolute;left:0;bottom:0;height:6px;background:var(--pr);width:0;transition:width .5s cubic-bezier(.22,1,.36,1)}
+#notes{position:absolute;left:0;right:0;bottom:0;z-index:30;background:rgba(0,0,0,.9);color:#fff;font:500 32px/1.5 var(--fb);padding:32px 64px 44px;display:none;max-height:380px;overflow:auto}
+#notes.on{display:block}
+#black{position:absolute;left:0;top:0;width:1920px;height:1080px;background:#000;z-index:40;display:none}
+#black.on{display:block}
+/* print: one slide per landscape page, everything revealed */
+@page{size:1920px 1080px;margin:0}
+@media print{
+  html,body{width:1920px;height:auto;overflow:visible;background:#fff}
+  #stage{position:static!important;transform:none!important;width:1920px;height:auto!important;overflow:visible}
+  #ui,#toast,#rec-dot,#chrome,#notes,#black{display:none!important}
+  #deck{position:static;height:auto}
+  .sl{position:relative!important;display:block!important;page-break-after:always;break-after:page;clip-path:none!important;animation:none!important}
+  .b{opacity:1!important;transform:none!important}
+}
+.p.mu.small{color:var(--tx);opacity:.9}

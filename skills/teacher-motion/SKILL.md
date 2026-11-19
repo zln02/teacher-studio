@@ -1,10 +1,12 @@
 ---
 name: teacher-motion
-description: Makes keynote-quality motion videos and animated screens (subject intro, lesson-start countdown, personal videos) as one HTML page, exportable to webm/MP4. Use for any video or motion request.
+description: Makes keynote-quality motion videos and animated screens (subject intro, countdown, 홍보·개인 영상) as one HTML page, exportable to webm/MP4. For teachers and anyone.
 license: Apache-2.0
 ---
 
 # 교사 스튜디오 · 영상·화면
+
+Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 선생님(코딩 모름)이 말로 원하는 **수업용 영상·움직이는 화면**을 1920×1080 무대 위 단일 HTML로 만들고, 영상 파일(webm/MP4)로도 뽑아 준다.
 퀄리티는 무대(`assets/stage.html`)와 미사일(완제품)이 책임진다. **맞는 미사일이 있으면 무조건 미사일로 쏜다.**

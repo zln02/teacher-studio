@@ -31,9 +31,9 @@
 | [menu-card.md](menu-card.md) | 모둠 책상용 메뉴판 (A4 1장) |
 | [pocket-card.md](pocket-card.md) | 가져가는 포켓 카드 (이렇게 시키세요 + 재료) |
 
-슬라이드 만들기 (저장소 루트에서, 점검기 PASS 확인함):
-`python3 skills/teacher-slides/scripts/build_stage.py --missile lesson-deck --skin notebook-pastel --content docs/training/deck.json --out deck.html`
-→ `python3 skills/teacher-slides/scripts/check_page.py deck.html` → 크롬에서 열고 F로 전체 화면. N = 발표자 메모.
+슬라이드 만들기 (저장소 루트에서, 새 도구로 다시 만듦 · 점검기와 디자인 점검 PASS 확인함):
+`python3 skills/teacher-slides/scripts/deck.py --spec docs/training/deck.json --out deck.html --seed 4 --review review/`
+→ 점검(`check_page.py`)·디자인 점검(`slides_review.py`)이 이어서 돌고 접촉 시트가 `review/`에 남음 → 크롬에서 열고 F로 전체 화면. N = 발표자 메모. 같은 모양은 `--seed 4`, 새 모양은 seed를 빼면 됨. (예전 방식 `build_stage.py --missile lesson-deck`도 그대로 동작)
 
 ## 시연·요청이 기대는 도구와 지금 상태
 | 시연·요청 | 필요한 무기 | 지금 |

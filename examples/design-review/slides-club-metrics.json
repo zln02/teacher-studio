@@ -1,0 +1,223 @@
+{
+ "file": "proof-club.html",
+ "caps": {
+  "elements": 36,
+  "icons": 3,
+  "colors": 6,
+  "colors_media": 9
+ },
+ "slides": [
+  {
+   "n": 1,
+   "layout": "title.left",
+   "elements": 7,
+   "icons": 0,
+   "media": false,
+   "texts": 5,
+   "weight": 0.196,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 2,
+   "layout": "statement.big",
+   "elements": 4,
+   "icons": 1,
+   "media": false,
+   "texts": 3,
+   "weight": 0.181,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 3,
+   "layout": "bignumbers.cols",
+   "elements": 10,
+   "icons": 0,
+   "media": false,
+   "texts": 11,
+   "weight": 0.198,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 4,
+   "layout": "bullets.cards",
+   "elements": 14,
+   "icons": 0,
+   "media": false,
+   "texts": 15,
+   "weight": 0.302,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 5,
+   "layout": "quote.center",
+   "elements": 2,
+   "icons": 0,
+   "media": false,
+   "texts": 3,
+   "weight": 0.092,
+   "colors": 3,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 6,
+   "layout": "timeline.vertical",
+   "elements": 19,
+   "icons": 0,
+   "media": false,
+   "texts": 15,
+   "weight": 0.127,
+   "colors": 3,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 7,
+   "layout": "qr.split",
+   "elements": 4,
+   "icons": 0,
+   "media": false,
+   "texts": 4,
+   "weight": 0.286,
+   "colors": 5,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 8,
+   "layout": "closing.big",
+   "elements": 6,
+   "icons": 1,
+   "media": false,
+   "texts": 4,
+   "weight": 0.257,
+   "colors": 4,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  }
+ ],
+ "fingerprint": [
+  "title.left",
+  "statement.big",
+  "bignumbers.cols",
+  "bullets.cards",
+  "quote.center",
+  "timeline.vertical",
+  "qr.split",
+  "closing.big"
+ ],
+ "results": [
+  [
+   "PASS",
+   "external requests = 0"
+  ],
+  [
+   "PASS",
+   "no JavaScript errors"
+  ],
+  [
+   "PASS",
+   "all text >= 28px"
+  ],
+  [
+   "PASS",
+   "no text overflow"
+  ],
+  [
+   "PASS",
+   "everything inside the stage and the 96px safe margin"
+  ],
+  [
+   "PASS",
+   "keep-all line breaking on Korean text"
+  ],
+  [
+   "PASS",
+   "no Korean word split across lines"
+  ],
+  [
+   "PASS",
+   "contrast >= 4.5:1 on real pixels"
+  ],
+  [
+   "PASS",
+   "no empty-looking slide (visual weight >= 0.05)"
+  ],
+  [
+   "PASS",
+   "visual weight min 0.09 / mean 0.20"
+  ],
+  [
+   "PASS",
+   "CLUTTER colours: <= 6 big colour bins per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER elements: <= 36 per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER icons: <= 3 per slide"
+  ],
+  [
+   "PASS",
+   "no 3 consecutive identical layouts"
+  ],
+  [
+   "PASS",
+   "no identical layout twice in a row"
+  ],
+  [
+   "PASS",
+   "layout variety 8/8"
+  ]
+ ]
+}

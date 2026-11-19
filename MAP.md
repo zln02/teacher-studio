@@ -11,7 +11,7 @@
 |---|---|---|
 | 게임, 퀴즈, 방탈출, 종 울리기, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (quiz-show · escape-room · drag-deliver, 스킨 9) |
 | 타이머, 뽑기, 모둠 나누기, 자리 바꾸기, 투표 | 🧰 수업 도구 | `skills/teacher-class-tools` (예정) 📋 |
-| 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (lesson-deck: chalkboard · clean-keynote · notebook-pastel) |
+| 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 19종 × 배치 변형, 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |
 | 학습지, 활동지, 형성평가지(인쇄) | 📝 학습지 | `skills/teacher-worksheet` (예정) 📋 |
 | 공문, 가정통신문, 계획서, 결과보고서, 회의록 (한글) | 📄 업무 문서 | `skills/teacher-work-docs` (예정) 🔨 |

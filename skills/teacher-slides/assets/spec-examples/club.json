@@ -1,0 +1,97 @@
+{
+ "purpose": "동아리",
+ "audience": "신입생",
+ "mood": "힙하게",
+ "title": "코딩 동아리 NEXT 모집",
+ "slides": [
+  {
+   "type": "title",
+   "kicker": "NEW MEMBERS",
+   "title": "코딩동아리\n**NEXT**",
+   "subtitle": "만들고 싶은 거, 다 만든다",
+   "meta": "신입 부원 모집 · 3월 둘째 주"
+  },
+  {
+   "type": "statement",
+   "text": "코딩, **처음**이어도\n괜찮아요",
+   "sub": "선배가 옆에서 같이 해요"
+  },
+  {
+   "type": "bignumbers",
+   "title": "**NEXT**는 이렇게 굴러가요",
+   "items": [
+    {
+     "value": "1",
+     "unit": "번",
+     "caption": "매주 목요일"
+    },
+    {
+     "value": "12",
+     "unit": "개",
+     "caption": "한 학기 프로젝트"
+    },
+    {
+     "value": "0",
+     "unit": "원",
+     "caption": "참가비"
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "kicker": "하는 일",
+   "title": "이런 걸 **만들어요**",
+   "items": [
+    "**게임** · 내 손으로 만드는 미니 게임",
+    "**앱** · 학교 생활에 쓰는 작은 앱",
+    "**로봇** · 움직이는 코딩 로봇",
+    "**발표** · 학교 축제 전시"
+   ]
+  },
+  {
+   "type": "quote",
+   "text": "처음엔 **버그**투성이,\n끝엔 **내 작품**"
+  },
+  {
+   "type": "timeline",
+   "kicker": "일정",
+   "title": "모집은 **이렇게**",
+   "events": [
+    {
+     "when": "3/4",
+     "title": "설명회",
+     "text": "점심시간"
+    },
+    {
+     "when": "3/6",
+     "title": "체험",
+     "text": "방과 후"
+    },
+    {
+     "when": "3/10",
+     "title": "접수 마감",
+     "text": "링크로 신청"
+    },
+    {
+     "when": "3/13",
+     "title": "첫 모임",
+     "text": "환영해요"
+    }
+   ]
+  },
+  {
+   "type": "qr",
+   "title": "지금 **신청**하기",
+   "url": "https://forms.example.com/next-join",
+   "caption": "QR을 찍으면 신청서가 열려요"
+  },
+  {
+   "type": "closing",
+   "title": "**NEXT**에서\n만나요",
+   "sub": "3월 13일 목요일, 컴퓨터실",
+   "next": [
+    "질문은 동아리 담당 선생님께"
+   ]
+  }
+ ]
+}

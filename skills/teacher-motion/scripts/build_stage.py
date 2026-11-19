@@ -47,13 +47,19 @@ SHOW_RE = re.compile(r"(/\* ===================== SHOW .*?\*/\n).*?(\n</script>\
 
 
 def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None = None, fonts: bool = True,
-          credit: bool = False, allow_modern: bool = False) -> int:
-    """Inject DOC, SHOW, CSS and anime.js into the runtime (+ optional libs, embedded fonts); return size in bytes."""
+          credit: bool = False, allow_modern: bool = False, scene_html: str = "", offline: bool = False) -> int:
+    """Inject DOC, SHOW, CSS and anime.js into the runtime (+ optional libs, embedded fonts); return size in bytes.
+
+    scene_html: static markup placed inside #scene (spec-built decks keep their slides as real HTML).
+    offline: drop the Google Fonts links entirely (the page then uses only the embedded Noto fonts) -> zero external requests.
+    """
     html = RUNTIME.read_text(encoding="utf-8")
     if not DOC_RE.search(html) or not SHOW_RE.search(html):
         raise SystemExit("stage markers not found - stage.html was modified")
     vendor = (VENDOR_DIR / "anime-4.5.0.umd.min.js").read_text(encoding="utf-8")
     html = html.replace("<!--VENDOR-->", "<script>\n" + vendor + "\n</script>", 1)
+    if scene_html:
+        html = html.replace('<div id="scene"></div>', '<div id="scene">' + scene_html + "</div>", 1)
     if credit:
         doc = {**doc, "credit": True}
     html = DOC_RE.sub(lambda _: "window.DOC = " + json.dumps(doc, ensure_ascii=False, indent=2) + ";", html, count=1)
@@ -78,6 +84,8 @@ def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None =
                 print("ASK TEACHER: " + rep["prompt"])
         else:
             print(f"fonts embedded: {rep['before_bytes'] // 1024} KB -> {rep['after_bytes'] // 1024} KB")
+    if offline:
+        html = re.sub(r'<link[^>]+(?:fonts\.googleapis|fonts\.gstatic)[^>]*>\s*', "", html)
     html = stamp(html)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")
