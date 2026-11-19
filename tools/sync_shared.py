@@ -3,7 +3,7 @@
 """Copy shared runtime files into every skill that uses them, then zip each skill.
 
 shared/ is the source of truth. Each skill must stay self-contained when zipped, so its own copy lives in
-skills/<skill>/shared/ (design, fonts, tools, vendor, voice) and, for the stage skills, assets/ + scripts/.
+skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice) and, for the stage skills, assets/ + scripts/.
 
 Usage:
     python3 tools/sync_shared.py            # copy shared -> skills, then rebuild dist/*.zip
@@ -27,10 +27,12 @@ STAGE_SKILLS = ("teacher-motion", "teacher-slides")
 
 # what each skill gets under skills/<skill>/shared/  (vendor = ids from shared/vendor/manifest.json)
 PLAN = {
-    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
-    "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti"]},
+    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "juice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
+    "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti", "qrcodegen"]},
     "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
-    "teacher-studio": {"design": False, "fonts": False, "tools": True, "vendor": []},
+    "teacher-studio": {"design": False, "fonts": False, "tools": True, "video_eyes": True, "vendor": []},
+    "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
+    "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
 }
 
 
@@ -64,6 +66,11 @@ def expected() -> dict[Path, bytes]:
         if cfg["tools"]:
             for tool in ("ensure.py", "stamp.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
+        if cfg.get("video_eyes"):  # local-only video frames helper (diagnose.py / ref_analyze.py)
+            add(SHARED / "tools" / "video_eyes.py", base / "tools" / "video_eyes.py")
+        if cfg.get("juice"):  # Game Wow kit: sound presets, particles, motion effects, lint
+            for f in _files(SHARED / "juice"):
+                add(f, base / "juice" / f.relative_to(SHARED / "juice"))
         if cfg.get("assets"):  # design asset arsenal (characters, icons, colors, sfx) - see shared/assets/manifest.json
             for f in _files(SHARED / "assets"):
                 if f.name != "verify_assets.py":

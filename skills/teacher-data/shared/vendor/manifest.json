@@ -1,0 +1,19 @@
+{
+ "_note": "Vendored libraries. Each LICENSE was read from the downloaded npm package. Fetched with npm pack (no install scripts run).",
+ "libs": {
+  "chartjs": {
+   "name": "Chart.js",
+   "version": "4.6.1",
+   "license": "MIT",
+   "dir": "chartjs",
+   "js": "chart-4.6.1.umd.min.js",
+   "global": "Chart",
+   "es": "es2017",
+   "use": "막대·꺾은선·원 그래프",
+   "source": "npm:chart.js@4.6.1",
+   "license_file": "chartjs/LICENSE",
+   "bytes": 210082,
+   "sha256": "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2"
+  }
+ }
+}

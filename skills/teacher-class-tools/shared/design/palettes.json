@@ -1,0 +1,754 @@
+{
+ "_note": "Shared design system (games, slides, motion, posters, invitations, print, web). Every palette is validated by design.py --validate: text/cardText/btnText >= 4.5:1, good/bad on card >= 3:1. 'uses' = where a palette may be picked; baseTheme/bgType map to the game engine themes.",
+ "fonts": {
+  "pairs": [
+   {
+    "id": "bold-clean",
+    "display": "Black Han Sans",
+    "body": "Noto Sans KR",
+    "tone": "bold"
+   },
+   {
+    "id": "round-soft",
+    "display": "Jua",
+    "body": "Gowun Dodum",
+    "tone": "friendly"
+   },
+   {
+    "id": "classic",
+    "display": "Do Hyeon",
+    "body": "Noto Sans KR",
+    "tone": "neutral"
+   },
+   {
+    "id": "hanok-serif",
+    "display": "Song Myung",
+    "body": "Gowun Batang",
+    "tone": "traditional"
+   },
+   {
+    "id": "noto-sans",
+    "display": "Noto Sans KR",
+    "body": "Noto Sans KR",
+    "tone": "clean",
+    "embeddable": true
+   },
+   {
+    "id": "noto-serif",
+    "display": "Noto Serif KR",
+    "body": "Noto Serif KR",
+    "tone": "elegant",
+    "embeddable": true
+   },
+   {
+    "id": "noto-warm",
+    "display": "Noto Serif KR",
+    "body": "Noto Sans KR",
+    "tone": "warm",
+    "embeddable": true
+   }
+  ]
+ },
+ "palettes": {
+  "neon-night": {
+   "mood": [
+    "긴장감",
+    "신남",
+    "도전"
+   ],
+   "subject": [
+    "과학",
+    "수학",
+    "정보",
+    "기술"
+   ],
+   "dark": true,
+   "baseTheme": "arcade",
+   "bgType": "grid",
+   "font": "bold-clean",
+   "bg1": "#0e0b24",
+   "bg2": "#2a1456",
+   "text": "#ffffff",
+   "card": "#1d1440",
+   "cardText": "#ffffff",
+   "cardBorder": "#7a5cd6",
+   "primary": "#ffd23f",
+   "btnText": "#1b1230",
+   "accent": "#ff4d8d",
+   "good": "#3dffa8",
+   "bad": "#ff7a90",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster"
+   ]
+  },
+  "lab-glow": {
+   "mood": [
+    "긴장감",
+    "탐구",
+    "차분"
+   ],
+   "subject": [
+    "과학",
+    "수학",
+    "실과"
+   ],
+   "dark": true,
+   "baseTheme": "space",
+   "bgType": "stars",
+   "font": "classic",
+   "bg1": "#04121f",
+   "bg2": "#0b3550",
+   "text": "#f2fbff",
+   "card": "#0f2a40",
+   "cardText": "#f2fbff",
+   "cardBorder": "#3fb6d6",
+   "primary": "#5ef0ff",
+   "btnText": "#02202b",
+   "accent": "#b48cff",
+   "good": "#4dffb8",
+   "bad": "#ff8aa0",
+   "uses": [
+    "class",
+    "personal",
+    "present"
+   ]
+  },
+  "sunny-pop": {
+   "mood": [
+    "신남",
+    "밝음",
+    "즐거움"
+   ],
+   "subject": [
+    "영어",
+    "국어",
+    "음악",
+    "미술"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "clouds",
+   "font": "round-soft",
+   "bg1": "#fff3b0",
+   "bg2": "#ffd6a5",
+   "text": "#3b2200",
+   "card": "#ffffff",
+   "cardText": "#3b2200",
+   "cardBorder": "#f08c00",
+   "primary": "#c2410c",
+   "btnText": "#ffffff",
+   "accent": "#0b7285",
+   "good": "#2b8a3e",
+   "bad": "#c92a2a",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster",
+    "invite",
+    "web"
+   ]
+  },
+  "sky-fresh": {
+   "mood": [
+    "밝음",
+    "차분",
+    "신남"
+   ],
+   "subject": [
+    "영어",
+    "사회",
+    "도덕",
+    "국어"
+   ],
+   "dark": false,
+   "baseTheme": "ocean",
+   "bgType": "sea",
+   "font": "round-soft",
+   "bg1": "#dff3ff",
+   "bg2": "#b7e0ff",
+   "text": "#10304a",
+   "card": "#ffffff",
+   "cardText": "#10304a",
+   "cardBorder": "#4aa3e0",
+   "primary": "#0b6fb3",
+   "btnText": "#ffffff",
+   "accent": "#d9480f",
+   "good": "#2b8a3e",
+   "bad": "#c92a2a",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster",
+    "web"
+   ]
+  },
+  "hanok-ink": {
+   "mood": [
+    "차분",
+    "긴장감",
+    "전통"
+   ],
+   "subject": [
+    "역사",
+    "사회",
+    "한국사",
+    "도덕"
+   ],
+   "dark": false,
+   "baseTheme": "hanok",
+   "bgType": "petals",
+   "font": "hanok-serif",
+   "bg1": "#f6ecd6",
+   "bg2": "#e8d2a8",
+   "text": "#2b2118",
+   "card": "#fffaf0",
+   "cardText": "#2b2118",
+   "cardBorder": "#8b6b3e",
+   "primary": "#a82920",
+   "btnText": "#fff8e7",
+   "accent": "#1f5f8b",
+   "good": "#1f7a44",
+   "bad": "#b02318",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster",
+    "invite",
+    "web"
+   ]
+  },
+  "paper-warm": {
+   "mood": [
+    "따뜻함",
+    "편안",
+    "가족",
+    "즐거움"
+   ],
+   "subject": [
+    "가족",
+    "일상",
+    "모임"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "clouds",
+   "font": "round-soft",
+   "bg1": "#fff4e0",
+   "bg2": "#ffe2b8",
+   "text": "#3a2410",
+   "card": "#fffdf7",
+   "cardText": "#3a2410",
+   "cardBorder": "#d9a05b",
+   "primary": "#b83c0a",
+   "btnText": "#ffffff",
+   "accent": "#1c6e8c",
+   "good": "#2b7a3d",
+   "bad": "#b72b2b",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster",
+    "invite",
+    "web"
+   ]
+  },
+  "forest-calm": {
+   "mood": [
+    "차분",
+    "편안",
+    "자연"
+   ],
+   "subject": [
+    "과학",
+    "환경",
+    "실과",
+    "도덕"
+   ],
+   "dark": true,
+   "baseTheme": "forest",
+   "bgType": "leaves",
+   "font": "classic",
+   "bg1": "#0f3b2e",
+   "bg2": "#2a6f4a",
+   "text": "#f4fff6",
+   "card": "#17493a",
+   "cardText": "#f4fff6",
+   "cardBorder": "#6fbf8a",
+   "primary": "#ffe066",
+   "btnText": "#2a2200",
+   "accent": "#a8f07a",
+   "good": "#7dffb0",
+   "bad": "#ffa08a",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "web"
+   ]
+  },
+  "midnight-calm": {
+   "mood": [
+    "차분",
+    "집중",
+    "긴장감"
+   ],
+   "subject": [
+    "국어",
+    "수학",
+    "사회",
+    "음악"
+   ],
+   "dark": true,
+   "baseTheme": "detective",
+   "bgType": "fog",
+   "font": "classic",
+   "bg1": "#0e0f14",
+   "bg2": "#2a2333",
+   "text": "#f5f3ff",
+   "card": "#24212e",
+   "cardText": "#f5f3ff",
+   "cardBorder": "#8f82b3",
+   "primary": "#e8b04a",
+   "btnText": "#1c1400",
+   "accent": "#9fb4ff",
+   "good": "#69e3a0",
+   "bad": "#ff8f86",
+   "uses": [
+    "class",
+    "personal",
+    "present",
+    "poster",
+    "web"
+   ]
+  },
+  "luxe-ink": {
+   "mood": [
+    "고급스러움",
+    "차분",
+    "엄숙",
+    "긴장감"
+   ],
+   "subject": [
+    "발표",
+    "행사",
+    "연수",
+    "졸업"
+   ],
+   "dark": true,
+   "baseTheme": "detective",
+   "bgType": "fog",
+   "font": "noto-serif",
+   "uses": [
+    "present",
+    "poster",
+    "invite",
+    "web"
+   ],
+   "bg1": "#0f1420",
+   "bg2": "#1c2438",
+   "text": "#f6f1e6",
+   "card": "#182033",
+   "cardText": "#f6f1e6",
+   "cardBorder": "#c9a45c",
+   "primary": "#d4af61",
+   "btnText": "#14100a",
+   "accent": "#8fb5d9",
+   "good": "#6fdca0",
+   "bad": "#ff9a8f"
+  },
+  "linen-soft": {
+   "mood": [
+    "따뜻함",
+    "포근",
+    "편안",
+    "차분"
+   ],
+   "subject": [
+    "초대",
+    "모임",
+    "학부모",
+    "가족"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "clouds",
+   "font": "noto-warm",
+   "uses": [
+    "present",
+    "poster",
+    "invite",
+    "print",
+    "web"
+   ],
+   "bg1": "#fbf3e8",
+   "bg2": "#f3e1cb",
+   "text": "#3b2a1e",
+   "card": "#fffaf3",
+   "cardText": "#3b2a1e",
+   "cardBorder": "#d6a97a",
+   "primary": "#a8471c",
+   "btnText": "#ffffff",
+   "accent": "#3f6f6a",
+   "good": "#2b7a3d",
+   "bad": "#b3261e"
+  },
+  "rose-garden": {
+   "mood": [
+    "우아",
+    "감성",
+    "따뜻함",
+    "축하"
+   ],
+   "subject": [
+    "초대",
+    "결혼",
+    "돌잔치",
+    "감사"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "petals",
+   "font": "noto-serif",
+   "uses": [
+    "invite",
+    "poster",
+    "present",
+    "web"
+   ],
+   "bg1": "#fdf0f2",
+   "bg2": "#f8d9de",
+   "text": "#3d1f2b",
+   "card": "#ffffff",
+   "cardText": "#3d1f2b",
+   "cardBorder": "#d98a9d",
+   "primary": "#a3294d",
+   "btnText": "#ffffff",
+   "accent": "#5a6f3c",
+   "good": "#2b7a3d",
+   "bad": "#b3261e"
+  },
+  "clean-white": {
+   "mood": [
+    "단정",
+    "깔끔",
+    "집중",
+    "차분"
+   ],
+   "subject": [
+    "발표",
+    "연수",
+    "보고",
+    "학부모"
+   ],
+   "dark": false,
+   "baseTheme": "ocean",
+   "bgType": "sea",
+   "font": "noto-sans",
+   "uses": [
+    "present",
+    "print",
+    "web",
+    "poster"
+   ],
+   "bg1": "#ffffff",
+   "bg2": "#f1f4f8",
+   "text": "#17202e",
+   "card": "#ffffff",
+   "cardText": "#17202e",
+   "cardBorder": "#c9d3e0",
+   "primary": "#1f5fbf",
+   "btnText": "#ffffff",
+   "accent": "#c2410c",
+   "good": "#1f7a44",
+   "bad": "#b42318"
+  },
+  "mono-print": {
+   "mood": [
+    "단정",
+    "깔끔",
+    "인쇄"
+   ],
+   "subject": [
+    "학습지",
+    "활동지",
+    "가정통신문",
+    "인쇄"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "clouds",
+   "font": "noto-sans",
+   "uses": [
+    "print"
+   ],
+   "bg1": "#ffffff",
+   "bg2": "#f4f4f4",
+   "text": "#111111",
+   "card": "#ffffff",
+   "cardText": "#111111",
+   "cardBorder": "#555555",
+   "primary": "#222222",
+   "btnText": "#ffffff",
+   "accent": "#444444",
+   "good": "#1f6b3a",
+   "bad": "#a61b1b"
+  },
+  "festival-pop": {
+   "mood": [
+    "축하",
+    "신남",
+    "즐거움",
+    "밝음"
+   ],
+   "subject": [
+    "행사",
+    "축제",
+    "체육대회",
+    "홍보"
+   ],
+   "dark": false,
+   "baseTheme": "fairytale",
+   "bgType": "clouds",
+   "font": "round-soft",
+   "uses": [
+    "poster",
+    "invite",
+    "present",
+    "web"
+   ],
+   "bg1": "#ffe8a3",
+   "bg2": "#ffb3a7",
+   "text": "#2b1200",
+   "card": "#ffffff",
+   "cardText": "#2b1200",
+   "cardBorder": "#e8590c",
+   "primary": "#b3261e",
+   "btnText": "#ffffff",
+   "accent": "#0b6e8a",
+   "good": "#2b7a3d",
+   "bad": "#b3261e"
+  },
+  "mint-study": {
+   "mood": [
+    "밝음",
+    "상쾌",
+    "집중",
+    "깔끔"
+   ],
+   "subject": [
+    "학습",
+    "자기주도",
+    "공부",
+    "독서"
+   ],
+   "dark": false,
+   "baseTheme": "forest",
+   "bgType": "leaves",
+   "font": "noto-sans",
+   "uses": [
+    "present",
+    "print",
+    "web",
+    "poster"
+   ],
+   "bg1": "#e8f8f2",
+   "bg2": "#cdeee0",
+   "text": "#0f3326",
+   "card": "#ffffff",
+   "cardText": "#0f3326",
+   "cardBorder": "#5bbf9a",
+   "primary": "#0b7a56",
+   "btnText": "#ffffff",
+   "accent": "#b45309",
+   "good": "#1f7a44",
+   "bad": "#b42318"
+  }
+ },
+ "type_scales": {
+  "class": {
+   "title": 150,
+   "question": 64,
+   "choice": 48,
+   "body": 36,
+   "small": 34,
+   "floor": {
+    "question": 60,
+    "choice": 48,
+    "body": 34,
+    "small": 34,
+    "button_h": 110
+   },
+   "canvas": "1920x1080"
+  },
+  "class_lowgrade": {
+   "title": 150,
+   "question": 72,
+   "choice": 54,
+   "body": 40,
+   "small": 36,
+   "floor": {
+    "question": 60,
+    "choice": 48,
+    "body": 34,
+    "small": 34,
+    "button_h": 110
+   },
+   "canvas": "1920x1080"
+  },
+  "personal": {
+   "title": 130,
+   "question": 52,
+   "choice": 42,
+   "body": 32,
+   "small": 28,
+   "floor": {
+    "question": 44,
+    "choice": 36,
+    "body": 28,
+    "small": 26,
+    "button_h": 90
+   },
+   "canvas": "1920x1080"
+  },
+  "personal_large": {
+   "title": 150,
+   "question": 64,
+   "choice": 52,
+   "body": 38,
+   "small": 34,
+   "floor": {
+    "question": 60,
+    "choice": 48,
+    "body": 34,
+    "small": 34,
+    "button_h": 110
+   },
+   "canvas": "1920x1080"
+  },
+  "present": {
+   "canvas": "1920x1080",
+   "title": 110,
+   "question": 64,
+   "choice": 44,
+   "body": 36,
+   "small": 28,
+   "floor": {
+    "question": 56,
+    "choice": 40,
+    "body": 32,
+    "small": 26,
+    "button_h": 80
+   }
+  },
+  "poster": {
+   "canvas": "A3 @96dpi (1123x1587)",
+   "title": 160,
+   "question": 72,
+   "choice": 48,
+   "body": 40,
+   "small": 30,
+   "floor": {
+    "question": 56,
+    "choice": 40,
+    "body": 32,
+    "small": 26,
+    "button_h": 64
+   }
+  },
+  "invite": {
+   "canvas": "5x7in card @192dpi (960x1344)",
+   "title": 110,
+   "question": 60,
+   "choice": 44,
+   "body": 38,
+   "small": 30,
+   "floor": {
+    "question": 48,
+    "choice": 36,
+    "body": 32,
+    "small": 26,
+    "button_h": 64
+   }
+  },
+  "print": {
+   "canvas": "A4 @96dpi (794x1123)",
+   "title": 48,
+   "question": 28,
+   "choice": 22,
+   "body": 18,
+   "small": 14,
+   "floor": {
+    "question": 24,
+    "choice": 18,
+    "body": 16,
+    "small": 12,
+    "button_h": 40
+   }
+  },
+  "web": {
+   "canvas": "responsive (px at 16px root)",
+   "title": 56,
+   "question": 32,
+   "choice": 20,
+   "body": 18,
+   "small": 14,
+   "floor": {
+    "question": 24,
+    "choice": 18,
+    "body": 16,
+    "small": 13,
+    "button_h": 44
+   }
+  }
+ },
+ "moods": {
+  "aliases": {
+   "따뜻하게": "따뜻함",
+   "따뜻한": "따뜻함",
+   "포근하게": "포근",
+   "고급스럽게": "고급스러움",
+   "고급": "고급스러움",
+   "품격": "고급스러움",
+   "럭셔리": "고급스러움",
+   "깔끔하게": "깔끔",
+   "단정하게": "단정",
+   "심플": "깔끔",
+   "신나게": "신남",
+   "즐겁게": "즐거움",
+   "차분하게": "차분",
+   "편안하게": "편안",
+   "밝게": "밝음",
+   "발랄하게": "밝음",
+   "긴장되게": "긴장감",
+   "스릴": "긴장감",
+   "우아하게": "우아",
+   "감성적": "감성",
+   "축하": "축하",
+   "경쾌하게": "신남"
+  },
+  "calm": [
+   "차분",
+   "편안",
+   "집중",
+   "자연",
+   "고급스러움",
+   "단정",
+   "깔끔",
+   "우아",
+   "포근"
+  ],
+  "high": [
+   "긴장감",
+   "신남",
+   "도전",
+   "즐거움"
+  ]
+ }
+}
