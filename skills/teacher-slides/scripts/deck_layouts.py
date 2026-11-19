@@ -739,3 +739,9 @@ REG: dict[str, list] = {
     "video": [("frame", "stack", video_frame, _always)],
     "closing": [("big", "bigtype", closing_big, lambda it: not it.get("_qr")), ("split", "split", closing_split, _always)],
 }
+
+
+# context recipe layouts (table / summary / toc / hero / public cover + 개조식 lists) - see deck_ctx_layouts.py
+import deck_ctx_layouts as _ctxlay  # noqa: E402
+
+_ctxlay.register(REG)

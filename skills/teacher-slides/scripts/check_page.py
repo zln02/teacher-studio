@@ -141,6 +141,31 @@ OVERFLOW_JS = r"""
 """
 
 
+# The user wins: spec "waive": [...] turns these quality FAILs into WARNs (default = checked). Text must match the check's message.
+WAIVE_KEYS = {"text_size": ("component text sizes", "all in-game text >=", "smallest text"),
+              "overflow": ("no text overflow", "nothing outside the screen"),
+              "hud": ("top bar parts",),
+              "phone": ("phone ", "390x844", "844x390", "portrait", "landscape", "every button/answer", "smallest text", "nothing outside")}
+
+
+def apply_waive(results: list[tuple[str, str]], waive) -> list[tuple[str, str]]:
+    """FAIL -> WARN for the checks the user explicitly turned off, plus ONE caution line. Unknown keys are ignored (specs.validate reports them)."""
+    keys = [k for k in (waive or []) if k in WAIVE_KEYS]
+    if not keys:
+        return results
+    out, hit = [], []
+    for lv, msg in results:
+        k = next((k for k in keys if lv == "FAIL" and "JavaScript" not in msg and any(s in msg for s in WAIVE_KEYS[k])), None)
+        if k:
+            lv = "WARN"
+            msg = "(사용자 요청으로 허용) " + msg
+            hit.append(k)
+        out.append((lv, msg))
+    if hit:
+        out.append(("WARN", f"점검 {len(hit)}개를 사용자 요청으로 주의로 낮췄어요 ({', '.join(dict.fromkeys(hit))}): 글자가 작거나 잘려 보일 수 있어요"))
+    return out
+
+
 def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
     """Checks for games built by build.py: spec rules, tokens, text floors, bias, forbidden input, autoplay."""
     import design
@@ -184,7 +209,7 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
                 pass
     else:
         out.append(("WARN", "autoplay skipped (--no-play)"))
-    return out
+    return apply_waive(out, spec.get("waive"))
 
 
 def _juice_lint():
@@ -239,6 +264,26 @@ def wow_checks(path: Path, tokens: dict, html: str) -> list[tuple[str, str]]:
     return out
 
 
+HUD_JS = r"""(function(){
+  var out = [], hs = document.querySelectorAll('#hud .timer, #hud .timer-num, #hud .scoreboard .team, #hud .icon-btn, #hud .combo');
+  var sc = document.querySelectorAll('#scene .card, #scene .choice, #scene .btn, #scene .title, #scene .subtitle, #scene .ts-chip, #scene .qs-chip, #scene [data-fit]');
+  function vis(e){ var c = getComputedStyle(e), q = e.getBoundingClientRect(); return q.width > 2 && q.height > 2 && c.visibility !== 'hidden' && c.display !== 'none' && parseFloat(c.opacity) > 0.2; }
+  for (var i = 0; i < hs.length; i++){
+    if (!vis(hs[i])) continue;
+    var a = hs[i].getBoundingClientRect(), n = (hs[i].className || hs[i].id || 'hud').toString().split(' ')[0];
+    for (var j = 0; j < sc.length; j++){
+      if (!vis(sc[j])) continue;
+      var b = sc[j].getBoundingClientRect();
+      if (a.left < b.right - 6 && b.left < a.right - 6 && a.top < b.bottom - 6 && b.top < a.bottom - 6){
+        out.push(['hudoverlap', n, ((sc[j].textContent || '').replace(/\s+/g, ' ').trim().slice(0, 14)) || sc[j].className.toString().split(' ')[0]]);
+        break;
+      }
+    }
+  }
+  return out;
+})()"""
+
+
 def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     """Play the game headlessly through GAME_LOGIC.auto(); report stalls, JS errors, overflow, small text."""
     try:
@@ -287,7 +332,7 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                 if now == final and final not in ("title", "countdown", "result") and key not in checked:
                     checked.add(key)
                     pg.wait_for_timeout(350)  # let the entrance animation finish so sizes are real
-                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()"):
+                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()") + pg.evaluate(HUD_JS):
                         problems.setdefault(f"{kind}:{tag}:{txt}", f"{kind} in scene {final}: <{tag}> '{txt}'")
                 steps += 1
             b.close()
@@ -299,6 +344,8 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     ov = [v for k, v in problems.items() if k.startswith(("overflow", "offstage", "clipped"))]
     sm = [v for k, v in problems.items() if k.startswith("smalltext")]
     out.append(("FAIL" if ov else "PASS", "no text overflow / clipped answers / off-stage elements" + (f": {ov[:3]} -> shorten the text, use fewer choices, or a layout with wider buttons (design.layout split|stack)" if ov else "")))
+    hv = [v for k, v in problems.items() if k.startswith("hudoverlap")]
+    out.append(("FAIL" if hv else "PASS", "top bar parts (timer, score, buttons, combo) never cover question boxes or '차례' tags" + (f": {hv[:3]} -> move the box down (H.top()) or pick another design.layout" if hv else "")))
     mw = [v for k, v in problems.items() if k.startswith("midword")]
     out.append(("WARN" if mw else "PASS", "no Korean word broken across lines" + (f": {mw[:3]} -> shorten the text so words are not split" if mw else "")))
     orph = [v for k, v in problems.items() if k.startswith("orphan")]

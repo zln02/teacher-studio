@@ -48,6 +48,7 @@ PACKAGES: dict[str, dict] = {
     "qrcode": {"imports": ["qrcode"], "pip": ["qrcode"], "mb": 1, "why": "QR 코드를 만들려면"},
     "imageio-ffmpeg": {"imports": ["imageio_ffmpeg"], "pip": ["imageio-ffmpeg"], "mb": 40, "why": "영상 파일(MP4)을 만들거나 자르려면"},
     "playwright": {"imports": ["playwright"], "pip": ["playwright"], "mb": 40, "why": "화면을 직접 열어 보고 영상으로 녹화하려면"},
+    "pypdfium2": {"imports": ["pypdfium2"], "pip": ["pypdfium2"], "mb": 6, "why": "PDF 쪽을 그림으로 바꿔 보려면"},
 }
 CODEX_NETWORK_HELP = ("인터넷이 막혀 있어요. Codex에서는 ~/.codex/config.toml 에 [sandbox_workspace_write] 아래 network_access = true 를 넣고 "
                       "Codex를 다시 시작해 주세요. (회사·학교 망이면 pypi.org 접속이 허용돼야 해요.)")
@@ -189,6 +190,46 @@ def ensure_playwright(consent: bool = False) -> dict:
     return {"ok": r.returncode == 0, "channel": "", "prompt": "" if r.returncode == 0 else "브라우저 내려받기에 실패했어요. 인터넷을 확인해 주세요."}
 
 
+def find_libreoffice() -> str:
+    """Path of LibreOffice's `soffice` (PATH first, then the usual install folders), or ''."""
+    for n in ("soffice", "libreoffice"):
+        f = shutil.which(n)
+        if f:
+            return f
+    cands = [r"C:\Program Files\LibreOffice\program\soffice.exe", r"C:\Program Files (x86)\LibreOffice\program\soffice.exe",
+             "/Applications/LibreOffice.app/Contents/MacOS/soffice", "/usr/bin/soffice", "/usr/lib/libreoffice/program/soffice"]
+    return next((c for c in cands if Path(c).exists()), "")
+
+
+LIBREOFFICE_PROMPT = ("PPT 파일을 실제 화면처럼 그려서 글자가 넘치는지 눈으로 확인하려면 LibreOffice(무료 사무 프로그램)가 필요해요. "
+                      "용량이 커요: 내려받기 약 350MB, 설치 후 약 700MB, 5~10분 걸려요. 설치할까요? "
+                      "(안 깔아도 돼요. 그럴 땐 도형 위치로 그린 '대략의 미리보기'로 확인하고, 그 사실을 알려 드려요.)")
+
+
+def ensure_libreoffice(consent: bool = False) -> dict:
+    """LibreOffice for .pptx -> PDF -> PNG review. Large (~350MB): nothing happens without consent=True.
+
+    Returns {ok, path, prompt}. With consent it tries the OS package manager (Windows winget, macOS brew); Linux: tell the teacher.
+    """
+    found = find_libreoffice()
+    if found:
+        return {"ok": True, "path": found, "prompt": ""}
+    if not consent:
+        return {"ok": False, "path": "", "prompt": LIBREOFFICE_PROMPT}
+    sysname = platform.system()
+    cmd = None
+    if sysname == "Windows" and shutil.which("winget"):
+        cmd = ["winget", "install", "--id", "TheDocumentFoundation.LibreOffice", "-e", "--silent",
+               "--accept-package-agreements", "--accept-source-agreements"]
+    elif sysname == "Darwin" and shutil.which("brew"):
+        cmd = ["brew", "install", "--cask", "libreoffice"]
+    if not cmd:
+        return {"ok": False, "path": "", "prompt": "자동 설치 길이 없어요. libreoffice.org 에서 내려받아 설치해 주세요 (약 350MB). 지금은 대략의 미리보기로 확인할게요."}
+    r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    found = find_libreoffice()
+    return {"ok": bool(found), "path": found, "prompt": "" if found else "LibreOffice 설치가 안 됐어요. 대략의 미리보기로 확인할게요. " + ((r.stderr or r.stdout).strip().splitlines() or [""])[-1]}
+
+
 def status() -> dict:
     """Which tools are present now and which would install on first need (for doctor.py)."""
     present, on_demand = [], []
@@ -196,12 +237,12 @@ def status() -> dict:
         (present if is_present(name) else on_demand).append({"name": name, "mb": spec["mb"], "why": spec["why"]})
     ff = shutil.which("ffmpeg")
     return {"present": present, "on_first_need": on_demand, "ffmpeg": "system" if ff else ("imageio-ffmpeg" if is_present("imageio-ffmpeg") else ""),
-            "browser": find_system_browser(), "network": network_ok()}
+            "browser": find_system_browser(), "libreoffice": find_libreoffice(), "network": network_ok()}
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", help="status | ffmpeg | playwright | " + " | ".join(PACKAGES))
+    ap.add_argument("what", help="status | ffmpeg | playwright | libreoffice | " + " | ".join(PACKAGES))
     ap.add_argument("--yes", action="store_true", help="the teacher agreed: install now")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
@@ -211,6 +252,8 @@ def main() -> int:
         out = ensure_ffmpeg(a.yes)
     elif a.what == "playwright":
         out = ensure_playwright(a.yes)
+    elif a.what == "libreoffice":
+        out = ensure_libreoffice(a.yes)
     else:
         out = ensure(a.what, a.yes)
     if a.json or a.what == "status":

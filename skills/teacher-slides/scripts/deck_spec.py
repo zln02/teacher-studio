@@ -28,11 +28,12 @@ if not _V.exists():
 sys.path.insert(0, str(_V))
 
 TYPES = ("title", "section", "statement", "bullets", "compare", "steps", "bignumber", "bignumbers", "quote", "illustration", "quiz", "timeline",
-         "chart", "math", "timer", "qr", "image", "video", "closing")
+         "chart", "math", "timer", "qr", "image", "video", "closing", "table", "summary", "toc", "hero")
 ALIAS = {"cover": "title", "end": "closing", "thanks": "closing", "cards": "bullets", "list": "bullets", "bigtext": "statement", "question": "statement",
          "big-number": "bignumber", "stat": "bignumber", "stats": "bignumbers", "compare-numbers": "bignumbers", "numbers": "bignumbers",
          "image-free": "illustration", "art": "illustration", "picture": "image", "photo": "image", "countdown": "timer", "quiz-reveal": "quiz",
-         "formula": "math", "bignumber2": "bignumbers", "agenda": "bullets", "process": "steps", "outro": "closing", "intro": "title"}
+         "formula": "math", "bignumber2": "bignumbers", "agenda": "bullets", "grid": "table", "datatable": "table", "key-points": "summary",
+         "keypoints": "summary", "contents": "toc", "banner": "hero", "process": "steps", "outro": "closing", "intro": "title"}
 EMOJI = re.compile("[\U0001F000-\U0001FFFF☀-➿⬀-⯿️‍←-⇿]")
 URL = re.compile(r"(https?://[^\s·「」)]+|(?:[a-z0-9-]+\.)+(?:com|kr|net|org|io|me|dev|ly)(?:/[^\s·「」)]*)?)", re.I)
 MAX_IMG_BYTES = 3 * 1024 * 1024
@@ -90,6 +91,8 @@ def normalize(spec: dict, base: Path | None = None) -> tuple[dict, list[str], li
     raw = s.get("slides") or s.get("items") or []
     if not raw:
         return s, warns, ["spec.slides is empty: write 8-15 slides, e.g. {\"type\":\"title\",...} ... {\"type\":\"closing\",...}"]
+    import deck_context as dctx
+    caps = dctx.recipe(dctx.context_of(s)).get("caps") or {}
     out = []
     for i, it in enumerate(raw, 1):
         it = _legacy(dict(it))
@@ -99,7 +102,7 @@ def normalize(spec: dict, base: Path | None = None) -> tuple[dict, list[str], li
             continue
         it["type"] = t
         out.append(it)
-        errs += check_slide(i, it, warns)
+        errs += check_slide(i, it, warns, caps)
     s["slides"] = out
     if len(out) > 40:
         warns.append(f"{len(out)} slides: long decks lose the audience; consider splitting")
@@ -112,28 +115,73 @@ def _len(it, key, errs, i, limit=None, soft=False):
         errs.append(f"slide {i} {it['type']}.{key}: {len(plain(v))} chars > {limit or LIMITS.get(key, 90)} -> shorten (one message per slide)")
 
 
-def check_slide(i: int, it: dict, warns: list[str]) -> list[str]:
+def check_extra(i: int, it: dict) -> list[str]:
+    """Limits of the context slide types (table / summary / toc / hero)."""
     e: list[str] = []
     t = it["type"]
+    if t == "table":
+        cols, rows = it.get("columns") or [], it.get("rows") or []
+        if not 2 <= len(cols) <= 6:
+            e.append(f"slide {i} table.columns: {len(cols)} columns -> use 2-6")
+        if not 1 <= len(rows) <= 8:
+            e.append(f"slide {i} table.rows: {len(rows)} rows -> use 1-8 (split the table)")
+        for r in rows:
+            if not isinstance(r, list) or len(r) != len(cols):
+                e.append(f"slide {i} table: every row needs {len(cols)} cells")
+                break
+            if any(len(plain(str(c))) > 40 for c in r):
+                e.append(f"slide {i} table: a cell is > 40 chars -> shorten (put detail in the note)")
+                break
+        if any(len(plain(str(c))) > 16 for c in cols):
+            e.append(f"slide {i} table.columns: header <= 16 chars")
+    elif t == "summary":
+        pts = it.get("points") or []
+        if not 2 <= len(pts) <= 5:
+            e.append(f"slide {i} summary.points: {len(pts)} -> use 2-5")
+        for x in pts:
+            if len(plain(str(x))) > 80:
+                e.append(f"slide {i} summary.points: '{plain(str(x))[:12]}...' > 80 chars")
+    elif t == "toc":
+        its = it.get("items") or []
+        if its and not 2 <= len(its) <= 8:
+            e.append(f"slide {i} toc.items: use 2-8")
+        if any(len(plain(str(x))) > 30 for x in its):
+            e.append(f"slide {i} toc.items: <= 30 chars each")
+    elif t == "hero":
+        if len(plain(str(it.get("headline", "")))) > 34:
+            e.append(f"slide {i} hero.headline: {len(plain(str(it.get('headline', ''))))} chars > 34 -> short and punchy")
+        if len(plain(str(it.get("cta", "")))) > 20:
+            e.append(f"slide {i} hero.cta: <= 20 chars")
+    return e
+
+
+def check_slide(i: int, it: dict, warns: list[str], caps: dict | None = None) -> list[str]:
+    e: list[str] = []
+    t = it["type"]
+    caps = caps or {}
     need = {"title": ["title"], "section": ["title"], "statement": ["text"], "bullets": ["title", "items"], "compare": ["title", "a", "b"], "steps": ["title", "steps"],
             "bignumber": ["value"], "bignumbers": ["items"], "quote": ["text"], "illustration": ["title"], "quiz": ["q", "choices"], "timeline": ["title", "events"],
-            "chart": ["title", "labels", "series"], "math": ["tex"], "timer": [], "qr": ["url"], "image": ["file"], "video": ["file"], "closing": ["title"]}[t]
+            "chart": ["title", "labels", "series"], "math": ["tex"], "timer": [], "qr": ["url"], "image": ["file"], "video": ["file"], "closing": ["title"],
+            "table": ["title", "columns", "rows"], "summary": ["points"], "toc": [], "hero": ["headline"]}[t]
     for k in need:
         if not it.get(k):
             e.append(f"slide {i} {t}: '{k}' is required")
     if e:
         return e
+    e += check_extra(i, it)
     for k in ("title", "kicker", "subtitle", "meta", "sub", "caption", "q", "takeaway", "explain"):
         _len(it, k, e, i)
     for k in ("text",):
         _len(it, k, e, i, 110 if t != "statement" else 70)
     if t == "bullets":
         items = it["items"]
-        if not 2 <= len(items) <= 6:
-            e.append(f"slide {i} bullets.items: {len(items)} items -> use 2-6 (split into two slides)")
+        lo, hi = caps.get("bullet_items", (2, 6))
+        mc = caps.get("bullet_chars", 60)
+        if not lo <= len(items) <= hi:
+            e.append(f"slide {i} bullets.items: {len(items)} items -> use {lo}-{hi} (split into two slides)")
         for j, x in enumerate(items):
-            if len(plain(x)) > 60:
-                e.append(f"slide {i} bullets.items[{j}]: {len(plain(x))} chars > 60 -> shorten")
+            if len(plain(x)) > mc:
+                e.append(f"slide {i} bullets.items[{j}]: {len(plain(x))} chars > {mc} -> shorten")
     if t == "compare":
         for side in ("a", "b"):
             if not isinstance(it[side], dict):
@@ -183,10 +231,11 @@ def check_slide(i: int, it: dict, warns: list[str]) -> list[str]:
         e.append(f"slide {i} timer.minutes: 1-90")
     if t == "closing" and len(it.get("next", [])) > 4:
         e.append(f"slide {i} closing.next: at most 4")
-    total = sum(len(plain(v)) for k, v in it.items() if isinstance(v, str) and k not in ("note", "type", "file", "url", "tex", "layout"))
-    total += sum(len(plain(x)) for k in ("items", "next", "choices") for x in it.get(k, []) if isinstance(x, str))
-    if total > 330:
-        e.append(f"slide {i} {t}: {total} chars of text > 330 -> split it (projection needs big, short text)")
+    total = sum(len(plain(v)) for k, v in it.items() if isinstance(v, str) and k not in ("note", "type", "file", "url", "tex", "layout", "source", "footnote", "context"))
+    total += sum(len(plain(x)) for k in ("items", "next", "choices", "points") for x in it.get(k, []) if isinstance(x, str))
+    cap = caps.get("total", 330)
+    if total > cap:
+        e.append(f"slide {i} {t}: {total} chars of text > {cap} -> split it (projection needs big, short text)")
     return e
 
 
@@ -234,13 +283,13 @@ def resolve_media(spec: dict, base: Path) -> tuple[list[str], list[str]]:
     import deck_qr
     for i, it in enumerate(spec["slides"], 1):
         t = it["type"]
-        if t in ("image", "video"):
+        if t in ("image", "video") or (t == "hero" and it.get("file")):
             p = Path(it["file"])
             p = p if p.is_absolute() else (base / p)
             if not p.exists():
                 errs.append(f"slide {i} {t}.file not found: {it['file']}")
                 continue
-            if t == "image":
+            if t in ("image", "hero"):
                 try:
                     it["_src"], n = inline_image(p)
                     notes += n
@@ -256,7 +305,7 @@ def resolve_media(spec: dict, base: Path) -> tuple[list[str], list[str]]:
                     it["_href"] = p.resolve().as_uri()
                     it["_name"] = p.name
                     notes.append(f"{p.name}: {size // 1048576}MB > 8MB -> 'open video' button (file stays next to the deck)")
-        if t in ("qr", "closing") and it.get("url"):
+        if t in ("qr", "closing", "hero") and it.get("url"):
             it["_qr"] = deck_qr.svg(it["url"])
         if t == "closing" and not it.get("url") and any(URL.search(str(x)) for x in it.get("next", [])):
             pass

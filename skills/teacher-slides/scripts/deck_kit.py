@@ -99,7 +99,11 @@ def box(x, y, w, h, inner: str = "", cls: str = "", extra: str = "", attrs: str 
 
 def T(ctx: Ctx, text, x, y, w, h, mx, mn=None, cls: str = "p", va: str = "m", lh: float = 1.25, step: int | None = -1, extra: str = "", align: str = "") -> str:
     """Text box with a Python-estimated font size (and data-fit for the runtime safety net). step=-1 -> no build; None -> next build."""
+    sc = (ctx.dz.get("tscale") or {}).get((cls.split() or ["p"])[0], 1.0)  # context type scale (deck_context recipes)
+    if sc != 1.0:
+        mx, mn = int(mx * sc), int((mn or ctx.floor) * sc)
     mn = max(ctx.floor, mn or ctx.floor)
+    mx = max(mx, mn)
     s = fit(plain(text), w, h, mx, mn, lh)
     battr = "" if step == -1 else ctx.b(step)
     bcls = "" if step == -1 or not ctx.builds else " b"

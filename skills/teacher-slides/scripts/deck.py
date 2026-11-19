@@ -30,6 +30,8 @@ SKILL = HERE.parent
 sys.path.insert(0, str(HERE))
 import build_stage  # noqa: E402
 import deck_art as art  # noqa: E402
+import deck_context as dctx  # noqa: E402
+import deck_ctx_layouts as ctxlay  # noqa: E402
 import deck_layouts as lay  # noqa: E402
 import deck_spec as dspec  # noqa: E402
 import deck_style as dstyle  # noqa: E402
@@ -93,6 +95,9 @@ def pick_layouts(dz: dict, slides: list[dict]) -> list[tuple[str, str, object]]:
     prev = None
     for i, it in enumerate(slides):
         opts = [o for o in lay.REG[it["type"]] if o[3](it)]
+        allowed = (dz.get("allowed") or {}).get(it["type"])
+        if allowed and not it.get("layout"):  # context recipe: only its layout set (e.g. public = 개조식 lists, table compare)
+            opts = [o for o in opts if o[0] in allowed] or opts
         forced = str(it.get("layout", ""))
         if forced:
             m = [o for o in opts if forced in (o[0], f"{it['type']}.{o[0]}")]
@@ -141,9 +146,16 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     """Build one deck. Returns a report dict (ok, seed, style, palette, fingerprint, warnings, errors, size)."""
     spec = dict(spec)
     spec.update({k: v for k, v in (overrides or {}).items() if v})
+    spec = dctx.pre(spec)  # context recipe: objectives / recap / toc / summary slides, gov date, no builds for public
     spec, warns, errs = dspec.normalize(spec, base)
     rep = {"ok": False, "warnings": warns, "errors": errs}
     if errs:
+        return rep
+    spec = dctx.post(spec)  # public numbering Ⅰ. / 1., toc items, cover fields
+    cerrs, cwarns = dctx.lint(spec)
+    rep["warnings"] += cwarns
+    if cerrs:
+        rep["errors"] = cerrs
         return rep
     notes, merrs = dspec.resolve_media(spec, base)
     rep["warnings"] += notes
@@ -187,6 +199,7 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     for i, (it, (var, fam, fn)) in enumerate(zip(spec["slides"], picks)):
         ctx = Ctx(dz, i, builds_on and it.get("build", True) is not False or it["type"] == "quiz")
         res = fn(ctx, it)
+        res["html"] = ctxlay.decorate(ctx, it, res, spec)
         sid = f"s{i + 1}"
         fcss, fsvg, probs = dspec.flair(it, sid)
         rep["warnings"] += probs
@@ -203,11 +216,11 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     js = (ASSETS / "deck.js").read_text(encoding="utf-8")
     for tag, used in (("chart", "chart" in types), ("math", "math" in types), ("timer", "timer" in types)):
         js = re.sub(rf"/\*#{tag}\*/(.*?)/\*#end\*/", (lambda m: m.group(1)) if used else "", js, flags=re.S)
-    css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + style_css(dz) + "\n" + "\n".join(css_extra)
+    css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + ctxlay.CSS + style_css(dz) + "\n" + "\n".join(css_extra)
     scene = ('<div id="deck">' + "".join(parts) + '</div><div id="chrome"><div class="prog"></div><div class="pn"></div></div><div id="notes"></div><div id="black"></div>')
     import placeholders as ph_
     doc = {"title": spec.get("title") or spec["slides"][0].get("title", "슬라이드"), "skin": "deck",
-           "deck": {"style": dz["style"], "palette": dz["palette"], "seed": seed, "purpose": dz["purpose"], "why": dz["why"], "layouts": fp,
+           "deck": {"style": dz["style"], "palette": dz["palette"], "seed": seed, "purpose": dz["purpose"], "why": dz["why"], "layouts": fp, "context": dz.get("context", ""),
                     "colors": {k: dz["colors"][k] for k in ("bg1", "tx", "pr")}, "floor": dz["floor"],
                     "fillins": [str(x) for x in ph_.with_blanks(spec.get("fillins"), spec.get("template_blanks"))]}}
     libs = ["lucide"] + (["chartjs"] if "chart" in types else []) + (["katex"] if "math" in types else [])
@@ -222,7 +235,8 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             RECENT.write_text(json.dumps((hist + [dz["style"]])[-6:]), encoding="utf-8")
         except Exception:
             pass
-    rep.update(ok=True, seed=seed, style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts))
+    rep.update(ok=True, seed=seed, style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts),
+               context=dz.get("context", ""))
     return rep
 
 
@@ -277,7 +291,7 @@ def main() -> int:
             print("FIX ", e)
         print(f"\n고칠 곳 {len(rep['errors'])}개 - spec을 고친 뒤 다시 실행하세요.")
         return 1
-    print(f"built {out} ({rep['size'] // 1024} KB) slides={rep['slides']} style={rep['style']} palette={rep['palette']} seed={rep['seed']} (같은 모양을 다시 만들려면 --seed {rep['seed']})")
+    print(f"built {out} ({rep['size'] // 1024} KB) slides={rep['slides']} style={rep['style']} palette={rep['palette']} context={rep.get('context') or '-'} seed={rep['seed']} (같은 모양을 다시 만들려면 --seed {rep['seed']})")
     code = 0
     left, listed = placeholder_gate(spec)  # blanks must never ship: FAIL unless the spec lists them as "fillins"
     if left:

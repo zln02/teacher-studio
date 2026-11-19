@@ -21,6 +21,9 @@ sys.path.insert(0, str(_SHARED / "design"))
 import design as design_core  # noqa: E402
 import styles as style_core  # noqa: E402
 
+sys.path.insert(0, str(HERE))
+import deck_context as dctx  # noqa: E402
+
 STYLES = style_core.STYLES
 
 # ---- composition language per style --------------------------------------------------------------------------------
@@ -168,12 +171,15 @@ def weighted(opts: dict, key: str) -> str:
     return items[0][0]
 
 
-def pick_style(purpose: str, mood: str, subject: str, seed: int, forced: str = "", avoid: list | None = None) -> tuple[str, str]:
-    """(style id, why): an explicit design.style wins; else mood words + purpose + subject weights with a seeded pick."""
+def pick_style(purpose: str, mood: str, subject: str, seed: int, forced: str = "", avoid: list | None = None, context: str = "") -> tuple[str, str]:
+    """(style id, why): an explicit design.style wins; else mood words + purpose (or the context recipe) + subject weights with a seeded pick."""
     if forced in STYLES:
         return forced, "style"
-    w = {k: float(v) for k, v in PURPOSE_STYLE.get(purpose, PURPOSE_STYLE["발표"]).items()}
-    why = "purpose"
+    rc = dctx.recipe(context)
+    if rc.get("style"):
+        return rc["style"], "context"
+    w = {k: float(v) for k, v in (rc.get("styles") or PURPOSE_STYLE.get(purpose, PURPOSE_STYLE["발표"])).items()}
+    why = "context" if rc else "purpose"
     words = f"{mood} {subject}"
     for key, add in MOOD_STYLE.items():
         if key in words:
@@ -188,6 +194,8 @@ def pick_style(purpose: str, mood: str, subject: str, seed: int, forced: str = "
         if any(k in words for k in v["keys"]):
             w[sid] = w.get(sid, 0) + 8
             why = "words"
+    if rc:  # a context keeps to its own style family: mood/subject words only re-weight inside it
+        w = {k: v for k, v in w.items() if k in rc["styles"]}
     for a in (avoid or []):  # styles used in the last builds are much less likely (same request -> visibly different looks)
         if a in w:
             w[a] *= 0.02
@@ -225,11 +233,22 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     """Design object used by every layout: style, language, colours (+ guarded derived colours), floors, fonts."""
     d = spec.get("design") or {}
     purpose = purpose_of(spec.get("purpose", ""))
+    context = dctx.context_of(spec)
+    rc = dctx.recipe(context)
     mood = " ".join(spec.get("mood") if isinstance(spec.get("mood"), list) else [str(spec.get("mood", ""))])
+    if rc and not mood.strip():
+        mood = rc["mood"]
     words = " ".join([mood, str(spec.get("title", ""))])
-    style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid)
+    style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid, context)
     lang = dict(LANG[style])
     pal, pal_name = palette_for(style, mood, seed)
+    if rc.get("palettes") and not d.get("style"):  # public: restrained navy/slate/teal, seeded
+        pal_name = weighted({k: 1 for k in rc["palettes"]}, f"gov|{seed}")
+        pal = dict(dctx.PUBLIC_PALETTES[pal_name])
+        lang.update(em="color", card="hair", rad=4, bg="minimal", trans="fade", tw=800)
+    if rc:
+        fam = rc.get("family") or {}
+        lang["prefer"] = {k: max(1, round(v * fam.get(k, 1.0))) for k, v in lang["prefer"].items()}
     if d.get("palette_from"):  # the user's own colours (logo / template): they replace the style's palette; the style's composition stays
         pal, pal_name = design_core.load_user_palette(d["palette_from"]), "user"
     bg1, bg2, tx = pal["bg1"], pal["bg2"], pal["text"]
@@ -256,6 +275,8 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
         hl_card = mix(card, pr, 0.14)
     # meaning colours: blue vs orange keep apart for colour-blind eyes (checked with shared/design/color_check.py); the layouts also say it in words (정답/오답)
     purpose_floor = 24 if purpose == "개인" else 28
+    if rc:
+        purpose_floor = rc["floor"]
     return {
         "style": style, "why": why, "purpose": purpose, "palette": pal_name, "seed": seed, "lang": lang, "dark": dark,
         "colors": {"bg1": bg1, "bg2": bg2, "tx": tx, "mu": mu, "card": card, "ct": ct, "cmu": cmu, "cb": mix(tx, bg1, 0.82), "line": mix(tx, bg1, 0.84), "pr": pr, "bt": pal["btnText"],
@@ -263,6 +284,7 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
                    "ink": "#1a1a1a" if not dark else "#f5f5f5"},
         "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "Noto Sans KR", "body": "Noto Sans KR"},
         "floor": purpose_floor, "motion": STYLES[style]["motion"],
+        "context": context, "tscale": dict(rc.get("tscale") or {}), "allowed": dict(rc.get("allowed") or {}),
     }
 
 
