@@ -18,7 +18,7 @@ Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가�
 4. Report is for people: conclusion first (one sentence a child understands), 3 lines, then charts with plain titles + units.
 5. Fix loop max 2, then tell the teacher plainly (ADR 0011). Speak Korean, plain words, no dev terms.
 
-## Steps
+## Steps (do them yourself in this chat, 4 commands, about 1 minute; no helper agent)
 1. **Ask first (ask-first.md, 0-3 questions, each with a recommended answer; skip if clear or 「알아서」)**: who reads it? (추천: 학부모 / 초등 / 선생님 / 전문가) · what to compare (only if the columns do not make it obvious) · also want an Excel file? (추천: 아니요)
 2. `python3 scripts/profile_data.py FILE [--sheet S] --json` -> schema, types, missing, units, PII, suggestions. `.xlsx` needs openpyxl: if the output has `need_install`, show its `prompt` and rerun with `--yes` only after consent.
 3. Write a plan (copy from `assets/spec-examples/`): `python3 scripts/analyze.py --data FILE --plan plan.json --out agg.json`
@@ -26,6 +26,24 @@ Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가�
 4. `python3 scripts/report.py --agg agg.json --out report.html --audience 초등|학부모|선생님|전문가 [--xlsx r.xlsx] [--csv a.csv]`. Wording and numbers come from the aggregates; override only via plan `narrative` (numbers still checked). If the user gave a logo/template, use its colours first: `--palette-from pal.json` (from `shared/design/color_from.py`, see `../teacher-studio/references/user-colors.md`; a means, not our design). `check_report.py` WARNs when chart colours look alike to colour-blind eyes.
 5. `python3 scripts/check_report.py report.html --agg agg.json --source FILE` must print PASS. Fix the plan (not the HTML) and rebuild, max 2 times.
 6. Show the page. Offer 2 tweaks (다른 눈높이로 / 엑셀로도). Mention correlation is not cause and small samples (the report already says so).
+
+## Plan picker (from the `profile_data.py` output; first match, 1-4 analyses, one chart per question)
+| The columns are | Plan |
+|---|---|
+| 3+ number columns side by side (국어·수학·과학 …), one row per person | one `overview` (add `"group"` when a 반/모둠 column exists). Do not add a `groupby` per subject |
+| one category + one number, and the user says 비교 | `groupby` (`by`, `value`, `agg` mean for scores, sum for money) |
+| a date column + a number | `trend` (`freq` month/week); money -> also `groupby` by 분류 with `"style": "share"`, `top` 5 |
+| before/after or two test columns | `change` |
+| 1-5 scale answers (매우 그렇다 …) | `likert`; free choices -> `distribution` |
+| the user asks 「관계 있어?」 | `correlation` (say it is not cause) |
+With 「알아서」 use the picker and go; the user's own question, when given, is always the first analysis.
+
+## Quality bar (read the finished report once before showing it)
+1. The first sentence answers the user's question for the WHOLE data (every subject/group), in words a child understands, with one number.
+2. Each chart answers one question; its title says the question and the unit. No chart that repeats another.
+3. No name, 번호 or 학번 anywhere (unless the user set the switch). Small groups (n < 5) are not compared as if certain.
+4. One 「다음에 해 볼 일」 line the reader can act on. No cause claimed from a correlation.
+5. Final message: file path · how to open · the headline sentence · which columns were hidden as identifiers · check PASS · 2 tweaks.
 
 ## Chart rules (built in)
 Bar = compare, line = change over time, pie only <= 5 parts (else bar), stacked = shares per group. Rounded numbers with units, axis shows 「단위」, bars start at 0, colour never the only cue (values are printed), colour-blind-safe series colours, keep-all Korean, text >= 14 px, contrast >= 4.5:1.

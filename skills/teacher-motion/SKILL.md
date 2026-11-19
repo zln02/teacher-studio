@@ -11,6 +11,21 @@ Respond in the user's language. If the user brings a template or reference, use 
 선생님(코딩 모름)이 말로 원하는 **수업용 영상·움직이는 화면**을 1920×1080 무대 위 단일 HTML로 만들고, 영상 파일(webm/MP4)로도 뽑아 준다.
 퀄리티는 무대(`assets/stage.html`)와 미사일(완제품)이 책임진다. **맞는 미사일이 있으면 무조건 미사일로 쏜다.**
 
+## Recipe (do it yourself in this chat; 3-4 tool calls; no helper agent, no background task)
+1. Pick the missile and skin from the table below (first row that matches). No row fits -> 「미사일이 없을 때 직접 제작」 at the bottom, same quality bar.
+2. 「알아서」「바로」 -> write the words yourself and build now. Otherwise show the shot table (번호 | 장면 | 화면 글자 | 길이) once and wait for 「좋아」.
+3. Read ONLY `assets/missiles/<missile>/README.md`, write `content.json` with the parts that change, then:
+   `python3 scripts/build_stage.py --missile <m> --skin <s> --content content.json --out page.html` and `python3 scripts/check_page.py page.html` (FAIL -> fix content, 2 tries at most).
+4. Last message, always a real answer: file path · 「더블클릭하면 열려요, Space = 재생/다음, F = 전체 화면, 🎥 = 영상으로 저장」 · check result in one line · 2-3 tweaks. MP4 only when asked (`render_mp4.py`; say the time first).
+
+## Quality bar (what an excellent 30-40 second piece looks like; check on the captures before showing)
+1. **One idea per shot, <= 12 words on screen**, each shot readable in half its duration. Total length = what was asked (±3 s); 5-7 shots for 30-40 s.
+2. **A hook in the first 3 seconds** (a question, a surprising number, the class name big), and a clear last frame that holds 2+ s (what to do next / who we are).
+3. **Words are the user's world**: the real subject, grade, unit names and 3-4 concrete things from it. No filler (「열정」「꿈」) unless the user wrote it; no invented facts, no real student names or faces.
+4. **Nothing overlaps or is cut** at 1920x1080 and 1280x720; text keeps 96 px from the edges; contrast is easy on a projector.
+5. **Motion has one rhythm**: things enter, hold, leave; nothing moves while it must be read; no flashing.
+6. The skin matches the request's mood, not the last video you made.
+
 ## 선생님 말 알아듣기 (가장 먼저)
 - 「멋있게」「첫 시간에 보여 줄 거」「애들 집중시키게」 같은 말은 `references/teacher-language.md` 사전으로 바로 작업으로 바꾼다(0번 표가 영상·화면 요청).
 - 사전에 없는 말도 「교실에서 언제, 어디에 띄우나」로 해석해 **먼저 만들고**, 「○○로 이해하고 이렇게 만들었어요」라고 한 줄로 알린다. 크게 갈릴 때만 보기 2~3개로 되묻는다.

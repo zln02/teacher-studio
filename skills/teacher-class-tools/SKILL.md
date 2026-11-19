@@ -15,12 +15,18 @@ Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", 
 - Not for: quizzes or games (-> teacher-game), slides (-> teacher-slides), videos (-> teacher-motion). If the request is clearly a one-off the model can do better inline, say so and do that (no-regret rule).
 - Speak Korean to the teacher, plain words. Do not mention HTML/JSON/spec unless asked. Show the result as an artifact.
 
-## Steps
-1. Pick the tool and ask only what is missing, in one numbered message with defaults: duration / how many people / team count / team names / sound on?
+## Steps (yourself, in this chat: write spec, one command, answer; under a minute)
+1. Pick the tool. Do NOT ask when the request has the number it needs (「5분 타이머」「6모둠」) or says 「알아서」「바로」: use the defaults (numbers 1-30 for people, 4 teams, animal team names, sound on for the timer only) and say them in one line. Ask one numbered message only when the count of people or teams is unknowable.
 2. Write a spec (copy the closest file from `assets/spec-examples/`), then:
    `python3 scripts/build_tool.py --spec spec.json --out tool.html`
    This builds and runs the checker. Fix and rebuild at most 2 times; then tell the teacher plainly what is off.
-3. Show the page. Tell them the keys: Space/Enter = main action; "전체화면" button for the board.
+3. Show the page. Last message: file path · 「더블클릭하면 열려요」 · keys (Space/Enter = main action, 「전체화면」 button) · 2 tweaks (예: 「10분으로」「모둠 이름 바꾸기」). No privacy line for a tool that holds no names.
+
+## Quality bar
+1. The one thing the room must read (time left, the picked number, the score) is the biggest thing on screen and readable from the back row.
+2. One obvious main button; everything works with one tap or Space.
+3. Fair and visible: no repeat draws unless asked, teams differ by at most one, the bracket shows who meets whom.
+4. Numbers, not student names, in the spec.
 
 ## Spec
 ```
@@ -49,7 +55,7 @@ Design uses the shared design system (palette from subject/grade/mood), one embe
 - Always visible: 「🌙 효과 줄이기」 and 「🔇 소리 끄기」 buttons; the OS "reduce motion" setting is honoured too. Everything stops with reduced motion. End alert is text plus optional sound (default on for timer only). Tune/disable: build with `--no-juice` (comparison only); values in `shared/juice/README.md`.
 
 ## Checker (`scripts/check_tool.py`)
-PASS required: no external request, no storage/network APIs, no `<form>`, inputs autocomplete off, keep-all, token contrast >= 4.5:1, text/button size floors, no overflow (landscape + portrait), tool logic (no duplicate draws, fair teams, bracket champion, timer end, count-up), reduced motion leaves nothing animating, no JS errors. Wow lint (`shared/juice/juice_lint.py`): flashes <= 3/s and none above 341x256 px, tap targets >= 44 px, class text >= 28 px, right/wrong never colour alone, 「효과 줄이기」+「소리 끄기」 present, >= 30 fps with the CPU throttled 4x, click -> next frame <= 100 ms. Needs Playwright for the headless part (system Chrome is used; audio muted); without it only static checks run.
+PASS required: no external request, no storage/network APIs, no `<form>`, inputs autocomplete off, keep-all, token contrast >= 4.5:1, text/button size floors, no overflow (landscape + portrait), tool logic (no duplicate draws, fair teams, bracket champion, timer end, count-up), reduced motion leaves nothing animating, no JS errors. Wow lint (`shared/juice/juice_lint.py`): flashes <= 3/s and none above 341x256 px, tap targets >= 44 px, class text >= 28 px, right/wrong never colour alone, 「효과 줄이기」+「소리 끄기」 present, the page's own work per frame <= 33 ms with the CPU throttled 4x (a low frame rate on a slow or busy test PC is a WARN, not a failure), click -> next frame <= 100 ms. Needs Playwright for the headless part (system Chrome is used; audio muted); without it only static checks run.
 
 ## Files
 `scripts/build_tool.py` build · `scripts/check_tool.py` check · `scripts/shots.py` contact sheet for review · `assets/tools.js|css` runtime (copied as is) · `assets/spec-examples/` 5 specs.
