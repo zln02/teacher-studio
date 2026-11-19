@@ -267,15 +267,15 @@ def render_html(cs: list[dict], request: str, plan_line: str = "") -> str:
     for c in cs:
         k = c["colors"]
         ff = ("'Noto Serif KR','Batang',serif" if c["serif"] else "'Noto Sans KR','Malgun Gothic',sans-serif")
-        boxes = "".join('<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="%s" opacity="%s"/>' % (x, y, w, h, k["primary"] if i == 0 else k["card"], "0.9" if i == 0 else "0.75")
+        boxes = "".join('<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="%s" opacity="%s"/>' % (x, y, w, h, e(k["primary"] if i == 0 else k["card"]), "0.9" if i == 0 else "0.75")
                         for i, (x, y, w, h) in enumerate(SKETCH.get(c["layout"], SKETCH["stack"])))
         parts.append(
             '<section class="card" style="background:%s;color:%s"><b class="id">%s</b>'
             '<h2 style="font-family:%s;color:%s">%s</h2><p class="feel">%s</p>'
             '<svg viewBox="0 0 120 68" role="img" aria-label="%s 배치 스케치"><rect width="120" height="68" rx="6" fill="%s" stroke="%s" stroke-opacity=".3"/>%s</svg>'
             '<div class="sw">%s</div><p class="meta">%s · %s</p></section>' % (
-                k["bg1"], k["text"], e(c["id"]), ff, k["text"], e(c["sample_title"]), e(c["name"] + " · " + c["feel"]), e(c["name"]), k["bg1"], k["text"], boxes,
-                "".join('<i style="background:%s"></i>' % v for v in (k["bg1"], k["primary"], k["accent"], k["card"])), e(c["font"]), e("어둡게" if c["dark"] else "밝게")))
+                e(k["bg1"]), e(k["text"]), e(c["id"]), ff, e(k["text"]), e(c["sample_title"]), e(c["name"] + " · " + c["feel"]), e(c["name"]), e(k["bg1"]), e(k["text"]), boxes,
+                "".join('<i style="background:%s"></i>' % e(v) for v in (k["bg1"], k["primary"], k["accent"], k["card"])), e(c["font"]), e("어둡게" if c["dark"] else "밝게")))
     return ("<!doctype html><html lang=\"ko\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>분위기 미리보기</title><style>body{margin:0;padding:24px;background:#f4f4f4;color:#111;font:16px 'Noto Sans KR','Malgun Gothic',sans-serif}"
             "h1{font-size:20px;margin:0 0 4px}.sub{margin:0 0 16px;color:#444}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}"

@@ -195,5 +195,67 @@ class StageTests(Base):
         self.assertNotIn("<img src=x", pages[1])
 
 
+class StudioScriptTests(Base):
+    """teacher-studio's own HTML writers: direction cards, storyboard sheet, reference analysis."""
+
+    def test_direction_cards(self):
+        d = load("direction_x", SK / "teacher-studio/scripts/direction.py")
+        for req in (P_TITLE + " 게임", P_SVG + P_SCRIPT):
+            r = d.build(req, {}, 0, {"bg1": "#ffffff", "text": "#111111", "primary": "#2255ff"})
+            bad = d.render_html(r["cards"], req, plan_line=P_SCRIPT)
+            good = d.render_html(d.build("안전한 게임", {}, 0, {"bg1": "#ffffff", "text": "#111111", "primary": "#2255ff"})["cards"], "안전한 게임", plan_line="안전")
+            self.assertSafe(bad, good)
+            self.assertNotIn("<img src=x", bad)
+        cs = d.build("퀴즈", {})["cards"]
+        cs[0]["sample_title"] = "A & B"
+        out = d.render_html(cs, "x")
+        self.assertIn("A &amp; B", out)
+        self.assertNotIn("&amp;amp;", out)
+
+    def test_storyboard(self):
+        sb = load("storyboard_x", SK / "teacher-studio/scripts/storyboard.py")
+        spec = {"title": P_TITLE, "slides": [{"type": "title", "title": P_SVG, "subtitle": P_SCRIPT, "note": P_SCRIPT}]}
+        bad = sb.render_html(sb.frames_from_spec(spec), spec["title"])
+        good = sb.render_html(sb.frames_from_spec({"title": "t", "slides": [{"type": "title", "title": "a", "subtitle": "b"}]}), "t")
+        self.assertSafe(bad, good)
+        self.assertNotIn("<img src=x", bad)
+        self.assertIn("A &amp; B", sb.render_html(sb.frames_from_spec({"frames": [{"title": "A & B"}]}), "t"))
+
+    def test_storyboard_bad_palette_is_ignored(self):
+        sb = load("storyboard_y", SK / "teacher-studio/scripts/storyboard.py")
+        with tempfile.TemporaryDirectory() as td:
+            f = Path(td) / "p.json"
+            f.write_text(json.dumps({"colors": {"bg1": "red;}</style><img src=x onerror=alert(1)>", "primary": "#112233"}}), encoding="utf-8")
+            tok = sb.palette(str(f))
+        self.assertEqual(tok["bg"], sb.DEFAULT["bg"])
+
+    def test_ref_analyze_page_values(self):
+        ra = load("ref_analyze_x", SK / "teacher-studio/scripts/ref_analyze.py")
+        bad = P_TITLE
+        d = {"sizes": [["16", 3]], "spacing": [["8", 2]], "radii": [[bad, 1]], "shadows": [[bad, 1]], "transitions": [[bad, 1]], "fonts": [[bad, 1]], "weights": [[bad, 1]],
+             "sections": [{"top": 0, "height": 10, "roles": [bad]}], "comps": {bad: 1}, "contrast": [{"fg": bad, "bg": bad, "ratio": 5.0}],
+             "contentWidth": 900, "maxWidths": [bad], "easings": [bad], "keyframes": [bad], "animations": [bad]}
+        data = {"desktop": d, "mobile": {"tap": {"small": 0, "total": 1}, "has_h_scroll": False}}
+        tokens = {"colors": {bad: bad}, "_inspired_by": {"spacing_unit_px": 8}}
+        try:
+            ra.summarize = lambda _d: ([(bad, 1.0)], [(bad, 1)], [(bad, 1, 1)])
+        except Exception:
+            pass
+        with tempfile.TemporaryDirectory() as td:
+            ra.build_html(Path(td), bad, bad, data, tokens, [bad])
+            page = (Path(td) / "analysis.html").read_text(encoding="utf-8")
+        self.assertEqual(scan(page).tags.get("img", 0), 3)  # only the three fixed screenshots
+        self.assertEqual(scan(page).handlers, [])
+
+    def test_deliver_never_writes_markup_from_input(self):
+        dv = load("deliver_x", SK / "teacher-studio/scripts/deliver.py")
+        if dv.find_qrcodegen() is None:
+            self.skipTest("qrcodegen not bundled")
+        svg = dv.qr_svg(dv.qr_matrix("https://example.com/?a=<script>&b=1"))
+        self.assertEqual(scan(svg).handlers, [])
+        self.assertNotIn("<script", svg)
+        self.assertEqual(dv.make_qr('javascript:alert(1)', Path("x.svg"))[:3], "QR:")
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

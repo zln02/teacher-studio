@@ -344,15 +344,15 @@ def patterns_ko(data, tokens):
 def build_html(out, name, url, data, tokens, patterns):
     d = data["desktop"]
     bgs, txt, sat = summarize(d)
-    sw = lambda h, lab="": f'<div class="sw"><i style="background:{h}"></i><b>{h}</b><small>{html.escape(lab)}</small></div>'
+    sw = lambda h, lab="": f'<div class="sw"><i style="background:{html.escape(str(h))}"></i><b>{html.escape(str(h))}</b><small>{html.escape(lab)}</small></div>'
     colors = "".join(sw(h, f"area {int(w)}") for h, w in bgs[:6]) + "".join(sw(h, "text") for h, _ in txt[:4]) + "".join(sw(h, "accent") for h, _, _ in sat[:3])
     tok = "".join(sw(v, k) for k, v in tokens["colors"].items())
     sizes = "".join(f'<span style="font-size:{min(int(k), 60)}px">{k}px<small> ×{n}</small></span>' for k, n in sorted(d["sizes"], key=lambda x: -int(x[0])))
     sp = "".join(f'<span class="chip"><i style="width:{min(int(k), 120)}px"></i>{k}px<small> ×{n}</small></span>' for k, n in d["spacing"][:12])
-    rad = "".join(f'<span class="chip"><i class="r" style="border-radius:{r}"></i>{r}</span>' for r, _ in d["radii"])
-    secs = "".join(f"<li>{s['top']}px · {s['height']}px · {', '.join(s['roles'])}</li>" for s in d["sections"][:14])
-    comps = ", ".join(f"{k}: {v}" for k, v in d["comps"].items() if v)
-    con = "".join(f"<li>{c['fg']} on {c['bg']} = <b class=\"{'ok' if c['ratio'] >= 4.5 else 'warn'}\">{c['ratio']}</b></li>" for c in d["contrast"][:6])
+    rad = "".join(f'<span class="chip"><i class="r" style="border-radius:{html.escape(str(r))}"></i>{html.escape(str(r))}</span>' for r, _ in d["radii"])
+    secs = "".join(f"<li>{s['top']}px · {s['height']}px · {html.escape(', '.join(str(x) for x in s['roles']))}</li>" for s in d["sections"][:14])
+    comps = ", ".join(html.escape(f"{k}: {v}") for k, v in d["comps"].items() if v)
+    con = "".join(f"<li>{html.escape(str(c['fg']))} on {html.escape(str(c['bg']))} = <b class=\"{'ok' if c['ratio'] >= 4.5 else 'warn'}\">{c['ratio']}</b></li>" for c in d["contrast"][:6])
     pat = "".join(f"<li>{html.escape(p)}</li>" for p in patterns)
     css = """body{font:15px/1.5 system-ui,'Malgun Gothic',sans-serif;margin:0;background:#f6f6f4;color:#1b1b1b}
 main{max-width:1200px;margin:auto;padding:24px}h1{font-size:22px;margin:0 0 4px}h2{font-size:15px;margin:22px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}
@@ -368,12 +368,12 @@ small{color:#777}.ok{color:#16a34a}.warn{color:#dc2626}.legal{background:#fff7d6
 <h2>화면 (데스크톱 / 모바일 첫 화면)</h2><div class="shots"><img src="shot-desktop-fold.png" width="640"><img src="shot-mobile-fold.png" width="200"><img src="shot-mobile-full.png" width="120"></div>
 <h2>색 (면적순 / 글씨 / 강조)</h2><div class="sws">{colors}</div>
 <h2>우리 토큰 제안 (약화된 값)</h2><div class="sws">{tok}</div>
-<h2>글자 크기 척도 (본문 {d['sizes'][0][0] if d['sizes'] else '?'}px · 글꼴: {html.escape(', '.join(f[0] for f in d['fonts'][:3]))} · 굵기 {', '.join(w[0] for w in d['weights'][:4])})</h2><div class="type">{sizes}</div>
+<h2>글자 크기 척도 (본문 {d['sizes'][0][0] if d['sizes'] else '?'}px · 글꼴: {html.escape(', '.join(f[0] for f in d['fonts'][:3]))} · 굵기 {html.escape(', '.join(str(w[0]) for w in d['weights'][:4]))})</h2><div class="type">{sizes}</div>
 <h2>간격 리듬 (추정 단위 {tokens['_inspired_by']['spacing_unit_px']}px)</h2>{sp}
 <h2>모서리</h2>{rad}<h2>그림자</h2><ul>{''.join(f'<li><code>{html.escape(s[0])}</code> ×{s[1]}</li>' for s in d['shadows'][:4]) or '<li>거의 없음</li>'}</ul>
-<h2>구조 (위에서 아래로)</h2><ul>{secs}</ul><small>폭: 내용 {d['contentWidth']}px · max-width {d['maxWidths'][:3]}</small>
+<h2>구조 (위에서 아래로)</h2><ul>{secs}</ul><small>폭: 내용 {d['contentWidth']}px · max-width {html.escape(str(d['maxWidths'][:3]))}</small>
 <h2>부품 수</h2><p>{comps}</p>
-<h2>움직임</h2><ul>{''.join(f'<li>{html.escape(t[0])} ×{t[1]}</li>' for t in d['transitions'][:6]) or '<li>전환 거의 없음</li>'}</ul><small>easing {d['easings'][:3]} · keyframes {d['keyframes']} · 애니메이션 {d['animations'][:3]}</small>
+<h2>움직임</h2><ul>{''.join(f'<li>{html.escape(t[0])} ×{t[1]}</li>' for t in d['transitions'][:6]) or '<li>전환 거의 없음</li>'}</ul><small>easing {html.escape(str(d['easings'][:3]))} · keyframes {html.escape(str(d['keyframes']))} · 애니메이션 {html.escape(str(d['animations'][:3]))}</small>
 <h2>접근성 신호</h2><ul>{con}</ul><small>모바일 탭 대상 {data['mobile']['tap']['small']}/{data['mobile']['tap']['total']}개가 44px 미만 · 모바일 가로 스크롤 {'있음' if data['mobile']['has_h_scroll'] else '없음'}</small>
 </main></html>"""
     (out / "analysis.html").write_text(page, encoding="utf-8")
