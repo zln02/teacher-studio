@@ -1,0 +1,3 @@
+{"tool":"timer","title":"모둠 활동 타이머","use":"class","sound":true,
+ "design":{"subject":"과학","grade":5,"mood":"집중","seed":3},
+ "timer":{"mode":"countdown","minutes":5,"presets":[1,3,5,10],"warn_at":10}}
