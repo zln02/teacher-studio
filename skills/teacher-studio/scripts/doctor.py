@@ -95,6 +95,16 @@ def _codex_network_on() -> bool:
     return False
 
 
+def _prefs_line() -> str:
+    """Saved first-run preferences (school level / subject / device) in one Korean line."""
+    try:
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import prefs
+        return prefs.summary()
+    except Exception:
+        return "확인 못 했어요"
+
+
 def report(agent: str = "") -> dict:
     """Probe tools, decide capabilities, cache and return them with a Korean summary."""
     agent = agent or guess_agent()
@@ -148,6 +158,7 @@ def report(agent: str = "") -> dict:
         f"· 법률 안내: {law}",
         f"· 나누기: {share}",
         f"· 문서 파일: {doc_line}",
+        f"· 내 설정: {_prefs_line()}  (바꾸려면 「설정 바꿔 줘」)",
         f"· 처음 필요할 때 설치되는 도구: {', '.join(caps['tools']['on_first_need']) or '없음 (모두 준비됨)'}",
         "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집, 🧰 수업 도구",
     ]

@@ -1,0 +1,12 @@
+{
+  "name": "teacher-studio-market",
+  "description": "교사 스튜디오: 선생님을 위한 수업 자료 스킬",
+  "owner": { "name": "zln02", "url": "https://github.com/zln02" },
+  "plugins": [
+    {
+      "name": "teacher-studio",
+      "source": "./",
+      "description": "수업 게임·슬라이드·영상·법률 안내 스킬 5개 묶음 (한국 교사용)"
+    }
+  ]
+}

@@ -146,6 +146,14 @@
 > [!TIP]
 > 아래 문장을 **복사해서 붙여 넣기만** 하면 AI가 알아서 설치하고, 끝나면 「준비 완료」 안내와 메뉴를 보여 드려요.
 
+### 설치 방법 4단계 — 위에서부터 해 보세요
+1. **링크 한 줄**: Claude Code·Codex에 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」 (Claude 앱·웹은 되는지 *확인 필요*)
+2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 5개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
+3. **파일 올리기**: Claude 앱 → [`dist/`](dist/)의 ZIP 5개를 Customize → Skills에 올리기
+4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 5개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
+
+자세한 설명은 [INSTALL.md](INSTALL.md). 아래는 1번의 자세한 형태입니다.
+
 <details open>
 <summary><b>💻 Claude Code 또는 Codex를 쓰는 경우</b> (권장)</summary>
 

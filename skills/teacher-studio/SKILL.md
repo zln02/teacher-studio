@@ -47,6 +47,10 @@ license: Apache-2.0
 - 「영상」 줄: Claude Code·Codex는 「MP4는 처음 요청할 때 작은 도구(약 80MB, 크롬이 있으면 그걸 써요)를 설치해요」, Claude 앱·웹은 「크롬 녹화(.webm)로 받아요」. 「법률 안내」 줄: Codex는 인터넷이 꺼져 있거나 웹 검색이 cached면 최신 법 확인이 막힐 수 있으니 켜는 법(`network_access = true`, `--search` live)을 한 줄로 덧붙인다. doctor 요약이 이미 환경에 맞춰 써 준다.
 - 번호만 고르면: 그 칸에서 **빠진 것만** 한 번에 묻는다 (학년·과목·단원 / 칠판 or 태블릿 / 느낌). 보기와 기본값을 붙이고, 「알아서」면 기본값으로 바로.
 
+### 처음 한 번 설정 + 먼저 묻기
+- **첫 사용 설정 (딱 한 번)**: `python3 <이 스킬>/scripts/prefs.py show`가 「아직 없음」이면, 첫 요청을 만들기 전에 한 번에 묻는다: 「학교급(초/중/고)·주로 가르치는 과목·주로 쓰는 기기(칠판 TV / 태블릿 / 개인 PC)만 알려 주세요. (추천: 중학교·전과목·칠판 TV, '네'라고만 하셔도 돼요)」 → `prefs.py set --level … --subject … --device board|tablet|pc` (「네」면 `prefs.py defaults`). 내 컴퓨터(`~/.teacher-studio/prefs.json`)에만 저장, 학생 정보·인터넷 없음. 이후엔 다시 묻지 않고 기본값으로 쓴다. 「설정 바꿔 줘」 → `prefs.py reset` 후 다시 묻기. 파일 쓰기가 안 되는 환경(Claude 앱)이면 대화 안에서만 기억한다.
+- **AI가 먼저 묻기**: 요청이 모호할 때만 **최대 1~3개, 추천 답 포함, 한 번만** 묻고 한 줄 계획을 확인한 뒤 만든다. 분명하거나 「알아서」면 묻지 않는다. 규칙 전문: `references/ask-first.md` (모든 무기 스킬이 같은 규칙을 따른다).
+
 ## 2. 환경별로 다른 점 (선생님께는 선생님 말로)
 | | Claude 앱·웹 (claude-app) | Claude Code | Codex |
 |---|---|---|---|
@@ -74,7 +78,7 @@ license: Apache-2.0
 - 미사일이 없는 요청(보드게임, 공문, 영상 편집 등): 가장 가까운 스킬의 「직접 제작」 절차로. 이때도 그 스킬의 엔진·무대와 점검기를 쓴다.
 
 ## 4. 빠르게 (선생님은 기다리지 않는다)
-- 질문은 한 번에, 최대 3개, 보기+기본값. 「알아서」면 바로.
+- 질문은 한 번에, 최대 3개, 보기+추천 답 (`references/ask-first.md`). 「알아서」면 바로.
 - 엔진·무대 파일(engine.html, stage.html)은 **읽지 않는다.** 미사일 README와 content.json만.
 - 문제·내용표는 짧게 보여 주고, 「바로 만들어 줘」였으면 표를 보여 주면서 동시에 만든다.
 - 다 만들면: 무엇을 만들었는지 1줄 + 쓰는 법 1줄 + 고치기 제안 2개. 개발 용어 금지 (`teacher-language.md` 5번 표).
@@ -110,6 +114,8 @@ license: Apache-2.0
 | 파일 | 내용 |
 |---|---|
 | `scripts/studio.py` | list / fire / check / render / doctor — 모든 칸 공통 명령 |
+| `scripts/prefs.py` | 처음 한 번 설정(학교급·과목·기기) 저장·조회·초기화 (`~/.teacher-studio/prefs.json`) |
+| `references/ask-first.md` | 「AI가 먼저 묻기」 공통 규칙 (질문 1~3개 + 추천 답) |
 | `scripts/doctor.py` | 이 환경에서 되는 것·처음 필요할 때 설치되는 도구·공식 문서 스킬 확인 → 선생님 말 요약 |
 | `shared/tools/ensure.py` | 도구 설치: 동의 받은 뒤 `ensure.py <이름> --yes` (fonttools·python-pptx·python-docx·openpyxl·python-hwpx·pypdf·pillow·qrcode·imageio-ffmpeg·playwright) |
 | 옆 스킬들 | `teacher-game`(게임) · `teacher-slides`(슬라이드) · `teacher-motion`(영상·화면) · `teacher-law`(법률 안내) |

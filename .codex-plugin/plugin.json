@@ -1,0 +1,6 @@
+{
+  "name": "teacher-studio",
+  "version": "0.1.0",
+  "description": "코딩을 모르는 선생님이 말로 게임·슬라이드·영상을 만들고 법 안내를 받는 스킬 모음",
+  "skills": "./skills/"
+}
