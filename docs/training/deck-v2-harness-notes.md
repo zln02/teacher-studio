@@ -116,3 +116,9 @@
 | 재질 | Poly Haven: asphalt_02 · aerial_grass_rock · wood_table_001 · marble_01 / ambientCG: Paper003 | CC0 | 바닥·풀·책상·조리대·종이 |
 | 모델 | Poly Haven: horse_statue_01 · round_spectacles | CC0 | 손으로 만든 것보다 확실히 나은 두 가지 |
 | 쓰지 않은 것 | 유료 이미지·영상 생성, 출처 불명 사진, GSAP, ffmpeg | - | 저장소 규칙 |
+
+### 6-6. 그림책 장 (스타일 바꾸기를 의도적으로)
+- 김치볶음밥 이야기만 포근한 툰 부엌: `MeshToonMaterial` + 5단 부드러운 램프 + 펠트 얼룩 텍스처, 둥근 소품(`rbox`), 창 햇살(가산 판 3장) + 먼지 점, 부드러운 그림자. 사진 환경 없음(`SEG.robot = none`).
+- 주인공은 CC0 리깅 로봇(RobotExpressive.glb): `AnimationMixer`로 단계·시간마다 동작을 고르고(`want`), 자리·방향은 `where` 표로. 날아오는 레시피·도구는 포물선 + 빛 꼬리 + 착지 찌그러짐(`squash`).
+- 들어갈 때 그림책 쪽이 펼쳐지는 전환(`pageOpen`), 화면은 둥근 쪽 틀 안. 끝은 키노트 문구 「이게 하네스!」 → 「AI에게 도구와 레시피를 주는 것」(아이콘이 낱말 옆에 착).
+- 하네스로 옮길 때: `story-toon` 프리셋 = 툰 재질 함수 `TM` + 부엌 세트 `toonKitchen` + 동작 표(`want`/`where`) + 도장 낱말(`.stamp`) + 결론 문구(`.punch`).

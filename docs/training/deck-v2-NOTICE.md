@@ -26,6 +26,7 @@
 | Marble 01 | https://polyhaven.com/a/marble_01 | CC0 | 1k → 부엌 조리대 |
 | Paper 003 | https://ambientcg.com/view?id=Paper003 | CC0 | 1K-JPG zip 안 `Paper003_1K-JPG_Color.jpg` 하나만 → 시험지·레시피 종이 |
 | Horse Statue 01 (모델) | https://polyhaven.com/a/horse_statue_01 | CC0 | glTF 1k → 텍스처 512로 줄여 한 파일(`assets/m_horse.gltf`): 「하네스의 원래 뜻」 말 조각상. 손으로 만든 말보다 훨씬 나아서 |
+| RobotExpressive (모델, 뼈대·애니메이션) | https://github.com/mrdoob/three.js/tree/r128/examples/models/gltf/RobotExpressive (원작 Tomás Laulhé, 수정 Don McCurdy) | CC0 1.0 (폴더 README.md 「CC0 1.0」 직접 확인) | .glb 그대로 `assets/m_robot.glb`: 김치볶음밥 그림책의 로봇 주인공(걷기·뛰기·도리도리·끄덕·엄지척). 재질만 덱의 툰 재질로 바꿈. 사람·캐릭터 저작물이 아닌 범용 로봇이라 골랐어요 |
 | Round Spectacles (모델) | https://polyhaven.com/a/round_spectacles | CC0 | glTF 1k → `assets/m_specs.gltf`: AI 커닝 구간의 모든 안경(테는 모델 그대로, 렌즈는 덱의 유리 재질, 작은 카메라·렌즈 화면은 덱에서 덧붙임) |
 
 ## 글꼴

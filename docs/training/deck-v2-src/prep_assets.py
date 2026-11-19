@@ -91,6 +91,13 @@ def main() -> int:
         m = Path(a.models)
         pack_model(m / "horse_statue_01", "horse")
         pack_model(m / "round_spectacles", "specs")
+        # three.js 예제의 RobotExpressive.glb (Tomás Laulhé, CC0 1.0): 뼈대·애니메이션째 그대로 (README.md 라이선스 확인)
+        rb = m / "RobotExpressive" / "RobotExpressive.glb"
+        if rb.exists():
+            data = rb.read_bytes()
+            assert data[:4] == b"glTF", "not a glb"
+            (OUT / "m_robot.glb").write_bytes(data)
+            print(f"  m_robot.glb {len(data) // 1024} KB")
         return 0
     NAVY, PLUM = (40, 70, 150), (120, 50, 90)
     # 1) 길 장면: evening_road_01 (해 질 녘 시골길)

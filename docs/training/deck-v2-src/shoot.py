@@ -140,17 +140,18 @@ def main() -> int:
             hs = fnd("horse")
             g.evaluate(f"window.__deck.go({hs}, 0)"); g.wait_for_timeout(900)
             grab(300); step(hs, 1, 1800); step(hs, 2, 1500)
-            # 김치볶음밥: 하네스 AI
-            kb = fnd("kitchenB")
-            g.evaluate(f"window.__deck.go({kb}, 0)"); g.wait_for_timeout(900)
-            grab(300); step(kb, 1, 1800); step(kb, 2, 1200); step(kb, 3, 1200)
+            # 김치볶음밥 그림책: 로봇이 걸어 들어오고 → 레시피 · 도구 · 재료가 날아와 → 엄지척 → 「이게 하네스!」
+            kb = fnd("robot")
+            g.evaluate(f"window.__deck.go({kb}, 0)"); grab(2600)
+            for st, ms in ((1, 1500), (4, 1800), (5, 2400), (6, 1000), (7, 1300), (8, 1300)):
+                step(kb, st, ms)
             sy = fnd("story")
             g.evaluate(f"window.__deck.go({sy}, 0)"); g.wait_for_timeout(900)
             for st in range(1, 8):
                 step(sy, st, 900 if st in (2, 3, 5) else 550)
             # 사진 배경·그레인은 GIF에서 무거워요: 560px, 두 장에 한 장, 48색으로 3MB 안쪽
-            small = [f.resize((560, 315), Image.LANCZOS) for f in frames[::2]]
-            pal = [f.quantize(colors=48, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in small]
+            small = [f.resize((520, 292), Image.LANCZOS) for f in frames[::2]]
+            pal = [f.quantize(colors=40, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in small]
             pal[0].save(GIF, save_all=True, append_images=pal[1:], duration=300, loop=0, optimize=True)
             print("gif:", GIF, f"{GIF.stat().st_size / 1e6:.2f} MB", len(frames), "frames")
         if a.stills:
@@ -164,6 +165,8 @@ def main() -> int:
             for k in kinds:
                 i = pg.evaluate(f"window.__deck.find('{k}')")
                 last = pg.evaluate(f"window.__deck.steps({i})")
+                if k == "robot":
+                    last = 7  # 마지막(8)은 글자 장면이라, 완성 접시 장면을 사진으로
                 pg.evaluate(f"window.__deck.go({i}, {last})")
                 pg.wait_for_timeout(1800)
                 pg.evaluate("window.__deck.settle()")

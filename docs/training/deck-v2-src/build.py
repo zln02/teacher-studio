@@ -120,7 +120,10 @@ def deck_font_css(html: str) -> str:
 
 def models_js() -> str:
     import json
+    import base64
     out = {p.stem[2:]: p.read_text(encoding="utf-8") for p in sorted(ASSETS.glob("m_*.gltf"))}
+    for p in sorted(ASSETS.glob("m_*.glb")):   # 뼈대·애니메이션이 있는 모델은 glb 그대로 (RobotExpressive, CC0)
+        out[p.stem[2:]] = "glb:" + base64.b64encode(p.read_bytes()).decode()
     print(f"  models: {list(out)} ({sum(len(v) for v in out.values()) // 1024} KB)")
     return json.dumps(out)
 
@@ -199,7 +202,7 @@ def main() -> int:
   - Lucide icons 1.75.0 · ISC License · Copyright (c) 2026 Lucide Icons and Contributors
   - Pretendard 1.3.9 subset, renamed "TS Deck Sans" · SIL Open Font License 1.1 · Copyright (c) 2021 Kil Hyung-jin
   - Noto Sans KR subset (fallback) · SIL Open Font License 1.1
-  - CC0 models: Poly Haven horse_statue_01, round_spectacles (glTF, textures shrunk)
+  - CC0 models: Poly Haven horse_statue_01, round_spectacles (glTF, textures shrunk); RobotExpressive.glb by Tomás Laulhé (CC0 1.0, from three.js examples)
   - QR Code generator (Project Nayuki) · MIT License (drawn at build time)
 -->
 <style>
