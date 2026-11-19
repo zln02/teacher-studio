@@ -1,0 +1,42 @@
+{
+  "_about": "Curated, vetted third-party skills. Install ONLY on first need, after the teacher says yes (see skill-scout.md). Licenses were read from the repos on 2026-11-19; re-check before use. Entries with license NONE are guide-only.",
+  "checked": "2026-11-19",
+  "skills": [
+    {"name": "pptx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/pptx",
+     "license": "Apache-2.0 (skills/pptx/LICENSE.txt)", "tasks": ["pptx", "powerpoint", "presentation", "slides", "ppt"],
+     "for": "Create/edit real .pptx files (our teacher-slides makes web decks, not .pptx)",
+     "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add anthropics/skills --skill pptx -a claude-code"},
+    {"name": "docx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/docx",
+     "license": "Apache-2.0 (skills/docx/LICENSE.txt)", "tasks": ["docx", "word", "document", "letter"],
+     "for": "Create/edit Word .docx files", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add anthropics/skills --skill docx -a claude-code"},
+    {"name": "xlsx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
+     "license": "Apache-2.0 (skills/xlsx/LICENSE.txt)", "tasks": ["xlsx", "excel", "spreadsheet", "csv", "sheet"],
+     "for": "Create/edit Excel .xlsx files", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add anthropics/skills --skill xlsx -a claude-code"},
+    {"name": "pdf", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/pdf",
+     "license": "Apache-2.0 (skills/pdf/LICENSE.txt)", "tasks": ["pdf", "merge", "split", "ocr", "form"],
+     "for": "Read, merge, split, fill, create PDFs", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add anthropics/skills --skill pdf -a claude-code"},
+    {"name": "modern-web-guidance", "publisher": "GoogleChrome", "url": "https://github.com/GoogleChrome/modern-web-guidance",
+     "license": "Apache-2.0", "tasks": ["web", "html", "css", "website", "javascript", "browser"],
+     "for": "Current web-platform guidance when building/fixing web pages or sites",
+     "env": ["claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add GoogleChrome/modern-web-guidance -a claude-code (skill name not checked; read its SKILL.md first)"},
+    {"name": "security-audit-skill", "publisher": "cloudflare", "url": "https://github.com/cloudflare/security-audit-skill",
+     "license": "MIT", "tasks": ["security", "audit", "review", "vulnerability", "pentest"],
+     "for": "One-time security review before publishing a site/tool (uses many sub-agents; tell the teacher it is slow)",
+     "env": ["claude-code"], "checked": "2026-11-19",
+     "install": "npx skills add cloudflare/security-audit-skill -a claude-code"},
+    {"name": "kordoc", "publisher": "chrisryugj", "url": "https://github.com/chrisryugj/kordoc",
+     "license": "MIT", "tasks": ["hwp", "hwpx", "korean", "gongmun", "hangul", "official"],
+     "for": "Read HWP/HWPX, extract forms, Markdown to HWPX (3k stars, active). Candidate only: SKILL.md and scripts not yet read; vet before use. Another option on this machine may already exist (hwp-docs plugin).",
+     "env": ["claude-code", "codex"], "checked": "2026-11-19",
+     "install": "npx skills add chrisryugj/kordoc -a claude-code (skill name not verified)"}
+  ],
+  "guide_only": [
+    {"name": "canine89/hwpxskill, jkf87/hwpx-skill, canine89/gonggong_hwpxskills", "reason": "no license in repo (GitHub reports none) - do not install/copy; mention to teacher only"},
+    {"name": "NomaDamas/k-skill hwp", "reason": "MIT, but its SKILL.md tells the agent to run `npx -y @nomadamas/k-skill instruct hwp` and obey the output: live remote instructions = prompt-injection-shaped, avoid"}
+  ]
+}

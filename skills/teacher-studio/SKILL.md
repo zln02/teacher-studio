@@ -20,6 +20,7 @@ license: Apache-2.0
 - **Inform-only**: legal/copyright notes are one-line heads-ups, not blocks. Block only for student privacy and safety.
 - **Stay small**: load only the one README you need; do not read engine/stage files; do not add steps the request did not need.
 - **Variety**: do not default to the same look; legacy skins are the lowest-priority option.
+- **Skill scout**: for 「우리 도구에 없는 일」 (office files, HWPX, video editing, security review...), look for an existing skill first (`references/skill-scout.md`, helper `scripts/skill_scout.py`). Vet it, ask the teacher before installing, keep installed third-party skills few.
 
 ## 1. 첫 대화 (설치 직후 / 새 대화의 첫 요청)
 1. 환경 확인 (1초): `~/.teacher-studio/env.json`이 있으면 읽고, 없으면
@@ -75,6 +76,8 @@ license: Apache-2.0
 - 순서: 해당 스킬의 SKILL.md(짧게) → 그 미사일의 `README.md` 하나만 읽기 → `content.json`에 **바뀌는 것만** 쓰기 → `fire … --content content.json [--open] [--mp4]` → `READY 경로`가 나오면 보여 주기.
 - 스킨 고르기: 과목·분위기·학년으로. 맞는 스킨이 없으면 가장 가까운 스킨 + `vars`(색) + `world` 문구로 바꾼다.
 - 참고 사진·영상을 받으면: 색 3~4개, 글씨 느낌(굵은/붓/손글씨/명조), 배치(여백 많음/꽉 참), 속도(차분/빠름)를 뽑아 한 줄로 말하고(「짙은 남색에 금색, 굵은 글씨, 느린 등장으로 갈게요」) 그 값으로 스킨을 조정한다. 원본 그림·로고는 그대로 쓰지 않는다.
+- 우리 도구에 없는 일 → `references/skill-scout.md` (기존 스킬을 찾아 검증하고, 동의받은 뒤에만 설치).
+- 3줄 요약: 설치된 것 → 공식 → 검증된 커뮤니티 순으로 찾고 / 라이선스·코드·개인정보를 확인하고 / 선생님 동의 후에만 설치.
 - 미사일이 없는 요청(보드게임, 공문, 영상 편집 등): 가장 가까운 스킬의 「직접 제작」 절차로. 이때도 그 스킬의 엔진·무대와 점검기를 쓴다.
 
 ## 4. 빠르게 (선생님은 기다리지 않는다)
@@ -116,6 +119,7 @@ license: Apache-2.0
 | `scripts/studio.py` | list / fire / check / render / doctor — 모든 칸 공통 명령 |
 | `scripts/prefs.py` | 처음 한 번 설정(학교급·과목·기기) 저장·조회·초기화 (`~/.teacher-studio/prefs.json`) |
 | `references/ask-first.md` | 「AI가 먼저 묻기」 공통 규칙 (질문 1~3개 + 추천 답) |
+| `references/skill-scout.md` | 우리 도구에 없는 일: 기존 스킬 찾기·검증·동의 설치 (+ `recommended-skills.json`, `scripts/skill_scout.py`) |
 | `scripts/doctor.py` | 이 환경에서 되는 것·처음 필요할 때 설치되는 도구·공식 문서 스킬 확인 → 선생님 말 요약 |
 | `shared/tools/ensure.py` | 도구 설치: 동의 받은 뒤 `ensure.py <이름> --yes` (fonttools·python-pptx·python-docx·openpyxl·python-hwpx·pypdf·pillow·qrcode·imageio-ffmpeg·playwright) |
 | 옆 스킬들 | `teacher-game`(게임) · `teacher-slides`(슬라이드) · `teacher-motion`(영상·화면) · `teacher-law`(법률 안내) |
