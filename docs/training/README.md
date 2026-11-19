@@ -27,6 +27,7 @@
 | [script.md](script.md) | 분 단위 진행 대본(발표자 멘트), 두 창 시연 체크리스트, 설치 따라 하기·문제 해결, 대체 멘트, 자주 묻는 질문 |
 | [deck.json](deck.json) | 슬라이드 21장 (교사 스튜디오 슬라이드 도구용 내용 파일, 발표자 메모 포함) |
 | [deck.md](deck.md) | 슬라이드를 읽기 쉽게 풀어 쓴 것 + 슬라이드 도구가 아직 못 하는 것 |
+| [cheating-segment.md](cheating-segment.md) | 2부 선택 구간: AI 시험 부정행위, 감독교사가 알아야 할 것 (10분 대본·체크리스트 A4, 슬라이드 [cheating-deck.html](cheating-deck.html), 근거 [ai-cheating-research.md](ai-cheating-research.md)) |
 | [predicted-requests.md](predicted-requests.md) | 예상 요청 30가지 (아이디어 목록 + 사전 테스트 목록, 기대 무기·상태) |
 | [menu-card.md](menu-card.md) | 모둠 책상용 메뉴판 (A4 1장) |
 | [pocket-card.md](pocket-card.md) | 가져가는 포켓 카드 (이렇게 시키세요 + 재료) |
@@ -55,7 +56,7 @@
 연수 전날까지
 - [ ] 모둠마다 공용 PC 1대 (인터넷, 크롬). 모둠 수 [입력]
 - [ ] 모둠 PC에 Claude 앱(또는 claude.ai) 선생님 본인 계정 로그인 (만 18세 이상). 학생 계정 금지
-- [ ] `dist` 폴더의 zip 5개 받아 모둠 PC 바탕화면에 두기 (또는 GitHub 접속 확인)
+- [ ] `dist` 폴더의 zip 7개 받아 모둠 PC 바탕화면에 두기 (또는 GitHub 접속 확인)
 - [ ] 학교망에서 claude.ai·GitHub 차단 여부 확인 (안 되면 핫스팟·개인 노트북)
 - [ ] 설치 메뉴(Customize → Skills, Capabilities)가 지금 앱 버전에서 맞는지 직접 확인하고 스크린샷 [삽입], 문제 해결 표 고치기
 - [ ] 두 창 시연 준비 (script.md의 체크리스트): 왼쪽 깡통, 오른쪽 하네스, 요청 3개 + 재료 파일
