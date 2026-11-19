@@ -44,7 +44,8 @@ ROUTES = {
     "data": "turns spreadsheets (CSV/XLSX) into a chart report without the AI reading raw rows",
     "law": "looks up current law/rules (privacy, copyright, AI rules, school records)",
     "co-plan": "plans, analysis, research done together as a one-page draft (no file is built)",
-    "docfile": "a Word/Hangul/PDF/PPT/Excel FILE made through an outside document skill",
+    "docs": "makes or edits documents: 한글 HWPX / Word / PDF (공문, 가정통신문, 안내문, 보고서; fill a form; fix a file; merge/split PDF)",
+    "docfile": "an Excel or other office FILE made through an outside document skill",
     "scout": "look for another existing skill first",
     "bare": "answer on your own ability, no tool",
     "greet": "show the welcome card (no request yet)",
@@ -272,7 +273,7 @@ def static_check() -> int:
             problems.append(f"teacher-studio description lacks 「{word}」 (entry point for make/build requests)")
     if len(desc) > 1024:
         problems.append("teacher-studio description is over 1024 characters")
-    for need in ("teacher-game", "teacher-slides", "teacher-motion", "teacher-class-tools", "teacher-data", "teacher-law", "co-plan", "skill_scout", "webapp.md"):
+    for need in ("teacher-game", "teacher-slides", "teacher-motion", "teacher-class-tools", "teacher-data", "teacher-law", "teacher-docs", "co-plan", "skill_scout", "webapp.md"):
         if need not in sk:
             problems.append(f"SKILL.md never mentions {need}")
     n = len(sk.splitlines())

@@ -25,6 +25,7 @@
    "route": [
     "slides",
     "co-plan",
+    "docs",
     "docfile"
    ],
    "direction": true,
@@ -364,8 +365,7 @@
    "id": "c26",
    "request": "가정통신문을 한글 파일로 만들어 줘",
    "route": [
-    "docfile",
-    "bare"
+    "docs"
    ],
    "direction": false,
    "max_questions": 2,
@@ -779,6 +779,195 @@
    "pipeline": {
     "checkpoint": "none"
    }
+  },
+  {
+   "id": "d01",
+   "request": "교육청에 보낼 공문 초안 써 줘. 연수 참가 협조 요청이야",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ],
+   "trigger": [
+    "teacher-studio",
+    "teacher-docs"
+   ]
+  },
+  {
+   "id": "d02",
+   "request": "현장체험학습 가정통신문 만들어 줘, 참가 동의서도 붙여서",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 3,
+   "must_not": [
+    "refuses",
+    "route:law",
+    "asks_student_info"
+   ],
+   "tags": [
+    "docs"
+   ],
+   "trigger": [
+    "teacher-studio",
+    "teacher-docs"
+   ]
+  },
+  {
+   "id": "d03",
+   "request": "이 hwpx 신청서 양식에 학교명이랑 날짜 채워 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
+  },
+  {
+   "id": "d04",
+   "request": "받은 한글 파일에서 날짜랑 장소만 고쳐 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
+  },
+  {
+   "id": "d05",
+   "request": "PDF 세 개를 하나로 합쳐 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ],
+   "trigger": [
+    "teacher-studio",
+    "teacher-docs"
+   ]
+  },
+  {
+   "id": "d06",
+   "request": "학교 축제 안내문을 워드 파일로 만들어 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 3,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
+  },
+  {
+   "id": "d07",
+   "request": "디지털 기기 점검 결과보고서를 한글 문서로 정리해 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 3,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
+  },
+  {
+   "id": "d08",
+   "request": "우리 학교 축제 홍보 PPT 만들어 줘",
+   "route": "slides",
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "slides",
+    "context"
+   ]
+  },
+  {
+   "id": "d09",
+   "request": "교육청 업무 보고용 발표 자료 만들어 줘. AI 교육 추진 현황이야",
+   "route": "slides",
+   "direction": false,
+   "max_questions": 3,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "slides",
+    "context"
+   ],
+   "trigger": [
+    "teacher-studio",
+    "teacher-slides"
+   ]
+  },
+  {
+   "id": "d10",
+   "request": "가족 여행 사진으로 발표 슬라이드 만들어 줘",
+   "route": "slides",
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "slides",
+    "context",
+    "non-class"
+   ]
+  },
+  {
+   "id": "d11",
+   "request": "이 공문 서식 맞는지 봐 줘 (첨부한 hwpx)",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
+  },
+  {
+   "id": "d12",
+   "request": "작년 가정통신문 hwp 파일을 올해 날짜로 바꿔 줘",
+   "route": "docs",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "docs"
+   ]
   }
  ]
 }
