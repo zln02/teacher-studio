@@ -1,10 +1,12 @@
 ---
 name: teacher-law
-description: Answers teachers' legal and rules questions (privacy, copyright, AI rules, characters, school records) by looking up current law live from official sources, with references. Use for any legal question
+description: Answers legal and rules questions (privacy, copyright, AI rules, characters, school records) by looking up current Korean law (한국법 기준) live from official sources. For teachers and anyone.
 license: Apache-2.0
 ---
 
 # 교사 스튜디오 · 법률 안내
+
+Respond in the user's language. User-provided documents or references come first; ask-first rule: `../teacher-studio/references/ask-first.md`.
 
 선생님이 「이거 써도 돼요?」「올려도 돼요?」처럼 말로 물으면, **그때그때 최신 법을 직접 찾아서** 근거와 함께 쉬운 말로 알려 드린다. 선생님이 법을 찾아볼 필요가 없게 하는 게 목표다.
 **법은 바뀐다. 이 스킬에는 법 조문·결론을 적어 두지 않았다.** 이 스킬은 「찾는 순서 + 믿을 수 있는 출처 + 답 양식」이다.

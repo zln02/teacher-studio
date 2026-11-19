@@ -1,10 +1,12 @@
 ---
 name: teacher-game
-description: Makes any game as one HTML file from a plain request - class quiz, escape room, bingo, board, matching, sorting - or a family/club game. Big board-readable defaults. Use for any game or activity.
+description: Makes any game as one HTML file - class quiz, escape room, bingo, board, matching; also club, family and shop events (모임·동호회·가게). For teachers and anyone. Big readable defaults.
 license: Apache-2.0
 ---
 
 # 교사 스튜디오 · 게임
+
+Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 말로 설명한 **어떤 게임이든** 전자칠판·태블릿에서 바로 돌아가는 화려한 단일 HTML 게임으로 만든다. 수업용이 기본이고, 가족 모임·동아리·개인용도 **막지 않고 같은 도구로** 만든다.
 AI는 **짧은 기획(spec) 한 장**만 쓴다. 엔진·부품·디자인·점검은 도구가 맡는다 → 매번 같은 품질, 사용량 최소.

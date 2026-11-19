@@ -1,13 +1,13 @@
 ---
 name: teacher-studio
-description: Start here for Teacher Studio. Greets teachers, shows what works in this app (Claude or Codex), and routes any request, class or personal, to the right tool for games, slides, videos or legal checks.
+description: Start here for Teacher Studio. Greets users, shows what works in this app, and routes any request (class or personal) to games, slides, videos, class tools, data analysis or legal checks.
 license: Apache-2.0
 ---
 
 # 교사 스튜디오 — 시작 안내 (모든 요청의 첫 관문)
 
 선생님(코딩 모름)이 말로 원하는 자료를 **상용 품질**로, **빠르게** 만들어 드린다.
-정체성: **「선생님 맞춤이 기본, 용도 제한 없음」** — 이 스킬을 깔면, 법을 지키는 범위 안에서 AI가 도구를 써서 짧은 요청에도 높은 품질로 만든다. 종류는 고정 목록이 아니다: 선생님이 원하는 게임·슬라이드·영상이면 무엇이든 (문서·한글 파일, PPT 파일, 영상 편집은 준비 중이라고 말한다).
+정체성: **「선생님 맞춤이 기본, 용도 제한 없음」** (선생님·직장인·동호회·자영업자 누구나, 사용자의 언어로 답한다) — 이 스킬을 깔면, 법을 지키는 범위 안에서 AI가 도구를 써서 짧은 요청에도 높은 품질로 만든다. 종류는 고정 목록이 아니다: 선생님이 원하는 게임·슬라이드·영상이면 무엇이든 (문서·한글 파일, PPT 파일, 영상 편집은 준비 중이라고 말한다).
 - **교실 기본값 ON**: 칠판용 큰 글씨, 태블릿 터치, 학생 정보 칸 없음, 선생님 말 알아듣기.
 - **수업이 아닌 요청**(가족 영상, 결혼식 축사 슬라이드, 동호회 퀴즈, 개인 문서 등)도 거절하지 않고 같은 도구로 만든다. 단 기본값을 맞춘다: 학년·교과·「수업 목표」 문구 대신 용도·분위기·보는 사람 기준으로, 글씨 크기는 보는 화면(폰·TV·행사장)에, 교실용 메뉴·학년 표현은 뺀다. 학생 정보 금지·사실 확인·저작권 안내 등 절대 규칙(5번)은 그대로 지킨다.
 북극성: **처음부터 만들지 않는다.** 미사일(완제품) → 고급 무기(부품·프로그램) → 디자인 세트 순으로 꺼내 쓰고, 점검을 통과한 것만 보여 준다.
@@ -46,8 +46,10 @@ license: Apache-2.0
 2. 🖥 수업 슬라이드 — 칠판 / 깔끔한 발표 / 파스텔 노트
 3. ✨ 과목 소개 영상 — 첫 시간에 틀 30~40초 영상
 4. ⏱ 수업 시작 화면 — 카운트다운 + 오늘의 주제
-5. ⚖️ 법률 안내 — 「이거 써도 돼요?」 저작권·개인정보·AI 규정을 최신 법으로 확인
-6. 💬 그냥 말로 할게요 (예: 「중2 과학 빛과 파동 방탈출, 칠판용」)
+5. 🧰 수업 도구 — 타이머 · 뽑기 · 모둠 · 대진표 · 점수판
+6. 📊 자료 분석 — 엑셀·설문·점수를 쉬운 그래프로
+7. ⚖️ 법률 안내 — 「이거 써도 돼요?」 저작권·개인정보·AI 규정을 최신 법으로 확인
+8. 💬 그냥 말로 할게요 (예: 「중2 과학 빛과 파동 방탈출, 칠판용」)
 참고할 사진·영상·학습지가 있으면 같이 올려 주세요. 그 느낌으로 만들어요.
 학생 이름·성적·상담 내용은 채팅에 붙여 넣지 마세요 (가명으로 바꿔 주세요).
 ```
@@ -75,7 +77,9 @@ license: Apache-2.0
 | 퀴즈, 종 울리기, OX, 칠판 모둠전 | `studio.py fire game/quiz-show/<tv-studio·golden-bell·space-quiz>` |
 | 방탈출, 미션, 협동, 긴장감 | `studio.py fire game/escape-room/<joseon·lab·temple>` |
 | 단어 뜻, 분류, 짝, 끌어서, 태블릿 | `studio.py fire game/drag-deliver/<post-office·cell-feed·recycle>` |
-| 수업 PPT(웹), 발표 자료, 연수 자료 | `studio.py fire slides/lesson-deck/<chalkboard·clean-keynote·notebook-pastel>` |
+| 수업 PPT(웹), 발표 자료, 연수·회사·모임 발표 | `studio.py build slides --spec deck.json` (짧은 JSON → 도구가 디자인, `teacher-slides`). 옛 `fire slides/lesson-deck/<스킨>`은 최하 우선순위 |
+| 타이머, 뽑기, 모둠 나누기, 대진표, 점수판 | `teacher-class-tools` 스킬 (spec → `build_tool.py`) |
+| 엑셀·CSV·설문·점수·가계부·매출 분석 | `teacher-data` 스킬 (파일을 AI가 직접 읽지 않고 스크립트로 분석 → 쉬운 그래프 보고서) |
 | 과목 소개 영상, 첫 시간, 과목 홍보 | `studio.py fire motion/subject-intro/<science-neon·korean-brush·english-news>` |
 | 수업 시작 화면, 집중, 오늘의 주제 | `studio.py fire motion/lesson-opening/<bold-pop·calm-paper>` |
 | 써도 돼요? 올려도 돼요? 저작권, 개인정보, AI 규정, 생기부 | `teacher-law` 스킬의 SKILL.md (최신 법을 직접 찾아 답 카드로) |
@@ -83,7 +87,7 @@ license: Apache-2.0
 - 스킨 고르기: 과목·분위기·학년으로. 맞는 스킨이 없으면 가장 가까운 스킨 + `vars`(색) + `world` 문구로 바꾼다.
 - 참고 사진·영상을 받으면: 색 3~4개, 글씨 느낌(굵은/붓/손글씨/명조), 배치(여백 많음/꽉 참), 속도(차분/빠름)를 뽑아 한 줄로 말하고(「짙은 남색에 금색, 굵은 글씨, 느린 등장으로 갈게요」) 그 값으로 스킨을 조정한다. 원본 그림·로고는 그대로 쓰지 않는다.
 - 「이 사이트처럼」「이런 느낌」 + 주소·스크린샷·영상 → `references/learn-from-reference.md` (`scripts/ref_analyze.py`로 패턴만 분석).
-- 한 줄 규칙: 구조와 느낌만 배우고, 글·그림·로고·코드는 가져오지 않아요.
+- 한 줄 규칙: 사용자가 준 양식·참고 자료가 항상 먼저. 구조와 느낌만 배우고, 글·그림·로고·코드는 가져오지 않아요.
 - 우리 도구에 없는 일 → `references/skill-scout.md` (기존 스킬을 찾아 검증하고, 동의받은 뒤에만 설치).
 - 3줄 요약: 설치된 것 → 공식 → 검증된 커뮤니티 순으로 찾고 / 라이선스·코드·개인정보를 확인하고 / 선생님 동의 후에만 설치.
 - 미사일이 없는 요청(보드게임, 공문, 영상 편집 등): 가장 가까운 스킬의 「직접 제작」 절차로. 이때도 그 스킬의 엔진·무대와 점검기를 쓴다.
@@ -131,4 +135,4 @@ license: Apache-2.0
 | `references/skill-scout.md` | 우리 도구에 없는 일: 기존 스킬 찾기·검증·동의 설치 (+ `recommended-skills.json`, `scripts/skill_scout.py`) |
 | `scripts/doctor.py` | 이 환경에서 되는 것·처음 필요할 때 설치되는 도구·공식 문서 스킬 확인 → 선생님 말 요약 |
 | `shared/tools/ensure.py` | 도구 설치: 동의 받은 뒤 `ensure.py <이름> --yes` (fonttools·python-pptx·python-docx·openpyxl·python-hwpx·pypdf·pillow·qrcode·imageio-ffmpeg·playwright) |
-| 옆 스킬들 | `teacher-game`(게임) · `teacher-slides`(슬라이드) · `teacher-motion`(영상·화면) · `teacher-law`(법률 안내) |
+| 옆 스킬들 | `teacher-game`(게임) · `teacher-slides`(슬라이드) · `teacher-motion`(영상·화면) · `teacher-law`(법률 안내) · `teacher-class-tools`(타이머·뽑기·모둠·대진표·점수판) · `teacher-data`(자료 분석) — 스킬 7개 |

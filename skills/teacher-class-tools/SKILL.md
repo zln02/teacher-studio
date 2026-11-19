@@ -1,10 +1,12 @@
 ---
 name: teacher-class-tools
-description: Makes classroom tools as one offline HTML file - timer, number/name picker, team maker, tournament bracket, scoreboard. TV-readable, touch-friendly. Use for any quick class or family tool request.
+description: Makes timer, picker, team maker, bracket and scoreboard as one offline HTML file for teachers and anyone (class, 가족·동호회). TV-readable and touch-friendly.
 license: Apache-2.0
 ---
 
 # Teacher Studio - Class Tools
+
+Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", "발표자 뽑기", "모둠 나눠줘", "대진표", "점수판"). The AI writes a short spec; `build_tool.py` makes one offline HTML file and `check_tool.py` gates it.
 
