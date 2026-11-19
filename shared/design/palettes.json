@@ -379,7 +379,7 @@
    "dark": false,
    "baseTheme": "fairytale",
    "bgType": "clouds",
-   "font": "noto-warm",
+   "font": "noto-sans",
    "uses": [
     "present",
     "poster",
