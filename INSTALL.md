@@ -8,8 +8,8 @@
 |---|---|---|
 | ① 링크 한 줄 | AI(Claude Code·Codex)에게 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」라고 말한다. AI가 이 문서(INSTALL.md)를 읽고 알아서 설치한다. Claude 앱·웹은 링크만으로 되는지 **확인 필요** → 안 되면 ③으로 | 가장 쉬움 |
 | ② 명령 한 줄 | 터미널(명령 창)에 `npx skills add zln02/teacher-studio` (Claude Code 안에서는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`). 스킬 5개를 **모두** 고르세요 | ①이 안 될 때 (Node.js 필요) |
-| ③ 파일 올리기 | Claude 앱·웹: [`dist/`](dist/)의 zip 5개를 Customize → Skills에 올리기 | Claude 앱을 쓸 때 |
-| ④ 폴더 복사 | 저장소를 내려받아(초록색 Code 버튼 → Download ZIP) 압축을 풀고, `skills` 안의 `teacher-` 폴더 5개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex) 폴더에 통째로 복사 (내 사용자 폴더 안) | 인터넷·명령이 막힌 학교 PC |
+| ③ 파일 올리기 | Claude 앱·웹: [`dist/`](dist/)의 zip 7개를 Customize → Skills에 올리기 | Claude 앱을 쓸 때 |
+| ④ 폴더 복사 | 저장소를 내려받아(초록색 Code 버튼 → Download ZIP) 압축을 풀고, `skills` 안의 `teacher-` 폴더 7개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex) 폴더에 통째로 복사 (내 사용자 폴더 안) | 인터넷·명령이 막힌 학교 PC |
 - 다섯 개가 한 묶음이라 **하나라도 빠지면 일부 기능이 안 돼요.** 끝나면 새 대화에서 「교사 스튜디오 시작」.
 - 개발자용: Claude Code 플러그인(`.claude-plugin/`)·Codex 플러그인(`.codex-plugin/`, `.agents/plugins/`) 정보가 들어 있다. 아래 1~5단계(`setup.py`)는 그대로 쓸 수 있다.
 
@@ -33,7 +33,7 @@ cd ~/teacher-studio
 python3 scripts/setup.py --agent <AGENT>
 ```
 - 파이썬 실행 이름은 환경마다 다르다. 이 문서의 `python3`는 Windows에서 `py`(없으면 `python`)로 바꿔 실행한다. 예: `py scripts/setup.py --agent <AGENT>`
-- 스킬 5개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`)를 등록한다.
+- 스킬 7개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`, `teacher-class-tools`, `teacher-data`)를 등록한다.
 
 ### 환경별 설치
 | 환경 | 설치 방법 | 알아 둘 점 |
@@ -42,7 +42,7 @@ python3 scripts/setup.py --agent <AGENT>
 | **Codex** (앱·CLI·IDE) | 위 명령 → `~/.agents/skills/`에 등록 | 내 컴퓨터에서 실행. 작업 폴더 밖에 쓸 때는 **승인 창**이 뜨니 허용하도록 안내. **인터넷은 기본 꺼짐**: `~/.codex/config.toml`에 `[sandbox_workspace_write]` 아래 `network_access = true`를 켜야 도구 설치·최신 법 확인이 된다. 웹 검색은 `--search`(live)로 켠다. 무료·Go 요금제에도 포함 |
 | **Claude 앱·웹** | 등록 대신 zip 올리기 (아래) | 클라우드 컨테이너에서 실행 → 내 컴퓨터 폴더·크롬에 접근 못 함, 결과는 미리보기·다운로드. 인터넷은 PyPI·npm·GitHub 정도만 허용. 무료 요금제 포함 |
 
-**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 5개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
+**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 7개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`·`teacher-class-tools`·`teacher-data`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
 - 설정 → Capabilities에서 **코드 실행·파일 만들기**가 켜져 있어야 한다 (기본 켜짐). 최신 법 확인에는 **웹 검색**도 켠다.
 - AI가 이미 코드 실행 환경에 저장소를 받았다면 `python3 skills/teacher-studio/scripts/studio.py doctor --agent claude-app`로 환경만 확인한다.
 - 끝에 「🎉 준비 완료」 요약이 나온다 (Claude Code·Codex).
@@ -65,7 +65,7 @@ python3 ~/.claude/skills/teacher-studio/scripts/studio.py fire motion/lesson-ope
 - `READY` 가 나오면 성공. 크롬에 「수업 시작 화면」이 열린다.
 
 ## 5. 선생님께 첫 인사
-`teacher-studio` 스킬의 **준비 카드**를 그대로 보여 준다 (doctor 요약 + 메뉴 5개).
+`teacher-studio` 스킬의 **준비 카드**를 그대로 보여 준다 (doctor 요약 + 메뉴 8개).
 - 이 환경에서 안 되는 기능(공유 링크, MP4 등)은 카드 안에 이미 한 줄로 들어 있다. 덧붙여 설명하지 않는다.
 - 마지막 줄: 「새 대화에서 '교사 스튜디오 시작'이라고 하시거나, 만들고 싶은 걸 바로 말씀해 주세요.」
 - Claude Code·Codex는 새 스킬을 바로 못 볼 수 있다 → 「한 번 껐다 켜 주세요」 안내.

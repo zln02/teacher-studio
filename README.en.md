@@ -19,8 +19,8 @@ Teacher Studio is a skill bundle for Claude and Codex (Agent Skills, `SKILL.md`)
 
 The target is **all work you do with AI**, in two layers:
 
-- **Our own tools (creative and education work):** games (7 play styles, auto themes, a "Wow" kit for juice and sound), web slide decks (being reworked), motion videos and opening screens (MP4 export), class tools (timer, picker, teams, bracket, scoreboard; in the repo, not yet in the ZIP bundle), a legal guide (looks up current law from official sources), and `video_eyes` (reads frames and subtitles of a video locally only).
-- **Everything else (coding, documents, web, security review):** a skill scout finds an existing, vetted skill (for example Anthropic's official office-document skills, web guidance, a security-audit skill), asks you first, then installs it on first need. Otherwise the model's own ability is used, under the same no-regret rules and quality gates. Dedicated **data analysis and research/compare tools are planned (준비 중)**.
+- **Our own tools (creative and education work):** games (7 play styles, auto themes, a "Wow" kit for juice and sound), web slide decks (short JSON spec -> designed deck, 12 styles x 19 slide types), motion videos and opening screens (MP4 export), class tools (timer, picker, teams, bracket, scoreboard), data analysis (`teacher-data`: anyone's CSV/XLSX -> plain-language chart report, the AI never reads the raw rows), a legal guide (looks up current law from official sources), and `video_eyes` (reads frames and subtitles of a video locally only).
+- **Everything else (coding, documents, web, security review):** a skill scout finds an existing, vetted skill (for example Anthropic's official office-document skills, web guidance, a security-audit skill), asks you first, then installs it on first need. Otherwise the model's own ability is used, under the same no-regret rules and quality gates. Dedicated **research/compare tools are planned (준비 중)**. All 7 skills ship as ZIPs in `dist/`.
 
 The AI asks 1 to 3 questions only when your request is vague (with a recommended answer each). A one-time setup stores your level, subject and device on your own computer.
 
@@ -36,15 +36,15 @@ The goal is **your design**. If you have a school or company template, brand col
 | Office worker | "6 clean opening slides for our team workshop" |
 | Small business owner | "A warm intro video for our cafe's new menu" |
 | Student | "Slides for my club presentation" (Claude requires age 18+; check the service terms) |
-| Developer / data analyst | "Write tests first, then implement this" / "Clean and summarize this CSV" (coding uses vetted existing skills plus the model; data-analysis tools are 준비 중) |
+| Developer / data analyst | "Write tests first, then implement this" / "Clean and summarize this CSV" (coding uses vetted existing skills plus the model; CSV/XLSX analysis uses the built-in `teacher-data` skill) |
 | Creator | "A flashy quiz game for my 10k-subscriber milestone" |
 
 ## Install (try from the top)
 
 1. **One line:** tell Claude Code or Codex "Install this skill: https://github.com/zln02/teacher-studio" (Claude app/web: to be confirmed).
-2. **One command:** `npx skills add zln02/teacher-studio` (choose all 5 skills). In Claude Code: `/plugin install teacher-studio --marketplace zln02/teacher-studio`.
+2. **One command:** `npx skills add zln02/teacher-studio` (choose all 7 skills). In Claude Code: `/plugin install teacher-studio --marketplace zln02/teacher-studio`.
 3. **Upload files:** Claude app, upload the 5 ZIPs in [`dist/`](dist/) under Customize, Skills.
-4. **Copy folders:** copy the five `teacher-*` folders from `skills` into `.claude/skills` (Claude Code) or `.agents/skills` (Codex).
+4. **Copy folders:** copy the seven `teacher-*` folders from `skills` into `.claude/skills` (Claude Code) or `.agents/skills` (Codex).
 
 Details: [INSTALL.md](INSTALL.md) (Korean). Then say "start Teacher Studio" or just ask for what you want.
 

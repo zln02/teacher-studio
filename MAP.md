@@ -9,8 +9,9 @@
 ## 1. 요청 → 칸 찾기
 | 선생님 말 (예) | 칸 | 내려받을 폴더 |
 |---|---|---|
-| 게임, 퀴즈, 방탈출, 종 울리기, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (quiz-show · escape-room · drag-deliver, 스킨 9) |
-| 타이머, 뽑기, 모둠 나누기, 자리 바꾸기, 투표 | 🧰 수업 도구 | `skills/teacher-class-tools` (예정) 📋 |
+| 게임, 퀴즈, 방탈출, 종 울리기, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (spec → `build.py`로 어떤 게임이든 + 옛 미사일: quiz-show · escape-room · drag-deliver, 스킨 9) |
+| 타이머, 뽑기, 모둠 나누기, 대진표, 점수판 | 🧰 수업 도구 | `skills/teacher-class-tools` ✅ (spec → `build_tool.py`, 오프라인 HTML 1개, 가족·동호회도) |
+| 엑셀·CSV·설문·점수·가계부 분석, 그래프 | 📊 자료 분석 | `skills/teacher-data` ✅ (AI가 원본을 읽지 않고 스크립트가 집계 → 쉬운 그래프 보고서, 이름 가림·숫자 대조) |
 | 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 19종 × 배치 변형, 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |
 | 학습지, 활동지, 형성평가지(인쇄) | 📝 학습지 | `skills/teacher-worksheet` (예정) 📋 |
@@ -27,8 +28,8 @@
 두 칸에 걸치면(예: 「게임 + 그걸 소개하는 PPT」) 두 칸만 받는다.
 
 ## 2. 설치·내려받기
-- Claude Code / Codex: 저장소의 `INSTALL.md`를 따라 `python3 scripts/setup.py --agent <claude-code|codex>` (스킬 5개 등록 + 환경 확인)
-- Claude 앱·웹: `dist/`의 zip 5개를 스킬로 올리기
+- Claude Code / Codex: 저장소의 `INSTALL.md`를 따라 `python3 scripts/setup.py --agent <claude-code|codex>` (스킬 7개 등록 + 환경 확인)
+- Claude 앱·웹: `dist/`의 zip 7개를 스킬로 올리기
 - 모든 요청의 첫 관문은 `skills/teacher-studio` (준비 카드 → 칸 고르기 → `studio.py fire`)
 
 ## 3. 부품 등급
@@ -63,3 +64,6 @@
 | `shared/assets/` | 디자인 소재(CC0 캐릭터 DiceBear·Tabler/Iconoir 아이콘·Open Color·ZzFX 효과음) + `manifest.json` | 게임 `theme:auto`가 `theme_auto.py`로 골라 씀 (쓴 것만 파일에 들어감) |
 | `shared/voice/voice.js` | 브라우저에서 가장 자연스러운 목소리를 골라 읽어 주기 (문장 나눔·15초 끊김 대책·iOS 대응) | 게임 조립 때 자동 포함 (`TSVoice.speak`) |
 | `shared/stage/` | 슬라이드·영상 공통 무대 | 기존대로 |
+| `shared/juice/` | 「Game Wow」 키트: 소리 12종·입자·흔들림·점수 올라가기·시상대·움직임 효과 10개 + 안전 점검(`juice_lint.py`) | 게임·수업 도구가 자동 포함 (`spec.juice`로 조절) |
+| `shared/tools/video_eyes.py` | 영상 → 장면 사진(+선택 자막), **내 컴퓨터 안에서만**(외부 전송 없음, 동의 후 도구 설치) | `diagnose.py`·`ref_analyze.py`가 사용 |
+| `shared/vendor/qrcodegen` | QR을 만들 때 SVG로 직접 그림(MIT) | 슬라이드 QR 장 |

@@ -19,7 +19,10 @@
 | GoogleChrome/modern-web-guidance | 최신 웹 기술 지침 스킬 | Apache-2.0 | 참고(규칙 발췌) | 웹페이지 무기·사이트 규칙 |
 | meta/astryx | React 디자인 시스템 | MIT, React 19 필요 | 넘어감(웹앱 무기 후보) | 빌드 없는 결과물과 안 맞음 |
 | pingdotgg/t3code | 코딩 에이전트 GUI | MIT, Windows 지원 | 참고 | 개발자용 |
-| claude-video (/watch) | 영상 → 장면 사진 + 자막 | MIT, Gemini 자동 업로드·yt-dlp | 참고(직접 안전판 제작) | 로컬 파일만, 외부 전송 없이 |
+| claude-video (/watch) | 영상 → 장면 사진 + 자막 | MIT, Gemini 자동 업로드·yt-dlp | 직접 안전판 제작 완료 (`shared/tools/video_eyes.py`) | 로컬 파일만, 외부 전송 없이 |
+| Alpine.js | 작은 화면 상호작용 | MIT | 사용 중(노안중 사이트) | 빌드 없이 한 줄로, 이 하네스 결과물에는 넣지 않음(바닐라 JS 유지) |
+| Open Props | CSS 변수 모음 | MIT | 사용 중(노안중 사이트) | 색·간격 기준 참고 |
+| Web Awesome | 웹 컴포넌트 | MIT(무료판) | 사용 중(노안중 사이트) | 하네스 결과물은 단일 HTML·외부 요청 0 원칙이라 번들하지 않음 |
 | newtake.ai | AI 영상 제작 서비스 | 계정, 업로드물 영구 사용권 | 안내만 | 학생 얼굴 영상 비권장 |
 | Upload-Post | SNS 올리기·예약 MCP | 무료 월 10번 | 안내만 | 초상권·개인정보 |
 | PostHog | 방문자 분석 MCP | 무료 월 100만 이벤트 | 넘어감 | 추적 금지 원칙 |

@@ -18,7 +18,7 @@
 
 **AI에게 말 한 줄만 하세요. 전문가 이상의 결과가 나와요.**
 
-짧은 요청을 **전문가가 만든 것 같은 품질**로 바꿔 주는 Claude·Codex용 스킬 묶음이에요. AI가 하는 **모든 일**이 대상이에요. 우리가 직접 만든 전용 도구는 **게임 · 슬라이드 · 영상 · 수업 도구 · 법률 안내**이고, 코딩·문서·웹·보안 점검 같은 일은 **검증된 기존 스킬을 처음 필요할 때 찾아 동의받고 설치**해서 함께 써요. 그 밖에는 AI 자신의 실력 위에 점검 규칙을 얹어요. (데이터 분석·자료 조사/비교 전용 도구는 준비 중)
+짧은 요청을 **전문가가 만든 것 같은 품질**로 바꿔 주는 Claude·Codex용 스킬 묶음이에요. AI가 하는 **모든 일**이 대상이에요. 우리가 직접 만든 전용 도구는 **게임 · 슬라이드 · 영상 · 수업 도구 · 자료(엑셀) 분석 · 법률 안내**(스킬 7개)이고, 코딩·문서·웹·보안 점검 같은 일은 **검증된 기존 스킬을 처음 필요할 때 찾아 동의받고 설치**해서 함께 써요. 그 밖에는 AI 자신의 실력 위에 점검 규칙을 얹어요. (자료 조사/비교 전용 도구는 준비 중)
 
 **선생님 맞춤이 기본, 누구나 쓸 수 있어요.** 직업이나 용도로 막지 않아요.
 
@@ -46,7 +46,7 @@
 | 💼 직장인 | 「팀 워크숍 오프닝 슬라이드 6장, 깔끔하게」 |
 | 🏪 자영업자 | 「우리 카페 신메뉴 소개 영상, 따뜻한 느낌으로」 |
 | 🎓 학생 | 「동아리 발표 슬라이드 만들어 줘」 <sub>(Claude는 만 18세 이상만 쓸 수 있어요 — 서비스 이용 기준을 확인해 주세요)</sub> |
-| 🧑‍💻 개발자·데이터 분석가 | 「이 기능 테스트부터 짜고 구현해 줘」 · 「이 CSV 정리해서 요약해 줘」 <sub>(코딩은 검증된 기존 스킬과 AI 실력으로, 데이터 분석 전용 도구는 준비 중이에요)</sub> |
+| 🧑‍💻 개발자·데이터 분석가 | 「이 기능 테스트부터 짜고 구현해 줘」 · 「이 CSV 정리해서 요약해 줘」 <sub>(코딩은 검증된 기존 스킬과 AI 실력으로, CSV·엑셀 분석은 `teacher-data`가 AI가 원본을 읽지 않고 집계해 그래프 보고서로 만들어요)</sub> |
 | 🎬 크리에이터 | 「구독자 1만 명 기념 퀴즈 게임, 화려하게」 |
 
 <details>
@@ -194,9 +194,9 @@
 
 ### 설치 방법 4단계 — 위에서부터 해 보세요
 1. **링크 한 줄**: Claude Code·Codex에 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」 (Claude 앱·웹은 되는지 *확인 필요*)
-2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 5개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
-3. **파일 올리기**: Claude 앱 → [`dist/`](dist/)의 ZIP 5개를 Customize → Skills에 올리기
-4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 5개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
+2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 7개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
+3. **파일 올리기**: Claude 앱 → [`dist/`](dist/)의 ZIP 7개를 Customize → Skills에 올리기
+4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 7개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
 
 자세한 설명은 [INSTALL.md](INSTALL.md). 아래는 1번의 자세한 형태입니다.
 
@@ -213,7 +213,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 <details>
 <summary><b>💬 Claude 앱·웹(claude.ai)을 쓰는 경우</b></summary>
 
-1. 이 페이지의 [`dist/`](dist/) 폴더에서 ZIP 파일(묶음 파일) 5개를 받습니다: `teacher-studio` · `teacher-game` · `teacher-slides` · `teacher-motion` · `teacher-law`
+1. 이 페이지의 [`dist/`](dist/) 폴더에서 ZIP 파일(묶음 파일) 7개를 받습니다: `teacher-studio` · `teacher-game` · `teacher-slides` · `teacher-motion` · `teacher-law` · `teacher-class-tools` · `teacher-data`
 2. Claude 앱 → **Customize(맞춤 설정) → Skills** 에서 ZIP을 하나씩 올립니다. (메뉴 이름은 앱 버전에 따라 조금 다를 수 있어요)
 3. **설정 → Capabilities** 에서 코드 실행(AI가 도구를 직접 돌리는 기능)·파일 만들기가 켜져 있는지 확인합니다. (기본은 켜짐)
 4. 새 대화에서 **「교사 스튜디오 시작」** 이라고 말합니다.
@@ -261,7 +261,9 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 | 🎮 수업 게임 | **퀴즈쇼** | 방송국 · 강당 종 울리기 · 우주 정거장 | 퀴즈·OX·종 울리기, 칠판 모둠전 |
 | | **방탈출** | 거북선 작전실 · 해독제 실험실 · 태양 신전 | 단원 마무리, 반 전체 협동 (3~6단계) |
 | | **끌어서 보내기** | 달밤 우체국 · 세포 먹이 · 분리수거 로봇 | 단어 뜻, 분류, 짝 맞추기, 태블릿 |
-| 🖥 슬라이드 | **수업·연수 발표** (화면 구성 13종) | 칠판 · 키노트형 · 파스텔 노트 | 수업 PPT 대신, 연수·설명회 |
+| 🖥 슬라이드 | **짧은 JSON → 디자인된 발표** (12 스타일 × 장 19종, QR·타이머·그래프·수식) | 목적·분위기에 따라 자동 | 수업·연수·설명회·회사·모임 |
+| 🧰 수업 도구 | **타이머 · 뽑기 · 모둠 · 대진표 · 점수판** | 오프라인 HTML 1개 | 교실, 가족·동호회 |
+| 📊 자료 분석 | **엑셀·CSV → 쉬운 그래프 보고서** | 점수·설문·가계부·매출 | 이름은 가리고 숫자는 대조 |
 | ✨ 영상·화면 | **과목 소개 영상** | 과학 네온 · 국어 붓글씨 · 영어 뉴스 | 첫 시간, 과목 홍보 |
 | | **수업 시작 화면** | 팝 · 종이 | 집중시키기, 오늘의 주제 |
 | ⚖️ 법률 안내 | **「이거 써도 돼요?」 답 카드** | 저작권·개인정보·AI 규정·생기부 | 그때그때 공식 출처에서 최신 법을 찾아 근거 링크와 함께 |
@@ -280,7 +282,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 
 | | Claude 앱·웹 | Claude Code | Codex |
 |---|---|---|---|
-| 설치 | 설정에서 ZIP 5개 올리기 | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
+| 설치 | 설정에서 ZIP 7개 올리기 | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
 | 만들기 + 자동 점검 | ✅ 코드 실행(AI가 도구를 직접 돌리는 기능) 켜기 | ✅ | ✅ |
 | 결과 받는 법 | 오른쪽 미리보기·다운로드 (클라우드에서 만들어 내 컴퓨터 폴더에는 직접 못 써요) | 내 컴퓨터에 파일로 저장, 크롬 자동 열기 | 내 컴퓨터에 파일로 저장, 크롬 열기 |
 | 공유 링크·QR | ✅ 「게시」 | ➖ 파일로 전달 | ➖ 파일로 전달 |

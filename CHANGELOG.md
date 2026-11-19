@@ -1,6 +1,13 @@
 # Changelog
 
 ## [Unreleased]
+### Summary (7 skills, 7 zips)
+- **스킬 7개**: `teacher-studio`(첫 관문·라우터) · `teacher-game` · `teacher-slides`(spec 기반으로 전환) · `teacher-motion` · `teacher-law` · `teacher-class-tools`(타이머·뽑기·모둠·대진표·점수판) · `teacher-data`(엑셀·CSV 분석 보고서). `dist/`에 zip 7개, `tools/sync_shared.py --check`가 공용 복사본·zip을 모두 검사
+- **공용 도구함 확장**: `shared/juice`(Game Wow 키트: 게임 + 수업 도구), `shared/tools/video_eyes.py`(영상 → 장면 사진, 로컬 전용), `shared/vendor/qrcodegen`, `shared/design/styles.py`
+- **첫 관문 규칙**: 먼저 묻기(`ask-first`), 막연한 불평 자동 진단(`diagnose.py`), 스킬 스카우트, 참고 사이트 패턴 분석(`ref_analyze.py`), 첫 설정 기억(`prefs.py`), 무손실 원칙. 모든 스킬: 「선생님과 누구나」, 사용자 언어로 답하고 사용자가 준 양식·참고가 먼저 (사용자 양식으로 만드는 도구는 아직 계획)
+- `teacher-data` 문구 정리: 점수대 그래프 설명이 설문 문구를 쓰던 것 수정, 「가장 높은 A와 가장 낮은 B의 차이」처럼 두 곳을 밝힘, 소수 자릿수 통일(-0.4점, 6.0점)
+- `docs/training/deck.json`을 새 슬라이드 spec으로 다시 만듦(21장, 점검 통과)
+
 ### Added
 - **모두를 위한 README**(ADR 0012): 「누가 쓰나요」(선생님·직장인·자영업자·학생·개발자·데이터 분석가·크리에이터)·「내 양식대로」 추가, 전용 도구와 스킬 스카우트 범위를 정직하게 구분(데이터 분석·조사 도구는 준비 중), 영문 `README.en.md`, ADR 0012
 - **슬라이드 도구 구조 전환** (ADR 0001~0003·0011 적용): `studio.py build slides --spec deck.json`(`scripts/deck.py`) — AI는 목적·청중·분위기·장 종류별 짧은 JSON만 쓰고, 도구가 디자인한다. 12가지 스타일 분류(이제 `shared/design/styles.py`, 게임과 공용)를 **슬라이드 구성 언어**(제목 처리·카드·강조·배경 모티프 하나·전환·선호 배치)로 번역, 장 19종(표지·구역·한 문장·목록·비교·단계·큰 숫자·**큰 숫자 둘 나란히**·인용·그림(이미지 없는 도형)·퀴즈 정답 공개·타임라인·Chart.js 그래프·KaTeX 수식·**타이머(시작/멈춤/초기화/±1분)**·**QR(빌드 때 SVG로, 외부 요청 0)**·**이미지(로컬 파일 → 파일 안에, 최대 1920px/3MB)**·**영상(8MB 이하 삽입, 크면 「영상 열기」 버튼)**·마무리)마다 배치 변형 2~4개(비대칭 분할·꽉 찬 큰 글자·벤토·에디토리얼 행·번호 단계·비교 패널…), 같은 배치를 연달아 쓰지 않음. 실행마다 새 seed(출력·`<meta name="ts-deck">`), `--seed`로 재현. 절제 원칙: 한 장에 초점 하나·강조 색 하나·배경 모티프 하나·아이콘 장식 없음, 글자 28px 이상, 장당 글 330자 이하(넘으면 「고칠 곳」). 장별 샌드박스 `flair`(css·svg) 허용. 옛 `lesson-deck` 스킨 3개와 `fire`는 그대로 두되 최하 우선순위. 예시 spec 4개(`skills/teacher-slides/assets/spec-examples/`)
