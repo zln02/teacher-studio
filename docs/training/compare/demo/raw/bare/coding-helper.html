@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>코딩 도우미 코비</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#1f2937;--sub:#6b7280;--pri:#4f46e5;--pri2:#eef2ff;--ok:#059669;--err:#dc2626;--line:#e5e7eb}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:var(--pri);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px}
+header h1{margin:0;font-size:20px}header span{opacity:.85;font-size:14px}
+main{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px;max-width:1300px;margin:auto}
+@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border-radius:14px;box-shadow:0 1px 4px #0001;padding:14px;display:flex;flex-direction:column;min-height:0}
+.card h2{margin:0 0 10px;font-size:16px}
+textarea#code{width:100%;height:260px;font:15px/1.5 Consolas,monospace;border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;tab-size:4}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+button{border:0;border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;background:var(--pri2);color:var(--pri);font-weight:700;font-family:inherit}
+button.main{background:var(--pri);color:#fff}button:hover{filter:brightness(.95)}
+select{padding:8px;border-radius:8px;border:1px solid var(--line);font-family:inherit}
+pre#out{background:#111827;color:#e5e7eb;border-radius:10px;padding:10px;min-height:90px;max-height:200px;overflow:auto;margin:0;white-space:pre-wrap;font:14px/1.5 Consolas,monospace}
+pre#out .e{color:#fca5a5}
+#chat{flex:1;overflow:auto;min-height:320px;max-height:520px;display:flex;flex-direction:column;gap:8px;padding:4px}
+.msg{padding:10px 12px;border-radius:12px;max-width:92%;line-height:1.55;white-space:pre-wrap;font-size:14.5px}
+.bot{background:var(--pri2);align-self:flex-start}.me{background:#dcfce7;align-self:flex-end}
+.msg code{background:#fff;padding:1px 5px;border-radius:5px;font-family:Consolas,monospace}
+.msg pre{background:#111827;color:#e5e7eb;padding:8px;border-radius:8px;margin:6px 0 0;overflow:auto;font-family:Consolas,monospace}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chips button{font-size:13px;padding:6px 10px}
+form{display:flex;gap:8px;margin-top:8px}
+input#q{flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;font-size:15px;font-family:inherit}
+.note{font-size:12px;color:var(--sub);margin-top:6px}
+</style>
+</head>
+<body>
+<header><div style="font-size:28px">🤖</div><div><h1>코딩 도우미 코비</h1><span>정답을 알려주기보다 힌트로 함께 생각해요!</span></div></header>
+<main>
+<section class="card">
+  <h2>✏️ 코드 작성 (파이썬)</h2>
+  <div class="row">
+    <select id="mission"><option value="">📚 연습 문제 불러오기</option></select>
+  </div>
+  <textarea id="code" spellcheck="false">name = input("이름이 뭐예요? ")
+print("안녕,", name)
+for i in range(3):
+    print(i + 1, "번째 인사!")</textarea>
+  <div class="row">
+    <button class="main" id="run">▶ 실행하기</button>
+    <button id="explain">🔍 코드 설명해줘</button>
+    <button id="hint">💡 힌트 줘</button>
+    <button id="clear">🧹 지우기</button>
+  </div>
+  <pre id="out">여기에 실행 결과가 나와요.</pre>
+  <div class="note" id="status">※ 처음 실행할 때 파이썬을 불러오느라 몇 초 걸려요. (인터넷 필요)</div>
+</section>
+
+<section class="card">
+  <h2>💬 코비에게 물어보기</h2>
+  <div class="chips" id="chips"></div>
+  <div id="chat"></div>
+  <form id="f"><input id="q" placeholder="예: 반복문이 뭐야? / 에러가 나요" autocomplete="off"><button class="main">보내기</button></form>
+  <div class="note">코비는 수업용 규칙 기반 도우미예요. 모르는 건 선생님께 꼭 물어보세요!</div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const fmt=s=>esc(s).replace(/```([\s\S]*?)```/g,'<pre>$1</pre>').replace(/`([^`]+)`/g,'<code>$1</code>');
+
+/* ---------- 지식 베이스 ---------- */
+const KB=[
+ {k:['출력','print','프린트','화면'],t:'🖨️ 출력 (print)',a:'`print()`는 화면에 글자를 보여주는 명령이에요.\n글자는 따옴표로 감싸야 해요.\n```\nprint("안녕하세요")\nprint("점수:", 100)\n```\n💡 따옴표를 빼면 어떻게 될까요? 직접 실행해 보세요!'},
+ {k:['변수','저장','대입'],t:'📦 변수',a:'변수는 값을 담아 두는 **이름표 붙은 상자**예요.\n`=`는 "같다"가 아니라 **"넣어라"**라는 뜻이에요.\n```\nscore = 90\nscore = score + 5\nprint(score)\n```\n💡 마지막에 score는 얼마일까요? 먼저 예상한 뒤 실행해 봐요!'},
+ {k:['입력','input','키보드'],t:'⌨️ 입력 (input)',a:'`input()`은 사용자가 키보드로 친 글자를 받아와요.\n```\nname = input("이름: ")\nprint(name, "님 반가워요")\n```\n⚠️ input은 항상 **글자(문자열)**로 받아요. 숫자로 계산하려면 `int(input())`으로 바꿔야 해요.'},
+ {k:['조건','if','else','elif','만약'],t:'🔀 조건문 (if)',a:'조건문은 **"만약 ~라면"** 갈림길이에요.\n```\nscore = 80\nif score >= 90:\n    print("A")\nelif score >= 70:\n    print("B")\nelse:\n    print("C")\n```\n⚠️ `if` 줄 끝의 콜론(`:`)과 아래 줄의 **들여쓰기(스페이스 4칸)**를 잊지 마세요!'},
+ {k:['반복','for','while','range','루프','여러번'],t:'🔁 반복문',a:'같은 일을 여러 번 시킬 때 써요.\n```\nfor i in range(5):\n    print("안녕", i)\n```\n`range(5)`는 0,1,2,3,4 → 다섯 번 반복!\n`while`은 조건이 참인 동안 계속 반복해요.\n💡 range(1, 6)으로 바꾸면 어떻게 달라질까요?'},
+ {k:['함수','def','return','리턴'],t:'🧰 함수',a:'함수는 **자주 쓰는 코드 묶음에 이름을 붙인 것**이에요.\n```\ndef hello(name):\n    return name + "님 안녕!"\n\nprint(hello("민수"))\n```\n`def`로 만들고, 이름으로 불러서 써요. `return`은 결과를 돌려줘요.'},
+ {k:['리스트','배열','list','append'],t:'📋 리스트',a:'리스트는 여러 값을 **순서대로 한 줄로** 담는 상자예요.\n```\nfruits = ["사과", "배"]\nfruits.append("포도")\nprint(fruits[0])   # 첫 번째\nprint(len(fruits)) # 개수\n```\n⚠️ 번호(인덱스)는 **0부터** 시작해요!'},
+ {k:['문자열','글자','string','str'],t:'🔤 문자열',a:'따옴표로 감싼 글자를 문자열이라고 해요.\n```\na = "hello"\nprint(a + " world")  # 이어붙이기\nprint(a * 3)         # 반복\nprint(len(a))        # 길이\n```'},
+ {k:['주석','#'],t:'📝 주석',a:'`#` 뒤의 글은 컴퓨터가 무시해요. 코드 설명을 적을 때 써요.\n```\n# 이건 설명이에요\nprint("hi")  # 여기도 가능\n```'},
+ {k:['에러','오류','error','안돼','안 돼','안되','버그','실행'],t:'🐞 에러가 났어요',a:'괜찮아요, 에러는 컴퓨터가 주는 **힌트**예요! 이렇게 해 보세요.\n1️⃣ 에러 메시지의 **마지막 줄**을 읽어요.\n2️⃣ `line 숫자`가 알려주는 **줄**을 확인해요.\n3️⃣ 콜론(:), 따옴표, 괄호 짝, 들여쓰기, 오타를 살펴봐요.\n\n왼쪽에서 **▶ 실행하기** 후 에러가 나면 제가 자동으로 설명해 드릴게요!'},
+ {k:['안녕','하이','hello','hi'],t:'',a:'안녕하세요! 저는 코딩 도우미 코비예요 🤖\n궁금한 개념을 물어보거나, 코드를 실행하고 **🔍 코드 설명해줘**를 눌러 보세요.'},
+ {k:['고마워','감사'],t:'',a:'천만에요! 😊 스스로 해결한 게 가장 큰 실력이에요. 다음 도전도 해 볼까요?'},
+];
+const FALLBACK='아직 잘 모르는 질문이에요 😅\n이런 걸 물어봐 주세요: **변수, 출력, 입력, 조건문, 반복문, 함수, 리스트, 문자열, 에러**\n더 자세한 건 선생님께 질문해요!';
+
+/* ---------- 에러 해설 ---------- */
+const ERR=[
+ [/SyntaxError: (expected ':'|invalid syntax)/,'문법이 틀렸어요. `if`, `for`, `def`, `while` 줄 끝에 콜론(`:`)이 있는지, 괄호/따옴표가 빠진 곳은 없는지 확인해요.'],
+ [/SyntaxError: unterminated string|EOL while scanning/,'따옴표를 열고 닫지 않았어요. `"`가 짝을 이루는지 봐요.'],
+ [/SyntaxError: .*(was never closed|unmatched)/,'괄호 `( )`의 짝이 맞지 않아요. 열었으면 꼭 닫아요.'],
+ [/IndentationError/,'들여쓰기가 맞지 않아요. 콜론(:) 아래 줄은 스페이스 4칸 들여써야 하고, 같은 블록은 칸 수가 같아야 해요.'],
+ [/NameError: name '(.+?)' is not defined/,m=>`\`${m[1]}\`라는 이름을 못 찾겠대요. ① 오타 ② 변수를 만들기 전에 사용 ③ 글자인데 따옴표를 빼먹음 — 이 셋을 확인해 봐요.`],
+ [/TypeError: can only concatenate str/,'글자와 숫자를 `+`로 합쳤어요. 숫자를 `str(숫자)`로 바꾸거나 `print("점수:", 숫자)`처럼 쉼표를 써요.'],
+ [/TypeError: unsupported operand/,'계산할 수 없는 종류끼리 계산했어요. `input()`은 글자로 받으니 `int(input())`으로 바꿨는지 확인해요.'],
+ [/ValueError: invalid literal for int/,'숫자가 아닌 글자를 `int()`로 바꾸려 했어요. 숫자만 입력했는지 확인해요.'],
+ [/ZeroDivisionError/,'0으로 나눌 수는 없어요! 나누는 수가 0이 되지 않게 해요.'],
+ [/IndexError/,'리스트 범위를 벗어났어요. 번호는 0부터 시작하고 마지막 번호는 `len(리스트)-1`이에요.'],
+ [/KeyError/,'딕셔너리에 없는 키를 찾았어요. 키 이름의 철자를 확인해요.'],
+ [/AttributeError/,'그 값에는 없는 기능을 쓰려 했어요. 점(.) 뒤의 이름 철자를 확인해요.'],
+ [/TypeError: .*not callable/,'변수를 함수처럼 `()`로 호출했어요. 변수 이름이 `print`, `str`처럼 기존 이름과 겹치지 않는지 봐요.'],
+];
+function explainError(text){
+  const last=text.trim().split('\n').filter(Boolean).pop()||'';
+  const ln=(text.match(/line (\d+)/g)||[]).pop();
+  for(const [re,h] of ERR){const m=text.match(re); if(m) return `🐞 에러 분석\n${ln?`📍 ${ln.replace('line','').trim()}번째 줄 근처를 보세요.\n`:''}${typeof h==='function'?h(m):h}\n\n(에러 원문: \`${last}\`)`;}
+  return `🐞 에러가 났어요.\n${ln?`📍 ${ln.replace('line','').trim()}번째 줄 근처를 보세요.\n`:''}마지막 줄을 천천히 읽어 보세요:\n\`${last}\`\n오타, 콜론, 들여쓰기를 먼저 확인해요!`;
+}
+
+/* ---------- 코드 설명 ---------- */
+const LINE=[
+ [/^\s*#/,'주석이에요. 컴퓨터는 무시하고 사람이 읽는 설명이에요.'],
+ [/^\s*(\w+)\s*=\s*int\(input\(/,m=>`사용자가 입력한 값을 **정수**로 바꿔 \`${m[1]}\`에 저장해요.`],
+ [/^\s*(\w+)\s*=\s*input\(/,m=>`키보드 입력을 받아 \`${m[1]}\`에 저장해요. (글자로 저장돼요)`],
+ [/^\s*print\(/,'화면에 값을 출력해요.'],
+ [/^\s*for\s+(\w+)\s+in\s+range\((.*)\):/,m=>`\`${m[1]}\`이(가) range(${m[2]})의 숫자를 하나씩 받으며 아래 들여쓴 코드를 **반복**해요.`],
+ [/^\s*for\s+(\w+)\s+in\s+(\w+):/,m=>`\`${m[2]}\`의 항목을 하나씩 \`${m[1]}\`에 꺼내며 **반복**해요.`],
+ [/^\s*while\s+(.*):/,m=>`\`${m[1]}\` 조건이 참인 동안 **계속 반복**해요.`],
+ [/^\s*if\s+(.*):/,m=>`**만약** \`${m[1]}\`이(가) 참이면 아래 들여쓴 코드를 실행해요.`],
+ [/^\s*elif\s+(.*):/,m=>`앞 조건이 아니고, \`${m[1]}\`이(가) 참이면 실행해요.`],
+ [/^\s*else\s*:/,'위 조건이 모두 아닐 때 실행해요.'],
+ [/^\s*def\s+(\w+)\((.*)\):/,m=>`\`${m[1]}\`라는 **함수를 정의**해요. 받는 값: ${m[2]||'없음'}`],
+ [/^\s*return\b/,'함수의 결과값을 돌려줘요.'],
+ [/^\s*(\w+)\s*(\+|-|\*|\/)=/,m=>`\`${m[1]}\`의 값을 계산해서 **갱신**해요.`],
+ [/^\s*(\w+)\s*=\s*\[/,m=>`\`${m[1]}\`에 **리스트**(여러 값 모음)를 만들어요.`],
+ [/^\s*(\w+)\.append\(/,m=>`리스트 \`${m[1]}\` 끝에 값을 **추가**해요.`],
+ [/^\s*import\s+/,'다른 도구 모음(모듈)을 가져와요.'],
+ [/^\s*(\w+)\s*=/,m=>`계산한 값을 \`${m[1]}\` 변수에 저장해요.`],
+];
+function explainCode(src){
+  const out=src.split('\n').map((l,i)=>{if(!l.trim())return null;
+    for(const [re,h] of LINE){const m=l.match(re); if(m) return `${i+1}: \`${l.trim()}\`\n   → ${typeof h==='function'?h(m):h}`;}
+    return `${i+1}: \`${l.trim()}\``;}).filter(Boolean);
+  return '🔍 코드를 한 줄씩 설명할게요!\n\n'+out.join('\n');
+}
+
+/* ---------- 힌트 (정답 대신 질문) ---------- */
+function hintFor(src){
+  const h=[];
+  src.split('\n').forEach((l,i)=>{
+    if(/^\s*(if|elif|else|for|while|def)\b[^:]*$/.test(l)&&l.trim()) h.push(`${i+1}번째 줄 끝에 콜론(:)이 있나요?`);
+    if(((l.match(/"/g)||[]).length)%2) h.push(`${i+1}번째 줄의 따옴표 짝이 맞나요?`);
+    if((l.match(/\(/g)||[]).length!==(l.match(/\)/g)||[]).length) h.push(`${i+1}번째 줄의 괄호 ( ) 개수가 같나요?`);
+  });
+  if(!h.length) h.push('눈에 띄는 문법 실수는 없어요! 👍','이제 **예상 결과**를 먼저 말해 보고, 실행 결과와 비교해 봐요.','결과가 다르다면 `print()`를 중간에 넣어 변수 값을 확인해 보세요.');
+  return '💡 힌트예요 (정답은 직접 찾아봐요!)\n• '+h.join('\n• ');
+}
+
+/* ---------- 연습 문제 ---------- */
+const MISSIONS={
+ '1. 자기소개 출력하기':'# 목표: 이름과 학년을 출력해 보세요\nprint("내 이름은 ___ 입니다")\n',
+ '2. 구구단 3단':'# 목표: 3 x 1 부터 3 x 9 까지 출력\nfor i in range(1, 10):\n    print(3, "x", i, "=", 3 * i)\n',
+ '3. 짝수 홀수 판별':'# 목표: 숫자를 입력받아 짝수/홀수 출력\nn = int(input("숫자: "))\nif n % 2 == 0:\n    print("짝수")\nelse:\n    print("홀수")\n',
+ '4. 1부터 10까지 합':'# 목표: 1~10의 합 구하기\ntotal = 0\nfor i in range(1, 11):\n    total += i\nprint(total)\n',
+ '5. 틀린 코드 고치기 (버그 찾기!)':'# 목표: 에러를 찾아 고쳐 보세요\nscore = 85\nif score >= 80\n    print("합격")\nprint("점수: " + score)\n',
+};
+Object.keys(MISSIONS).forEach(k=>{const o=document.createElement('option');o.textContent=k;o.value=k;$('mission').appendChild(o)});
+$('mission').onchange=e=>{if(e.target.value){$('code').value=MISSIONS[e.target.value];say('bot','📚 "'+e.target.value+'" 문제를 불러왔어요. 먼저 코드를 읽고 결과를 예상해 보세요!')}};
+
+/* ---------- 채팅 ---------- */
+function say(who,text){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=fmt(text);$('chat').appendChild(d);$('chat').scrollTop=1e9}
+function answer(q){
+  const s=q.toLowerCase();
+  if(/(정답|답 알려|대신 (짜|해)|숙제 (해|좀))/.test(s)) return '정답을 바로 알려주면 실력이 안 늘어요 😉 대신 **어디까지 해봤는지** 알려주면 힌트를 줄게요! 코드를 쓰고 **💡 힌트 줘**를 눌러 봐요.';
+  let best=null,sc=0;
+  for(const e of KB){const n=e.k.filter(w=>s.includes(w)).length; if(n>sc){sc=n;best=e}}
+  return best?(best.t?`**${best.t}**\n`:'')+best.a:FALLBACK;
+}
+$('f').onsubmit=e=>{e.preventDefault();const q=$('q').value.trim();if(!q)return;say('me',q);say('bot',answer(q));$('q').value=''};
+['변수가 뭐야?','출력은 어떻게 해?','조건문 알려줘','반복문이 뭐야?','함수가 뭐야?','리스트 알려줘','에러가 나요'].forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{say('me',t);say('bot',answer(t))};$('chips').appendChild(b)});
+say('bot','안녕하세요! 저는 코딩 도우미 코비예요 🤖\n위의 버튼을 누르거나 궁금한 걸 직접 물어보세요.\n왼쪽에 코드를 쓰고 **▶ 실행하기**를 눌러 보세요!');
+
+/* ---------- 파이썬 실행 (Pyodide) ---------- */
+let pyodide=null,loading=null;
+function loadPy(){
+  if(pyodide) return Promise.resolve(pyodide);
+  if(loading) return loading;
+  $('status').textContent='⏳ 파이썬을 불러오는 중이에요... (처음 한 번만)';
+  loading=new Promise((res,rej)=>{
+    const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+    s.onload=async()=>{try{pyodide=await loadPyodide();$('status').textContent='✅ 파이썬 준비 완료!';res(pyodide)}catch(e){rej(e)}};
+    s.onerror=()=>rej(new Error('offline'));document.head.appendChild(s);
+  });
+  loading.catch(()=>{loading=null});
+  return loading;
+}
+$('run').onclick=async()=>{
+  const out=$('out');out.textContent='실행 중...';
+  let py;try{py=await loadPy()}catch(e){out.textContent='';out.innerHTML='<span class="e">파이썬을 불러오지 못했어요. 인터넷 연결을 확인해 주세요.</span>';$('status').textContent='❌ 인터넷 연결 필요';return}
+  let buf='';
+  py.setStdout({batched:s=>buf+=s+'\n'});py.setStderr({batched:s=>buf+=s+'\n'});
+  py.globals.set('__src',$('code').value);
+  // input()을 prompt 창으로 연결
+  py.runPython(`
+import builtins, js
+def _inp(p=""):
+    v = js.window.prompt(str(p) if p else "입력해 주세요")
+    if v is None: v = ""
+    print(str(p) + v)
+    return v
+builtins.input = _inp
+`);
+  try{
+    await py.runPythonAsync($('code').value);
+    out.textContent=buf||'(출력할 내용이 없어요)';
+  }catch(e){
+    const msg=String(e.message||e);
+    out.textContent=buf;const sp=document.createElement('span');sp.className='e';sp.textContent=msg.split('\n').slice(-4).join('\n');out.appendChild(sp);
+    say('bot',explainError(msg));
+  }
+};
+$('explain').onclick=()=>{say('me','이 코드 설명해줘');say('bot',explainCode($('code').value))};
+$('hint').onclick=()=>{say('me','힌트 줘');say('bot',hintFor($('code').value))};
+$('clear').onclick=()=>{$('code').value='';$('out').textContent='여기에 실행 결과가 나와요.'};
+$('code').addEventListener('keydown',e=>{if(e.key==='Tab'){e.preventDefault();const t=e.target,s=t.selectionStart;t.value=t.value.slice(0,s)+'    '+t.value.slice(t.selectionEnd);t.selectionStart=t.selectionEnd=s+4}});
+</script>
+</body>
+</html>
