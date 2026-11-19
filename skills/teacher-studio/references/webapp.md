@@ -14,6 +14,14 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 4. FAIL -> fix the spec (shorter labels, a missing `<label>`, `?.`), rebuild. Max 2 fixes, then the plain way (no-regret rule).
 5. Final message: full path, 「더블클릭하면 브라우저에서 열려요」, the check line, the honest-AI line below, 2 tweak offers (예: 「질문 더 넣기」「파이썬 예시로」).
 
+## Quality bar (what makes it worth more than a plain page; check before the final message)
+1. **The first screen works in 5 seconds**: one clear title, the main control visible without scrolling, a sensible starting value or example already filled in.
+2. **Real content for this class**: helper = 8-12 questions students of that grade actually ask, in their words; calculator/simulation = the textbook's own quantities, units and a worked example; no lorem ipsum, no 「예시 1」.
+3. **Every control gives a visible result at once** (number + unit + one plain sentence 「시속 60 km로 2시간이면 120 km를 가요」), and wrong input gets a kind hint, not NaN.
+4. **Facts are right for the grade**; unsure -> 「확인 필요」. Formulas are shown the way the textbook writes them.
+5. **Readable on the projector**: test with P (projector mode); labels are short enough not to wrap inside buttons.
+6. The honest-AI line and what it can / cannot do (`can`, `cannot`) are filled in for this app, not copied from the example.
+
 ## Spec
 ```
 {"title": "≤40자", "subtitle": "학년 · 과목 · 핵심", "words": "style hint (코딩, 과학, 깔끔, 파스텔 …)", "style": "<optional id from shared/design/styles.py>",
