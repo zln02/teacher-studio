@@ -16,6 +16,7 @@
 | [0010](0010-identity-teacher-first.md) | 정체성: 선생님 맞춤이 기본, 용도 제한 없음 | Accepted |
 | [0011](0011-no-regret-principle.md) | 무손실 원칙: 하네스가 맨 모델보다 나빠지면 안 된다 | Accepted (평가 관문은 「계획」) |
 | [0012](0012-for-everyone.md) | 모두를 위해: 선생님·한국어 기본값, 직업·언어 제한 없음, 사용자 디자인 우선 | Accepted (0010 확장) |
+| [0013](0013-documents-weapon-teacher-docs.md) | 문서 무기는 새 스킬 teacher-docs: HWPX 표준 라이브러리 직접 작성, 설치된 hwp-docs·docx 스킬에 위임, 워드·PDF는 필요할 때 설치 | Accepted (0009 일부 변경) |
 
 ## AI 활용 개발
 

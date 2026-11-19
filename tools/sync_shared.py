@@ -34,6 +34,7 @@ PLAN = {
     "teacher-studio": {"design": True, "fonts": True, "tools": True, "video_eyes": True, "vendor": []},
     "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
     "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
+    "teacher-docs": {"design": True, "fonts": True, "tools": True, "placeholders": True, "vendor": []},
 }
 
 
@@ -67,6 +68,8 @@ def expected() -> dict[Path, bytes]:
         if cfg["tools"]:
             for tool in ("ensure.py", "stamp.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
+        if cfg.get("placeholders"):  # blank detector shared with teacher-slides (scripts/placeholders.py must equal shared/tools/placeholders.py)
+            add(SHARED / "tools" / "placeholders.py", base / "tools" / "placeholders.py")
         if cfg.get("video_eyes"):  # local-only video frames helper (diagnose.py / ref_analyze.py)
             add(SHARED / "tools" / "video_eyes.py", base / "tools" / "video_eyes.py")
         if cfg.get("juice"):  # Game Wow kit: sound presets, particles, motion effects, lint
@@ -195,6 +198,8 @@ def check() -> int:
         problems.append("shared/stage/check_page.py != skills/teacher-game/scripts/check_game.py")
     if (STAGE / "clipcheck.py").read_bytes() != (ROOT / "skills" / "teacher-game" / "scripts" / "clipcheck.py").read_bytes():
         problems.append("shared/stage/clipcheck.py != skills/teacher-game/scripts/clipcheck.py")
+    if (SHARED / "tools" / "placeholders.py").read_bytes() != (ROOT / "skills" / "teacher-slides" / "scripts" / "placeholders.py").read_bytes():
+        problems.append("shared/tools/placeholders.py != skills/teacher-slides/scripts/placeholders.py (one blank detector for slides and docs)")
     for dst, data in expected().items():
         rel = dst.relative_to(ROOT).as_posix()
         if not dst.exists():

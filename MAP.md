@@ -13,11 +13,11 @@
 | 타이머, 뽑기, 모둠 나누기, 대진표, 점수판 | 🧰 수업 도구 | `skills/teacher-class-tools` ✅ (spec → `build_tool.py`, 오프라인 HTML 1개, 가족·동호회도) |
 | 프로그램, 앱, 웹페이지, 도우미·챗봇, 계산기, 시뮬레이션, 연습장 | 🖥️ 웹 앱 | `skills/teacher-studio` ✅ (`references/webapp.md`: spec → `scripts/build_webapp.py` + `check_webapp.py`, 오프라인 HTML 1개, 프로젝터 모드, 「AI」는 솔직하게) |
 | 엑셀·CSV·설문·점수·가계부 분석, 그래프 | 📊 자료 분석 | `skills/teacher-data` ✅ (AI가 원본을 읽지 않고 스크립트가 집계 → 쉬운 그래프 보고서, 이름 가림·숫자 대조) |
-| 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 19종 × 배치 변형, 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
+| 수업 슬라이드, 발표 자료(웹·PPT), 연수 자료, 홍보 PPT, 기관 보고 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 23종 × 배치 변형 × 용도 4(수업·홍보·기관 보고·개인), 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |
 | 학습지, 활동지, 형성평가지(인쇄) | 📝 학습지 | `skills/teacher-worksheet` (예정) 📋 |
-| 공문, 가정통신문, 계획서, 결과보고서, 회의록 (한글) | 📄 업무 문서 | `skills/teacher-work-docs` (예정) 🔨 |
-| PPT 파일, 파워포인트 | 📊 PPT 파일 | `skills/teacher-pptx` (예정) 🔨 |
+| 공문, 가정통신문, 안내문, 계획서, 결과보고서 (한글·워드·PDF), 양식 채우기, 한글 파일 고치기, PDF 합치기·나누기 | 📄 문서 | `skills/teacher-docs` ✅ (spec → `docs.py make` HWPX·DOCX·PDF, 공문 형식 자동(1. 가. 1) …·끝·붙임·날짜), `fill`·`patch`로 원본 서식 유지, 점검기 `doc_check.py`) |
+| PPT 파일, 파워포인트 | 📊 PPT 파일 | `skills/teacher-slides` ✅ (`--pptx`, 내 양식 `--template`, 용도 `"context"`: 수업·홍보·기관 보고·개인) |
 | 영상 자르기, 자막, 배경음악, 사진 영상 | 🎬 영상 | `skills/teacher-video` (예정) 🔨 |
 | 포스터, 카드뉴스, 캔바, 피그마 | 🎨 디자인 | `skills/teacher-design` (예정) 📋 |
 | 자료 찾아 줘, 논문 요약, 비교해 줘 | 🔎 조사 | `skills/teacher-research` (예정) 📋 |

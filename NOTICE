@@ -86,6 +86,15 @@ This product includes third-party components:
    Paweł Kuna; LICENSE-tabler.txt) reduced to their inner SVG markup, and characters/ holds four DiceBear thumbs faces from item 13 (CC0 1.0,
    LICENSE-thumbs.txt). Device frames, patterns and spot illustrations are original work of this project (Apache-2.0).
 
+21. python-hwpx 6.12.0 — Copyright 2025-2026 airmang — Apache License 2.0
+   Location: skills/teacher-docs/assets/hwpx/Skeleton.hwpx (the blank HWPX document shipped as hwpx/data/Skeleton.hwpx in the python-hwpx wheel).
+   Data file only, unmodified; no python-hwpx source code is copied (our HWPX writer/editor is standard-library code of this project).
+   LICENSE-python-hwpx.txt and NOTICE-python-hwpx.txt (the upstream NOTICE, incl. its Hancom format attribution) are next to it.
+   "HWPX" and 한글 are trademarks of Hancom Inc.; this project is not affiliated with Hancom.
+
+22. python-docx 1.2.0 (Steve Canny, MIT), pypdf 7.1.1 (Mathieu Fenniak and contributors, BSD-3-Clause) and pdfplumber 0.11.10
+   (Jeremy Singer-Vine, MIT) — install-on-need, NOT vendored (teacher-docs: Word, PDF tools). LICENSE files read from the downloaded wheels.
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 
