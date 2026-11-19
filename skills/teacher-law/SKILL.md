@@ -4,83 +4,70 @@ description: Answers legal and rules questions (privacy, copyright, AI rules, ch
 license: Apache-2.0
 ---
 
-# 교사 스튜디오 · 법률 안내
+# 교사 스튜디오 · 법률 안내 (Teacher Studio · Law)
 
-Respond in the user's language. User-provided documents or references come first; ask-first rule: `../teacher-studio/references/ask-first.md`.
+The user asks 「이거 써도 돼요?」「올려도 돼요?」. You read the CURRENT official text, then answer with a short fixed card in plain Korean.
+This skill stores no article text and no conclusions (law changes). It is: where to look + how to look fast + the card.
 
-선생님이 「이거 써도 돼요?」「올려도 돼요?」처럼 말로 물으면, **그때그때 최신 법을 직접 찾아서** 근거와 함께 쉬운 말로 알려 드린다. 선생님이 법을 찾아볼 필요가 없게 하는 게 목표다.
-**법은 바뀐다. 이 스킬에는 법 조문·결론을 적어 두지 않았다.** 이 스킬은 「찾는 순서 + 믿을 수 있는 출처 + 답 양식」이다.
+## Principles
+1. Responsibility stays with the user. You inform; you never block the work and this is not legal advice.
+2. Nothing is asserted without a source. What you could not confirm is written 「확인 필요」.
+3. Plain words in the body; article numbers only in the 근거 lines. No dev terms.
 
-## 원칙 (바꾸지 않는다)
-1. **책임은 항상 선생님께.** AI는 법적 문제를 **알려 주기만** 한다. 작업을 막지 않고, 법률 자문이 아니다.
-2. **근거 없이 단정하지 않는다.** 확인하지 못한 것은 「확인 필요」라고 쓴다.
-3. 선생님 말 그대로: 개발 용어 금지 (`../teacher-game/references/teacher-language.md`). 조문 번호는 근거 목록에만 쓰고, 본문은 쉬운 말.
-- **먼저 묻기**: 요청이 모호할 때만 `../teacher-studio/references/ask-first.md` 규칙(최대 1~3개, 추천 답 포함, 한 번만)으로 묻고, 「내 설정」(`~/.teacher-studio/prefs.json`)에 있는 학교급·과목·기기는 다시 묻지 않는다.
+## Recipe (2 tool calls, about 30 seconds; answer in this chat, no helper agent, no other skill files)
+1. **Sort the question** into one or two kinds and pick the laws from the table. Ask ONE question only if a missing fact flips the answer (공개 범위, 학생 얼굴이 나오는지, 상업적 이용인지); otherwise state the assumption in the card.
+2. **Read the official text in ONE call** (prints 시행일 + the article text + its link; each law takes about 2 s):
+   `python3 scripts/law_fetch.py --articles "저작권법:25,35의5"` (repeat `--articles` for a second law; Windows `py`; `--chars 1200` for a long article)
+   - The table below is only a guess of WHERE to look. Use what the script prints; 「못 찾은 조문」 or 「못 읽음」 -> write 「확인 필요」 for that item and give the link. Never retry the same site.
+3. **Only if needed, ONE web search**: the question hangs on something that is not a statute (교육부 지침, 교육청 안내, a service's terms, a 위원회 해설), or step 2 could not read anything. Official sites first (`references/sources.md`); a blog or news page may support the answer but is labelled 「보조 출처(공식 아님)」.
+4. **Write the card.** Stop there: no extra sections, no source list after the card.
+No search or shell tool in this environment -> say 「지금 이 환경에서는 최신 법을 확인할 수 없어요」, give the official links from the table, and give NO conclusion (how to turn search on: `references/sources.md` §4).
 
-## 언제 쓰나
-- 선생님이 법·규정·저작권·개인정보·AI 사용 규칙을 묻는다 (예: 「이 캐릭터 그림 넣어도 돼요?」「학생 이름 넣어서 만들어도 돼요?」「홈페이지에 올려도 돼요?」「AI로 생기부 써도 돼요?」).
-- **다른 스킬이 부른다**: 요청이 ① 학생 정보 ② 남의 그림·글·음악 ③ 공개 공유 ④ 학생 평가·생기부에 걸리면, 만들던 작업은 계속하면서 이 절차로 짧게 확인해 한 줄을 덧붙인다.
+| Kind | Look at (guess; the script confirms) |
+|---|---|
+| 저작권 (그림·글·음악·영상·글꼴·교과서) | `저작권법:25,28,35의5` · 한국저작권위원회 copyright.or.kr |
+| 캐릭터·상표·로고 | `저작권법:25,35의5` + search 상표법 / 부정경쟁방지법 only if the use is commercial or public |
+| 개인정보 (학생 이름·사진·성적·상담) | `개인정보 보호법:15,17,18,22의2` · 개인정보보호위원회 pipc.go.kr |
+| AI 규정 (학생 평가·수행평가·AI 서비스) | `인공지능 발전과 신뢰 기반 조성 등에 관한 기본법:2,31` · 교육부 moe.go.kr 「수행평가 AI 활용 관리 방안」 |
+| 생기부·학교 규정 | search: 교육부 학교생활기록 작성 및 관리지침 (최신 연도) · 시·도 교육청 |
+| 서비스 약관·나이 | the service's own terms page (Anthropic, OpenAI …) |
 
-## 절차
-**(가) 질문 정리** — 질문을 한 줄로 다시 말하고, 어떤 종류인지 정한다: 개인정보 / 저작권 / AI 규정 / 상표·캐릭터 / 학교 규정·생기부 / 서비스 약관. (둘 이상이면 모두.) 빠진 사실(공개 범위, 학생 얼굴 포함 여부 등)이 결론을 바꾸면 한 번에 묻는다.
-
-**(나) 지금 찾기** — 이 환경의 웹 검색·페이지 열기 도구로 **공식 출처 먼저** (`references/sources.md`).
-1. 종류별 「확인할 조항 목록(seed)」으로 어디를 볼지 정하되, **목록의 조항을 믿지 말고 원문 페이지를 직접 연다.**
-2. 조항 원문, **시행일**, 오늘 날짜(확인한 날)를 적어 둔다.
-3. 공식 출처에서 못 찾으면 「확인 필요」. 블로그·뉴스는 보조로만 쓰고 근거 목록에는 공식 링크를 우선한다.
-
-**빨리 찾기 규칙 (막힌 곳에서 시간을 버리지 않는다)** — `scripts/law_fetch.py`가 이 규칙대로 해 준다 (`py law_fetch.py --law 개인정보보호법 --article 17 --kind 개인정보 [--secondary URL]`).
-1. 공식 페이지는 **한 번만, 짧은 제한 시간(6초)**으로 열어 본다. 안 열리면(막힘·느림·빈 화면) **다시 시도하지 않고** 바로 다음 공식 출처(위원회·교육부 등)로 간다. 같은 사이트를 두 번 이상 열지 않는다. 한 번 막힌 사이트는 30분 동안 건너뛴다.
-2. 공식 출처가 모두 안 열리면 **보조 출처**(해설 기사·법률 사이트·검색 결과 요약)로 넘어가고, 답 카드 근거에 「보조 출처(공식 아님) — 원문 확인 필요」라고 분명히 적는다.
-3. 전체 찾는 시간은 **약 1분**(도구 호출 4~5번)으로 끊고 답한다. 다 못 찾은 항목은 「확인 필요」로 쓰고 공식 링크만 안내한다. 끝없이 다시 찾지 않는다.
-4. **오래 걸릴 것 같으면 먼저 말한다** (「법을 찾아보는 데 1~2분쯤 걸려요」). 말한 시간을 넘기면 한 번 더 알린다.
-
-**(다) 답 카드** — 아래 형식 그대로.
-
-## 답 카드 (고정 형식)
+## The card (fixed shape; the whole answer is at most about 250 words)
 ```
 ⚖️ 질문: (한 줄)
-✅ 한 줄 결론: (쉬운 말. 「~일 수 있어요」 수준. 단정 금지)
+✅ 한 줄 결론: (쉬운 말, 「~일 수 있어요」 수준. 단정 금지)
 왜 그런가요?
- · (2~3줄)
+ · (2~3줄. 조문이 실제로 말하는 조건을 쉬운 말로)
 근거
- · 법령·지침 이름 / 조항 / 시행일 / 원문 링크 / 확인한 날
- · (확인하지 못한 것은 「확인 필요」)
+ · 법령 이름 제N조 (시행 YYYY-MM-DD) 원문 링크      ← 줄마다 하나, 최대 3줄
+ · (확인하지 못한 것은 「확인 필요」, 공식이 아니면 「보조 출처(공식 아님)」)
 이렇게 하면 안전해요
  1) …  2) …  3) …
 법률 자문이 아니에요. 최종 판단과 책임은 선생님께 있어요. 애매하면 학교 관리자·교육청(법무 담당)에 확인하세요.
 법은 바뀔 수 있어요 — 확인한 날: YYYY-MM-DD
 ```
-- 마지막 두 줄(고정 문구)은 글자 그대로 넣는다. 날짜는 실제 확인한 날.
-- 결론은 막는 말투가 아니라 「이렇게 하면 걱정이 줄어요」로 쓴다.
+Quality bar (check before sending):
+1. The conclusion answers the user's exact situation (their material, their place of use), not the topic in general.
+2. Every 근거 line has a law name, article, 시행일 and a link that the script or search actually returned. No article number from memory.
+3. 「왜」 states the condition that decides the case (예: 수업 목적인지, 공개 범위, 일부인지 전부인지), in words a non-lawyer uses.
+4. The three safe options are things the user can do today, the easiest first (예: 무료 이용 표시가 있는 그림으로 바꾸기).
+5. Tone: 「이렇게 하면 걱정이 줄어요」, never a ban. The last two lines are copied exactly, with today's date.
 
-## 최신 법을 못 찾는 환경일 때
-웹 검색·페이지 열기가 안 되면: 「지금 이 환경에서는 최신 법을 확인할 수 없어요」라고 말하고, `references/sources.md`의 **공식 링크만** 안내한다. **결론은 말하지 않는다.**
-| 환경 | 확인 방법 |
+## When another skill calls this (student data, others' works, public sharing, 생기부 in a making job)
+Keep the making job going. Do step 2 once and add ONE line to that job's final message (결론 + 근거 링크 하나). No full card unless asked.
+
+## Output
+- Default: the card in chat.
+- 「안내문으로」「인쇄할래」 -> one A4 HTML page: `python3 scripts/make_notice.py --data notice.json --out ~/TeacherStudio/law-notice-<날짜>.html` (keys: `title`, `question`, `conclusion`, `reasons`[], `sources`[{`name`,`article`,`effective`,`url`}], `safe_options`[], `checked_date`). Print with Ctrl+P.
+- 한글(HWPX): 「한글 문서는 가정통신문 무기와 함께 준비 중이에요.」
+
+## Student data
+Never ask for or store student names, grades, counseling content or photos. If the user pasted some, say once 「학생 정보가 보여요. 가명으로 바꾸시면 더 안전해요」, do not repeat it back, and go on.
+
+## Files
+| File | What |
 |---|---|
-| Claude Code | 웹 검색·웹 페이지 열기 도구(WebSearch·WebFetch)가 도구 목록에 있으면 가능 |
-| Claude 앱·웹 | 설정·입력창의 「웹 검색」 켜짐 여부 확인 (꺼져 있으면 켜 달라고 안내) |
-| Codex | 설정 `web_search`가 기본 `"cached"`(미리 모아 둔 검색 결과)이고, `"live"`(= `--search`)면 최신 페이지까지 가져옴. 전체 접근 모드(`--yolo` 등)에선 기본 live. 최신 법 확인은 live 권장. 근거: OpenAI Codex 설정 문서(learn.chatgpt.com/docs/config-file/config-basic, 2026-11-18 확인). `"indexed"` 값도 문서에 있으나 동작 세부는 확인 필요. |
-- 어느 쪽인지 모르면 한 번 검색해 보고, 안 되면 위 안내로 넘어간다.
-
-## 결과물
-- **기본: 대화창 답 카드.**
-- 선생님이 「안내문으로」「인쇄할래」라고 하면 **A4 한 장 안내문(HTML 한 파일)**: 답 내용을 JSON으로 만들어 실행.
-```
-python3 scripts/make_notice.py --data notice.json --out ~/TeacherStudio/law-notice-<날짜>.html
-```
-- JSON 키: `title`, `question`, `conclusion`, `reasons`[], `sources`[{`name`,`article`,`effective`,`url`}], `safe_options`[], `checked_date`.
-- 안내문 파일에는 스크립트·외부 그림·학생 정보 칸이 없다 (게임 점검기 `check_game.py`는 게임 전용이라 쓰지 않는다. 근거 링크 주소가 「외부 자원」으로 잡히는 건 정상). 인쇄는 「인터넷 창에서 Ctrl+P → PDF로 저장」.
-- 한글(HWPX) 문서: 「한글 문서는 가정통신문 무기와 함께 준비 중이에요.」
-
-## 학생 개인정보
-- 학생 이름·성적·상담 내용·사진을 **묻지 않고 저장하지 않는다.** 안내문에도 학생 정보 칸이 없다.
-- 선생님이 붙여 넣었으면 **한 번만** 「학생 정보가 보여요. 가명으로 바꾸시면 더 안전해요」라고 알리고, 그 내용을 되풀이하지 않고 계속한다.
-
-## 파일
-| 파일 | 내용 |
-|---|---|
-| `references/sources.md` | 공식 출처 주소, 확인할 조항 목록(이름·번호만), 법령 Open API 조사 결과 |
-| `scripts/law_fetch.py` | 공식 페이지를 한 번만(6초) 읽고, 막히면 다음 출처로. 막힌 곳 30분 기억, 총 40초 한도. 결과에 공식/보조 표시 |
-| `references/test-questions.md` | 나중에 이 스킬을 점검할 예시 질문과 반드시 볼 출처 |
-| `assets/notice-template.html` · `scripts/make_notice.py` | 인쇄용 안내문 틀 / JSON으로 채우기 |
+| `scripts/law_fetch.py` | `--articles "법령명:조,조"` official text + 시행일 in one call; `--url` / `--secondary` any page, one try each (6 s), blocked hosts remembered 30 min, 40 s total |
+| `references/sources.md` | official sites, per-kind article list, how search is switched on per environment |
+| `scripts/make_notice.py` · `assets/notice-template.html` | printable notice |
+| `references/test-questions.md` | questions for checking this skill |

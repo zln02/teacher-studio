@@ -13,6 +13,8 @@
 | Anthropic | https://support.claude.com/en/articles/13117299-minimum-age-requirement-access-restriction | Claude 최소 이용 연령. 이용정책: https://www.anthropic.com/legal/aup |
 | OpenAI | https://openai.com/policies/ | 이용약관·연령 조건·사용 정책 (페이지 구조가 바뀔 수 있어 검색으로 현재 주소 확인) |
 
+**가장 빠른 길 (2026-11-20 확인)**: `scripts/law_fetch.py --articles "법령명:조,조"`. 법령 페이지에서 일련번호(lsiSeq)·시행일(efYd)을 읽고, 본문 주소(`/LSW/lsInfoR.do?lsiSeq=…&efYd=…&chrClsCd=010202&ancYnChk=0`)에서 조문 글을 그대로 가져온다(법령 하나에 약 2초, 두 번 요청, 재시도 없음). 사이트 구조가 바뀌어 못 읽으면 「못 읽음」이 나오고, 그때는 답에 「확인 필요」 + 링크만 쓴다.
+
 ## 2. 확인할 조항 목록 (seed index)
 이름·번호만. **전부 「매번 원문 재확인」.** 마지막으로 이 목록을 확인한 날: 2026-11-18. 번호가 바뀌었거나 없으면 법령 검색으로 현재 조항을 찾는다.
 
@@ -33,3 +35,12 @@
 - **OC 값은 필수로 보인다.** 제3자 자료들은 open.law.go.kr 회원가입 후 「OPEN API 신청」을 해야 하고 OC는 가입 ID(이메일 앞부분)라고 설명한다. 즉 **등록 없이는 쓸 수 없다**(OC 누락 시 오류). 일부 자료는 등록한 IP에서만 허용(403)이라고 한다 — 공식 확인 못 함 → 확인 필요.
 - 신청 문의(공식 페이지 표기): 02-2109-6446. 신청 페이지: https://open.law.go.kr/LSO/openApi/cuAskList.do
 - 결론: 지금은 웹 검색·페이지 열기로 law.go.kr 조항 페이지를 읽는다. 학교·교육청 단위로 OC를 발급받는 날이 오면 그때 연결을 검토.
+
+## 4. 최신 법을 찾을 수 없는 환경일 때 (검색 켜는 법)
+웹 검색·페이지 열기·스크립트 실행이 모두 안 되면: 「지금 이 환경에서는 최신 법을 확인할 수 없어요」라고 말하고 위 공식 링크만 안내한다. **결론은 말하지 않는다.**
+| 환경 | 확인 방법 |
+|---|---|
+| Claude Code | `law_fetch.py`(셸)과 웹 검색·페이지 열기 도구(WebSearch·WebFetch)가 도구 목록에 있으면 가능 |
+| Claude 앱·웹 | 설정·입력창의 「웹 검색」 켜짐 여부 확인 (꺼져 있으면 켜 달라고 안내) |
+| Codex | 설정 `web_search`가 기본 `"cached"`(미리 모아 둔 검색 결과)이고, `"live"`(= `--search`)면 최신 페이지까지 가져옴. 전체 접근 모드(`--yolo` 등)에선 기본 live. 최신 법 확인은 live 권장. 근거: OpenAI Codex 설정 문서(learn.chatgpt.com/docs/config-file/config-basic, 2026-11-18 확인). `"indexed"` 값도 문서에 있으나 동작 세부는 확인 필요. |
+- 어느 쪽인지 모르면 한 번 해 보고, 안 되면 위 안내로 넘어간다.

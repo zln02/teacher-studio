@@ -3,6 +3,7 @@
 # Copyright 2026 박진영 (zln02)
 """Fail-fast reader for law pages: try each official page ONCE with a short timeout, remember what is blocked, then fall back and label the result.
 
+    py law_fetch.py --articles "저작권법:25,35의5" [--articles "개인정보 보호법:17"]   # FASTEST: the article TEXT itself + 시행일, one call
     py law_fetch.py --law 개인정보보호법 --article 17 [--kind 개인정보] [--secondary URL ...] [--timeout 6] [--budget 40] [--json]
     py law_fetch.py --url https://www.pipc.go.kr/... [--url ...]            # your own list, tried in order
 
@@ -102,6 +103,103 @@ def fetch_once(url: str, timeout: float, chars: int) -> dict:
     return r
 
 
+ART_HEAD = r"제\s*%s\s*조%s\s*\("          # 「제25조(」 / 「제35조의5(」 = an article heading (references to it have no bracket)
+ANY_HEAD = re.compile(r"제\s*\d+\s*조(?:의\s*\d+)?\s*\([^)]{1,60}\)")
+
+
+def cut_article(text: str, art: str, chars: int = 700) -> str:
+    """The block of one article out of a whole-law text: from its heading to the next heading. '' when not found."""
+    m = re.match(r"\s*(\d+)\s*(?:조)?\s*(?:의\s*(\d+))?\s*$", str(art))
+    if not m:
+        return ""
+    head = re.compile(ART_HEAD % (m.group(1), (r"\s*의\s*" + m.group(2)) if m.group(2) else ""))
+    h = head.search(text)
+    if not h:
+        return ""
+    nxt = ANY_HEAD.search(text, h.end() + 2)
+    block = text[h.start(): nxt.start() if nxt else h.start() + chars * 3].strip()
+    return block if len(block) <= chars else block[:chars].rstrip() + " …(이하 줄임: 원문 링크에서 확인)"
+
+
+def art_no(a) -> str:
+    mm = re.match(r"(\d+)(?:조)?(?:의(\d+))?", re.sub(r"\s+", "", str(a)))
+    return (f"제{mm.group(1)}조" + (f"의{mm.group(2)}" if mm.group(2) else "")) if mm else str(a)
+
+
+def _get(url: str, timeout: float) -> str:
+    url = urllib.parse.quote(url, safe=":/?&=%#+,;@~-._")
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "ko,en;q=0.5"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read(3_000_000).decode("utf-8", "replace")
+
+
+def law_articles(law: str, arts: list[str], timeout: float = 6.0, chars: int = 700) -> dict:
+    """Official article text from 국가법령정보센터 in two short requests (the law page gives the ids, the body endpoint gives the text).
+    Returns {'ok', 'law', 'effective', 'articles': [{'no', 'text', 'url'}], 'missing': [...], 'why', 'secs'}. One try, never retried."""
+    t0 = time.time()
+    name = re.sub(r"\s+", "", law)
+    out = {"ok": False, "law": law, "effective": "", "articles": [], "missing": [], "why": "", "secs": 0.0,
+           "url": f"https://www.law.go.kr/법령/{name}"}
+    host = "www.law.go.kr"
+    if host in _memo():
+        out["why"] = "방금 막힌 곳이라 건너뜀(30분 기억)"
+        return out
+    try:
+        shell = _get(out["url"], timeout)
+        seq = re.search(r'id="lsiSeq"\s+value="(\d+)"', shell) or re.search(r'name="lsiSeq"\s+value="(\d+)"', shell)
+        efyd = re.search(r'name="efYd"\s+value="(\d{8})"', shell)
+        if not seq:
+            out["why"] = "법령 이름으로 찾지 못함 (이름을 법령 검색의 정식 이름으로 다시 적어 보세요)"
+            return out
+        if efyd:
+            d = efyd.group(1)
+            out["effective"] = f"{d[:4]}-{d[4:6]}-{d[6:]}"
+        body = _get(f"https://{host}/LSW/lsInfoR.do?lsiSeq={seq.group(1)}" + (f"&efYd={efyd.group(1)}" if efyd else "") + "&chrClsCd=010202&ancYnChk=0", timeout)
+        body = re.sub(r"<(script|style|noscript)\b.*?</\1>", " ", body, flags=re.S | re.I)
+        text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", body)))
+        for a in arts:
+            blk = cut_article(text, a, chars)
+            no = art_no(a)
+            if blk:
+                out["articles"].append({"no": no, "text": blk, "url": f"{out['url']}/{no}"})
+            else:
+                out["missing"].append(no)
+        out["ok"] = bool(out["articles"]) or not arts
+        if not out["ok"]:
+            out["why"] = "조문 번호를 본문에서 찾지 못함 (번호가 바뀌었을 수 있어요)"
+    except urllib.error.HTTPError as e:
+        out["why"] = f"HTTP {e.code} (접속 거부·차단일 수 있어요)"
+        _remember(host)
+    except (urllib.error.URLError, socket.timeout, TimeoutError, ConnectionError, OSError) as e:
+        out["why"] = f"{type(e).__name__}: 시간 초과 또는 접속 불가"
+        _remember(host)
+    finally:
+        out["secs"] = round(time.time() - t0, 1)
+    return out
+
+
+def print_articles(specs: list[str], timeout: float, chars: int, as_json: bool) -> int:
+    """--articles "법령명:25,35의5" (repeatable). Prints only what the answer card needs."""
+    results = []
+    for sp in specs:
+        law, _, nums = sp.partition(":")
+        results.append(law_articles(law.strip(), [n.strip() for n in nums.split(",") if n.strip()], timeout, chars))
+    if as_json:
+        print(json.dumps(results, ensure_ascii=False, indent=1))
+        return 0 if any(r["ok"] for r in results) else 2
+    today = time.strftime("%Y-%m-%d")
+    for r in results:
+        if r["ok"]:
+            print(f"=== 공식 원문: {r['law']} (시행 {r['effective'] or '확인 필요'}) · 확인한 날 {today} · {r['secs']}초")
+            for a in r["articles"]:
+                print(f"[{a['no']}] {a['url']}\n{a['text']}")
+            if r["missing"]:
+                print(f"못 찾은 조문: {', '.join(r['missing'])} -> 답에 「확인 필요」")
+        else:
+            print(f"=== 못 읽음: {r['law']} ({r['why']}) -> 재시도하지 말고 「확인 필요」 + 링크 {r['url']}")
+    return 0 if any(r["ok"] for r in results) else 2
+
+
 def law_url(law: str, article: str) -> str:
     name = urllib.parse.quote(law)
     return f"https://www.law.go.kr/법령/{name}" + (f"/제{urllib.parse.quote(str(article))}조" if article else "")
@@ -132,6 +230,7 @@ def run(urls: list[tuple[str, str]], timeout: float, budget: float, chars: int, 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--articles", action="append", default=[], metavar="법령명:조,조", help='official article text in one call, e.g. "저작권법:25,35의5" (repeatable)')
     ap.add_argument("--law")
     ap.add_argument("--article")
     ap.add_argument("--kind", default="", help="개인정보 | 저작권 | AI | 학교 (picks the official entry pages)")
@@ -139,10 +238,13 @@ def main() -> int:
     ap.add_argument("--secondary", action="append", default=[], help="secondary (non-official) URL, tried only after the official ones")
     ap.add_argument("--timeout", type=float, default=6.0)
     ap.add_argument("--budget", type=float, default=40.0)
-    ap.add_argument("--chars", type=int, default=1500)
+    ap.add_argument("--chars", type=int, default=None, help="max characters printed per page (default 1500) or per article (default 700)")
     ap.add_argument("--legacy", action="store_true", help="old behaviour (3 tries x 30 s, no memory): for measuring only")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
+    if a.articles:
+        return print_articles(a.articles, a.timeout, a.chars or 700, a.json)
+    a.chars = a.chars or 1500
     urls = [(u, "공식") for u in a.url]
     if a.law:
         urls.insert(0, (law_url(a.law, a.article or ""), "공식"))
