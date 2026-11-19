@@ -32,7 +32,7 @@ for _s in (sys.stdout, sys.stderr):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
 STYLES: dict[str, dict] = {
-    "neon-cyber": {"keys": ["네온", "사이버", "미래", "게임", "해킹", "ai", "AI", "코딩"], "dark": True, "bg": "neongrid", "pattern": "grid", "font": "Black Han Sans", "music": "tension", "motion": "high",
+    "neon-cyber": {"keys": ["네온", "사이버", "미래", "게임", "해킹", "코딩"], "dark": True, "bg": "neongrid", "pattern": "grid", "font": "Black Han Sans", "music": "tension", "motion": "high",
         "pal": {"bg1": "#05070f", "bg2": "#1a0b3d", "text": "#ffffff", "card": "#0d1230", "cardText": "#eaf2ff", "cardBorder": "#00e5ff", "primary": "#00e5ff", "btnText": "#02111a", "accent": "#ff2bd6", "good": "#39ff9c", "bad": "#ff5c7a"},
         "layout": {"split": 4, "news": 3, "poster": 2, "bento": 1}, "choice": {"neon": 6, "tile": 1}, "card": {"hex": 3, "ticket": 3, "default": 1}, "score": {"led": 5, "banner": 1}, "title": {"outline": 4, "stack3d": 3},
         "transition": {"wipe": 3, "fade": 1}, "props": True, "css": "neon"},
@@ -101,15 +101,24 @@ def _h(key: str) -> int:
     return int(hashlib.sha256(key.encode("utf-8")).hexdigest()[:10], 16)
 
 
-def pick_style(text: str, world: str, seed: int, forced: str = "") -> tuple[str, str]:
-    """(style id, why). A style named in the words or design.style wins; otherwise a seeded weighted pick that suits the world."""
-    if forced in STYLES:
-        return forced, "design.style"
+def _hits(text: str) -> list[tuple[int, int, str]]:
     hits = [(sum(text.count(k) for k in v["keys"]), i, sid) for i, (sid, v) in enumerate(STYLES.items())]
     hits = [h for h in hits if h[0] > 0]
+    hits.sort(key=lambda x: (-x[0], x[1]))
+    return hits
+
+
+def pick_style(text: str, world: str, seed: int, forced: str = "", priority: str = "") -> tuple[str, str]:
+    """(style id, why). Order of authority: design.style > style words in `priority` (design.words + design.mood) > style words in the rest of
+    `text` (title, subtitle, subject) > a seeded weighted pick that suits the world. So a title such as "AI 연수" can never beat an explicit "미니멀"."""
+    if forced in STYLES:
+        return forced, "design.style"
+    hits = _hits(priority) if priority else []
     if hits:
-        hits.sort(key=lambda x: (-x[0], x[1]))
         return hits[0][2], "words"
+    hits = _hits(text)
+    if hits:
+        return hits[0][2], "title"
     opts = WORLD_STYLE.get(world or "generic", WORLD_STYLE["generic"])
     total = sum(opts.values())
     r = _h(f"{world}|{seed}|style") % total

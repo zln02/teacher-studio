@@ -92,6 +92,16 @@ def families_used(html: str) -> list[str]:
     return out
 
 
+_EXT_LINK = re.compile(r"""\s*<link\b[^>]*(?:fonts\.googleapis\.com|fonts\.gstatic\.com)[^>]*>""", re.I)
+
+
+def go_offline(html: str) -> str:
+    """Remove every Google Fonts <link> / preconnect (and the comment that explains them). Fonts that are not embedded then fall back to system fonts.
+    Builders call this by default; a spec that opts in with "online": true keeps the links."""
+    html = _EXT_LINK.sub("", html)
+    return re.sub(r"\s*<!-- Korean display fonts[^>]*-->", "", html)
+
+
 def embed(html: str, families: list[str] | None = None, consent: bool = False) -> tuple[str, dict]:
     """Return (html with embedded fonts, report). Never raises for a missing tool: returns the page untouched."""
     report: dict = {"embedded": False, "before_bytes": len(html.encode("utf-8")), "families": {}}

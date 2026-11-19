@@ -56,11 +56,12 @@ SHOW_RE = re.compile(r"(/\* ===================== SHOW .*?\*/\n).*?(\n</script>\
 
 
 def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None = None, fonts: bool = True,
-          credit: bool = False, allow_modern: bool = False, scene_html: str = "", offline: bool = False) -> int:
+          credit: bool = False, allow_modern: bool = False, scene_html: str = "", offline: bool = True) -> int:
     """Inject DOC, SHOW, CSS and anime.js into the runtime (+ optional libs, embedded fonts); return size in bytes.
 
     scene_html: static markup placed inside #scene (spec-built decks keep their slides as real HTML).
-    offline: drop the Google Fonts links entirely (the page then uses only the embedded Noto fonts) -> zero external requests.
+    offline (default True): drop the Google Fonts links entirely (the page then uses only the embedded Noto fonts) -> zero external requests.
+    A doc with "online": true keeps them (and lets the show load extra fonts).
     """
     html = RUNTIME.read_text(encoding="utf-8")
     if not DOC_RE.search(html) or not SHOW_RE.search(html):
@@ -93,8 +94,10 @@ def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None =
                 print("ASK TEACHER: " + rep["prompt"])
         else:
             print(f"fonts embedded: {rep['before_bytes'] // 1024} KB -> {rep['after_bytes'] // 1024} KB")
-    if offline:
+    if offline and doc.get("online") is not True:
         html = re.sub(r'<link[^>]+(?:fonts\.googleapis|fonts\.gstatic)[^>]*>\s*', "", html)
+        html = re.sub(r"\s*<!-- Korean display fonts[^>]*-->", "", html)
+        html = re.sub(r"""(["'])https://fonts\.(?:googleapis|gstatic)\.com[^"']*\1""", '""', html)  # the (unreachable offline) font loaders of a show leave no address behind
     html = stamp(html)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")

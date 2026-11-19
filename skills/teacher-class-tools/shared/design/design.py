@@ -87,6 +87,9 @@ def _rank(key: str, seed: int) -> int:
     return int(hashlib.sha256(f"{key}|{seed}".encode()).hexdigest()[:8], 16)
 
 
+_LAST_DECO = None  # set by load_user_palette, read by apply_palette_from
+
+
 def load_user_palette(src) -> dict:
     """The user's own colours as a complete, contrast-checked dict of the 11 colour keys.
 
@@ -121,6 +124,9 @@ def load_user_palette(src) -> dict:
         fitted = color_from.fit_palette(cols, (src.get("mode") == "dark") if src.get("mode") else None)
     except color_from.ColorFromError as exc:
         raise ValueError(str(exc))
+    deco = src.get("accentDeco") or cols.get("accentDeco")
+    global _LAST_DECO
+    _LAST_DECO = deco.lower() if isinstance(deco, str) and len(deco) == 7 and deco.startswith("#") else None  # decoration colour: the accent as the source has it (never used for text)
     issues = palette_issues("user", fitted)
     if issues:
         raise ValueError("palette_from could not be made readable: " + "; ".join(issues))
@@ -145,6 +151,8 @@ def apply_palette_from(tokens: dict, src) -> dict:
                           "cardText_on_card": round(contrast(cols["cardText"], cols["card"]), 2),
                           "btnText_on_primary": round(contrast(cols["btnText"], cols["primary"]), 2)}
     tokens["userPalette"] = True
+    if _LAST_DECO:
+        tokens["accentDeco"] = _LAST_DECO
     return tokens
 
 

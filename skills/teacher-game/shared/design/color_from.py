@@ -7,6 +7,7 @@ This is a MEANS to honour what the user already has (template-first rule), not o
 nudged (hue kept) so text is readable. Output is tokens-compatible JSON: {"colors": {bg1,bg2,text,card,cardText,cardBorder,primary,btnText,accent,good,bad}, ...}.
 
     python3 color_from.py logo.png                      # print palette JSON
+    python3 color_from.py app.css premium.css tokens.css --out my-palette.json   # several files: a site whose colours live in more than one place
     python3 color_from.py theme.pptx --out my-palette.json [--dark] [--save-default]
     python3 design.py --palette-from my-palette.json    # or spec: "design": {"palette_from": "my-palette.json"}   ("saved" = the saved default)
 
@@ -16,6 +17,11 @@ Sources (by extension):
   .pptx .potx .ppsx .docx .dotx .xlsx  theme XML (ppt|word|xl/theme/theme1.xml: accent1..6, dk2, lt2) read with zipfile + xml
   .hwpx                     colours found in Contents/*.xml (textColor, faceColor, border colour...). Coverage is limited: most documents are black/white.
   .css .html .htm .svg      colour frequencies (#rgb, #rrggbb, rgb()), CSS variables named primary/brand/accent get a boost
+
+A website's own CSS variables win where they exist: names like --good/--success/--ok/--mint -> correct colour, --bad/--error/--danger/--red -> wrong colour,
+--ink/--text -> text, --border/--line -> card border, --bg/--paper/--surface -> background. They are kept (hue and chroma) and only moved in lightness until they are readable,
+clearly different from each other for colour-blind eyes (color_check.py) and never muddy (chroma >= 0.12). The accent also comes back unchanged as accentDeco for
+decoration only (dots, stars), because the readable accent has to be darker.
 
 --save-default stores the result as the user's default palette in ~/.teacher-studio/prefs.json (only when asked). Nothing is installed or sent anywhere.
 """
@@ -291,7 +297,33 @@ def from_hwpx(path: Path) -> list[tuple[str, float]]:
 _CSS_HEX = re.compile(r"#([0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b")
 _CSS_RGB = re.compile(r"rgba?\(\s*(\d{1,3})\s*[, ]\s*(\d{1,3})\s*[, ]\s*(\d{1,3})")
 _CSS_VAR = re.compile(r"--([\w-]+)\s*:\s*(#[0-9a-fA-F]{3,6}\b|rgba?\([^)]*\))")
+_SEM_SKIP = {"bg", "soft", "tint", "light", "muted", "on", "hover", "active", "disabled", "shadow", "alpha", "rgb"}
+_SEM_SETS = {  # CSS variable name tokens -> the meaning they carry in our palette
+    "good": {"good", "success", "ok", "mint", "green", "positive", "correct", "valid"},
+    "bad": {"bad", "error", "danger", "red", "stop", "negative", "wrong", "invalid", "fail", "failure"},
+    "text": {"ink", "text", "fg", "foreground"},
+    "border": {"border", "line", "hairline", "stroke", "divider"},
+    "bg": {"bg", "background", "paper", "canvas", "surface", "page"},
+}
+_WEAK_NAMES = {"mint", "green", "red", "stop"}  # a colour NAME, not a meaning: a site may call its blue "mint" -> a name like --ok / --error / --danger wins over it
 _PRIMARY_NAMES = re.compile(r"primary|brand|main|theme|key", re.I)
+
+
+def semantic_role(name: str) -> str | None:
+    """CSS variable name -> 'good' | 'bad' | 'text' | 'border' | 'bg' | None  (--success, --color-danger, --ink ... ; --success-bg or --text-muted are not the role colour itself)."""
+    toks = [t for t in re.split(r"[-_]+", name.lower()) if t and not t.isdigit()]
+    if not toks or _PRIMARY_NAMES.search(name):
+        return None
+    for role, words in _SEM_SETS.items():
+        if role == "bg":  # background: the whole name must be a background word (--bg, --page-bg), not --bg-soft / --card-bg-hover
+            if toks[-1] in words and not (set(toks) & (_SEM_SKIP - {"bg"})) and len(toks) <= 2:
+                return role
+            continue
+        if toks[0] in words or toks[-1] in words:
+            if set(toks) & _SEM_SKIP:
+                return None
+            return role
+    return None
 _ACCENT_NAMES = re.compile(r"accent|secondary|highlight", re.I)
 
 
@@ -320,6 +352,13 @@ def from_css(text: str) -> tuple[list[tuple[str, float]], dict]:
     for name, val in _CSS_VAR.findall(text):
         c = _norm_css(val)
         if not c:
+            continue
+        role = semantic_role(name)
+        if role:
+            weak = 1 if (set(re.split(r"[-_]+", name.lower())) & _WEAK_NAMES) else 0
+            prio = hints.setdefault("_prio", {})
+            if role not in hints or weak < prio.get(role, 1):
+                hints[role], prio[role] = c, weak
             continue
         if _PRIMARY_NAMES.search(name):
             counts[c] = counts.get(c, 0) + 20
@@ -380,9 +419,32 @@ def pick_seeds(items: list[dict], hints: dict | None = None) -> tuple[str, str, 
 
 
 # ---------- seeds -> tokens ----------
-def _meaning_pair(card: str, dark: bool) -> tuple[str, str]:
-    """good/bad colours: hue stays green/red-ish but lightness is split so they also differ for red-green colour blindness; contrast on the card >= 4.5."""
+def _hint_candidates(hint: str, dark: bool, light_band: tuple = (0.38, 0.56)) -> list[str]:
+    """Colours with the hint's hue (and at least a clear chroma), lightness stepping away from the hint's own: [closest to the source ... farthest]."""
+    L, C, h = ok.hex_to_oklch(hint)
+    lo, hi = (0.70, 0.90) if dark else light_band  # inside this band a colour is readable on the card and not muddy (a red below 0.44 turns brown-black)
+    chroma = max(C, 0.12)
+    steps = sorted({round(min(hi, max(lo, L)), 3)} | {round(lo + (hi - lo) * i / 6, 3) for i in range(7)}, key=lambda v: abs(v - L))
+    return [ok.oklch_to_hex(v, chroma, h) for v in steps]
+
+
+def _meaning_pair(card: str, dark: bool, good_hint: str | None = None, bad_hint: str | None = None) -> tuple[str, str]:
+    """good/bad colours: hue stays green/red-ish but lightness is split so they also differ for red-green colour blindness; contrast on the card >= 4.5.
+    A hint (the source's own success/error colour) keeps its hue and is only moved in lightness, closest to the original first."""
     import color_check as cc
+    if good_hint or bad_hint:
+        gs = _hint_candidates(good_hint or ok.oklch_to_hex(0.5 if not dark else 0.8, 0.16, 150), dark, (0.34, 0.56))
+        bs = _hint_candidates(bad_hint or ok.oklch_to_hex(0.5 if not dark else 0.8, 0.17, 28), dark, (0.46, 0.56))
+        best_h, best_hde = None, -1.0
+        pairs = sorted(((i + j, i, j) for i in range(len(gs)) for j in range(len(bs))))  # the pair closest to both source colours first
+        for _, i, j in pairs:
+            g, b = ok.fit_contrast(gs[i], card, 4.5), ok.fit_contrast(bs[j], card, 4.5)
+            de = min([ok.delta_e(cc.simulate(g, k), cc.simulate(b, k)) for k in cc.MACHADO] + [ok.delta_e(g, b)])
+            if de >= cc.MIN_DE:
+                return g, b
+            if de > best_hde:
+                best_h, best_hde = (g, b), de
+        return best_h  # type: ignore[return-value]
     best, best_de = None, -1.0
     lights = (0.78, 0.86, 0.70) if dark else (0.45, 0.52, 0.40)
     for gh, bh in ((150, 28), (170, 28), (205, 28), (250, 28)):
@@ -400,7 +462,7 @@ def _meaning_pair(card: str, dark: bool) -> tuple[str, str]:
     return best  # type: ignore[return-value]
 
 
-def tokens_from_seeds(primary: str, accent: str, dark: bool = False) -> dict[str, str]:
+def tokens_from_seeds(primary: str, accent: str, dark: bool = False, hints: dict | None = None) -> dict[str, str]:
     """Map two brand colours onto the 11 colour tokens. Lightness is adjusted (hue kept) so that: text on bg1/bg2 and card >= 4.5 (aim 7),
     btnText on primary >= 4.5, primary on bg1 >= 3, accent on bg1/card >= 3, good/bad on card >= 4.5."""
     _, pc, ph = ok.hex_to_oklch(primary)
@@ -414,16 +476,26 @@ def tokens_from_seeds(primary: str, accent: str, dark: bool = False) -> dict[str
         bg1, bg2 = ok.oklch_to_hex(0.975, 0.008 + tint / 4, th), ok.oklch_to_hex(0.945, 0.014 + tint / 3, th)
         card = "#ffffff"
         text = ok.oklch_to_hex(0.24, 0.025, th)
-    text_fit = ok.fit_contrast(text, [bg1, bg2, card], 7.0)
-    if min(ok.contrast(text_fit, x) for x in (bg1, bg2, card)) < 4.5:
-        text_fit = ok.fit_contrast(text, [bg1, bg2, card], 4.5)
+    hints = hints or {}
+    if hints.get("bg") and not dark and ok.hex_to_oklch(hints["bg"])[0] >= 0.9:  # the source's own light page colour
+        bg1 = hints["bg"]
+        L0, C0, H0 = ok.hex_to_oklch(bg1)
+        bg2 = ok.oklch_to_hex(max(0.0, L0 - 0.03), C0, H0)
+    if hints.get("text"):
+        text = hints["text"]
+    if hints.get("text") and min(ok.contrast(text, x) for x in (bg1, bg2, card)) >= 4.5:
+        text_fit = text  # the source's own ink is already readable: keep it exactly
+    else:
+        text_fit = ok.fit_contrast(text, [bg1, bg2, card], 7.0)
+        if min(ok.contrast(text_fit, x) for x in (bg1, bg2, card)) < 4.5:
+            text_fit = ok.fit_contrast(text, [bg1, bg2, card], 4.5)
     pr = ok.fit_contrast(primary, [bg1, card], 3.0)
     ac = ok.fit_contrast(accent, [bg1, card], 3.0)
     dark_btn, light_btn = ok.oklch_to_hex(0.2, 0.02, ok.hex_to_oklch(pr)[2]), "#ffffff"
     btn = max((dark_btn, light_btn), key=lambda c: ok.contrast(c, pr))
     btn = ok.fit_contrast(btn, pr, 4.5)
-    good, bad = _meaning_pair(card, dark)
-    return {"bg1": bg1, "bg2": bg2, "text": text_fit, "card": card, "cardText": text_fit, "cardBorder": pr, "primary": pr, "btnText": btn,
+    good, bad = _meaning_pair(card, dark, hints.get("good"), hints.get("bad"))
+    return {"bg1": bg1, "bg2": bg2, "text": text_fit, "card": card, "cardText": text_fit, "cardBorder": hints.get("border") or pr, "primary": pr, "btnText": btn,
             "accent": ac, "good": good, "bad": bad}
 
 
@@ -460,8 +532,8 @@ def contrast_report(colors: dict) -> dict:
             "accent_on_bg1": round(r(colors["accent"], colors["bg1"]), 2)}
 
 
-def extract(path: Path, dark: bool = False) -> dict:
-    """File -> palette JSON (see module doc). Raises ColorFromError with a plain-Korean message."""
+def _gather(path: Path) -> tuple[list, dict, dict, str]:
+    """One file -> (candidates, hints, extra, kind)."""
     path = Path(path)
     if not path.exists():
         raise ColorFromError(f"파일을 찾지 못했어요: {path}")
@@ -483,11 +555,45 @@ def extract(path: Path, dark: bool = False) -> dict:
         raise ColorFromError("옛 형식(.hwp/.ppt/.doc)은 읽지 못해요. 한글은 HWPX, 파워포인트·워드는 PPTX·DOCX로 저장해서 올려 주세요.")
     else:
         raise ColorFromError(f"지원하지 않는 파일이에요({ext}). 사진·로고(PNG/JPG), PPTX/POTX, DOCX, HWPX, CSS/HTML을 올려 주세요.")
+    return cands, hints, extra, kind
+
+
+def extract(path: Path, dark: bool = False) -> dict:
+    """File -> palette JSON (see module doc). Raises ColorFromError with a plain-Korean message."""
+    return extract_many([Path(path)], dark)
+
+
+def extract_many(paths: list, dark: bool = False) -> dict:
+    """One or several files (a site's app.css + premium.css + tokens.css ...) -> ONE palette JSON. Colours are pooled; the first file that names a role wins."""
+    paths = [Path(p) for p in paths]
+    if not paths:
+        raise ColorFromError("파일을 하나 이상 알려 주세요.")
+    cands: list = []
+    hints: dict = {}
+    extra: dict = {}
+    kinds: list = []
+    for p in paths:
+        c, h, e, k = _gather(p)
+        cands += c
+        for key, val in h.items():
+            if key == "_prio":
+                continue
+            wk = (h.get("_prio") or {}).get(key, 0)
+            if key not in hints or wk < hints.setdefault("_prio", {}).get(key, 0):
+                hints[key] = val
+                hints.setdefault("_prio", {})[key] = wk
+        extra = extra or e
+        kinds.append(k)
     items = cluster(cands)
     primary, accent, notes = pick_seeds(items, hints)
-    colors = tokens_from_seeds(primary, accent, dark)
-    return {"version": 1, "kind": "user-palette", "palette": "user-" + path.stem[:24], "source": {"file": path.name, "type": kind},
-            "mode": "dark" if dark else "light", "seeds": {"primary": primary, "accent": accent},
+    colors = tokens_from_seeds(primary, accent, dark, hints)
+    respected = {k: hints[k] for k in ("good", "bad", "text", "border", "bg") if k in hints}
+    if respected:
+        notes.append("원본 자료의 이름 있는 색을 그대로 따랐어요: " + ", ".join(f"{k} {v}" for k, v in respected.items()) + " (읽기 쉽게 밝기만 조정)")
+    src = {"file": paths[0].name, "type": kinds[0]} if len(paths) == 1 else {"files": [p.name for p in paths], "type": "+".join(dict.fromkeys(kinds))}
+    return {"version": 1, "kind": "user-palette", "palette": "user-" + paths[0].stem[:24], "source": src,
+            "mode": "dark" if dark else "light", "seeds": {"primary": primary, "accent": accent}, "respected": respected,
+            "accentDeco": accent,  # the accent exactly as the source has it: decoration only (no text on it); design.palette_from carries it as --accent-deco
             "swatches": [{"hex": i["hex"], "share": i["share"]} for i in items[:8]], "colors": colors, "contrast": contrast_report(colors),
             "notes": notes, **({"office": extra["theme"]} if extra else {})}
 
@@ -534,13 +640,13 @@ def save_default(pal: dict) -> str:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("file", help="logo/photo (PNG/JPG), PPTX/POTX, DOCX, HWPX, CSS/HTML")
+    ap.add_argument("file", nargs="+", help="logo/photo (PNG/JPG), PPTX/POTX, DOCX, HWPX, CSS/HTML (one or several files)")
     ap.add_argument("--out", help="write the palette JSON here (default: print)")
     ap.add_argument("--dark", action="store_true", help="dark background version (default: light)")
     ap.add_argument("--save-default", action="store_true", help="also save as the user's default palette in ~/.teacher-studio/prefs.json")
     a = ap.parse_args()
     try:
-        pal = extract(Path(a.file), a.dark)
+        pal = extract_many([Path(f) for f in a.file], a.dark)
     except ColorFromError as exc:
         print(f"FAIL {exc}")
         return 1
