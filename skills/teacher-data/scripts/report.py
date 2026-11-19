@@ -173,6 +173,51 @@ def texts(r: dict, aud: str) -> dict:
         emoji = "📊"
         b.append(f"가장 낮은 곳은 {f['low_row']}({fmt_num(f['low_pct'], '%')})예요." if kid else f"가장 낮은 곳은 {f['low_row']}({fmt_num(f['low_pct'], '%')})입니다.")
         b.append(f"전체에서는 {fmt_num(f['overall_pct'], '%')}예요. 응답은 {f['n']}명이에요.")
+    elif t == "profile":
+        subj, means = f["subjects"], f["means"]
+        parts = [f"{c} {_u(means[c], unit, 1)}" for c in subj]
+        top_, bot_ = f["top_label"], f["bottom_label"]
+        if len(subj) == 1:
+            head = f"{josa(subj[0], '은/는')} 평균 {_u(means[subj[0]], unit, 1)}" + ("이에요" if kid else "입니다")
+        else:
+            head = f"{f['n_subjects']}개 과목 중 {josa(top_, '이/가')} {_u(f['top_value'], unit, 1)}으로 가장 높고, {josa(bot_, '이/가')} {_u(f['bottom_value'], unit, 1)}으로 가장 낮" + ("아요" if kid else "습니다")
+            if len(head) > (36 if kid else 55):
+                head = f"{f['n_subjects']}개 과목 중 {josa(top_, '이/가')} 가장 높고 {josa(bot_, '이/가')} 가장 낮" + ("아요" if kid else "습니다")
+        emoji = "📚"
+        if len(subj) <= 4:
+            b.append(" ".join(("과목별 평균은 " if k == 0 else "") + ", ".join(f"{c} {_u(means[c], unit, 1)}" for c in subj[k:k + 2]) + ("이에요." if kid else "입니다.") for k in range(0, len(subj), 2)))
+        else:
+            b.append(f"과목 {f['n_subjects']}개의 평균은 표에서 모두 볼 수 있어요.")
+        if len(subj) > 1:
+            b.append(f"가장 높은 {top_}과 가장 낮은 {bot_}의 차이는 {_u(f['gap'], unit, 1)}이에요.")
+            b.append(f"점수 차이가 가장 크게 벌어진 과목은 {f['spread_label']}이에요.")
+        b.append(f"자료는 최대 {f['n']}명 것을 썼어요.")
+    elif t == "bands":
+        head = (f"{f['low_label']}은 모두 합쳐 {f['low_total']}명이고, {josa(f['low_worst'], '이/가')} 가장 많아요" if f["low_total"] else
+                f"{f['low_label']}인 학생은 없어요")
+        emoji = "📊"
+        sj = f["subjects"][:4]
+        b.append(" ".join("가장 많은 점수대: " + ", ".join(f"{c} {f['top_bands'][c]}" for c in sj[k:k + 2]) + "." for k in range(0, len(sj), 2)))
+        if f["low_total"]:
+            b.append(f"{f['low_label']}: " + ", ".join(f"{c} {f['low_counts'][c]}명" for c in f["subjects"][:5]) + "이에요.")
+        b.append(f"한 칸마다 최대 {f['n']}명의 점수를 나눴어요.")
+    elif t == "rank":
+        w = f["kind"]
+        head = f"과목 평균은 {josa(f['top_label'], '이/가')} 가장 높고 {josa(f['bottom_label'], '이/가')} 가장 낮" + ("아요" if kid else "습니다")
+        emoji = "🏅"
+        b.append(f"{josa(f['top_label'], '은/는')} {_u(f['top_value'], unit, 1)}, {josa(f['bottom_label'], '은/는')} {_u(f['bottom_value'], unit, 1)}이에요.")
+        b.append(f"가장 높은 쪽과 낮은 쪽의 차이는 {_u(f['gap'], unit, 1)}이에요.")
+        b.append(f"전체 {f['n_units']}명 중 위쪽 {f['show_n']}명과 아래쪽 {f['show_n']}명만 보여 줘요." if w == "학생" else f"전체 {f['n_units']}개 중 위쪽 {f['show_n']}개와 아래쪽 {f['show_n']}개만 보여 줘요.")
+    elif t == "matrix":
+        up = f["top_r"] > 0
+        s_ = f["top_strength"]
+        tail = {"거의 없음": "함께 움직이는 정도가 거의 없어요", "약함": "함께 움직이는 정도가 약해요", "보통": "꽤 함께 움직여요", "강함": "아주 비슷하게 함께 움직여요"}[s_]
+        head = (f"{josa(f['top_a'], '과/와')} {f['top_b']}는 {tail}" if up or s_ == "거의 없음" else f"{josa(f['top_a'], '과/와')} {f['top_b']}는 서로 반대로 움직이는 편이에요")
+        emoji = "🔍"
+        b.append(f"가장 비슷하게 움직이는 짝은 {f['top_pair']}이에요." if up else f"가장 반대로 움직이는 짝은 {f['top_pair']}이에요.")
+        if aud in ("선생님", "전문가"):
+            b.append(f"가장 센 짝의 값은 {fmt_num(f['top_r'])}, 가장 약한 짝({f['weak_pair']})은 {fmt_num(f['weak_r'])}이에요 (자료 {f['n']}개).")
+        b.append("함께 움직인다고 해서 하나가 다른 하나의 원인이라는 뜻은 아니에요." if kid else "함께 움직인다고 해서 한쪽이 다른 쪽의 원인이라는 뜻은 아닙니다.")
     else:  # correlation
         s, rr = f["strength"], f["r"]
         up = rr > 0
@@ -371,6 +416,8 @@ def build(agg: dict, aud: str | None = None, palette: str | None = None, embed_f
             f"<ul class='facts'>{facts}</ul>{notes}"
             f"<details><summary>숫자로 보기</summary>{_table_html(r)}</details></section>")
     summary = "".join(f"<li>{H.escape(s)}</li>" for s in story["summary"])
+    nxt = agg.get("next_steps") or []
+    next_html = ("<section class='card nextsteps' id='next'><h2>다음에 해 볼 일</h2><ul class='facts'>" + "".join(f"<li>{H.escape(x)}</li>" for x in nxt) + "</ul></section>") if nxt else ""
     privacy = ("학생 이름은 가명으로 바꿔서 분석했어요. " if "이름" in meta.get("pii_columns", []) else ("개인정보 칸은 가려서 분석했어요. " if meta.get("pseudonymized") else "")) + "이 보고서는 선생님 컴퓨터 안에서만 만들었고, 자료는 어디로도 보내지 않았어요."
     n_total = meta["rows"]
     sub = f"자료 {n_total:,}줄을 살펴봤어요"
@@ -386,6 +433,7 @@ def build(agg: dict, aud: str | None = None, palette: str | None = None, embed_f
 <section class="hero" id="conclusion"><p class="kicker">한 줄 결론</p><p class="headline">{H.escape(story['headline'])}</p></section>
 <section class="card summary" id="summary"><h2>세 줄 요약</h2><ol>{summary}</ol></section>
 {''.join(secs)}
+{next_html}
 </main>
 <footer>{H.escape(privacy)}</footer>
 </div>

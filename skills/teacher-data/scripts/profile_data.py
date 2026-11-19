@@ -43,6 +43,8 @@ def profile(path: str, sheet: str | None = None, consent: bool = False) -> dict:
     cats = [c["name"] for c in cols if c["kind"] == "category"]
     dates = [c["name"] for c in cols if c["kind"] == "date"]
     hints = []
+    if len(nums) >= 2 and not dates:
+        hints.append(f"숫자 칸 {len(nums)}개({', '.join(nums[:5])}) 한꺼번에 살펴보기: 평균·점수대·높은/낮은 쪽·함께 움직임·다음에 할 일 (overview, 첫째로 추천)")
     if cats and nums:
         hints.append(f"{cats[0]}별 {nums[0]} 비교 (groupby)")
     if dates and nums:

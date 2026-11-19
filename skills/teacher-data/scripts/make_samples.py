@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Make 3 SYNTHETIC practice files (no real people): class unit-test scores, parent survey, 3-month household ledger.
+"""Make SYNTHETIC practice files (no real people): class unit-test scores (long and wide form), parent survey, 3-month household ledger.
 
     python3 make_samples.py [out_dir]     # default: ../assets/sample-data
 
@@ -44,6 +44,18 @@ def scores(out: Path) -> None:
         w = csv.writer(f)
         w.writerow(["이름", "반", "성별", "시험일", "점수"])
         w.writerows(rows)
+
+
+def scores_wide(out: Path) -> None:
+    """One row per student, one column per subject (the shape most teachers have): 25 students x 국어·수학·과학·영어."""
+    rng = random.Random(31)
+    people = names(rng, 25)
+    with out.open("w", encoding="utf-8-sig", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["이름", "국어", "수학", "과학", "영어"])
+        for nm in people:
+            ab = rng.gauss(0, 9)
+            w.writerow([nm] + [max(30, min(100, round(m + k * ab + rng.gauss(0, 7)))) for m, k in ((74, 0.7), (70, 1.0), (72, 0.9), (77, 0.5))])
 
 
 def survey(out: Path) -> None:
@@ -99,6 +111,7 @@ def main() -> int:
     out = Path(sys.argv[1]) if len(sys.argv) > 1 else HERE.parent / "assets" / "sample-data"
     out.mkdir(parents=True, exist_ok=True)
     scores(out / "scores-synthetic.csv")
+    scores_wide(out / "scores-wide-synthetic.csv")
     survey(out / "survey-synthetic.csv")
     budget(out / "budget-synthetic.xlsx")
     print("OK", *sorted(p.name for p in out.iterdir()))

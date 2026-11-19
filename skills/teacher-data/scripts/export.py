@@ -57,7 +57,7 @@ def write_xlsx(agg: dict, path: str, headline: str, summary: list[str], consent:
     head_fill = PatternFill("solid", fgColor="DDE7F5")
     blue = Font(color="1F4FBF")
     for k, r in enumerate(agg["results"], 1):
-        ws = wb.create_sheet(f"분석{k}")
+        ws = wb.create_sheet({"profile": "과목별 평균", "bands": "점수대", "rank": "높은·낮은", "matrix": "함께 움직임"}.get(r["type"], f"분석{k}"))
         cols, rows = list(r["table"]["columns"]), [list(x) for x in r["table"]["rows"]]
         ws["A1"], ws["A1"].font = r["title"], Font(bold=True, size=13)
         hr = 3
@@ -97,6 +97,15 @@ def write_xlsx(agg: dict, path: str, headline: str, summary: list[str], consent:
             ws.cell(row=sr, column=1, value="합계" if f.get("agg") in ("sum", "count") else "평균").font = bold
             fn = "SUM" if f.get("agg") in ("sum", "count") else "AVERAGE"
             ws.cell(row=sr, column=2, value=f"={fn}(B{first}:B{last})").font = blue
+        elif t == "profile":
+            ws.cell(row=sr, column=1, value="과목 평균의 평균").font = bold
+            ws.cell(row=sr, column=2, value=f"=AVERAGE(B{first}:B{last})").font = blue
+            ws.cell(row=sr + 1, column=1, value="가장 높은 과목 − 가장 낮은 과목").font = bold
+            ws.cell(row=sr + 1, column=2, value=f"=MAX(B{first}:B{last})-MIN(B{first}:B{last})").font = blue
+        elif t == "bands":
+            ws.cell(row=sr, column=1, value="합계(명)").font = bold
+            for j in range(2, len(cols) + 1):
+                ws.cell(row=sr, column=j, value=f"=SUM({_col(j)}{first}:{_col(j)}{last})").font = blue
         elif t == "likert":
             ws.cell(row=sr, column=1, value="전체 평균").font = bold
             ws.cell(row=sr, column=2, value=f"=AVERAGE(B{first}:B{last})").font = blue
@@ -107,13 +116,21 @@ def write_xlsx(agg: dict, path: str, headline: str, summary: list[str], consent:
             ws.column_dimensions[_col(j)].width = 22 if j > 1 else 26
         for nt in r.get("notes", []):
             sr += 1 if nt is r["notes"][0] else 1
-        if t in ("groupby", "distribution", "likert", "change", "trend", "correlation") and n >= 2:
+        if t in ("groupby", "distribution", "likert", "change", "trend", "correlation", "profile", "bands", "rank", "matrix") and n >= 2:
             ch = LineChart() if r.get("chart") == "line" else BarChart()
+            if r.get("chart") == "hbar":
+                ch.type = "bar"  # horizontal bars
             ch.title, ch.height, ch.width = r["title"], 8, 16
             ns = len(r["series"])
             ch.add_data(Reference(ws, min_col=2, max_col=1 + ns, min_row=hr, max_row=last), titles_from_data=True)
             ch.set_categories(Reference(ws, min_col=1, min_row=first, max_row=last))
             ws.add_chart(ch, f"{_col(len(cols) + 2)}3")
+    if agg.get("next_steps"):
+        wn = wb.create_sheet("다음에 할 일", 1)
+        wn["A1"], wn["A1"].font = "다음에 해 볼 일", Font(bold=True, size=14)
+        for i, x in enumerate(agg["next_steps"]):
+            wn.cell(row=3 + i, column=1, value=f"{i + 1}. {x}")
+        wn.column_dimensions["A"].width = 110
     wb.calculation.fullCalcOnLoad = True
     wb.save(path)
 

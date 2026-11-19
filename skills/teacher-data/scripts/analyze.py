@@ -15,8 +15,11 @@ Plan:
   {"type": "crosstab", "rows": "학년군", "cols": "만족도"},
   {"type": "trend",    "time": "날짜", "value": "금액", "agg": "sum", "freq": "month|week|day|year", "by": "분류", "filter": [...]},
   {"type": "change",   "by": "반", "time": "시험일", "value": "점수", "focus": "3반"},
-  {"type": "correlation", "x": "공부시간", "y": "점수"}
+  {"type": "correlation", "x": "공부시간", "y": "점수"},
+  {"type": "overview", "columns": ["국어", "수학", "과학"] (optional: every numeric column), "group": "반" (optional: rank groups, else rows by pseudonym), "unit": "점", "bins": [...]}
  ]}
+overview = ONE line for wide tables (one row per student, one column per subject): stats of every column, score bands, top/bottom, which columns move together,
+and a short "what to do next" list. The headline names every column.
 Filters: {"column", "equals" | "in": [...] | "min" | "max"}. A plan-level "filters" applies to every analysis.
 Personal columns are pseudonymized before any number is made, and grouping by one is refused.
 """
@@ -31,7 +34,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import tdata  # noqa: E402
-from tdata import fmt_num, is_missing, to_date, to_num  # noqa: E402
+from tdata import fmt_num, is_missing, josa, to_date, to_num  # noqa: E402
 
 MIN_N_TEST = 5
 AGG_NAME = {"mean": "평균", "sum": "합계", "median": "가운데 값", "count": "개수", "min": "가장 작은 값", "max": "가장 큰 값"}
@@ -435,6 +438,142 @@ def a_correlation(t, p, idx, pii):
             "how": f"{xc}를 비슷한 사람끼리 5덩이로 나눠서 {yc} 평균을 보여 줘요."}
 
 
+# ---------- overview: every numeric column, one go (wide tables like 국어·수학·과학) ----------
+BANDS_100 = ([0, 60, 70, 80, 90, 101], ["60점 미만", "60점대", "70점대", "80점대", "90점 이상"])
+
+
+def _num_cols(t, pii: set[str], wanted: list[str] | None) -> list[str]:
+    if wanted:
+        return [_col(t, c, pii) for c in wanted]
+    out = []
+    for c in t.cols:
+        if c in pii:
+            continue
+        info = tdata.column_info(c, t.data[c])
+        if info["kind"] == "number" and info["unique"] < t.n:  # an all-different integer column is an id, not a score
+            out.append(c)
+    return out
+
+
+def _overview(t, p, idx, pii):
+    """One plan line -> profile + bands + rank + matrix results, plus a short 'what next' list."""
+    cols = _num_cols(t, pii, p.get("columns"))
+    if not cols:
+        raise PlanError("숫자 칸을 못 찾았어요. columns에 점수 칸 이름을 적어 주세요.")
+    vals = {c: {i: to_num(t.data[c][i]) for i in idx if to_num(t.data[c][i]) is not None} for c in cols}
+    cols = [c for c in cols if len(vals[c]) >= 3]
+    if not cols:
+        raise PlanError("숫자가 3개 이상 있는 칸이 없어요")
+    unit = p.get("unit") or tdata.guess_unit(cols[0], list(vals[cols[0]].values())) or ("점" if all(0 <= x <= 100 for c in cols for x in vals[c].values()) else "")
+    mean_ = {c: tdata.mean(list(vals[c].values())) for c in cols}
+    med = {c: tdata.median(list(vals[c].values())) for c in cols}
+    sdv = {c: tdata.sd(list(vals[c].values())) for c in cols}
+    lo = {c: min(vals[c].values()) for c in cols}
+    hi = {c: max(vals[c].values()) for c in cols}
+    cnt = {c: len(vals[c]) for c in cols}
+    order = sorted(cols, key=lambda c: mean_[c], reverse=True)
+    spread = max(cols, key=lambda c: sdv[c])
+    overall = tdata.mean([mean_[c] for c in cols])
+    pf = {"subjects": cols, "n_subjects": len(cols), "means": {c: _r(mean_[c]) for c in cols}, "top_label": order[0], "top_value": _r(mean_[order[0]]),
+          "bottom_label": order[-1], "bottom_value": _r(mean_[order[-1]]), "gap": _r(mean_[order[0]] - mean_[order[-1]]), "overall": _r(overall),
+          "spread_label": spread, "spread_value": _r(sdv[spread]), "n": max(cnt.values()), "unit": unit}
+    profile = {"chart": "bar", "labels": cols, "series": [{"name": "평균", "values": [_r(mean_[c]) for c in cols]}], "unit": unit,
+               "table": {"columns": ["칸", f"평균({unit})" if unit else "평균", "가운데 값", "흩어진 정도(표준편차)", "가장 낮은 값", "가장 높은 값", "자료 수"],
+                         "rows": [[c, _r(mean_[c]), _r(med[c]), _r(sdv[c]), _r(lo[c], 2), _r(hi[c], 2), cnt[c]] for c in cols]},
+               "facts": pf, "notes": [], "n": pf["n"], "default_title": "과목별 평균" + (f" ({unit})" if unit else ""),
+               "how": "막대가 길수록 평균이 높아요."}
+    results = [("profile", profile)]
+    # distribution: how many in each band, per column
+    allv = [x for c in cols for x in vals[c].values()]
+    if p.get("bins"):
+        bins, blabels = p["bins"], p.get("bin_labels") or [f"{fmt_num(a)}~{fmt_num(b)}" for a, b in zip(p["bins"], p["bins"][1:])]
+    elif min(allv) >= 0 and max(allv) <= 100:
+        bins, blabels = BANDS_100
+    else:
+        lo_, hi_ = min(allv), max(allv)
+        step = (hi_ - lo_) / 5 or 1
+        bins = [lo_ + step * k for k in range(5)] + [hi_ + 1e-9]
+        blabels = [f"{fmt_num(bins[k])}~{fmt_num(bins[k + 1] if k < 4 else hi_)}" for k in range(5)]
+    counts = {c: [sum(1 for x in vals[c].values() if a <= x < b) for a, b in zip(bins, bins[1:])] for c in cols}
+    low_n = {c: counts[c][0] for c in cols}
+    top_band = {c: blabels[max(range(len(blabels)), key=lambda k: counts[c][k])] for c in cols}
+    bf = {"bands": blabels, "counts": counts, "low_label": blabels[0], "low_counts": low_n, "low_total": sum(low_n.values()), "low_worst": max(cols, key=lambda c: low_n[c]),
+          "top_bands": top_band, "n": max(cnt.values()), "subjects": cols}
+    results.append(("bands", {"chart": "grouped", "labels": blabels, "series": [{"name": c, "values": counts[c]} for c in cols], "unit": "명",
+                              "table": {"columns": ["점수대"] + [f"{c}(명)" for c in cols], "rows": [[blabels[k]] + [counts[c][k] for c in cols] for k in range(len(blabels))]},
+                              "facts": bf, "notes": [], "n": bf["n"], "default_title": "점수대별 학생 수 (명)", "how": "과목마다 점수대별로 몇 명인지 막대로 보여 줘요."}))
+    # rank: top and bottom units (groups if a group column is given, else rows with pseudonyms)
+    gcol = p.get("group")
+    if gcol:
+        _col(t, gcol, pii, True)
+    names = tdata.detect_pii(t)
+    name_col = None if gcol else next((c for c in t.cols if c in pii and names.get(c) == "name"), None)
+    # (pii columns are already pseudonymised in `t`, so detect_pii on the safe table finds nothing: fall back to the column list passed in `pii`)
+    if not gcol and not name_col:
+        name_col = next((c for c in t.cols if c in pii), None)
+    keycol = gcol or name_col
+    units: dict[str, list[float]] = OrderedDict()
+    rows_of: dict[str, list[int]] = {}
+    for i in idx:
+        xs = [vals[c][i] for c in cols if i in vals[c]]
+        if not xs:
+            continue
+        key = str(t.data[keycol][i]).strip() if keycol else f"{len(units) + 1}번째 줄"
+        units.setdefault(key, []).append(tdata.mean(xs))
+        rows_of.setdefault(key, []).append(i)
+    um = {k: tdata.mean(v) for k, v in units.items()}
+    ranked = sorted(um, key=lambda k: um[k], reverse=True)
+    show_n = 3 if len(ranked) > 6 else max(1, len(ranked) // 2)
+    pick = ranked[:show_n] + [k for k in ranked[-show_n:] if k not in ranked[:show_n]]
+    weakest = {k: min(cols, key=lambda c: tdata.mean([vals[c][i] for i in rows_of[k] if i in vals[c]] or [1e9])) for k in pick}
+    what = "모둠" if gcol else "학생"
+    rf = {"kind": what, "n_units": len(ranked), "show_n": show_n, "top": [[k, _r(um[k])] for k in ranked[:show_n]], "bottom": [[k, _r(um[k])] for k in ranked[-show_n:]],
+          "top_label": ranked[0], "top_value": _r(um[ranked[0]]), "bottom_label": ranked[-1], "bottom_value": _r(um[ranked[-1]]), "gap": _r(um[ranked[0]] - um[ranked[-1]]), "n": len(ranked)}
+    rnotes = ["이름은 가명으로 바꿨어요. 학생 번호는 파일 위에서부터 센 순서예요. 학생01은 맨 위 학생이에요."] if (name_col and not gcol) else []
+    results.append(("rank", {"chart": "hbar", "labels": pick, "series": [{"name": "과목 평균", "values": [_r(um[k]) for k in pick]}], "unit": unit or "평균",
+                             "table": {"columns": [what + ("(가명)" if name_col and not gcol else ""), f"과목 평균({unit})" if unit else "과목 평균", "가장 낮은 과목"],
+                                       "rows": [[k, _r(um[k]), weakest.get(k, "")] for k in pick]},
+                             "facts": rf, "notes": rnotes, "n": len(ranked), "default_title": f"과목 평균이 높은 {what}·낮은 {what} (" + (unit or "평균") + ")",
+                             "how": f"전체 {what} 중 가장 높은 쪽과 낮은 쪽만 골라 보여 줘요."}))
+    # correlation between every pair of columns
+    pairs = []
+    for a in range(len(cols)):
+        for b in range(a + 1, len(cols)):
+            ca, cb = cols[a], cols[b]
+            both = [i for i in vals[ca] if i in vals[cb]]
+            if len(both) >= 5:
+                pairs.append((ca, cb, tdata.pearson([vals[ca][i] for i in both], [vals[cb][i] for i in both]), len(both)))
+    mf = {}
+    if pairs:
+        pairs.sort(key=lambda x: -abs(x[2]))
+        pairs = pairs[:10]
+        top = pairs[0]
+        stg = lambda r_: "거의 없음" if abs(r_) < 0.2 else "약함" if abs(r_) < 0.4 else "보통" if abs(r_) < 0.7 else "강함"
+        mf = {"pairs": {f"{a}·{b}": _r(r_, 2) for a, b, r_, _ in pairs}, "top_pair": f"{top[0]}·{top[1]}", "top_a": top[0], "top_b": top[1], "top_r": _r(top[2], 2),
+              "top_strength": stg(top[2]), "top_direction": "같이 오름" if top[2] > 0 else "반대로 움직임", "weak_pair": f"{pairs[-1][0]}·{pairs[-1][1]}",
+              "weak_r": _r(pairs[-1][2], 2), "n_pairs": len(pairs), "n": top[3]}
+        results.append(("matrix", {"chart": "bar", "labels": [f"{a}·{b}" for a, b, _, _ in pairs], "series": [{"name": "함께 움직이는 정도", "values": [_r(r_, 2) for _, _, r_, _ in pairs]}],
+                                   "unit": "함께 움직이는 정도", "axis_max": 1,
+                                   "table": {"columns": ["두 과목", "함께 움직이는 정도(상관계수)", "세기", "자료 수"], "rows": [[f"{a}·{b}", _r(r_, 2), stg(r_), n_] for a, b, r_, n_ in pairs]},
+                                   "facts": mf, "notes": ["함께 움직인다고 해서 한쪽이 원인이라는 뜻은 아니에요. (상관관계 ≠ 인과관계)"] + (["자료가 30개보다 적어서 참고만 해 주세요."] if top[3] < 30 else []),
+                                   "n": top[3], "default_title": "과목끼리 함께 움직이는 정도 (함께 움직이는 정도)",
+                                   "how": "막대가 길수록 두 과목 점수가 비슷하게 오르내려요. 1에 가까우면 거의 같이 움직여요."}))
+    # what to do next: short, from the numbers above only
+    if len(cols) > 1:
+        nxt = [f"{josa(order[-1], '은/는')} 평균이 {fmt_num(pf['bottom_value'], unit)}으로 가장 낮아요. 이 과목 복습을 먼저 해 보세요."]
+    else:
+        nxt = [f"{josa(cols[0], '은/는')} 평균이 {fmt_num(pf['top_value'], unit)}이에요."]
+    if bf["low_total"]:
+        nxt.append(f"{bf['low_label']}인 학생은 {josa(bf['low_worst'], '이/가')} 가장 많은 {bf['low_counts'][bf['low_worst']]}명이에요. 이 친구들을 먼저 도와 주세요.")
+    if len(cols) > 1 and spread != order[-1]:
+        nxt.append(f"{josa(spread, '은/는')} 점수 차이가 크게 벌어져 있어요. 수준에 맞는 활동을 나눠 보세요.")
+    if mf:
+        nxt.append(f"{josa(mf['top_a'], '과/와')} {josa(mf['top_b'], '은/는')} 함께 오르내리는 편이에요. 같이 공부하는 활동이 도움이 돼요." if mf["top_strength"] in ("보통", "강함") and mf["top_r"] > 0
+                   else "과목끼리 점수가 크게 얽혀 있지 않아요. 과목마다 따로 살펴보세요.")
+    nxt.append("다음 시험 뒤에 같은 방법으로 다시 보면, 얼마나 달라졌는지 알 수 있어요.")
+    return results, nxt[:5]
+
+
 HANDLERS = {"groupby": a_groupby, "distribution": a_distribution, "likert": a_likert, "crosstab": a_crosstab, "trend": a_trend,
             "change": a_change, "correlation": a_correlation}
 
@@ -443,8 +582,22 @@ def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
     safe, rep = (table, pii_report) if pii_report is not None else tdata.prepare(table)
     pii = {c["column"] for c in rep["pii_columns"]}
     base = _rows(safe, plan.get("filters", []))
-    results = []
+    results, next_steps = [], []
     for k, a in enumerate(plan.get("analyses", []), 1):
+        if a.get("type") == "overview":
+            idx0 = _rows(safe, a.get("filter", [])) if a.get("filter") else base
+            if a.get("filter") and plan.get("filters"):
+                idx0 = [i for i in idx0 if i in set(base)]
+            ov, nxt_ = _overview(safe, a, idx0, pii)
+            base_id = a.get("id", f"a{k}")
+            for sub, res in ov:
+                res.update(id=f"{base_id}-{sub}" if sub != "profile" else base_id, type=sub, title=a.get("title") if (sub == "profile" and a.get("title")) else res.pop("default_title"))
+                res.pop("default_title", None)
+                res["unit"] = res.get("unit", "")
+                res["metric"] = ""
+                results.append(res)
+            next_steps += nxt_
+            continue
         h = HANDLERS.get(a.get("type"))
         if not h:
             raise PlanError(f"모르는 분석 종류: {a.get('type')} (쓸 수 있는 것: {', '.join(HANDLERS)})")
@@ -460,7 +613,7 @@ def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
         res["metric"] = a.get("metric", "")
         results.append(res)
     return {"title": plan.get("title", "자료 분석"), "audience": plan.get("audience", "학부모"), "subject": plan.get("subject", ""),
-            "narrative": plan.get("narrative"), "headline_of": plan.get("headline_of"),
+            "narrative": plan.get("narrative"), "headline_of": plan.get("headline_of"), "next_steps": next_steps,
             "meta": {"rows": safe.n, "pseudonymized": rep["pseudonymized"], "pii_columns": [c["label"] for c in rep["pii_columns"]],
                      "warning": rep.get("warning", ""), "columns": len(safe.cols)},
             "results": results}
