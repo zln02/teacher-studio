@@ -8,7 +8,7 @@ such as "따뜻하게" or "고급스럽게" looks the same everywhere.
 
 Usage:
     python3 design.py --subject 과학 --grade 5 --mood 긴장감 [--use class|personal|present|poster|invite|print|web]
-                      [--large] [--seed N] [--theme ID]
+                      [--large] [--seed N] [--theme ID] [--palette-from FILE|saved]
     python3 design.py --validate        # check every palette in palettes.json
     python3 design.py --list            # uses, moods, palettes
 
@@ -17,6 +17,8 @@ Prints tokens JSON (schema: tokens.schema.json). Same input -> same output.
 - personal : normal type floor (question 44 / choice 36); --large (e.g. for grandparents) = class floor
 - present  : slides (1920x1080) | poster: A3 | invite: 5x7in card | print: A4 handout | web: responsive page
   (tokens.canvas names the reference canvas the sizes are written for)
+--palette-from takes the user's OWN colours (JSON from color_from.py, or "saved" = the default saved in ~/.teacher-studio/prefs.json) instead of a built-in
+palette; text colours are re-fitted in lightness only so contrast stays >= 4.5. Without it nothing changes. Builders read spec "design": {"palette_from": ...}.
 Moods may be given in everyday words ("따뜻하게", "고급스럽게", "깔끔하게"): see palettes.json "moods.aliases".
 tokens.fonts.embeddable = true means every font in the pair can be embedded offline (Noto Sans/Serif KR, see shared/fonts).
 """
@@ -85,9 +87,70 @@ def _rank(key: str, seed: int) -> int:
     return int(hashlib.sha256(f"{key}|{seed}".encode()).hexdigest()[:8], 16)
 
 
+def load_user_palette(src) -> dict:
+    """The user's own colours as a complete, contrast-checked dict of the 11 colour keys.
+
+    src: a dict (palette/tokens JSON: uses its "colors"), a path to such a JSON file (color_from.py output), or "saved" (the default in prefs.json).
+    Partial dicts are completed and failing text colours re-fitted (lightness only) by color_from.fit_palette. Raises ValueError with a fix hint."""
+    if str(HERE) not in sys.path:
+        sys.path.insert(0, str(HERE))
+    import color_from  # lazy: only needed when the user brings their own colours
+    if isinstance(src, str):
+        if src.strip().lower() in ("saved", "prefs"):
+            pf = Path.home() / ".teacher-studio" / "prefs.json"
+            try:
+                src = (json.loads(pf.read_text(encoding="utf-8")) or {}).get("palette") or {}
+            except (OSError, ValueError):
+                src = {}
+            if not src:
+                raise ValueError("저장된 내 팔레트가 없어요. color_from.py <파일> --save-default 로 먼저 저장해 주세요. (palette_from: saved)")
+        else:
+            f = Path(src).expanduser()
+            if not f.exists():
+                raise ValueError(f"palette_from file not found: {src}")
+            try:
+                src = json.loads(f.read_text(encoding="utf-8"))
+            except ValueError as exc:
+                raise ValueError(f"palette_from is not valid JSON: {src} ({exc})")
+    if not isinstance(src, dict):
+        raise ValueError("palette_from must be a file path, 'saved' or a colours object")
+    cols = src.get("colors") if isinstance(src.get("colors"), dict) else src
+    if not any(k in cols for k in ("primary", "accent", "bg1")):
+        raise ValueError("palette_from needs at least colors.primary (a #rrggbb hex)")
+    try:
+        fitted = color_from.fit_palette(cols, (src.get("mode") == "dark") if src.get("mode") else None)
+    except color_from.ColorFromError as exc:
+        raise ValueError(str(exc))
+    issues = palette_issues("user", fitted)
+    if issues:
+        raise ValueError("palette_from could not be made readable: " + "; ".join(issues))
+    return fitted
+
+
+def resolve_palette_from(src, base) -> object:
+    """A relative palette_from file name is looked up next to the spec file (`base` = that folder); "saved", dicts and absolute paths pass through."""
+    if isinstance(src, str) and src.strip().lower() not in ("saved", "prefs") and not Path(src).is_absolute():
+        cand = Path(base) / src
+        if cand.exists():
+            return str(cand.resolve())
+    return src
+
+
+def apply_palette_from(tokens: dict, src) -> dict:
+    """Replace the colours in tokens with the user's own palette (in place; returns tokens). Everything else (type sizes, motion, fonts) is untouched."""
+    cols = load_user_palette(src)
+    tokens["colors"].update(cols)
+    tokens["palette"] = "user"
+    tokens["contrast"] = {"text_on_bg": round(min(contrast(cols["text"], cols["bg1"]), contrast(cols["text"], cols["bg2"])), 2),
+                          "cardText_on_card": round(contrast(cols["cardText"], cols["card"]), 2),
+                          "btnText_on_primary": round(contrast(cols["btnText"], cols["primary"]), 2)}
+    tokens["userPalette"] = True
+    return tokens
+
+
 def generate(subject: str = "", grade: int = 5, mood: str = "", use: str = "class", seed: int = 0,
-             large: bool = False, theme: str = "default") -> dict:
-    """Build tokens from the request words. Deterministic for the same inputs."""
+             large: bool = False, theme: str = "default", palette_from=None) -> dict:
+    """Build tokens from the request words. Deterministic for the same inputs. palette_from (optional): the user's own colours, see load_user_palette."""
     if use not in USES:
         raise ValueError(f"use must be one of {', '.join(USES)}")
     data = load()
@@ -115,7 +178,7 @@ def generate(subject: str = "", grade: int = 5, mood: str = "", use: str = "clas
     motion = "calm" if mood in calm_moods else ("high" if mood in high_moods and use == "class" else "normal")
     game = use in GAME_USES
     keys = ("bg1", "bg2", "text", "card", "cardText", "cardBorder", "primary", "btnText", "accent", "good", "bad")
-    return {
+    tokens = {
         "version": 1, "use": use, "palette": name, "seed": seed,
         "colors": {k: p[k] for k in keys},
         "fonts": {"display": pair["display"], "body": pair["body"], "embeddable": bool(pair.get("embeddable"))},
@@ -127,6 +190,7 @@ def generate(subject: str = "", grade: int = 5, mood: str = "", use: str = "clas
                      "cardText_on_card": round(contrast(p["cardText"], p["card"]), 2),
                      "btnText_on_primary": round(contrast(p["btnText"], p["primary"]), 2)},
     }
+    return apply_palette_from(tokens, palette_from) if palette_from else tokens
 
 
 def validate_tokens(t: dict) -> list[str]:
@@ -159,6 +223,7 @@ def main() -> int:
     ap.add_argument("--large", action="store_true")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--theme", default="default")
+    ap.add_argument("--palette-from", default=None, help="user's own colours: JSON from color_from.py, or 'saved'")
     ap.add_argument("--validate", action="store_true")
     ap.add_argument("--list", action="store_true")
     a = ap.parse_args()
@@ -176,7 +241,12 @@ def main() -> int:
             bad += palette_issues(n, p)
         print("\n".join(bad) if bad else f"all {len(load()['palettes'])} palettes valid")
         return 1 if bad else 0
-    print(json.dumps(generate(a.subject, a.grade, a.mood, a.use, a.seed, a.large, a.theme), ensure_ascii=False, indent=1))
+    try:
+        tk = generate(a.subject, a.grade, a.mood, a.use, a.seed, a.large, a.theme, a.palette_from)
+    except ValueError as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    print(json.dumps(tk, ensure_ascii=False, indent=1))
     return 0
 
 
