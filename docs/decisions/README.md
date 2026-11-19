@@ -15,6 +15,7 @@
 | [0009](0009-reuse-official-skills.md) | 공식 스킬·기존 도구 재사용 | Accepted (구현은 「계획」) |
 | [0010](0010-identity-teacher-first.md) | 정체성: 선생님 맞춤이 기본, 용도 제한 없음 | Accepted |
 | [0011](0011-no-regret-principle.md) | 무손실 원칙: 하네스가 맨 모델보다 나빠지면 안 된다 | Accepted (평가 관문은 「계획」) |
+| [0012](0012-for-everyone.md) | 모두를 위해: 선생님·한국어 기본값, 직업·언어 제한 없음, 사용자 디자인 우선 | Accepted (0010 확장) |
 
 ## AI 활용 개발
 
