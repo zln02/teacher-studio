@@ -141,6 +141,31 @@ OVERFLOW_JS = r"""
 """
 
 
+# The user wins: spec "waive": [...] turns these quality FAILs into WARNs (default = checked). Text must match the check's message.
+WAIVE_KEYS = {"text_size": ("component text sizes", "all in-game text >=", "smallest text"),
+              "overflow": ("no text overflow", "nothing outside the screen"),
+              "hud": ("top bar parts",),
+              "phone": ("phone ", "390x844", "844x390", "portrait", "landscape", "every button/answer", "smallest text", "nothing outside")}
+
+
+def apply_waive(results: list[tuple[str, str]], waive) -> list[tuple[str, str]]:
+    """FAIL -> WARN for the checks the user explicitly turned off, plus ONE caution line. Unknown keys are ignored (specs.validate reports them)."""
+    keys = [k for k in (waive or []) if k in WAIVE_KEYS]
+    if not keys:
+        return results
+    out, hit = [], []
+    for lv, msg in results:
+        k = next((k for k in keys if lv == "FAIL" and "JavaScript" not in msg and any(s in msg for s in WAIVE_KEYS[k])), None)
+        if k:
+            lv = "WARN"
+            msg = "(사용자 요청으로 허용) " + msg
+            hit.append(k)
+        out.append((lv, msg))
+    if hit:
+        out.append(("WARN", f"점검 {len(hit)}개를 사용자 요청으로 주의로 낮췄어요 ({', '.join(dict.fromkeys(hit))}): 글자가 작거나 잘려 보일 수 있어요"))
+    return out
+
+
 def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
     """Checks for games built by build.py: spec rules, tokens, text floors, bias, forbidden input, autoplay."""
     import design
@@ -184,7 +209,7 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
                 pass
     else:
         out.append(("WARN", "autoplay skipped (--no-play)"))
-    return out
+    return apply_waive(out, spec.get("waive"))
 
 
 def _juice_lint():

@@ -36,6 +36,7 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `design.hostCol` · `design.podiums` | false | 진행자를 왼쪽 큰 기둥으로 + 아래 팀 연단 줄(방송 느낌). quiz·survival·escape(칠판)에서만 기둥, 연단은 모든 방식. 방송국 테마(tv-studio)는 기본으로 켜져요 |
 | `libs` | 없음 | 필요한 부품만 파일에 넣기: confetti(꽃가루)·katex(수식)·lucide(아이콘)·chartjs·anime·phaser(크다, 정말 필요할 때만). `motion`은 2020년 이전 크롬에서 안 돌아가서 `allow_modern:true`를 함께 적어야만 들어가요(아니면 만들기가 멈추고 anime.js를 권해요) |
 | `allow_modern` | false | `libs`에 `motion`을 꼭 넣어야 할 때만 true (점검기는 주의로 표시) |
+| `waive` | 없음 | **사용자가 원할 때만** 끄는 점검 목록: `text_size`(작은 글자) · `overflow`(잘림·넘침) · `hud`(상단바 겹침) · `phone`(폰 화면 점검). 해당 FAIL이 주의로 낮아지고 한 줄 경고가 나와요. 먼저 AI가 고치고, 정말 그 모양을 원할 때만 |
 | `credit` | false | **선생님이 원할 때만** true → 결과 화면에 작게 「교사 스튜디오로 만듦」. 기본은 화면에 아무 표시도 없어요 (파일 속 보이지 않는 정보와 선생님 메뉴 맨 아래 「만든 도구」 줄만 있어요) |
 
 ## 3. 교실 기본 vs 개인 용도

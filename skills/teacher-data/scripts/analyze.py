@@ -22,6 +22,8 @@ overview = ONE line for wide tables (one row per student, one column per subject
 and a short "what to do next" list. The headline names every column.
 Filters: {"column", "equals" | "in": [...] | "min" | "max"}. A plan-level "filters" applies to every analysis.
 Personal columns are pseudonymized before any number is made, and grouping by one is refused.
+Defaults are safe, the teacher can switch them: "show_labels": true -> pseudonyms in top/bottom; "show_ids": true -> real 번호/학번 in top/bottom (plan level or per analysis;
+local-only report, prints a caution, and the privacy check turns WARN instead of FAIL for those IDs).
 """
 from __future__ import annotations
 
@@ -41,6 +43,8 @@ AGG_NAME = {"mean": "평균", "sum": "합계", "median": "가운데 값", "count
 
 
 _PII_KINDS: dict[str, str] = {}  # column -> kind of the table being analysed (set by run)
+_RAW_IDS: dict[str, list] = {}  # ID-like column -> original values; filled by run ONLY when the plan says "show_ids": true (local-only report)
+ID_CAUTION = "이 파일은 번호가 그대로 보여요. 밖으로 보내지 마세요 (메신저·메일·공유 링크 X)."
 
 
 class PlanError(ValueError):
@@ -510,9 +514,11 @@ def _overview(t, p, idx, pii):
     if gcol:
         _col(t, gcol, pii, True)
     # Individual students are shown as anonymous ranks (상위 1위 ...) by default: no name, no pseudonym number, never an ID-like column (번호, 학번, id).
-    # plan "show_labels": true shows the pseudonym (학생01) of a name / already-pseudonymous column; ID-like values are never shown.
+    # plan "show_labels": true shows the pseudonym (학생01) of a name / already-pseudonymous column.
+    # plan "show_ids": true (the teacher asked to see 번호/학번) shows the real ID values: for local-only reports, with a caution (the AI still never reads the rows).
     name_col = None
-    if not gcol and p.get("show_labels"):
+    id_col = next(iter(_RAW_IDS), None) if (not gcol and p.get("show_ids")) else None
+    if not gcol and not id_col and p.get("show_labels"):
         name_col = next((c for c in t.cols if c in pii and _PII_KINDS.get(c) in ("name", "pseudonym")), None)
     keycol = gcol or name_col
     units: dict[str, list[float]] = OrderedDict()
@@ -521,7 +527,10 @@ def _overview(t, p, idx, pii):
         xs = [vals[c][i] for c in cols if i in vals[c]]
         if not xs:
             continue
-        key = str(t.data[keycol][i]).strip() if keycol else f"{len(units) + 1}번째 줄"
+        if id_col:
+            key = f"{id_col} {str(_RAW_IDS[id_col][i]).strip()}"
+        else:
+            key = str(t.data[keycol][i]).strip() if keycol else f"{len(units) + 1}번째 줄"
         units.setdefault(key, []).append(tdata.mean(xs))
         rows_of.setdefault(key, []).append(i)
     um = {k: tdata.mean(v) for k, v in units.items()}
@@ -530,18 +539,18 @@ def _overview(t, p, idx, pii):
     pick = ranked[:show_n] + [k for k in ranked[-show_n:] if k not in ranked[:show_n]]
     weakest = {k: min(cols, key=lambda c: tdata.mean([vals[c][i] for i in rows_of[k] if i in vals[c]] or [1e9])) for k in pick}
     what = "모둠" if gcol else "학생"
-    if gcol or name_col:
+    if gcol or name_col or id_col:
         disp = {k: k for k in ranked}
     else:  # anonymous: rank only
         disp = {}
         for pos, k in enumerate(ranked):
             disp[k] = f"상위 {pos + 1}위" if pos < show_n else (f"하위 {len(ranked) - pos}위" if pos >= len(ranked) - show_n else k)
-    hidden = not (gcol or name_col)
+    hidden = not (gcol or name_col or id_col)
     rf = {"kind": what, "n_units": len(ranked), "show_n": show_n, "top": [[disp[k], _r(um[k])] for k in ranked[:show_n]], "bottom": [[disp[k], _r(um[k])] for k in ranked[-show_n:]], "hidden": hidden,
           "top_label": disp[ranked[0]], "top_value": _r(um[ranked[0]]), "bottom_label": disp[ranked[-1]], "bottom_value": _r(um[ranked[-1]]), "gap": _r(um[ranked[0]] - um[ranked[-1]]), "n": len(ranked)}
-    rnotes = ["이름과 번호는 보이지 않게 하고 순위로만 보여 드려요. (가명으로 보고 싶으면 말씀해 주세요)"] if hidden else []
+    rnotes = ["이름과 번호는 보이지 않게 하고 순위로만 보여 드려요. (가명으로 보고 싶으면 말씀해 주세요)"] if hidden else ([ID_CAUTION] if id_col else [])
     results.append(("rank", {"chart": "hbar", "labels": [disp[k] for k in pick], "series": [{"name": "과목 평균", "values": [_r(um[k]) for k in pick]}], "unit": unit or "평균",
-                             "table": {"columns": [("순위" if hidden else what + ("(가명)" if name_col else "")), f"과목 평균({unit})" if unit else "과목 평균", "가장 낮은 과목"],
+                             "table": {"columns": [("순위" if hidden else what + ("(가명)" if name_col else "(번호)" if id_col else "")), f"과목 평균({unit})" if unit else "과목 평균", "가장 낮은 과목"],
                                        "rows": [[disp[k], _r(um[k]), weakest.get(k, "")] for k in pick]},
                              "facts": rf, "notes": rnotes, "n": len(ranked), "default_title": f"과목 평균이 높은 {what}·낮은 {what} (" + (unit or "평균") + ")",
                              "how": f"전체 {what} 중 가장 높은 쪽과 낮은 쪽만 골라 보여 줘요."}))
@@ -593,6 +602,11 @@ def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
     pii = {c["column"] for c in rep["pii_columns"]}
     _PII_KINDS.clear()
     _PII_KINDS.update({c["column"]: c["kind"] for c in rep["pii_columns"]})
+    _RAW_IDS.clear()
+    shows_ids = bool(plan.get("show_ids")) or any(a.get("show_ids") for a in plan.get("analyses", []))
+    if shows_ids:  # the teacher asked to see numbers (번호/학번): take them from the ORIGINAL table, for a local-only report
+        _RAW_IDS.update({c["column"]: list(table.data[c["column"]]) for c in rep["pii_columns"] if c["kind"] == "student_id"})
+        shows_ids = bool(_RAW_IDS)
     base = _rows(safe, plan.get("filters", []))
     results, next_steps = [], []
     for k, a in enumerate(plan.get("analyses", []), 1):
@@ -600,6 +614,8 @@ def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
             idx0 = _rows(safe, a.get("filter", [])) if a.get("filter") else base
             if a.get("filter") and plan.get("filters"):
                 idx0 = [i for i in idx0 if i in set(base)]
+            if plan.get("show_ids"):
+                a = dict(a, show_ids=True)
             ov, nxt_ = _overview(safe, a, idx0, pii)
             base_id = a.get("id", f"a{k}")
             for sub, res in ov:
@@ -627,7 +643,8 @@ def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
     return {"title": plan.get("title", "자료 분석"), "audience": plan.get("audience", "학부모"), "subject": plan.get("subject", ""),
             "narrative": plan.get("narrative"), "headline_of": plan.get("headline_of"), "next_steps": next_steps,
             "meta": {"rows": safe.n, "pseudonymized": rep["pseudonymized"], "pii_columns": [c["label"] for c in rep["pii_columns"]],
-                     "warning": rep.get("warning", ""), "columns": len(safe.cols)},
+                     "warning": rep.get("warning", ""), "columns": len(safe.cols),
+                     **({"shows_ids": True, "caution": ID_CAUTION} if shows_ids else {})},
             "results": results}
 
 

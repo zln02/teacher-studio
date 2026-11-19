@@ -105,6 +105,9 @@ def validate(spec: dict) -> list[str]:
         errs.append("design: {subject, grade, mood, seed, theme} 객체")
     elif isinstance(design, dict) and design.get("font") not in (None, "sans", "serif", "rounded", "system"):
         errs.append('design.font: "sans" | "serif" | "rounded" | "system" (글꼴은 이 넷 중에서만 골라요)')
+    wv = spec.get("waive")
+    if wv is not None and not (isinstance(wv, list) and all(x in WAIVE_OK for x in wv)):
+        errs.append('waive: 사용자가 점검을 꺼 달라고 했을 때만. ' + " · ".join(WAIVE_OK) + ' 중에서 고르세요 (예: ["overflow"]). 점검은 주의로 낮아지고 한 줄 경고가 나와요')
     if spec.get("online", False) not in (True, False):
         errs.append('online: true 또는 false (기본 false = 인터넷 없이 열리는 파일. true일 때만 Google 글꼴·CDN 주소를 허용)')
     bk = spec.get("back")
@@ -116,6 +119,7 @@ def validate(spec: dict) -> list[str]:
     return errs
 
 
+WAIVE_OK = ("text_size", "overflow", "hud", "phone")  # quality checks the user may turn off (check_game.apply_waive)
 CUSTOM_CSS_MAX = 6000
 CUSTOM_SVG_MAX = 12000
 _BAD_COMMON = (

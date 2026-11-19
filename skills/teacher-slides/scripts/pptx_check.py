@@ -116,6 +116,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("pptx", type=Path)
     ap.add_argument("--spec", type=Path, help="deck.json: its \"fillins\" list is allowed (reported, not failed)")
+    ap.add_argument("--allow-blanks", action="store_true", help="the user wants a template / 양식 with blanks: report them as 「바꿔 넣을 곳」, do not FAIL")
     ap.add_argument("--fillins", default="", help="comma-separated fill-ins allowed to remain")
     ap.add_argument("--render", type=Path, help="also draw PNGs into this folder (LibreOffice if present, else an approximate preview)")
     ap.add_argument("--yes", action="store_true", help="with --render: the teacher agreed to install LibreOffice")
@@ -123,6 +124,9 @@ def main() -> int:
     fills = [x.strip() for x in a.fillins.split(",") if x.strip()]
     if a.spec:
         fills += [str(x) for x in (json.loads(a.spec.read_text(encoding="utf-8")).get("fillins") or [])]
+    if a.allow_blanks:
+        fills = ph.with_blanks(fills, True)
+        print("NOTE 양식 모드: 빈칸을 일부러 남긴 파일이에요. 사용하기 전에 채워 주세요.")
     r = check_pptx(a.pptx, fills)
     for lv, msg in r["results"]:
         print(f"{lv:4} {msg}")

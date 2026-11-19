@@ -14,7 +14,7 @@ Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가�
 1. **Never read the data file yourself** (no Read/cat/head on it). Run scripts; read only their aggregate output.
 2. Never put raw rows, names, phones or e-mails in chat, specs or output. The original file is never modified; nothing is sent anywhere.
 3. If `profile_data.py` reports personal columns, say once: 「학생 이름이 보여요. 가명으로 바꿔서 분석할게요」 and go on (pseudonyms are automatic).
-   - Names that are ALREADY pseudonyms (학생01, ID003 ...) are recognised: kept as is, not warned about, and the privacy self-check skips them (no false FAIL). ID-like columns (번호, 학번, id, 출석번호, 순번) count as identifiers: never used as labels and never shown. Top/bottom lists show anonymous ranks (상위 1위 ... 하위 1위); only if the teacher asks, plan `"show_labels": true` shows pseudonyms (still never IDs).
+   - Names that are ALREADY pseudonyms (학생01, ID003 ...) are recognised: kept as is, not warned about, and the privacy self-check skips them (no false FAIL). ID-like columns (번호, 학번, id, 출석번호, 순번) count as identifiers: never used as labels and never shown. Top/bottom lists show anonymous ranks (상위 1위 ... 하위 1위) by default. **The user wins**: 「가명으로 보여 줘」 -> plan `"show_labels": true` (pseudonyms); 「번호/학번도 보여 줘」 -> plan `"show_ids": true` (real 번호 from the column, local-only report). When you set either, tell once: 「이 파일은 밖으로 보내지 마세요」 (the report notes it; `check_report` turns the ID check into a WARN). You still never read the raw rows.
 4. Report is for people: conclusion first (one sentence a child understands), 3 lines, then charts with plain titles + units.
 5. Fix loop max 2, then tell the teacher plainly (ADR 0011). Speak Korean, plain words, no dev terms.
 

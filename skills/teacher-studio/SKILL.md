@@ -62,6 +62,20 @@ Always ask mid-way, even on 「알아서」: before anything irreversible or out
 - **Vague complaints** (「별로야」「이상해」「밤티야」「아까가 나았어」): self-diagnose, do not interrogate (`references/vague-fix.md`, `scripts/diagnose.py`); max 2 fix loops, then show options.
 - **Other skills and documents**: use them when they beat our path. Record each use (`scripts/skill_scout.py log`) and end the message with one line 「출처: <이름> (<만든 곳>, <라이선스>)」. Our own files need no credit line.
 
+## User wins (the harness is a shortcut, not a cage)
+Checks exist so YOU fix things before showing them, not to block the user. Defaults are safe; if the user says otherwise, set the switch, add ONE caution line, and go on. No lecture, no second ask.
+- **HARD (never switch off, even if asked)**: sending student personal data to an outside service · illegal acts · impersonating real people/brands or copying others' works · irreversible outward actions (send, post, publish, delete) without a yes · you never read raw data rows. Say what you can do instead, in one line.
+- **DEFAULT (user can turn off)**: table below. WARN-only checks need no switch.
+| User says (examples) | You set | Caution line (one) |
+|---|---|---|
+| 「번호도 보여 줘」「학번 그대로」 (teacher-data) | plan `"show_ids": true` | 「이 파일은 밖으로 보내지 마세요」 |
+| 「가명으로/이름 라벨 보여 줘」 | plan `"show_labels": true` | 「이 파일은 밖으로 보내지 마세요」 |
+| 「양식으로」「빈칸 있는 틀」 (slides) | spec `"template_blanks": true` | 「빈칸은 쓰기 전에 채워 주세요」 |
+| 「인터넷 연결해도 돼」「글꼴·영상 링크 써 줘」 | spec `"online": true` | 「인터넷이 있어야 제대로 열려요」 |
+| 「글씨 작아도 돼」「이 배치 그대로」 (game) | spec `"waive": ["text_size"\|"overflow"\|"hud"\|"phone"]` | 「글자가 작거나 잘려 보일 수 있어요」 |
+| 「하네스 없이」「네 방식대로」 | skip the tool path | none |
+Default order of work: fix quality FAILs yourself first (shorten text, change layout); use a switch only when the user explicitly wants that result. Full list: `docs/research/rules-audit-2026-11.md`.
+
 ## First-time setup
 - `scripts/prefs.py show` says 「아직 없음」 -> ask level / subject / device **inside the direction round** (recommended: 중학교·전과목·칠판 TV; 「네」 = `prefs.py defaults`; else `prefs.py set --level … --subject … --device board|phone|tablet|pc`). Stored only in `~/.teacher-studio/prefs.json`, no student data. A clear request builds first with the defaults, then mentions it. 「설정 바꿔 줘」 -> `prefs.py reset`. No file access (Claude app) -> remember inside the chat.
 

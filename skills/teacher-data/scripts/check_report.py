@@ -183,8 +183,11 @@ def static_checks(src: str, agg: dict | None, source_path: str | None, yes: bool
         leaks = []
         blob = own + (json.dumps(agg, ensure_ascii=False) if agg else "")
         already = [c for c, k in pii.items() if k == "pseudonym"]  # source names are already pseudonyms (학생01): nothing to leak
+        shows_ids = bool(agg and agg.get("meta", {}).get("shows_ids"))  # the teacher asked to see 번호/학번: allowed in a local-only report
+        if shows_ids:
+            say("WARN", "번호가 그대로 보여요 (선생님이 요청). 이 파일은 밖으로 보내지 마세요")
         for c, kind in pii.items():
-            if kind == "pseudonym":
+            if kind == "pseudonym" or (shows_ids and kind == "student_id"):
                 continue
             for val in {str(x).strip() for x in t.data[c] if not tdata.is_missing(x)}:
                 if tdata.is_pseudonym(val):

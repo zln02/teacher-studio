@@ -205,10 +205,11 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         js = re.sub(rf"/\*#{tag}\*/(.*?)/\*#end\*/", (lambda m: m.group(1)) if used else "", js, flags=re.S)
     css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + style_css(dz) + "\n" + "\n".join(css_extra)
     scene = ('<div id="deck">' + "".join(parts) + '</div><div id="chrome"><div class="prog"></div><div class="pn"></div></div><div id="notes"></div><div id="black"></div>')
+    import placeholders as ph_
     doc = {"title": spec.get("title") or spec["slides"][0].get("title", "슬라이드"), "skin": "deck",
            "deck": {"style": dz["style"], "palette": dz["palette"], "seed": seed, "purpose": dz["purpose"], "why": dz["why"], "layouts": fp,
                     "colors": {k: dz["colors"][k] for k in ("bg1", "tx", "pr")}, "floor": dz["floor"],
-                    "fillins": [str(x) for x in (spec.get("fillins") or [])]}}
+                    "fillins": [str(x) for x in ph_.with_blanks(spec.get("fillins"), spec.get("template_blanks"))]}}
     libs = ["lucide"] + (["chartjs"] if "chart" in types else []) + (["katex"] if "math" in types else [])
     size = build_stage.build(doc, js, out, css, libs, True, False, False, scene, True)
     html = out.read_text(encoding="utf-8")
@@ -242,7 +243,7 @@ def placeholder_gate(spec: dict):
                 walk(x)
     walk(spec.get("slides") or spec.get("items") or [])
     walk(spec.get("title") or "")
-    fills = spec.get("fillins") or []
+    fills = ph.with_blanks(spec.get("fillins"), spec.get("template_blanks"))
     left = [m for tx in texts for m in ph.leftovers(tx, fills)]
     return list(dict.fromkeys(left)), ph.fillin_list(texts, fills)
 
@@ -284,6 +285,8 @@ def main() -> int:
         print(f"FAIL placeholders left in the deck: {left[:10]}  -> 실제 값이나 그럴듯한 가정(오늘 날짜, 2026학년도, '우리 학교')으로 채우거나, spec의 \"fillins\"에 적어 마지막에 「바꿔 넣을 곳」으로 알리세요")
     if listed:
         print("바꿔 넣을 곳 (선생님께 마지막에 알려 주세요): " + ", ".join(listed))
+        if spec.get("template_blanks") is True:
+            print("NOTE 양식 모드: 빈칸을 일부러 남겼어요. 사용하기 전에 위 곳을 채워 주세요.")
     if not a.no_check:
         code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode or code
     if a.review:
@@ -301,7 +304,7 @@ def main() -> int:
                 if "줄여" in w_ or "넘쳐" in w_:
                     print("NOTE", w_)
             import pptx_check
-            ck = pptx_check.check_pptx(px, spec.get("fillins") or [])
+            ck = pptx_check.check_pptx(px, __import__("placeholders").with_blanks(spec.get("fillins"), spec.get("template_blanks")))
             for lv, msg in ck["results"]:
                 print(f"{lv:4} pptx: {msg}")
                 if lv == "FAIL":

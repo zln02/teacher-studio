@@ -8,6 +8,7 @@
 
 Rule: fill blanks with a plausible stated assumption (today's date / school year, generic 「우리 학교」) or list them in the spec as
 `"fillins": ["학교명", ...]` - those are shown at the final checkpoint as 「바꿔 넣을 곳」 and do not FAIL the review.
+The user wins: if they ask for a template / 양식 / 빈칸 있는 틀, set `"template_blanks": true` in the spec - every blank is then only reported as 「바꿔 넣을 곳」.
 """
 from __future__ import annotations
 
@@ -51,7 +52,17 @@ def _norm(s: str) -> str:
     return re.sub(r"[\[\]【】{}\s]", "", s or "")
 
 
+ALLOW_ALL = "*"  # fillins containing "*" = the user wants a template / 양식 with blanks: every blank is reported as 「바꿔 넣을 곳」, none fails
+
+
+def with_blanks(fillins, template_blanks) -> list:
+    """The spec's fillins, plus the allow-all marker when the spec says "template_blanks": true."""
+    return list(fillins or []) + ([ALLOW_ALL] if template_blanks is True else [])
+
+
 def _listed(match: str, fillins) -> bool:
+    if ALLOW_ALL in (fillins or []):
+        return True
     m = _norm(match)
     return any(_norm(f) and (_norm(f) == m or _norm(f) in m) for f in (fillins or []))
 
