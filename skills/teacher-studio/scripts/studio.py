@@ -147,6 +147,9 @@ def main() -> None:
     b.add_argument("--purpose", default="")
     b.add_argument("--mood", default="")
     b.add_argument("--style", default="")
+    b.add_argument("--pptx", nargs="?", const="auto", help="slides: ALSO write an editable .pptx (PPT / 파워포인트 / 나중에 고칠 거예요)")
+    b.add_argument("--template", type=Path, help="slides + --pptx: the teacher's own .pptx/.potx (template first)")
+    b.add_argument("--yes", action="store_true", help="the teacher agreed to install the small tool (python-pptx)")
     c = sub.add_parser("check")
     c.add_argument("path", type=Path)
     r = sub.add_parser("render")
@@ -166,6 +169,13 @@ def main() -> None:
         for flag in ("seed", "review", "purpose", "mood", "style"):
             if getattr(a, flag):
                 extra += [f"--{flag}", str(getattr(a, flag))]
+        if a.kind == "slides":
+            if a.pptx:
+                extra += ["--pptx"] + ([] if a.pptx == "auto" else [a.pptx])
+            if a.template:
+                extra += ["--template", str(a.template)]
+            if a.yes:
+                extra += ["--yes"]
         cmd_build(a.kind, a.spec, a.out, a.open, extra)
     elif a.cmd == "check":
         cmd_check(a.path)

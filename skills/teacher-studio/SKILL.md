@@ -66,6 +66,7 @@ Always ask mid-way, even on 「알아서」: before anything irreversible or out
 - `scripts/prefs.py show` says 「아직 없음」 -> ask level / subject / device **inside the direction round** (recommended: 중학교·전과목·칠판 TV; 「네」 = `prefs.py defaults`; else `prefs.py set --level … --subject … --device board|phone|tablet|pc`). Stored only in `~/.teacher-studio/prefs.json`, no student data. A clear request builds first with the defaults, then mentions it. 「설정 바꿔 줘」 -> `prefs.py reset`. No file access (Claude app) -> remember inside the chat.
 
 ## Absolute rules (every skill)
+- **Tell the teacher BEFORE a long step** (game build + check, deck with screenshots, law lookup, video render, anything over ~1 minute): say it up front with a rough time, e.g. 「게임 만들고 점검하는 데 5~10분쯤 걸려요」「법을 찾는 데 1~2분쯤 걸려요」, then work. Slowness that saves the teacher a fix round is fine; time wasted on blocked sites, re-checks and endless retries is not (cap retries, one try per blocked source, fall back and label).
 1. No place to enter or store student names, 학번, photos, grades.
 2. Unsure facts -> mark 「확인 필요」.
 3. Law/copyright: inform, do not block (`teacher-law`; principle in `teacher-game/references/legal-advisory.md`). Do not reproduce lyrics or famous characters; use originals or the user's files.
