@@ -115,7 +115,8 @@ def T(ctx: Ctx, text, x, y, w, h, mx, mn=None, cls: str = "p", va: str = "m", lh
 def kicker(ctx: Ctx, text, x, y, w=900, cls: str = "k") -> str:
     if not text:
         return ""
-    return f'<div class="bx {cls}" style="left:{x}px;top:{y}px;width:{w}px;height:44px;font-size:28px">{esc(text)}</div>'
+    fs = max(28, ctx.floor)  # a context with a higher floor (class = 32px) lifts the kicker too
+    return f'<div class="bx {cls}" style="left:{x}px;top:{y}px;width:{w}px;height:{fs + 16}px;font-size:{fs}px">{esc(text)}</div>'
 
 
 def rect(x, y, w, h, cls: str = "", extra: str = "") -> str:

@@ -61,7 +61,7 @@ RECIPES: dict[str, dict] = {
         "style": "minimal-premium", "palettes": list(PUBLIC_PALETTES), "mood": "단정하게", "floor": 24, "tscale": {"h": 0.72, "p": 0.8},
         "type_px": {"cover": 80, "heading": 52, "body": 32, "caption": 24},
         "family": {"editorial": 2.0, "stack": 1.3, "split": 1.0, "center": 0.8, "bento": 0.6, "bigtype": 0.4, "poster": 0.3},
-        "allowed": {"title": ["gov"], "bullets": ["gov", "govsplit"], "compare": ["table"], "section": ["band", "num"], "statement": ["center", "big"],
+        "allowed": {"title": ["gov"], "bullets": ["gov", "govsplit"], "compare": ["table"], "section": ["num"], "statement": ["center", "big"],
                     "bignumbers": ["cols", "duo"], "steps": ["list", "row"]},
         "caps": {"bullet_items": (2, 7), "bullet_chars": 70, "total": 440},
         "builds": False, "numbering": True, "header": True,
@@ -209,9 +209,10 @@ def post(spec: dict) -> dict:
             n = 0
             raw = re.sub(_NUMBERED, "", str(it["title"]))
             cur = f"{roman(sec)}. {raw}"
-            it["title"] = cur
+            it["title"] = raw  # the big section number is the Roman numeral itself (no 01 + Ⅰ. twice)
+            it["num"] = roman(sec)
             it["_secno"] = sec
-        elif t in CONTENT_TYPES and it.get("title") and spec.get("numbering", True) is not False:
+        elif t in CONTENT_TYPES and t != "summary" and it.get("title") and spec.get("numbering", True) is not False:
             if not _NUMBERED.match(str(it["title"])):
                 n += 1
                 it["title"] = f"{n}. {it['title']}"

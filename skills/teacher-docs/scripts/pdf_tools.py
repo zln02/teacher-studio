@@ -214,37 +214,60 @@ def to_png(src, outdir, scale: float = 1.4) -> list[Path]:
 
 
 # ------------------------------------------------------------------------------------------------ HTML -> PDF (heavy: opens a browser)
+def _browser_exe() -> str:
+    """Path of Chrome / Edge on this PC ('' if none). ensure.find_system_browser() gives only the Playwright channel name."""
+    import os
+    local = os.environ.get("LOCALAPPDATA", "")
+    for c in (r"C:\Program Files\Google\Chrome\Application\chrome.exe", r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+              str(Path(local) / "Google" / "Chrome" / "Application" / "chrome.exe") if local else "",
+              r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", r"C:\Program Files\Microsoft\Edge\Application\msedge.exe",
+              "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/microsoft-edge"):
+        if c and Path(c).exists():
+            return c
+    for n in ("google-chrome", "chromium", "chrome", "msedge"):
+        if shutil.which(n):
+            return shutil.which(n)
+    return ""
+
+
 def html_to_pdf(html_path, pdf) -> dict:
+    """Print our A4 HTML to PDF: Playwright with the PC's Chrome/Edge (or its own Chromium), else the browser's --print-to-pdf."""
     html_path, pdf = Path(html_path).resolve(), Path(pdf).resolve()
-    browser = ""
+    channel = ""
     try:
         import ensure
-        browser = ensure.find_system_browser()
+        channel = ensure.find_system_browser()
     except Exception:  # noqa: BLE001
         pass
-    if browser:
-        with tempfile.TemporaryDirectory() as prof:
-            cmd = [browser, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--user-data-dir={prof}",
-                   f"--print-to-pdf={pdf}", html_path.as_uri()]
-            subprocess.run(cmd, capture_output=True, timeout=120)
-        if pdf.exists() and pdf.stat().st_size > 800:
-            return {"ok": True, "how": "system browser", "path": str(pdf)}
     try:
         from playwright.sync_api import sync_playwright
         with sync_playwright() as p:
-            b = p.chromium.launch()
+            try:
+                b = p.chromium.launch(channel=channel) if channel else p.chromium.launch()
+            except Exception:  # noqa: BLE001
+                b = p.chromium.launch()
             pg = b.new_page()
             pg.goto(html_path.as_uri())
+            pg.wait_for_timeout(300)
             pg.pdf(path=str(pdf), format="A4", print_background=True, prefer_css_page_size=True)
             b.close()
-        return {"ok": True, "how": "playwright", "path": str(pdf)}
-    except Exception as exc:  # noqa: BLE001
-        return {"ok": False, "how": "", "path": "", "error": f"브라우저가 없어요: 크롬/엣지에서 Ctrl+P → PDF로 저장 ({exc.__class__.__name__})"}
+        if pdf.exists():
+            return {"ok": True, "how": "playwright" + (f" ({channel})" if channel else ""), "path": str(pdf)}
+    except Exception:  # noqa: BLE001
+        pass
+    exe = _browser_exe()
+    if exe:
+        with tempfile.TemporaryDirectory() as prof:
+            subprocess.run([exe, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--user-data-dir={prof}",
+                            f"--print-to-pdf={pdf}", html_path.as_uri()], capture_output=True, timeout=120)
+        if pdf.exists() and pdf.stat().st_size > 800:
+            return {"ok": True, "how": "browser print", "path": str(pdf)}
+    return {"ok": False, "how": "", "path": "", "error": "PDF로 바꿀 브라우저가 없어요: 만든 웹 문서를 크롬/엣지에서 열고 Ctrl+P → PDF로 저장"}
 
 
 def has_browser() -> bool:
     try:
         import ensure
-        return bool(ensure.find_system_browser()) or bool(shutil.which("chromium"))
+        return bool(ensure.find_system_browser()) or bool(_browser_exe())
     except Exception:  # noqa: BLE001
         return False

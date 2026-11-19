@@ -62,7 +62,7 @@ def texts_of(path: Path) -> list[str]:
             from pypdf import PdfReader
         except ImportError:
             return []
-        return [ln for pg in PdfReader(str(path)).pages for ln in (pg.extract_text() or "").split("\n")]
+        return [ln.replace("\xa0", " ") for pg in PdfReader(str(path)).pages for ln in (pg.extract_text() or "").split("\n")]
     if suf in (".html", ".htm"):
         h = path.read_text(encoding="utf-8")
         h = re.sub(r"<(script|style)[^>]*>.*?</\1>", "", h, flags=re.S)
@@ -131,7 +131,7 @@ def mark_of(line: str):
     return None
 
 
-def check_gongmun(lines: list[str]) -> list[tuple[str, str]]:
+def check_gongmun(lines: list[str], lenient_space: bool = False) -> list[tuple[str, str]]:
     res = []
     L = [ln.rstrip() for ln in lines]
     has_recv = any(re.match(r"^\s*수신\s", ln) or ln.strip() == "수신" for ln in L)
@@ -167,6 +167,8 @@ def check_gongmun(lines: list[str]) -> list[tuple[str, str]]:
     res.append(("WARN" if probs else "PASS", "항목 번호 순서 (1. 가. 1) 가) (1) (가) ① ㉮)" + (": " + " / ".join(probs[:3]) if probs else "")))
     full = "\n".join(L)
     end_ok = bool(re.search(r"\S {2}끝\.\s*$", full, re.M)) or bool(re.search(r"^\s{0,2}끝\.\s*$", full, re.M))
+    if lenient_space:  # PDF text extraction collapses runs of spaces: only check that 끝. is there
+        end_ok = end_ok or bool(re.search(r"\S ?끝\.\s*$", full, re.M))
     end_one = bool(re.search(r"\S ?끝\.\s*$", full, re.M)) and not end_ok
     res.append(("PASS" if end_ok else "WARN", "「끝」 표시" + ("" if end_ok else (": 본문 끝에서 두 칸 띄우고 「끝.」" if end_one else ": 본문(또는 붙임) 마지막에 두 칸 띄우고 「끝.」이 없어요"))))
     if re.search(r"붙임\s*:", full):
@@ -311,6 +313,8 @@ def check_fonts(path: Path) -> list[tuple[str, str]]:
             fonts = (pg.get("/Resources") or {}).get("/Font") or {}
             for _, ref in fonts.items():
                 f = ref.get_object()
+                if f.get("/Subtype") == "/Type3":  # glyphs drawn inside the PDF itself (Chrome prints web fonts this way)
+                    continue
                 desc = f.get("/FontDescriptor")
                 if desc is None and f.get("/DescendantFonts"):
                     desc = f["/DescendantFonts"][0].get_object().get("/FontDescriptor")
@@ -344,7 +348,7 @@ def run(path, kind: str = "", fillins=(), allow_blanks: bool = False) -> list[tu
     res += check_privacy(lines)
     official = kind == "gongmun" or (not kind and is_gongmun(lines))
     if official:
-        res += check_gongmun(lines)
+        res += check_gongmun(lines, lenient_space=path.suffix.lower() == ".pdf")
     res += check_dates(lines, official)
     res += check_spacing(lines)
     res += check_fonts(path)

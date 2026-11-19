@@ -384,7 +384,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 tbox(s, 1.25, 5.5, 10.5, 0.5, it["meta"], 16, C["mu"])
         elif t == "section":
             n_sec += 1
-            tbox(s, 0.8, 1.7, 4, 1.4, f"{n_sec:02d}", 80, C["emc"], True, name="disp")
+            tbox(s, 0.8, 1.7, 4, 1.4, str(it.get("num") or f"{n_sec:02d}"), 80, C["emc"], True, name="disp")
             put_title(s, plain(it["title"]), 0.8, 3.2, 11.5, 1.5, 44)
             if it.get("sub"):
                 tbox(s, 0.8, 4.8, 11.5, 0.7, it["sub"], 22, C["mu"])

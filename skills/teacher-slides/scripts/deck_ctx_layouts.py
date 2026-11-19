@@ -27,11 +27,12 @@ CSS = """
 .gtbl td.hi{color:var(--emc);font-weight:800}
 .gbox{border:3px solid var(--pr);border-radius:6px;background:var(--bg1)}
 .gtab{background:var(--pr);color:var(--bt);font-weight:800;display:flex;align-items:center;justify-content:center;border-radius:4px;word-break:keep-all}
-.src{color:var(--mu);font-weight:500}
-.ghead{color:var(--mu);font-weight:700;word-break:keep-all}
+.src{color:var(--tx);font-weight:500}
+.ghead{color:var(--tx);font-weight:700;word-break:keep-all}
 .gnumr{color:var(--emc);font-weight:800;font-family:var(--fd)}
 .cta{background:var(--pr);border-radius:999px}
 .cta .tx{color:var(--bt);font-weight:800;text-align:center}
+.hscrim{background:rgba(12,12,16,.66)}
 .hang .tx{padding-left:1.25em;text-indent:-1.25em}
 """
 
@@ -127,7 +128,7 @@ def table_grid(ctx, it):
     bottom = 920 if (it.get("source") or it.get("footnote") or pub) else 970
     hh = [_head(ctx, it) if pub else T(ctx, it.get("title", ""), MX, 110, CW, 140, 72, 44, cls="h", va="m", lh=1.14)]
     if it.get("unit"):
-        hh.append(T(ctx, f"(단위: {it['unit']})", W - MX - 420, top - 52, 420, 44, 26, 24, cls="p mu", va="m", align="right"))
+        hh.append(T(ctx, f"(단위: {it['unit']})", W - MX - 420, top - 52, 420, 44, 26, 24, cls="p", va="m", align="right"))
     th = bottom - top
     nrow = len(rows) + 1
     rh = min(110, th / nrow)
@@ -192,13 +193,13 @@ def hero_full(ctx, it):
     d = ctx.dz
     if it.get("_src"):
         h = [f'<div class="bx imgfull" style="left:0;top:0;width:{W}px;height:{H}px"><img src="{it["_src"]}" alt="{esc(it.get("alt", it.get("headline", "")))}"></div>',
-             rect(0, 380, W, 700, "scrim")]
+             rect(0, 0, W, H, "hscrim")]  # whole-photo veil: bright skies / suns must still give white text >= 4.5:1
         oncls = " on-img"
     else:
         h = [rect(1240, 0, 680, H, "panel"), box(1240, 0, 680, H, art.abstract(d, 680, H, ctx.idx), "pa")]
         oncls = ""
     tw = 1180 if (it.get("_qr") or not it.get("_src")) else 1500
-    h.append(kicker(ctx, it.get("kicker"), MX, 470, 900))
+    h.append(kicker(ctx, it.get("kicker"), MX, 470, 900, cls="k" + oncls))
     h.append(T(ctx, it["headline"], MX, 520, tw, 300, 150, 72, cls="h" + oncls, va="b", lh=1.06))
     if it.get("sub"):
         h.append(T(ctx, it["sub"], MX, 830, tw, 70, 40, 28, cls="p" + oncls, va="t"))

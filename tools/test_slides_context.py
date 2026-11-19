@@ -88,8 +88,8 @@ class Public(unittest.TestCase):
         s = prep(load("public-ai-edu-report"))
         types = [x["type"] for x in s["slides"]]
         self.assertEqual(types[:3], ["title", "toc", "summary"])
-        secs = [x["title"] for x in s["slides"] if x["type"] == "section"]
-        self.assertEqual(secs, ["Ⅰ. 추진 배경", "Ⅱ. 추진 현황", "Ⅲ. 향후 계획"])
+        secs = [(x["num"], x["title"], x["_section"]) for x in s["slides"] if x["type"] == "section"]
+        self.assertEqual(secs, [("Ⅰ", "추진 배경", "Ⅰ. 추진 배경"), ("Ⅱ", "추진 현황", "Ⅱ. 추진 현황"), ("Ⅲ", "향후 계획", "Ⅲ. 향후 계획")])
         toc = s["slides"][1]
         self.assertEqual(toc["items"], ["추진 배경", "추진 현황", "향후 계획"])
         tbl = next(x for x in s["slides"] if x["type"] == "table")
@@ -171,7 +171,7 @@ class NewTypes(unittest.TestCase):
                 self.assertIn("title.gov", r["fingerprint"])
                 self.assertIn("summary.box", r["fingerprint"])
                 self.assertIn("자료: 예시 자료", html)
-                self.assertIn("Ⅱ. 점검 결과", html)
+                self.assertIn("Ⅱ. 점검 결과", html)  # header of the slides in section Ⅱ
                 self.assertNotIn('data-b="', html.split('id="s2"')[1][:4000])  # no builds in public decks
             else:
                 self.assertTrue(r["fingerprint"][0].startswith("hero."))
