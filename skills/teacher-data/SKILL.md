@@ -1,6 +1,6 @@
 ---
 name: teacher-data
-description: Turns anyone's spreadsheets (CSV/XLSX: scores, surveys, budgets, sales) into an easy offline chart report without the AI reading raw rows. For teachers and anyone; hides names.
+description: "Turns anyone's spreadsheets (CSV/XLSX: scores, surveys, budgets, sales) into an easy offline chart report without the AI reading raw rows. Use when a teacher or anyone wants to compare groups, see a trend or summarize a survey; names are hidden."
 license: Apache-2.0
 ---
 

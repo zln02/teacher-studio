@@ -136,6 +136,50 @@ def doc_count_problems() -> list[str]:
     return out
 
 
+def skill_meta_text_problems(rel: str, text: str, folder: str) -> list[str]:
+    """Problems of one SKILL.md text: name = folder, description quoted if needed, >= 60 chars, says what it is for and when."""
+    out = []
+    m = re.match(r"---\r?\n(.*?)\r?\n---", text, re.S)
+    if not m:
+        return [f"{rel}: no frontmatter"]
+    fm = m.group(1)
+    name = re.search(r"^name:\s*(\S+)\s*$", fm, re.M)
+    if not name or name.group(1) != folder:
+        out.append(f"{rel}: name must be '{folder}'")
+    dm = re.search(r"^description:[ 	]*(.*)$", fm, re.M)
+    desc = dm.group(1).strip() if dm else ""
+    quoted = len(desc) > 1 and desc[0] in "\"'" and desc[-1] == desc[0]
+    if not quoted and (": " in desc or " #" in desc):
+        out.append(f"{rel}: description has ': ' or ' #' but is not quoted (invalid YAML: the skill list shows the heading instead) -> wrap it in double quotes")
+    body = desc[1:-1] if quoted else desc
+    try:
+        import yaml  # optional: when installed, the real parser must agree
+        data = yaml.safe_load(fm)
+        if not isinstance(data, dict) or not isinstance(data.get("description"), str):
+            out.append(f"{rel}: frontmatter does not parse as YAML with a text description")
+        else:
+            body = data["description"]
+    except ImportError:
+        pass
+    except Exception as exc:  # noqa: BLE001
+        out.append(f"{rel}: frontmatter is invalid YAML ({str(exc).splitlines()[0][:60]})")
+    if len(body) < 60:
+        out.append(f"{rel}: description is {len(body)} chars (< 60)")
+    elif not re.search(r"\b(for|when|use|start here)\b|쓸 때|할 때", body, re.I):
+        out.append(f"{rel}: description should say who/when it is for (e.g. 'for teachers and anyone', 'use when ...')")
+    return out
+
+
+def skill_meta_problems() -> list[str]:
+    """Every SKILL.md must pass skill_meta_text_problems (teacher-data once showed "Teacher Studio - Data Analysis Weapon" because of an unquoted ': ')."""
+    out = []
+    for skill in sorted((ROOT / "skills").iterdir()):
+        f = skill / "SKILL.md"
+        if f.exists():
+            out += skill_meta_text_problems(f.relative_to(ROOT).as_posix(), f.read_text(encoding="utf-8"), skill.name)
+    return out
+
+
 def check() -> int:
     """Report every drifted copy; return 1 if any."""
     problems: list[str] = []
@@ -149,6 +193,7 @@ def check() -> int:
         elif dst.read_bytes() != data:
             problems.append(f"drifted copy: {rel} (edit shared/ and run tools/sync_shared.py)")
     problems += doc_count_problems()
+    problems += skill_meta_problems()
     claude = (ROOT / "CLAUDE.md").read_text(encoding="utf-8").splitlines()[1:]
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").splitlines()[1:]
     if claude != agents:
