@@ -1,0 +1,6 @@
+{"title": "가계부 3개월 살펴보기", "audience": "선생님", "subject": "",
+ "analyses": [
+  {"id": "month", "type": "trend", "time": "날짜", "value": "금액", "agg": "sum", "freq": "month", "unit": "원", "metric": "지출", "title": "달별 지출 (원)", "filter": [{"column": "구분", "equals": "지출"}]},
+  {"id": "cat", "type": "groupby", "by": "분류", "value": "금액", "agg": "sum", "sort": "desc", "top": 5, "style": "share", "unit": "원", "metric": "지출", "title": "어디에 가장 많이 썼나요? 분류별 지출 (원)", "filter": [{"column": "구분", "equals": "지출"}]},
+  {"id": "food", "type": "trend", "time": "날짜", "value": "금액", "agg": "sum", "freq": "month", "by": "분류", "unit": "원", "metric": "지출", "title": "분류별 달 지출 변화 (원)", "filter": [{"column": "구분", "equals": "지출"}, {"column": "분류", "in": ["식비", "교통", "문화·여가"]}]}
+ ]}

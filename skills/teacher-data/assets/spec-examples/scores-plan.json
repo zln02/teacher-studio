@@ -1,0 +1,6 @@
+{"title": "단원평가 점수, 반별로 비교해 봤어요", "audience": "초등", "subject": "수학",
+ "analyses": [
+  {"id": "change", "type": "change", "by": "반", "time": "시험일", "value": "점수", "focus": "3반", "title": "반별 평균 점수: 지난달과 이번 달 (점)"},
+  {"id": "now", "type": "groupby", "by": "반", "value": "점수", "agg": "mean", "test": true, "title": "이번 달 시험, 반별 평균 점수 (점)", "filter": [{"column": "시험일", "equals": "2026-11"}]},
+  {"id": "bands", "type": "distribution", "column": "점수", "bins": [0, 60, 70, 80, 90, 101], "bin_labels": ["60점 미만", "60점대", "70점대", "80점대", "90점 이상"], "count_unit": "명", "title": "이번 달 시험, 점수대별 학생 수 (명)", "filter": [{"column": "시험일", "equals": "2026-11"}]}
+ ]}
