@@ -1,0 +1,301 @@
+<!-- 1 표지 -->
+<section class="slide cover" data-scene="cover" data-agenda="0">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbcards"><div>기획</div><div>콘티</div><div>제작</div><div>배포</div></div></div>
+  <div style="position:relative;z-index:2;margin-top:150px">
+    <div class="kicker">교사 연수 · 60분 · 직접 해 보기</div>
+    <h1>AI에게 <em>무기를</em> 주면</h1>
+    <p class="tag">기획부터 배포까지, ChatGPT·Claude에 내비를 켜 주는 법</p>
+  </div>
+  <div class="who"><b>AI교육코디네이터 박진영</b><span>·</span><span>무료 공개 · 재능기부</span></div>
+  <aside class="note">[0분] 인사만 짧게 하고 바로 들어가요. 「안녕하세요. 오늘은 외울 것도, 시험도 없어요. 보시고, 같이 해 보시면 돼요. 오늘 보여 드리는 건 전부 무료로 공개된 재능기부 도구예요.」 자기소개는 하지 않아요. 오른쪽 카드들은 오늘 우리가 지나갈 공정이에요(기획·대본·콘티·제작·수정·배포).</aside>
+</section>
+
+<!-- 2 오늘 해 볼 것 -->
+<section class="slide" data-agenda="0">
+  <div class="kicker">오늘 해 볼 것</div>
+  <div class="today">
+    <ol>
+      <li data-b="1">AI를 내비로 이해하기</li>
+      <li data-b="1">기획부터 시켜 보기</li>
+      <li data-b="1">하나 만들어서 폰으로 나눠 보기</li>
+    </ol>
+    <div class="motto" data-b="2">
+      <div class="k">오늘의 한 줄</div>
+      <div class="q">「<s>바로 만들어</s> 말고,<br>기획부터 같이 해 줘」</div>
+    </div>
+  </div>
+  <aside class="note">[1~3분] 읽어 드리지 않고 가볍게 훑어요. 「오늘은 이 세 가지만 해 볼게요.」 한 번 더 누르면 오늘의 한 줄이 나와요. 「오늘 딱 한 문장만 가져가신다면 이거예요. 바로 만들어 말고, 기획부터 같이 해 줘.」 줄이 그어지는 걸 보여 주고 넘어가요.</aside>
+</section>
+
+<!-- 3 섹션 1 -->
+<section class="slide section" data-agenda="1" data-fx="section">
+  <div class="bigno">01</div>
+  <h2>ChatGPT·Claude를<br><em>내비</em>로 이해하기</h2>
+  <div class="agenda"></div>
+  <aside class="note">[3분] 「어려운 말은 안 쓸게요. 오늘 진짜 용어는 딱 두 개, 프롬프트랑 환각만 나와요. 나머지는 전부 운전 이야기로 할게요. 운전 안 하시는 분도 내비는 다 아시잖아요.」</aside>
+</section>
+
+<!-- 4 같은 목적지, 두 길 -->
+<section class="slide" data-scene="nav" data-steps="3" data-agenda="1">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbcards"><div>내비 없이</div><div>내비 켜고</div><div>엉뚱한 문</div><div>정문 도착</div></div></div>
+  <div style="position:relative;z-index:2">
+    <div class="kicker">같은 목적지 · 학교에서 처음 가는 박물관까지</div>
+    <h2 style="font-size:64px">같은 차, <em>다른 도착</em></h2>
+  </div>
+  <div class="navcap">
+    <div class="half" data-b="1"><b>내비 없이</b><span>ChatGPT·Claude 그대로. 잘 달리는데 길을 몰라서 헤매다 엉뚱한 문에 도착해요</span></div>
+    <div class="half r" data-b="2"><b>내비 켜고</b><span>하네스를 깐 AI. 곧은 길, 불 켜진 경유지를 지나 정문에 딱 도착해요</span></div>
+  </div>
+  <aside class="note">[3~6분] 「학교에서 처음 가는 박물관에 간다고 해 볼게요. 차는 똑같아요.」 클릭 1: 「왼쪽은 내비가 없어요. 차는 정말 잘 달려요. ChatGPT, Claude가 원래 그래요. 그런데 길을 모르니까 이리저리 돌다가 후문에 도착해요.」 클릭 2: 「오른쪽은 내비를 켰어요. 가는 길에 불 켜진 경유지가 있고, 정문에 딱 도착해요.」 클릭 3에서 한 줄 정리는 다음 장에서 크게 보여 드려요.</aside>
+</section>
+
+<!-- 5 내비가 해 주는 다섯 가지 -->
+<section class="slide" data-scene="route" data-steps="5" data-agenda="1">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbrow" data-fbrow="1"><div>경로 3개</div><div>이 길 맞나요?</div><div>블랙박스</div><div>차량 점검</div><div>정문 도착</div></div></div>
+  <div class="side" style="width:720px">
+    <div class="kicker">내비를 켜면 생기는 일</div>
+    <h2 style="font-size:64px">길 위의 <em>다섯 경유지</em></h2>
+  </div>
+  <div class="wp">
+    <div class="wpc" data-only="0"><p class="sub">경유지마다 하네스가 하는 일이 하나씩 있어요</p></div>
+    <div class="wpc" data-only="1"><div class="n">1</div><h3>경로 3개 + 추천 하나</h3><p class="eq">= 기획 3안. 선생님이 고르기만 해요</p></div>
+    <div class="wpc" data-only="2"><div class="n">2</div><h3>「이 길 맞나요?」</h3><p class="eq">= 중간 확인, 콘티. 가다가 한 번 물어봐요</p></div>
+    <div class="wpc" data-only="3"><div class="n">3</div><h3>블랙박스</h3><p class="eq">= 출처 기록. 어디서 가져왔는지 남겨요</p></div>
+    <div class="wpc" data-only="4"><div class="n">4</div><h3>도착 전 차량 점검</h3><p class="eq">= 자동 검사. 글씨 크기, 색, 학생 정보</p></div>
+    <div class="wpc" data-only="5"><div class="n">5</div><h3>정문에 딱 도착</h3><p class="eq">= 배포. 폰 링크와 QR로 나눠요</p></div>
+  </div>
+  <aside class="note">[6~9분] 클릭할 때마다 차가 다음 경유지로 가요. ① 「내비는 경로를 세 개 보여 주고 하나를 추천하죠. 하네스도 바로 만들지 않고 기획을 세 가지 보여 줘요.」 ② 「가다가 '이 길 맞나요?' 한 번 물어봐요. 콘티를 보여 주고 확인받는 자리예요.」 ③ 「블랙박스처럼 어디서 가져왔는지 남겨요. 출처 기록이에요.」 ④ 「도착 전에 차량 점검. 다 만들면 스스로 검사해요.」 ⑤ 「그리고 정문에 딱. 폰으로 바로 나눠요.」</aside>
+</section>
+
+<!-- 6 한 줄 -->
+<section class="slide" data-agenda="1">
+  <div class="stmt">
+    <div class="kicker">한 줄로</div>
+    <div class="big" style="font-size:96px">AI는 원래 <em>잘 달리는 차</em>예요.<br>하네스는 <em>내비</em>예요.</div>
+    <p class="sub" data-b="1" style="font-size:48px;color:var(--ink);font-weight:700">같은 차인데, 도착이 달라요</p>
+  </div>
+  <aside class="note">[9분] 천천히 읽어요. 「AI는 원래 잘 달리는 차예요. 하네스는 내비예요.」 한 번 누르고: 「같은 차인데 도착이 달라요. 오늘 제가 드리는 게 이 내비예요.」</aside>
+</section>
+
+<!-- 7 진짜 용어 두 개 -->
+<section class="slide" data-agenda="1">
+  <div class="kicker">오늘 진짜 용어는 두 개뿐</div>
+  <h2 style="font-size:64px">프롬프트와 <em>환각</em></h2>
+  <div class="terms">
+    <div class="card" data-b="1">
+      <div class="tw">프롬프트</div>
+      <p class="as">내비에 <b>목적지를 찍는 것</b>. AI에게 하는 부탁 한 줄이에요</p>
+      <div class="nunu4"><span><i>누</i>누구에게</span><span><i>어</i>어디에</span><span><i>느</i>어떤 느낌</span><span><i>재</i>어떤 재료</span></div>
+      <p class="ex">「중2 우리 반이, 수업 끝 5분에, 신나게 할, 교과서 빛 단원 복습 게임」</p>
+    </div>
+    <div class="card" data-b="2">
+      <div class="tw">환각</div>
+      <p class="as"><b>길 모르는데 아는 척</b> 알려 주는 사람. 자신 있게 틀려요</p>
+      <div class="chk"><svg class="ic"><use href="#list-checks"/></svg><span>그래서 끝나면 한 번 확인<br><small>사실·숫자·출처는 원문으로</small></span></div>
+    </div>
+  </div>
+  <aside class="note">[9~11분] 「프롬프트는 내비에 목적지를 찍는 거예요. 누·어·느·재, 누구에게, 어디에, 어떤 느낌, 어떤 재료. 이 네 개를 넣을수록 정확해져요. 학생 이름·사진·성적은 재료로 넣지 않아요.」 「환각은 길 모르면서 '쭉 가서 왼쪽이요!' 하시는 분이에요. 친절하고 자신 있는데 가 보면 없어요. 그래서 사실, 숫자, 출처는 원문으로 한 번만 확인하시면 돼요.」</aside>
+</section>
+
+<!-- 8 섹션 2 -->
+<section class="slide section" data-agenda="2" data-fx="section">
+  <div class="bigno">02</div>
+  <h2>같은 부탁,<br><em>다른 결과</em></h2>
+  <div class="agenda"></div>
+  <aside class="note">[11분] 화면 두 개를 띄워요. 왼쪽은 내비 없는 AI, 오른쪽은 하네스를 깐 AI. 「같은 문장을 두 군데 똑같이 넣어 볼게요. 먼저 하네스 쪽에서 무슨 일이 일어나는지 길로 보여 드릴게요.」</aside>
+</section>
+
+<!-- 9 공정 = 길 위의 정거장 -->
+<section class="slide" data-scene="pipeline" data-steps="6" data-agenda="2">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbrow" data-fbrow="1"><div>기획</div><div>대본</div><div>콘티</div><div>제작</div><div>수정</div><div>배포</div></div></div>
+  <div style="position:relative;z-index:2">
+    <div class="kicker">하네스 쪽에서 일어나는 일</div>
+    <h2 style="font-size:64px">기획부터 배포까지, <em>여섯 정거장</em></h2>
+  </div>
+  <div class="capbar">
+    <div class="cap" data-only="0"><div class="no">6</div><div><h3>길 위의 여섯 정거장</h3><p>초록 문 세 곳에서만 선생님이 확인하시면 돼요</p></div></div>
+    <div class="cap" data-only="1"><div class="no">①</div><div><h3>기획 <span class="gate">✓ 선생님 고르기</span></h3><p>아이디어 3개와 분위기 카드를 보여 주고, 추천도 해요</p></div></div>
+    <div class="cap" data-only="2"><div class="no">②</div><div><h3>대본</h3><p>화면에 나올 말과 순서를 먼저 써요</p></div></div>
+    <div class="cap" data-only="3"><div class="no">③</div><div><h3>콘티 <span class="gate">✓ 이 길 맞나요?</span></h3><p>화면 흐름을 한 장으로 보여 줘요. 한 군데 고쳐 보세요</p></div></div>
+    <div class="cap" data-only="4"><div class="no">④</div><div><h3>제작</h3><p>만들고, 글씨 크기·색·학생 정보까지 스스로 점검해요</p></div></div>
+    <div class="cap" data-only="5"><div class="no">⑤</div><div><h3>수정</h3><p>「좀 더 밝게」 한마디면 그 부분만 고쳐요</p></div></div>
+    <div class="cap" data-only="6"><div class="no">⑥</div><div><h3>배포 <span class="gate">✓ 마지막 확인</span></h3><p>폰 링크와 QR로 나눠요. 학생 정보는 한 번 더 확인</p></div></div>
+  </div>
+  <aside class="note">[11~18분] 아까 그 길이에요. 정거장 이름만 바뀌었어요. 클릭마다 차가 다음 정거장으로 가요. 시연 화면과 번갈아 보여 주세요. ① 「바로 만들지 않고 아이디어 세 개를 보여 주네요. 저는 고르기만 해요.」 ② 대본. ③ 「콘티예요. 이 길 맞나요? 여기서 한 군데만 고쳐 볼게요.」 ④ 「만들고 나서 스스로 점검해요.」 ⑤ 「좀 더 밝게 해 줘.」 시간이 모자라면 ⑤는 말로만. ⑥ 「폰으로 바로 열리는 링크랑 QR이에요.」</aside>
+</section>
+
+<!-- 10~13 같은 부탁, 다른 결과 -->
+__COMPARE__
+
+<!-- 14 설치 -->
+<section class="slide" data-fx="install" data-agenda="3">
+  <div class="kicker">같이 설치 · 5분</div>
+  <h2>한 줄이면 돼요</h2>
+  <div class="typebox"><svg class="ic"><use href="#message-square"/></svg><div class="tx" data-type="github.com/zln02/teacher-studio 이 스킬 설치해 줘"></div><div class="send"><svg class="ic"><use href="#navigation"/></svg></div></div>
+  <div class="planb">
+    <div class="card" data-b="1"><svg class="ic"><use href="#check"/></svg><div><h3>준비 카드가 뜨면 성공</h3><p>「무엇을 만들까요?」가 나오면 끝</p></div></div>
+    <div class="card" data-b="2"><svg class="ic"><use href="#package"/></svg><div><h3>플랜 B: zip 올리기</h3><p>안 되면 안내서 1쪽, zip 7개를 설정 → Skills에</p></div></div>
+  </div>
+  <div class="timer" data-min="5"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke="#e4cfb3" stroke-width="7" fill="none"/><circle class="ring" cx="50" cy="50" r="44" stroke="#2f6b66" stroke-width="7" fill="none" stroke-linecap="round"/></svg><div class="tt"><b>5:00</b><span>눌러서 시작</span></div></div>
+  <aside class="note">[23~28분] 「모둠 대표 한 분이 노트북에서 해 주세요. AI 채팅창에 이 한 줄만 붙여 넣으시면 돼요.」 타이머는 숫자를 누르거나 T 키로 시작·멈춤이에요. 「'무엇을 만들까요?' 카드가 뜨면 성공이에요.」 막힌 모둠은 손 들어 주시면 제가 갈게요. 링크로 안 되면 안내서 1쪽 플랜 B, zip 파일을 올리는 방법이에요.</aside>
+</section>
+
+<!-- 15 미션 -->
+<section class="slide" data-fx="mission" data-agenda="4">
+  <div class="kicker">모둠 미션 · 17분</div>
+  <h2>기획부터 <em>시켜 보기</em></h2>
+  <div class="mission">
+    <div class="card" data-b="1"><div class="n">1</div><h3>「○○ 기획부터 같이 해 줘」</h3><p>만들고 싶은 걸 넣어서</p></div>
+    <div class="card" data-b="1"><div class="n">2</div><h3>세 가지 안 중 고르기</h3><p>추천 이유도 물어보기</p></div>
+    <div class="card" data-b="1"><div class="n">3</div><h3>콘티 보고 한 군데 고치기</h3><p>딱 한 군데만</p></div>
+    <div class="card" data-b="1"><div class="n">4</div><h3>완성</h3><p>스스로 검사까지</p></div>
+    <div class="card" data-b="1"><div class="n">5</div><h3>폰으로 공유</h3><p>링크나 QR로 옆 모둠에</p></div>
+  </div>
+  <div class="menu" data-b="2"><span class="t">메뉴판</span><span class="chip"><svg class="ic"><use href="#gamepad-2"/></svg>게임</span><span class="chip"><svg class="ic"><use href="#presentation"/></svg>슬라이드</span><span class="chip"><svg class="ic"><use href="#clapperboard"/></svg>영상</span><span class="chip"><svg class="ic"><use href="#timer"/></svg>수업 도구</span><span class="chip"><svg class="ic"><use href="#chart-column"/></svg>데이터 보고서</span><span class="chip"><svg class="ic"><use href="#scale"/></svg>가정통신문 법 확인</span></div>
+  <div class="timer" data-min="17" style="top:300px"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke="#e4cfb3" stroke-width="7" fill="none"/><circle class="ring" cx="50" cy="50" r="44" stroke="#a8471c" stroke-width="7" fill="none" stroke-linecap="round"/></svg><div class="tt"><b>17:00</b><span>눌러서 시작</span></div></div>
+  <aside class="note">[28~45분] 「이제 모둠별로 해 보실 시간이에요. 다섯 칸만 따라가시면 돼요. 제일 중요한 건 첫 칸이에요. 바로 만들어 말고, 기획부터 같이 해 줘.」 메뉴판에서 하나 고르셔도 되고, 평소 필요하던 걸 하셔도 돼요. 타이머는 숫자를 누르거나 T 키로 시작해요. 저는 돌아다니면서 막힌 모둠을 도울게요.</aside>
+</section>
+
+<!-- 16 부정행위 표지 -->
+<section class="slide dark ctitle" data-agenda="5">
+  <div style="margin-top:140px">
+    <div class="kicker">45~55분 · 감독 들어가시는 선생님께</div>
+    <h1>AI 시험 부정행위,<br><em>감독교사가</em> 알아야 할 것</h1>
+    <p class="sub">겁주려는 게 아니에요. 순서대로 살피는 법만 알려 드려요</p>
+  </div>
+  <div class="flow"><i style="animation-delay:0s"></i><i style="animation-delay:-2s"></i><i style="animation-delay:-4s"></i></div>
+  <aside class="note">[45분] 「여기서부터 10분은 감독 들어가실 때 마음이 조금 가벼워지시라고 준비했어요. 겁주는 시간이 아니에요. 특정 기기 이름이나 따라 하는 방법은 말씀드리지 않고, 큰 갈래만 이야기할게요.」</aside>
+</section>
+
+<!-- 17 의심은 증거가 아니에요 -->
+<section class="slide dark" data-agenda="5">
+  <div class="stmt">
+    <div class="kicker">오늘 한 줄</div>
+    <div class="big"><em>의심은 증거가 아니에요.</em><br>살피되, 단정하지 말아요</div>
+    <p class="sub" data-b="1">착용 위반과 실제 사용을 따로 적어요</p>
+  </div>
+  <aside class="note">[46분] 「주방에서 연기가 난다고 바로 누가 태웠다고 하진 않잖아요. 불부터 끄고, 무슨 일인지는 나중에 같이 봐요. 감독도 똑같아요. 시험이 끊기지 않게 조용히 확인하고, 판단은 시험 뒤 절차로 넘겨요.」</aside>
+</section>
+
+<!-- 18 부정행위 3D 파이프라인 -->
+<section class="slide dark" data-scene="cheat" data-steps="7" data-agenda="5">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbrow" data-fbrow="1"><div>사전</div><div>입력</div><div>전송</div><div>연산</div><div>출력</div><div>기타</div></div></div>
+  <div class="ctitle2"><div class="kicker">한눈에 보는 길</div><h2>정보는 이 <em>여섯 칸</em>을 지나가요</h2></div>
+  <div class="panel">
+    <div class="card" data-only="1"><div class="st">1 · 사전</div><h3>미리 만든 자료·유출</h3><div class="row"><b class="c">단서</b><span>서로 같은 오답, 이상하게 비슷한 답</span></div><div class="row"><b>예방</b><span>문항 변형, 유형 여러 개, 출제 보안</span></div></div>
+    <div class="card" data-only="2"><div class="st">2 · 입력</div><h3>문제를 담는 웨어러블</h3><div class="row"><b class="c">단서</b><span>시험 직전 안경 교체, 안경테 만지기, 시선 고정</span></div><div class="row"><b>예방</b><span>입실 전 안경 확인 요청, 반입 금지 안내</span></div></div>
+    <div class="card" data-only="3"><div class="st">3 · 전송</div><h3>휴대폰 중계·무선</h3><div class="row"><b class="c">단서</b><span>걷지 않은 휴대폰의 진동·알림</span></div><div class="row"><b>예방</b><span>일괄 수거·보관, 시작 전 최종 확인</span></div></div>
+    <div class="card" data-only="4"><div class="st">4 · 연산</div><h3>클라우드 AI·조력자</h3><div class="row"><b class="c">단서</b><span>답 속도나 표현이 평소와 크게 달라요</span></div><div class="row"><b>예방</b><span>서술형·구술 확인, 학생별 맞춤 문항</span></div></div>
+    <div class="card" data-only="5"><div class="st">5 · 출력</div><h3>소리·화면·진동으로 답 받기</h3><div class="row"><b class="c">단서</b><span>귀를 자꾸 만지기, 입 움직임, 반복되는 시선</span></div><div class="row"><b>예방</b><span>순찰, 좌석 배치, 인권 범위 안에서 확인</span></div></div>
+    <div class="card" data-only="6"><div class="st">6 · 기타</div><h3>공모·대리·과제 대필</h3><div class="row"><b class="c">단서</b><span>과제와 교실 실력의 큰 차이</span></div><div class="row"><b>예방</b><span>수업 중 손글씨, 한마디 질문, 과정 평가</span></div></div>
+  </div>
+  <div class="block-cap" data-only="7"><svg class="ic"><use href="#shield-check"/></svg><div><h3>한 칸만 막아도 끊겨요</h3><p>가장 튼튼한 예방은 시작 전에 걷고 확인하기</p></div></div>
+  <aside class="note">[47~51분] 처음엔 점들이 여섯 칸을 지나가요. 「배달 음식처럼 생각해 보세요. 재료를 사 오고, 주문을 넣고, 보내고, 만들고, 문 앞에 도착해요.」 클릭마다 한 칸씩 가까이 가서 단서와 예방이 나와요. 「단서는 냄새 같아요. 냄새가 난다고 범인은 아니지만 한 번 더 볼 이유는 되죠.」 뒤의 칸(연산·기타)은 「시험장에서 잡기보다 평가를 설계해서 푸는 쪽이 커요. 손글씨, 한마디 질문, 과정 평가가 그 한 숟갈이에요.」 마지막 클릭은 전송 칸에 벽이 서고 점들이 멈춰요. 「한 칸만 막아도 끊겨요. 시작 전에 걷고 확인하는 것, 그게 제일 튼튼한 뚜껑이에요.」 기기·제품 이름, 설정 방법은 말하지 않아요.</aside>
+</section>
+
+<!-- 19 여섯 칸 표 -->
+<section class="slide dark" data-agenda="5">
+  <div class="kicker">한 장으로 다시</div>
+  <h2 style="font-size:60px;margin-bottom:20px">여섯 칸, <em>단서</em>와 <em>예방</em></h2>
+  <table class="six">
+    <tr><th>칸</th><th>단서 (의심일 뿐)</th><th>예방</th></tr>
+    <tr data-b="1"><td>사전</td><td class="c">같은 오답, 이상하게 비슷한 답</td><td class="p">문항 변형, 유형 여러 개, 출제 보안</td></tr>
+    <tr data-b="1"><td>입력</td><td class="c">시험 직전 안경 교체, 시선 고정</td><td class="p">입실 전 안경 확인 요청, 반입 금지 안내</td></tr>
+    <tr data-b="1"><td>전송</td><td class="c">걷지 않은 휴대폰의 진동·알림</td><td class="p">일괄 수거·보관, 시작 전 최종 확인</td></tr>
+    <tr data-b="2"><td>연산</td><td class="c">답 속도·표현이 평소와 크게 다름</td><td class="p">서술형·구술 확인, 학생별 맞춤 문항</td></tr>
+    <tr data-b="2"><td>출력</td><td class="c">귀 만지기, 입 움직임, 반복 시선</td><td class="p">순찰, 좌석 배치, 인권 범위 안 확인</td></tr>
+    <tr data-b="2"><td>기타</td><td class="c">과제와 교실 실력의 큰 차이</td><td class="p">수업 중 손글씨, 구두 질문, 과정 평가</td></tr>
+  </table>
+  <aside class="note">[51분] 시간이 모자라면 이 장은 건너뛰어도 돼요(앞 장과 같은 내용). 「앞의 세 칸은 시험장에서, 뒤의 세 칸은 평가를 설계하면서 막아요.」 A4 체크리스트에도 같은 내용이 있어요.</aside>
+</section>
+
+<!-- 20 이렇게 해요 / 하지 않아요 -->
+<section class="slide dark" data-agenda="5">
+  <div class="kicker">법이 그어 준 선</div>
+  <h2 style="font-size:64px">이렇게 해요 / <em>하지 않아요</em></h2>
+  <div class="dodont">
+    <div class="card yes" data-b="1">
+      <h3><svg class="ic"><use href="#check"/></svg>이렇게 해요</h3>
+      <ul><li>시작 전에 걷고, 한 번 더 확인</li><li>요청하고 협조 구하기<small>비접촉, 동성 감독</small></li><li>사실만 메모, 판단은 절차로</li></ul>
+    </div>
+    <div class="card no" data-b="2">
+      <h3><svg class="ic"><use href="#ban"/></svg>하지 않아요</h3>
+      <ul><li>전파 차단 장치 사용<small>법이 정한 경우가 아니면 학교가 쓸 수 없어요</small></li><li>몸 수색, 억지로 벗기기</li><li>공개 지목, 학생 사진·영상 임의 저장</li></ul>
+    </div>
+  </div>
+  <p class="fn">관련 조문은 연수 직전 국가법령정보센터 원문으로 다시 확인해요</p>
+  <aside class="note">[52분] 「제일 중요한 두 줄이에요. 하나, 전파를 막는 장치는 법이 정한 경우가 아니면 쓸 수 없어요. 학교가 임의로 쓰면 안 돼요. 둘, 몸을 뒤지거나 억지로 벗기게 하는 건 안 돼요. 요청하고 협조를 구하는 데까지예요.」 처벌 숫자는 말하지 않아요. 전파법 조문은 아직 원문 대조 전이라(국가법령정보센터 law.go.kr) 연수 직전에 확인하고, 확인 전이면 '법이 정한 경우가 아니면 못 쓴다'까지만 말해요.</aside>
+</section>
+
+<!-- 21 착용 ≠ 사용 -->
+<section class="slide dark" data-fx="neq" data-agenda="5">
+  <div class="kicker">따로 적어요</div>
+  <h2 style="font-size:64px">착용 <em>≠</em> 사용</h2>
+  <div class="neq">
+    <div class="card" data-b="1"><div class="tag">기록 1</div><h3>반입 금지 위반</h3><p>착용·소지했는지, 때와 자리, 제출 안내를 했는지</p></div>
+    <svg viewBox="0 0 180 180"><path d="M30 70H150M30 110H150" stroke="#f2a65a" stroke-width="12" stroke-linecap="round"/><path class="slash" d="M120 26L60 154" stroke="#f2a65a" stroke-width="12" stroke-linecap="round"/></svg>
+    <div class="card" data-b="2"><div class="tag">기록 2</div><h3>실제 사용</h3><p>본 것 그대로만. 결론은 감독이 내리지 않아요</p></div>
+  </div>
+  <p class="knife" data-b="3">칼을 들고 있는 것과 칼로 베는 것은 달라요</p>
+  <aside class="note">[53분] 「칼을 들고 있는 것과 칼로 누군가를 베는 건 다르죠. 반입 금지를 어긴 사실과 실제로 부정하게 쓴 건 따로 적어요.」 「수능은 교육부가 따로 정한 엄격한 규정이 있어요. 우리 학교 시험 규정은 꼭 따로 확인해 주세요.」 처벌 기간 같은 숫자는 말하지 않아요.</aside>
+</section>
+
+<!-- 22 체크리스트 -->
+<section class="slide dark" data-agenda="5">
+  <div class="kicker">손에 쥐는 한 장 · A4</div>
+  <h2 style="font-size:60px;margin-bottom:18px">2분 <em>감독 체크리스트</em></h2>
+  <div>
+    <div class="check" data-b="1"><span class="w">입실 전</span><span class="t">휴대폰·스마트워치·이어폰 등 전자기기 제출 안내</span><span class="bx">✓</span></div>
+    <div class="check" data-b="1"><span class="w">입실 전</span><span class="t">안경·귀 주변 확인 요청 (요청·비접촉, 동성 감독)</span><span class="bx">✓</span></div>
+    <div class="check" data-b="2"><span class="w">시작 직전</span><span class="t">책상 위 정리, 「제출하지 않은 기기 있나요?」 한 번 더</span><span class="bx">✓</span></div>
+    <div class="check" data-b="3"><span class="w">시험 중</span><span class="t">순찰하며 살피기: 안경·귀 만지기, 시선 고정, 진동·알림</span><span class="bx">✓</span></div>
+    <div class="check" data-b="4"><span class="w">의심될 때</span><span class="t">시험을 멈추지 않고 확인 요청, 학생 앞에서 단정하지 않기</span><span class="bx">✓</span></div>
+    <div class="check" data-b="4"><span class="w">의심될 때</span><span class="t">사실만 메모 (때·자리·본 것)</span><span class="bx">✓</span></div>
+    <div class="check" data-b="5"><span class="w">시험 후</span><span class="t">교무실에 보고, 판단은 절차에 맡기기</span><span class="bx">✓</span></div>
+  </div>
+  <aside class="note">[54분] 「A4 한 장이에요. 클립보드에 끼워 가세요. 2분이면 다 읽어요.」 때 순서대로 한 줄씩 나와요. 인쇄본을 나눠 드리면서 넘겨요.</aside>
+</section>
+
+<!-- 23 핵심 메시지 5 -->
+<section class="slide dark" data-agenda="5">
+  <div class="kicker">다섯 가지만 기억해요</div>
+  <h2 style="font-size:60px;margin-bottom:10px">감독 <em>핵심 메시지</em></h2>
+  <ol class="five">
+    <li data-b="1">여섯 칸별 단서로 살펴요</li>
+    <li data-b="2">기기 수거와 사전 확인이 가장 잘 듣는 예방이에요</li>
+    <li data-b="3">의심은 증거가 아니에요<small>착용 위반과 실제 사용을 따로 적어요</small></li>
+    <li data-b="4">전파 차단은 하지 않아요<small>학생 인권·개인정보를 지키는 선에서 확인해요</small></li>
+    <li data-b="5">긴 해법은 평가 설계예요<small>손글씨, 한마디 질문, 문항 변형, 과정 평가</small></li>
+  </ol>
+  <aside class="note">[55분] 「다섯 가지를 한 번씩 읽을게요.」 한 줄씩 누르면서 읽어요. 「오늘 이야기가 부담이 아니라 준비가 되셨으면 좋겠어요.」</aside>
+</section>
+
+<!-- 24 그래서 제가 만들었습니다 -->
+<section class="slide dark" data-scene="made" data-agenda="6">
+  <div class="gl"></div><div class="labels"></div>
+  <div class="fb"><div class="fbcards"><div>게임</div><div>슬라이드</div><div>영상</div><div>수업 도구</div></div></div>
+  <div class="made">
+    <div class="kicker">마무리</div>
+    <h1>그래서 제가<br><em>만들었습니다</em> 😎</h1>
+    <p class="sub">게임·슬라이드·영상·수업 도구·데이터·법 확인까지. 코딩은 몰라도 돼요. 무료 공개, 재능기부예요</p>
+  </div>
+  <aside class="note">[56~58분] 모둠 한 곳 자랑을 1분 들은 다음 이 장으로 와요. 「제가 그동안 겪고 해결해 온 것들을 한데 묶었어요. 그게 오늘 깔아 드린 인수인계 파일이에요. 😎 돈 받는 거 없는 재능기부예요. 아직 못 하는 것도 있으니, 쓰시다 부족하면 꼭 알려 주세요.」</aside>
+</section>
+
+<!-- 25 꿀팁 3줄 -->
+<section class="slide" data-agenda="6">
+  <div class="kicker">가져갈 꿀팁 3줄</div>
+  <ol class="tips">
+    <li data-b="1"><span class="n">1</span><div><h3>기획부터</h3><p>「바로 만들어」 대신 「기획부터 같이 해 줘」</p></div></li>
+    <li data-b="2"><span class="n">2</span><div><h3>막연하면 고르게 시키기</h3><p>「3가지 안을 보여 주고 추천도 해 줘」</p></div></li>
+    <li data-b="3"><span class="n">3</span><div><h3>끝나면 확인</h3><p>사실·숫자·출처는 원문으로, 학생 정보는 넣지 않기</p></div></li>
+  </ol>
+  <div class="resp" data-b="4"><svg class="ic"><use href="#shield-check"/></svg>AI가 만들어도, 마지막 책임은 선생님께 있어요</div>
+  <div class="qr"><div class="box">__QR__</div><p>교사 스튜디오<br>github.com/zln02/teacher-studio</p></div>
+  <aside class="note">[58~60분] 「세 줄만 가져가세요. 기획부터, 막연하면 고르게, 끝나면 확인.」 마지막 줄: 「AI가 아무리 잘 만들어도, 마지막 책임은 선생님께 있어요. 그래서 확인하는 세 곳이 중요해요.」 QR은 사이트예요. 「오늘 함께해 주셔서 감사합니다.」</aside>
+</section>
