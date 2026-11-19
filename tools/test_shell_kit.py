@@ -47,7 +47,7 @@ class AiLookTests(unittest.TestCase):
         self.assertTrue(ai_look.is_house("#f0eee6", ["#1a1a1a", "#c15f3c"], "Georgia, serif"))
         self.assertFalse(ai_look.is_house("#faf9f5", ["#d97757"], "Noto Sans KR"))      # sans headline
         self.assertFalse(ai_look.is_house("#ffffff", ["#d97757"], "Noto Serif KR"))     # pure white is not cream
-        self.assertFalse(ai_look.is_house("#faf9f5", ["#2f5bea"], "Noto Serif KR"))     # blue accent
+        self.assertTrue(ai_look.is_house("#faf9f5", ["#2f5bea"], "Noto Serif KR"))      # cream + serif: any accent
         self.assertFalse(ai_look.is_house("#14110f", ["#d97757"], "Noto Serif KR"))     # dark page
 
     def test_thresholds_edges(self):

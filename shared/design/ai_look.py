@@ -7,7 +7,7 @@ Rule: never default to an AI-company house look. The user's own palette / templa
 
 Measured, not guessed. Colours are read in OKLCH (oklch.py): L = lightness 0..1, C = chroma (colourfulness), h = hue in degrees.
 
-1. "AI house" combo (the main case: cream paper + terracotta/clay accent + serif headline). WARN only when ALL THREE hold:
+1. "AI house" combo (cream paper + serif headline, with any accent; terracotta/clay is the classic one). WARN when the first and third hold (the accent is reported but not required):
    - CREAM background : L >= 0.88, 0.004 <= C <= 0.07, 55 <= h <= 110       (warm off-white / beige / linen; pure white and grey have C < 0.004)
    - CLAY accent      : 0.42 <= L <= 0.78, 0.07 <= C <= 0.19, 32 <= h <= 62  (terracotta, clay, burnt orange; e.g. #d97757 = L .67 C .13 h 39)
                         h < 32 is red / dancheong vermilion (#a82920 = h 29) and h > 62 is ochre / gold (#b08d3c = h 86): both are not this look.
@@ -78,9 +78,9 @@ def is_serif(family: str) -> bool:
 
 
 def is_house(bg: str, accents, heading_font: str) -> bool:
-    """The cream + clay + serif combo (all three)."""
+    """Cream paper + serif headline (the accent hue no longer matters: terracotta, gold ... all read as the same house look)."""
     accents = [accents] if isinstance(accents, str) else list(accents or [])
-    return is_cream(bg) and any(is_clay(a) for a in accents) and is_serif(heading_font)
+    return is_cream(bg) and is_serif(heading_font)  # cream paper + serif headline reads as the house look whatever the accent hue (clay, gold, ...)
 
 
 def measure(bg: str, accents, heading_font: str) -> dict:
@@ -103,7 +103,7 @@ def check_tokens(tokens: dict) -> list[str]:
 
 
 def house_line() -> str:
-    return ("AI 회사 기본 느낌: 크림색 배경 + 테라코타(벽돌색) 강조 + 명조(세리프) 제목 조합이에요. 흔한 'AI가 만든 티'가 나요. "
+    return ("AI 회사 기본 느낌: 크림색 배경 + 명조(세리프) 제목 조합이에요(강조색이 뭐든). 흔한 'AI가 만든 티'가 나요. "
             "배경을 흰색·다른 색으로, 강조색을 다른 색으로, 또는 제목을 고딕으로 바꿔 주세요 (선생님 로고·양식 색이면 그대로 두셔도 돼요).")
 
 

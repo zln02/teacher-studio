@@ -45,7 +45,7 @@ LANG: dict[str, dict] = {
                         prefer={"bento": 4, "stack": 3, "center": 2, "split": 2, "poster": 1, "editorial": 1, "bigtype": 1}),
     "retro-pixel": dict(font="sans", tw=900, ls=0.0, title="pixel", card="pixel", em="color", bg="pixel", trans="wipe", rad=0,
                         prefer={"split": 3, "bento": 3, "bigtype": 2, "stack": 2, "poster": 1, "editorial": 1}),
-    "minimal-premium": dict(font="serif", tw=700, ls=-0.015, title="serif", card="hair", em="underline", bg="minimal", trans="fade", rad=2,
+    "minimal-premium": dict(font="sans", tw=800, ls=-0.02, title="plain", card="hair", em="underline", bg="minimal", trans="fade", rad=2,
                             prefer={"editorial": 4, "poster": 4, "split": 3, "bigtype": 2, "stack": 1, "bento": 1}),
     "chalk-paper": dict(font="sans", tw=800, ls=-0.01, title="chalk", card="chalk", em="underline", bg="chalk", trans="fade", rad=18,
                         prefer={"stack": 3, "split": 3, "editorial": 2, "bento": 2, "poster": 1, "bigtype": 1}),
