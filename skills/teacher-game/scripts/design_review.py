@@ -17,6 +17,9 @@ Metrics (per screen, then summarised) - all measured, none guessed:
   min_contrast   lowest text-to-background contrast (WCAG ratio) among text >= 34px
   overlaps       text boxes that overlap each other / the host character
 Compared with the legacy skins (assets/design-baseline.json): below baseline -> WARN with a concrete hint. Exit 0 always (advisory gate).
+device:"phone" games are also rendered at 390x844 (upright) and 844x390 (sideways): <name>-phone.png + the real smallest text size, off-screen
+parts and tap targets (scripts/phone_check.py). Unreadable text there makes the verdict FAIL.
+The summary uses the WORST screen (max overlaps, min contrast over title/question/correct/wrong/result), not the average.
 """
 from __future__ import annotations
 
@@ -263,8 +266,8 @@ def summarise(metrics: dict) -> dict:
     out = {k: round(statistics.mean(m[k] for m in play), 3) for k in keys if play}
     out["hierarchy"] = max(m["hierarchy"] for m in metrics.values())
     if "min_contrast" in out:
-        out["min_contrast"] = round(min(m["min_contrast"] for m in play), 2)
-        out["overlaps"] = max(m["overlaps"] for m in play)
+        out["min_contrast"] = round(min(m["min_contrast"] for m in metrics.values()), 2)  # worst screen, title and result included
+        out["overlaps"] = max(m["overlaps"] for m in metrics.values())
     if "title" in metrics:
         out["title_empty_ratio"] = metrics["title"]["empty_ratio"]
         out["title_deco_density"] = metrics["title"]["deco_density"]
@@ -384,11 +387,64 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
     if plain >= 3:
         verdict = "WARN" if verdict == "PASS" else verdict
         hints.append(f"기호만 있는 밋밋한 흰 카드가 {plain}장 보여요 → 카드 뒷면/카드에 무늬·그림을 넣으세요(자동 테마는 기본으로 넣어요, theme를 auto로 바꿔 보세요)")
-    res = {"file": html.name, "sheet": str(sheet), "screens": metrics, "summary": summ, "verdict": verdict, "hints": hints,
+    if gs.get("device") == "phone":
+        try:
+            ph = phone_review(html, out_dir, gs)
+            summ["phone_verdict"] = ph["verdict"]
+            if ph["fails"]:
+                verdict = "FAIL"
+                hints += ["폰 화면에서 쓸 수 없어요: " + m for m in ph["fails"]]
+            elif ph["warns"]:
+                verdict = "WARN" if verdict == "PASS" else verdict
+                hints += ["폰 화면 주의: " + m for m in ph["warns"]]
+            phone = ph
+        except Exception as exc:  # no browser etc.: the main review still counts
+            phone = {"error": str(exc).splitlines()[0][:80]}
+            hints.append("폰 화면 점검을 건너뛰었어요 (" + phone["error"] + ")")
+    else:
+        phone = None
+    res = {"file": html.name, "sheet": str(sheet), "screens": metrics, "phone": phone, "summary": summ, "verdict": verdict, "hints": hints,
            "missing_screens": [k for k in ("correct", "wrong") if k not in shots], "prop_relevance": rel,
            "mechanic": mech, "layout": gs.get("layoutCfg"), "fingerprint": fp, "similar_to": same[:3]}
     (out_dir / f"{html.stem}-metrics.json").write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
     return res
+
+
+def phone_review(html: Path, out_dir: Path, spec: dict) -> dict:
+    """390x844 + 844x390 renders of a device:"phone" game: contact sheet PNG + measured readability (phone_check.py)."""
+    import phone_check
+    from PIL import Image, ImageDraw
+    from playwright.sync_api import sync_playwright
+    portrait_game = spec.get("mechanic") in ("quiz",)
+    shots: dict = {}
+    res: dict = {}
+    lines: list = []
+    with sync_playwright() as p:
+        for orient in ("portrait", "landscape"):
+            sh: dict = {}
+            probes, errors = phone_check.run_viewport(p, html, orient, sh, Image)
+            shots[orient] = sh
+            res[orient] = {k: {"min_font_px": round(v["minFont"], 1), "tiny_buttons": len(v["tiny"]), "offscreen": len(v["offscreen"]), "clipped": len(v["clipped"])} for k, v in probes.items()}
+            lines += phone_check.evaluate(orient, probes, errors, portrait_game)
+    cell_p, cell_l, cap = (234, 506), (506, 234), 22
+    names_p = ["title", "question", "answered", "result"]
+    names_l = ["question", "answered"]
+    sheet = Image.new("RGB", (8 + 4 * (cell_p[0] + 8), 8 + cap + cell_p[1] + 8 + cap + cell_l[1] + 8), (24, 24, 28))
+    d = ImageDraw.Draw(sheet)
+    for i, n in enumerate(names_p):
+        x, y = 8 + i * (cell_p[0] + 8), 8
+        d.text((x + 2, y + 4), "390x844 " + n + "  min %.1fpx" % res["portrait"][n]["min_font_px"], fill=(235, 235, 240))
+        sheet.paste(shots["portrait"][n].resize(cell_p), (x, y + cap))
+    for i, n in enumerate(names_l):
+        x, y = 8 + i * (cell_l[0] + 8), 8 + cap + cell_p[1] + 8
+        d.text((x + 2, y + 4), "844x390 " + n + "  min %.1fpx" % res["landscape"][n]["min_font_px"], fill=(235, 235, 240))
+        sheet.paste(shots["landscape"][n].resize(cell_l), (x, y + cap))
+    path = out_dir / f"{html.stem}-phone.png"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    sheet.quantize(colors=128, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).save(path, optimize=True)
+    fails = [m for lv, m in lines if lv == "FAIL"]
+    warns = [m for lv, m in lines if lv == "WARN"]
+    return {"sheet": str(path), "screens": res, "verdict": "FAIL" if fails else ("WARN" if warns else "PASS"), "fails": fails, "warns": warns}
 
 
 def make_baseline(folder: Path) -> int:
@@ -449,6 +505,8 @@ def main() -> int:
     if res.get("summary"):
         print("  " + "  ".join(f"{k}={v}" for k, v in res["summary"].items()))
         print(f"  sheet: {res['sheet']}")
+        if res.get("phone") and res["phone"].get("sheet"):
+            print(f"  phone sheet: {res['phone']['sheet']}  ({res['phone']['verdict']})")
     for h in res["hints"]:
         print("  - " + h)
     if res.get("missing_screens"):

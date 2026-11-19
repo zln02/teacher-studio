@@ -3,7 +3,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>교사 스튜디오 · 게임</title>
 <!-- Korean display fonts (Google Fonts only; system fonts are the fallback) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,14 +30,14 @@ html,body{width:100%;height:100%;overflow:hidden;background:#05060f;overscroll-b
 body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-user-select:none;touch-action:manipulation}
 #app{position:fixed;left:0;top:0;width:100%;height:100%;overflow:hidden;background:linear-gradient(160deg,var(--bg1),var(--bg2))}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;touch-action:none}
-#bg,#fx{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+#bg,#fx{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 #fx{z-index:40}
-#scene{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:10}
-#hud{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:30;pointer-events:none}
+#scene{position:absolute;left:0;top:0;width:100%;height:100%;z-index:10}
+#hud{position:absolute;left:0;top:0;width:100%;height:100%;z-index:30;pointer-events:none}
 #hud>*{pointer-events:auto}
-#overlay{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
+#overlay{position:absolute;left:0;top:0;width:100%;height:100%;z-index:50;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55)}
 #overlay.show{display:flex}
-.screen{position:absolute;left:0;top:0;width:1920px;height:1080px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.screen{position:absolute;left:0;top:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .screen>*+*{margin-top:24px}
 .screen>.abs,.screen>[style*="position:absolute"],.screen>[style*="position: absolute"]{margin-top:0}
 .title{font-family:var(--font-display);font-size:150px;line-height:1.05;text-align:center;letter-spacing:2px;color:var(--text);text-shadow:0 8px 0 rgba(0,0,0,.25),var(--glow)}
@@ -48,7 +48,7 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 @keyframes shine{0%{left:-60%}35%,100%{left:130%}}
 .mascot{position:absolute;pointer-events:none}
 .ng-char{overflow:visible}.ng-char *{transform-box:fill-box;transform-origin:center}
-.vignette{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:5;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.35) 100%)}
+.vignette{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:5;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,var(--vig,.35)) 100%)}
 .subtitle{font-size:46px;color:var(--text);opacity:.8;font-weight:700;text-align:center}
 .h1{font-family:var(--font-display);font-size:96px;text-align:center;line-height:1.15}
 .h2{font-family:var(--font-display);font-size:64px;text-align:center;line-height:1.2}
@@ -74,7 +74,7 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 .toast{position:absolute;left:50%;bottom:40px;transform:translateX(-50%);font-size:44px;font-weight:900;padding:18px 44px;border-radius:999px;background:rgba(0,0,0,.65);color:#fff;z-index:46;pointer-events:none}
 .float{position:absolute;font-family:var(--font-display);font-size:72px;pointer-events:none;z-index:44;text-shadow:0 4px 0 rgba(0,0,0,.35)}
 /* HUD */
-.hud-top{position:absolute;left:0;top:0;width:1920px;height:120px;display:flex;align-items:center;justify-content:space-between;padding:0 36px}
+.hud-top{position:absolute;left:0;top:0;width:100%;height:120px;display:flex;align-items:center;justify-content:space-between;padding:0 36px}
 .hud-progress{position:absolute;left:0;top:0;height:12px;background:var(--accent);box-shadow:var(--glow);transition:width .4s ease-out}
 .icon-btn{width:88px;height:88px;border-radius:50%;border:none;background:rgba(0,0,0,.35);color:#fff;font-size:44px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:16px}
 .icon-btn:active{transform:scale(.92)}
@@ -115,7 +115,7 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 [data-skin="arcade"] .choice .mark{border-radius:4px}
 [data-skin="arcade"] .title{color:var(--primary);text-shadow:6px 6px 0 var(--accent),12px 12px 0 #000}
 [data-skin="arcade"] .team{border-radius:6px}
-[data-skin="arcade"] #stage:after{content:"";position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:60;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);mix-blend-mode:multiply}
+[data-skin="arcade"] #stage:after{content:"";position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:60;background:repeating-linear-gradient(0deg,rgba(0,0,0,.18) 0 2px,transparent 2px 5px);mix-blend-mode:multiply}
 /* hanok: hanji paper, ink borders, brush title, seal-stamp badges, dancheong bands */
 [data-skin="hanok"] #app{background:#efe2c4}
 [data-skin="hanok"] .card,[data-skin="hanok"] .choice{border-radius:10px;border:5px solid #2b2118;box-shadow:6px 6px 0 rgba(43,33,24,.25);background-image:radial-gradient(rgba(139,107,62,.10) 1px,transparent 1.5px),linear-gradient(#fffaf0,#fbf1dc);background-size:9px 9px,100% 100%}
@@ -157,21 +157,21 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 .enter{animation:floatIn .35s cubic-bezier(.22,1,.36,1) both}
 @media (prefers-reduced-motion:reduce){.title .ch,.pulse,.enter,.stars span.on{animation:none!important}}
 .reduce .title .ch,.reduce .pulse,.reduce .enter,.reduce .stars span.on{animation:none!important}
+/* a phone held upright with a game that has no portrait layout: ask to turn it (outside the stage, always readable) */
+body[data-rotate="1"] #app:after{content:"폰을 가로로 돌려 주세요 ↻";position:absolute;left:0;right:0;top:0;padding:14px 12px;text-align:center;font:700 18px/1.4 system-ui,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;color:#fff;background:rgba(0,0,0,.78);z-index:99;pointer-events:none}
 </style>
 </head>
 <body>
 <div id="app"><div id="stage">
-  <canvas id="bg" width="1920" height="1080"></canvas>
+  <canvas id="bg" width="1920" height="1080" style="width:100%;height:100%"></canvas>
   <div class="vignette"></div>
   <div id="scene"></div>
   <div id="hud"></div>
-  <canvas id="fx" width="1920" height="1080"></canvas>
+  <canvas id="fx" width="1920" height="1080" style="width:100%;height:100%"></canvas>
   <div id="overlay"></div>
 </div></div>
 
-<!-- ASSET PACKS (optional): real sprites and sounds (Kenney CC0).
-     Online: add a script tag with src = https://cdn.jsdelivr.net/npm/teacher-studio-assets@0.1.0/kenney-platformer-core.js
-     Offline: paste the pack file content inside a script tag at the marker below. -->
+<!-- ASSET PACKS (optional): real sprites and sounds (Kenney CC0). Paste the pack file content inside a script tag at the marker below (offline). -->
 <!--ASSET_PACKS-->
 <script>
 /* ===================== GAME DATA (Claude edits this block) ===================== */
@@ -222,18 +222,33 @@ NG.store = {
   set: function(k, v){ try { localStorage.setItem("ngs." + k, JSON.stringify(v)); } catch(e){} }
 };
 
-/* ---------- stage scaling (fixed 16:9, letterboxed) ---------- */
+/* ---------- stage scaling ----------
+   Landscape / board / tablet: a fixed 1920x1080 stage, letterboxed.
+   Phone held upright (GAME.portrait = this game has a portrait layout): a portrait stage PW units wide and as tall as the screen
+   (PW*vh/vw), so text stays >= 16 CSS px. body[data-orient="portrait"] switches the portrait CSS on. Never rotated. */
+var PW = 600;
 function fit(){
-  var vw = window.innerWidth, vh = window.innerHeight;
-  var s = Math.min(vw / W, vh / H);
-  NG.scale = s;
-  stage.style.transform = "translate(" + ((vw - W * s) / 2) + "px," + ((vh - H * s) / 2) + "px) scale(" + s + ")";
+  var vw = window.innerWidth, vh = window.innerHeight, G = window.GAME || {};
+  var phone = !!(G.spec && G.spec.device === "phone");
+  var por = phone && G.portrait === true && vh > vw * 1.1;
+  var nw = por ? PW : 1920, nh = por ? Math.max(PW, Math.min(1500, Math.round(PW * vh / vw))) : 1080;
+  var s = por ? vw / PW : Math.min(vw / 1920, vh / 1080);
+  if (por && nh * s > vh + 0.5) s = vh / nh;
+  W = nw; H = nh; NG.W = W; NG.H = H; NG.scale = s; NG.portrait = por;
+  stage.style.width = W + "px"; stage.style.height = H + "px";
+  if (cvBg && (cvBg.width !== W || cvBg.height !== H)){ cvBg.width = W; cvBg.height = H; if (cvFx){ cvFx.width = W; cvFx.height = H; } }
+  document.body.setAttribute("data-orient", por ? "portrait" : "landscape");
+  document.body.setAttribute("data-rotate", (phone && !por && vh > vw * 1.1) ? "1" : "0");
+  document.body.setAttribute("data-device", (phone && vw < 900) ? "phone" : ((G.spec && G.spec.device) || "board"));  /* phone rules only on a phone-sized screen */
+  stage.style.transform = "translate(" + ((vw - W * s) / 2) + "px," + (por ? 0 : (vh - H * s) / 2) + "px) scale(" + s + ")";
 }
+var cvBg = document.getElementById("bg"), cvFx = document.getElementById("fx");
 window.addEventListener("resize", fit);
 window.addEventListener("orientationchange", function(){ setTimeout(fit, 200); });
 fit();
-document.addEventListener("touchmove", function(e){ if (e.touches && e.touches.length > 1) e.preventDefault(); }, {passive:false});
-document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
+function noPinch(){ var G = window.GAME || {}; return !(G.spec && G.spec.device === "phone"); }  /* phones may zoom (WCAG 1.4.4) */
+document.addEventListener("touchmove", function(e){ if (noPinch() && e.touches && e.touches.length > 1) e.preventDefault(); }, {passive:false});
+document.addEventListener("gesturestart", function(e){ if (noPinch()) e.preventDefault(); });
 document.addEventListener("contextmenu", function(e){ e.preventDefault(); });
 
 /* ---------- clock (virtual time so advanceTime() can drive it) ---------- */
@@ -790,9 +805,11 @@ Teacher.open = function(){
     '<button class="btn secondary" data-always="1" id="tp-reduce">' + (NG.reduceMotion ? "✨ 효과 켜기" : "🌙 효과 줄이기") + '</button>' +
     '<button class="btn secondary" data-always="1" id="tp-restart">↺ 처음으로</button>' +
     '</div>' + teamHtml + voiceHtml + '<div class="subtitle" style="font-size:30px;margin-top:24px">단축키: Space 다음 · P 메뉴 · M 소리 · F 전체 화면 · R 처음으로</div>' +
-    '<div class="subtitle" id="tp-credit" role="link" tabindex="0" style="font-size:30px;margin-top:18px;opacity:.75;cursor:pointer;text-decoration:underline">만든 도구: 교사 스튜디오 · 박진영</div></div>', function(box){
+    '' + (window.GAME.creditUrl ? '<div class="subtitle" id="tp-credit" role="link" tabindex="0" style="font-size:30px;margin-top:18px;opacity:.75;cursor:pointer;text-decoration:underline">만든 도구: 교사 스튜디오 · 박진영</div>' : '') + (window.GAME.back && window.GAME.back.href ? '<div class="subtitle" id="tp-back" role="link" tabindex="0" style="font-size:30px;margin-top:18px;opacity:.9;cursor:pointer;text-decoration:underline">' + U.esc(window.GAME.back.label || "돌아가기") + '</div>' : '') + '</div>', function(box){
       var cr = box.querySelector("#tp-credit");
-      if (cr) NG.button(cr, function(){ try { window.open("https://github.com/zln02/teacher-studio", "_blank", "noopener"); } catch (e) {} });
+      if (cr) NG.button(cr, function(){ try { window.open(window.GAME.creditUrl, "_blank", "noopener"); } catch (e) {} });
+      var bk = box.querySelector("#tp-back");
+      if (bk) NG.button(bk, function(){ try { window.location.href = window.GAME.back.href; } catch (e) {} });
       function b(id, fn){ var e = box.querySelector("#" + id); if (e) NG.button(e, fn); }
       b("tp-resume", Teacher.close);
       b("tp-skip", function(){ Teacher.close(); if (Teacher.hooks.skip) Teacher.hooks.skip(); });

@@ -99,7 +99,7 @@ body[data-sv=arena] .ts-teamrow{background:rgba(0,0,0,.2);border:6px dashed var(
 @keyframes tsslide{from{margin-left:-900px;opacity:0}to{margin-left:0;opacity:1}}
 body[data-sortv=shelves] .ts-bin{border-radius:6px!important;border-top-width:14px!important;background-image:repeating-linear-gradient(0deg,transparent 0 84px,rgba(0,0,0,.18) 84px 90px)}
 body[data-sortv=shelves] .ts-bin:before{display:none}
-.ts-custom{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+.ts-custom{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 .ts-custom svg{width:100%;height:100%}
 
 /* ---- style packs: one per entry of the general style taxonomy (scripts/style_auto.py) ---- */
