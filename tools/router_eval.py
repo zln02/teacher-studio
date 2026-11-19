@@ -40,6 +40,7 @@ ROUTES = {
     "slides": "makes web slide decks (lessons, talks, parent meetings)",
     "motion": "makes intro videos / animated start screens / countdowns",
     "class-tools": "timer, picker, team maker, bracket, scoreboard",
+    "webapp": "interactive web app / program (helper, chatbot, tutor, calculator, simulation, practice pad, dashboard) built from a spec",
     "data": "turns spreadsheets (CSV/XLSX) into a chart report without the AI reading raw rows",
     "law": "looks up current law/rules (privacy, copyright, AI rules, school records)",
     "co-plan": "plans, analysis, research done together as a one-page draft (no file is built)",
@@ -62,11 +63,49 @@ SCHEMA = (
 )
 
 
+REF: str | None = None  # --ref <git rev>: read SKILL.md files as they were at that revision (before/after runs)
+
+
+def _read(path: Path) -> str:
+    if REF:
+        rel = path.resolve().relative_to(ROOT).as_posix()
+        return subprocess.run(["git", "show", f"{REF}:{rel}"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8", check=True).stdout
+    return path.read_text(encoding="utf-8")
+
+
 def frontmatter(path: Path) -> tuple[str, str]:
-    t = path.read_text(encoding="utf-8")
+    t = _read(path)
     name = re.search(r"^name:\s*(.+)$", t, re.M)
     desc = re.search(r"^description:\s*(.+)$", t, re.M)
     return (name.group(1).strip() if name else path.parent.name, desc.group(1).strip() if desc else "")
+
+
+# Trigger eval: before any routing, does the model pick teacher-studio at all? Only the skill list is shown (as Claude Code shows it).
+DISTRACTORS = {  # generic skills often installed next to ours (short paraphrases); used with --distractors
+    "web-artifacts-builder": "Suite of tools for creating elaborate, multi-component HTML artifacts using React, Tailwind CSS, shadcn/ui.",
+    "frontend-design": "Create distinctive, production-grade frontend interfaces with high design quality.",
+    "canvas-design": "Create beautiful visual art in .png and .pdf documents using design philosophy.",
+}
+TRIGGER_SCHEMA = ('Output ONLY one JSON object: {"skill": "<the name of the ONE skill you would invoke first with the Skill tool for this request, '
+                  'or none if you would just do it yourself>", "why": "<max 12 words>"}')
+
+
+def trigger_context(distractors: bool = False) -> str:
+    lines = []
+    for sk in sorted(SKILLS.glob("*/SKILL.md")):
+        n, d = frontmatter(sk)
+        lines.append(f"- {n}: {d}")
+    if distractors:
+        lines += [f"- {k}: {v}" for k, v in DISTRACTORS.items()]
+    return ("You are Claude Code, working in an empty folder for a user. The following skills are available via the Skill tool. "
+            "When a request matches a skill, invoke it before doing anything else.\n" + "\n".join(lines))
+
+
+def score_trigger(case: dict, out: dict | None) -> dict:
+    want = case["trigger"] if isinstance(case["trigger"], list) else [case["trigger"]]
+    got = str((out or {}).get("skill", "none")).split(":")[-1].strip()
+    ok = got in want
+    return {"score": 1.0 if ok else 0.0, "parts": {"trigger": 1.0 if ok else 0.0}, "notes": [] if ok else [f"skill {got} not in {want}"]}
 
 
 def skill_context(skill_file: Path) -> str:
@@ -74,7 +113,7 @@ def skill_context(skill_file: Path) -> str:
     for sk in sorted(SKILLS.glob("*/SKILL.md")):
         n, d = frontmatter(sk)
         lines.append(f"- {n}: {d}")
-    body = skill_file.read_text(encoding="utf-8")
+    body = _read(skill_file)
     body = re.sub(r"\A---.*?---\s*", "", body, flags=re.S)
     return ("You are an AI assistant for a user who may be a teacher. These skills are installed (name: description):\n" + "\n".join(lines) +
             "\n\nThe request below activates teacher-studio. Its instructions:\n\n" + body)
@@ -162,11 +201,11 @@ def score(case: dict, out: dict | None) -> dict:
     return {"score": round(total, 3), "parts": parts, "notes": notes}
 
 
-def ask_claude(model: str, system: str, request: str, timeout: int = 180) -> tuple[str, float]:
+def ask_claude(model: str, system: str, request: str, timeout: int = 360, schema: str = SCHEMA) -> tuple[str, float]:
     exe = shutil.which("claude")
     if not exe:
         raise RuntimeError("claude CLI not found")
-    prompt = f"User request: 「{request}」\n\n{SCHEMA}"
+    prompt = f"User request: 「{request}」\n\n{schema}"
     cwd = tempfile.mkdtemp(prefix="router-eval-")
     sf = Path(cwd) / "system.txt"  # a file, not an argument: the Windows .cmd shim garbles non-ASCII arguments
     sf.write_text(system, encoding="utf-8")
@@ -192,13 +231,16 @@ def ask_codex(system: str, request: str, timeout: int = 240) -> tuple[str, float
     return p.stdout, 0.0
 
 
-def run_one(model: str, case: dict, system: str) -> dict:
+def run_one(model: str, case: dict, system: str, trigger: bool = False) -> dict:
     try:
-        text, cost = ask_codex(system, case["request"]) if model == "codex" else ask_claude(model, system, case["request"])
+        if model == "codex":
+            text, cost = ask_codex(system, case["request"])
+        else:
+            text, cost = ask_claude(model, system, case["request"], schema=TRIGGER_SCHEMA if trigger else SCHEMA)
     except Exception as e:  # noqa: BLE001 - report, never crash the batch
         return {"id": case["id"], "error": str(e)[:120], "score": 0.0, "notes": ["call failed"], "cost": 0.0}
     out = parse_json(text)
-    r = score(case, out)
+    r = score_trigger(case, out) if trigger else score(case, out)
     return {"id": case["id"], "out": out, "cost": cost, **r}
 
 
@@ -220,7 +262,17 @@ def static_check() -> int:
         for r in (c["route"] if isinstance(c["route"], list) else [c["route"]]):
             if r not in ROUTES:
                 problems.append(f"{c['id']}: unknown route {r}")
-    for need in ("teacher-game", "teacher-slides", "teacher-motion", "teacher-class-tools", "teacher-data", "teacher-law", "co-plan", "skill_scout"):
+    for c in cases:
+        for t in ([c["trigger"]] if isinstance(c.get("trigger"), str) else c.get("trigger") or []):
+            if not (SKILLS / t / "SKILL.md").exists() and t != "none":
+                problems.append(f"{c['id']}: trigger names unknown skill {t}")
+    _n, desc = frontmatter(SKILLS / "teacher-studio" / "SKILL.md")
+    for word in ("프로그램", "앱", "도우미", "알아서"):
+        if word not in desc:
+            problems.append(f"teacher-studio description lacks 「{word}」 (entry point for make/build requests)")
+    if len(desc) > 1024:
+        problems.append("teacher-studio description is over 1024 characters")
+    for need in ("teacher-game", "teacher-slides", "teacher-motion", "teacher-class-tools", "teacher-data", "teacher-law", "co-plan", "skill_scout", "webapp.md"):
         if need not in sk:
             problems.append(f"SKILL.md never mentions {need}")
     n = len(sk.splitlines())
@@ -245,17 +297,29 @@ def main() -> int:
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--skill-file", default=str(SKILLS / "teacher-studio" / "SKILL.md"))
     ap.add_argument("--out")
+    ap.add_argument("--trigger", action="store_true", help="only cases with a 'trigger' field: does the model invoke teacher-studio first?")
+    ap.add_argument("--distractors", action="store_true", help="with --trigger: also list a few generic web/design skills")
+    ap.add_argument("--tag", help="only cases with this tag (e.g. webapp)")
+    ap.add_argument("--ref", help="git revision to read SKILL.md files from (before/after comparison)")
     a = ap.parse_args()
+    global REF
+    REF = a.ref
     if a.static:
         return static_check()
     cases = load_cases(a.cases, a.subset)
-    system = BARE_CONTEXT if a.bare else skill_context(Path(a.skill_file))
+    if a.tag:
+        cases = [c for c in cases if a.tag in c.get("tags", [])]
+    if a.trigger:
+        cases = [c for c in cases if c.get("trigger")]
+        system = trigger_context(a.distractors)
+    else:
+        system = BARE_CONTEXT if a.bare else skill_context(Path(a.skill_file))
     result = {}
     for model in a.models.split(","):
         runs = []
         for _ in range(a.runs):
             with cf.ThreadPoolExecutor(a.workers) as ex:
-                rows = list(ex.map(lambda c: run_one(model, c, system), cases))
+                rows = list(ex.map(lambda c: run_one(model, c, system, a.trigger), cases))
             runs.append(rows)
         s = summarize(runs)
         s["cost_usd"] = round(sum(r.get("cost", 0) for run in runs for r in run), 3)
