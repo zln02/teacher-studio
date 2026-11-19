@@ -70,7 +70,9 @@ def theme(aud: str, palette: str | None) -> dict:
 
 
 # ---------- wording ----------
-def _u(v, unit):
+def _u(v, unit, dec=None):
+    if dec is not None and v is not None:  # fixed decimals so every sentence reads the same (6.0점, -0.4점)
+        return f"{v:,.{dec}f}{unit}"
     return fmt_num(v, unit)
 
 
@@ -93,11 +95,12 @@ def texts(r: dict, aud: str) -> dict:
     if t == "groupby":
         top, bot, agg = f["top_label"], f["bottom_label"], f["agg"]
         if agg == "mean":
-            head = (f"{josa(top, '이/가')} 평균 {josa(_u(f['top_value'], unit), '으로/로')} 가장 높아요" if kid else
-                    f"{top}의 {_metric(r)} 평균이 {josa(_u(f['top_value'], unit), '으로/로')} 가장 높습니다")
+            dc = 1 if unit != "원" else 0  # same number of decimals in every sentence (78.0점, 74.4점, 3.6점)
+            head = (f"{josa(top, '이/가')} 평균 {josa(_u(f['top_value'], unit, dc), '으로/로')} 가장 높아요" if kid else
+                    f"{top}의 {_metric(r)} 평균이 {josa(_u(f['top_value'], unit, dc), '으로/로')} 가장 높습니다")
             emoji = "🥇"
-            b.append(f"가장 낮은 곳은 {bot}, {_u(f['bottom_value'], unit)}이에요. 두 곳 차이는 {_u(f['gap'], unit)}예요." if kid else
-                     f"가장 낮은 곳은 {bot}({_u(f['bottom_value'], unit)})이며, 차이는 {_u(f['gap'], unit)}입니다.")
+            b.append(f"가장 낮은 곳은 {bot}, {_u(f['bottom_value'], unit, dc)}이에요. 가장 높은 {top}과 가장 낮은 {bot}의 차이는 {_u(f['gap'], unit, dc)}이에요." if kid else
+                     f"가장 낮은 곳은 {bot}({_u(f['bottom_value'], unit, dc)})이며, 가장 높은 {top}과의 차이는 {_u(f['gap'], unit, dc)}입니다.")
             ts = f.get("test")
             if ts and ts.get("done"):
                 if ts["significant"]:
@@ -116,18 +119,19 @@ def texts(r: dict, aud: str) -> dict:
                 b.append(f"모두 합치면 {_u(f['total'], unit)}이에요.")
     elif t == "change":
         d, foc = f["focus_diff"], f["focus"]
+        dc = 1 if unit != "원" else 0  # one decimal everywhere in this block
         prev = "지난달" if f["consecutive"] else f["from_label"]
         word, emoji = (("올랐어요", "📈") if d > 0.5 else ("내려갔어요", "📉") if d < -0.5 else ("비슷해요", "➖"))
         if kid:
-            head = f"{foc} 평균이 {prev}보다 {_u(abs(d), unit)} {word}" if word != "비슷해요" else f"{foc} 평균은 {prev}와 비슷해요"
+            head = f"{foc} 평균이 {prev}보다 {_u(abs(d), unit, dc)} {word}" if word != "비슷해요" else f"{foc} 평균은 {prev}와 비슷해요"
         else:
             vb = {"올랐어요": "올랐습니다", "내려갔어요": "내려갔습니다", "비슷해요": "비슷합니다"}[word]
-            head = f"{foc}의 {f['value']} 평균이 {prev}보다 {_u(abs(d), unit)} {vb}" if word != "비슷해요" else f"{foc}의 {f['value']} 평균은 {prev}와 비슷합니다"
-        b.append(f"{foc}: {f['from_label']} {_u(f['focus_from'], unit)} → {f['to_label']} {_u(f['focus_to'], unit)}")
-        others = [f"{g} {'+' if v >= 0 else '-'}{fmt_num(abs(v), unit)}" for g, v in f["diffs"].items() if g != foc]
+            head = f"{foc}의 {f['value']} 평균이 {prev}보다 {_u(abs(d), unit, dc)} {vb}" if word != "비슷해요" else f"{foc}의 {f['value']} 평균은 {prev}와 비슷합니다"
+        b.append(f"{foc}: {f['from_label']} {_u(f['focus_from'], unit, dc)} → {f['to_label']} {_u(f['focus_to'], unit, dc)}")
+        others = [f"{g} {'+' if v >= 0 else '-'}{fmt_num(abs(v), unit, dc)}" for g, v in f["diffs"].items() if g != foc]
         if others:
             b.append("다른 곳은 " + ", ".join(others) + ("이에요." if kid else "입니다."))
-        b.append(f"전체 평균은 {_u(f['overall_from'], unit)}에서 {_u(f['overall_to'], unit)}로 {'바뀌었어요' if kid else '바뀌었습니다'}.")
+        b.append(f"전체 평균은 {_u(f['overall_from'], unit, dc)}에서 {josa(_u(f['overall_to'], unit, dc), '으로/로')} {'바뀌었어요' if kid else '바뀌었습니다'}.")
     elif t == "trend":
         m = _metric(r)
         lv = f["last_vs_prev"]

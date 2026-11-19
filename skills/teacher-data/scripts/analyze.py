@@ -241,7 +241,7 @@ def a_distribution(t, p, idx, pii):
     return {"chart": "share" if share else "bar", "labels": labels, "series": [{"name": f"{count_unit}", "values": [counts[k] for k in labels]}],
             "unit": count_unit, "table": {"columns": [c, f"{count_unit}", "비율(%)"], "rows": [[k, counts[k], _r(pct[k], 1)] for k in labels]},
             "facts": facts, "notes": notes, "n": n, "default_title": f"{c}별 {count_unit} 수 ({count_unit})",
-            "how": "막대가 길수록 그 답을 고른 사람이 많아요." if not share else "조각이 클수록 차지하는 몫이 커요.", "pct": {k: _r(pct[k], 1) for k in labels}}
+            "how": (f"막대가 길수록 그 점수대에 해당하는 {count_unit} 수가 많아요." if p.get("bins") else "막대가 길수록 그 답을 고른 사람이 많아요.") if not share else "조각이 클수록 차지하는 몫이 커요.", "pct": {k: _r(pct[k], 1) for k in labels}}
 
 
 def a_likert(t, p, idx, pii):
