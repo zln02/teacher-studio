@@ -1,0 +1,42 @@
+{
+  "title": "코딩 도우미 코디",
+  "subtitle": "중학교 코딩 수업 · 변수 · 조건문 · 반복문 · 함수",
+  "words": "코딩 깔끔",
+  "ai": "rules",
+  "about": "코딩 수업에서 자주 나오는 질문에 바로 답하고, 오른쪽 연습장에서 자바스크립트 코드를 직접 실행해 볼 수 있는 프로그램이에요.",
+  "can": ["변수·조건문·반복문·함수·배열 같은 기본 개념을 예시 코드와 함께 설명해요", "예시 코드를 연습장으로 보내 바로 실행해 볼 수 있어요", "끝나지 않는 반복은 3초 뒤 자동으로 멈춰요"],
+  "cannot": ["준비하지 않은 질문에 새 답을 지어내지 못해요", "학생이 쓴 코드를 읽고 고쳐 주지는 못해요 (오류 종류별 도움말만 보여 줘요)"],
+  "parts": [
+    {
+      "type": "helper",
+      "name": "코디에게 물어보기",
+      "greeting": "안녕하세요! 저는 코딩 도우미 코디예요. 궁금한 개념을 적거나 아래 버튼을 눌러 보세요.",
+      "placeholder": "예: 반복문이 뭐예요?",
+      "chips": ["변수가 뭐예요?", "조건문은요?", "반복문이 뭐예요?", "함수는 왜 써요?", "배열이 뭐예요?", "오류가 나요"],
+      "fallback": "그 질문은 아직 준비된 답이 없어요. 변수, 조건문, 반복문, 함수, 배열, 오류 같은 낱말로 다시 물어보거나 선생님께 물어보세요.",
+      "intents": [
+        {"keys": ["변수", "let", "const", "저장"], "answer": "변수는 값을 담아 두는 이름표 붙은 상자예요.\nlet으로 만든 변수는 나중에 값을 바꿀 수 있고, const로 만든 변수는 바꿀 수 없어요.", "code": "let score = 10;\nscore = score + 5;\nconsole.log(score); // 15"},
+        {"keys": ["조건", "if", "else", "만약"], "answer": "조건문은 '만약 ~라면'을 코드로 쓰는 방법이에요.\n조건이 참이면 if 안의 코드를, 거짓이면 else 안의 코드를 실행해요.", "code": "let temp = 28;\nif (temp >= 25) {\n  console.log(\"더워요\");\n} else {\n  console.log(\"선선해요\");\n}"},
+        {"keys": ["반복", "for", "while", "여러 번", "루프"], "answer": "반복문은 같은 일을 여러 번 시키는 방법이에요.\nfor는 '몇 번' 반복할지 알 때, while은 '조건이 참인 동안' 반복할 때 써요. 반복이 끝나는 조건을 꼭 확인하세요.", "code": "for (let i = 1; i <= 5; i++) {\n  console.log(i + \"번째 인사: 안녕!\");\n}"},
+        {"keys": ["함수", "function", "왜 써", "재사용"], "answer": "함수는 여러 줄의 코드를 하나로 묶어 이름을 붙인 거예요.\n한 번 만들어 두면 이름만 불러서 여러 번 쓸 수 있어 코드가 짧고 읽기 쉬워져요.", "code": "function square(n) {\n  return n * n;\n}\nconsole.log(square(3)); // 9\nconsole.log(square(7)); // 49"},
+        {"keys": ["배열", "array", "목록", "리스트"], "answer": "배열은 여러 값을 순서대로 담는 목록이에요.\n번호(인덱스)는 0부터 시작해요. length로 개수를 알 수 있어요.", "code": "let fruits = [\"사과\", \"배\", \"포도\"];\nconsole.log(fruits[0]); // 사과\nconsole.log(fruits.length); // 3"},
+        {"keys": ["오류", "에러", "error", "안 돼", "안돼", "빨간"], "answer": "오류가 나면 당황하지 말고 세 가지를 확인해 보세요.\n1. 괄호와 따옴표가 짝이 맞는지\n2. 이름의 철자(대문자·소문자)가 같은지\n3. 오류 메시지의 첫 낱말 (ReferenceError, SyntaxError 같은)\n연습장은 오류 종류별 도움말도 함께 보여 줘요."},
+        {"keys": ["출력", "console", "print", "보여"], "answer": "console.log(값) 은 괄호 안의 값을 결과 칸에 보여 줘요.\n쉼표로 여러 값을 한 번에 보여 줄 수도 있어요.", "code": "let name = \"코디\";\nconsole.log(\"안녕,\", name);"},
+        {"keys": ["연산", "더하기", "나머지", "%", "계산"], "answer": "+ - * / 로 사칙연산을 하고, % 는 나눈 나머지를 구해요.\n나머지는 짝수·홀수를 가를 때 자주 써요.", "code": "console.log(7 + 3, 7 - 3, 7 * 3, 7 / 2);\nconsole.log(7 % 2); // 1 이면 홀수"},
+        {"keys": ["알고리즘", "순서도", "절차"], "answer": "알고리즘은 문제를 푸는 순서를 정한 것이에요.\n코드를 쓰기 전에 '입력 → 처리 → 출력' 순서로 말이나 순서도로 먼저 적어 보면 쉬워져요."},
+        {"keys": ["디버깅", "버그", "고치"], "answer": "디버깅은 코드의 잘못된 곳(버그)을 찾아 고치는 일이에요.\n중간중간 console.log로 변수 값을 찍어 보면 어디서 달라지는지 찾기 쉬워요.", "code": "let total = 0;\nfor (let i = 1; i <= 3; i++) {\n  total = total + i;\n  console.log(\"i =\", i, \"total =\", total);\n}"}
+      ]
+    },
+    {
+      "type": "runner",
+      "name": "코드 연습장",
+      "timeout_ms": 3000,
+      "examples": [
+        {"name": "1. 인사하기", "code": "console.log(\"안녕하세요! 오늘도 코딩해 봐요.\");"},
+        {"name": "2. 구구단 3단", "code": "for (let i = 1; i <= 9; i++) {\n  console.log(\"3 x \" + i + \" = \" + (3 * i));\n}"},
+        {"name": "3. 짝수 홀수", "code": "for (let n = 1; n <= 6; n++) {\n  if (n % 2 === 0) {\n    console.log(n + \"은(는) 짝수\");\n  } else {\n    console.log(n + \"은(는) 홀수\");\n  }\n}"},
+        {"name": "4. 합계 함수", "code": "function sum(list) {\n  let total = 0;\n  for (let x of list) total = total + x;\n  return total;\n}\nconsole.log(sum([3, 5, 7]));"}
+      ]
+    }
+  ]
+}

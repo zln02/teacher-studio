@@ -1,6 +1,6 @@
 ---
 name: teacher-studio
-description: Start here for Teacher Studio. Greets users, shows what works in this app, and routes any request (class or personal) to games, slides, videos, class tools, data analysis, planning or legal checks.
+description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, 영상, 보고서. Use it first, even when told 「알아서」「묻지 말고」 (that skips questions, not this skill). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
 license: Apache-2.0
 ---
 
@@ -19,7 +19,7 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 - Students using AI directly, or AI finalizing student evaluations -> decline that part, offer the safe version.
 - Otherwise continue (legal notes are one-line heads-ups, never blocks).
 **R2. Clear or vague?** (`scripts/direction.py "<request>"` prints `mode`)
-- 「알아서」「바로」「그냥 해 줘」 anywhere in the message -> build now: zero options, zero questions, even if the rest is vague; state assumptions in one line; go to R3.
+- 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere in the message -> build now: zero options, zero questions, even if the rest is vague; state assumptions in one line; go to R3. It skips questions, never the router, the build scripts or the checker.
 - Clear = it names what to make AND its topic or purpose (「중2 과학 빛과 파동 방탈출」「타이머 5분」). Go to R3.
 - Everything else is vague: 「X 자료」「X 기획」「재밌는 거」「느낌 있게」 with no topic, who or purpose. When unsure, treat as vague (three options cost the user one tap) -> direction step (`references/direction-step.md`): 3 pitches with one 추천, mood cards, one question round (max 5, each with a recommended answer, 「네」 accepts all), one-line plan. The prefs question lives in that same round.
 **R3. Make a thing, or plan/analyse?**
@@ -30,6 +30,7 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 |---|---|
 | 엑셀·CSV·설문·성적·가계부·매출 파일 분석 | `teacher-data`. Never open or print raw rows yourself; its script reads the file and writes the report |
 | 타이머·뽑기·모둠 나누기·대진표·점수판 | `teacher-class-tools` (spec -> `build_tool.py`) |
+| 프로그램·앱·웹페이지·사이트·도우미·챗봇·튜터·계산기·시뮬레이션·연습장·대시보드 (점수 내는 놀이가 아닌 **움직이는 화면**, 「AI ○○ 도우미」 포함) | `references/webapp.md`: copy an example spec -> `scripts/build_webapp.py --spec app.json --out app.html --shot app.png` (builds + checks). Naming the thing + its class/purpose = clear (build, no options). Do it yourself in this chat: no helper agent, no plan detour; target 3 minutes |
 | 퀴즈·종 울리기·OX · 방탈출·미션·협동 · 단어·분류·짝·끌어서·태블릿 · 빙고·보드게임·그 밖의 게임 (**모든 새 게임 요청**) | `teacher-game` 「직접 제작」: `studio.py build game --spec` (spec -> build -> check). Never `fire` for a new request |
 | **옛 완제품 스킨을 이름으로 지목** (「tv-studio 퀴즈쇼」「종 울리기 그대로」「같은 스킨 다시」) | only then `studio.py fire game/<quiz-show·escape-room·drag-deliver>/<skin>` (`teacher-game/assets/missiles/*/README.md`) |
 | 발표·슬라이드·PPT(웹)·연수·회사·모임·학부모 설명회·학부모 상담 자료·총회 | `studio.py build slides --spec deck.json` (`teacher-slides`; purpose 「학부모 설명회」 for parents). 「PPT·파워포인트·피피티·.pptx」나 「나중에 고칠 거예요」면 **편집되는 .pptx도 같이** 드린다: `deck.py --pptx` (선생님 .pptx 양식이 있으면 `--template`) |
@@ -39,10 +40,10 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 | 기획·리서치·글쓰기·SNS 글·이름 짓기 | `references/co-plan.md` (R3) |
 - Template first: if the user gives a logo, template, brand or reference file (or has a saved palette), use their colours before ours (`references/user-colors.md`: `color_from.py` -> spec `design.palette_from`). It is only the means to take their colours, not our design; save as default only if they ask.
 - Never default to an AI-company house look (cream/beige + terracotta/clay accent + serif headline; white + blue-purple gradient + emoji hero). Pick a look from the request; checkers WARN on it (`shared/design/ai_look.py`). The user's own palette or template always wins.
-- Never stretch a row to a request it does not cover (VR/3D apps, mobile apps, websites, video editing, anything not in the table): that is R5, not the nearest skill.
+- Never stretch a row to a request it does not cover (VR/3D apps, store-installed mobile apps, apps that need a server, login or database, video editing, anything not in the table): that is R5, not the nearest skill.
 - Then: that skill's SKILL.md (short) -> one missile README -> `content.json` with only the changing parts -> `fire ... [--open] [--mp4]` -> show on `READY <path>`. Details: `references/studio-details.md` D.
 **Pipeline (every making job; `references/pipeline.md`)**: 기획 -> 대본 -> 콘티 -> 제작 -> 수정 -> 배포, each ends in one small artifact. Your first reply stops at ONE checkpoint: take the FIRST rule that matches.
-1. 「알아서」「바로」「그냥 해 줘」 anywhere -> checkpoint `none`: build in this reply, show it, offer 2 tweaks. 0 questions, no 콘티 stop, never `build`.
+1. 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere (any type, web apps too) -> checkpoint `none`: build in this reply, show it, offer 2 tweaks. 0 questions, no 콘티 stop, never `build`.
 2. A change to a file that already exists (「글씨 크게」「색 바꿔」「한 군데만」) -> `build`, 0 questions, skip plan/script/storyboard: change it, show it, offer 2 tweaks.
 3. Send / share / post / publish -> `deliver`: show the privacy check first, build nothing.
 4. One-screen tool (timer, picker, team maker, scoreboard, countdown, short notice) -> `none`, skip storyboard.
@@ -55,7 +56,8 @@ Always ask mid-way, even on 「알아서」: before anything irreversible or out
 ## No-regret rules (the harness must never make you worse than the bare model)
 - **Confidence gate**: use a missile/weapon only when the request clearly fits it; otherwise answer with your own ability, still applying R1, legal notes, checkers.
 - **2-loop cap**: a fire/check/build path failing after 2 fixes -> stop, do it the plain way, say so: 「도구가 말을 안 들어서, 직접 만드는 방식으로 바꿨어요」.
-- **Override**: 「하네스 없이 해 줘」「그냥 네 방식대로」 -> comply at once. 「알아서」 skips every question. Privacy and safety still hold.
+- **Override**: 「하네스 없이 해 줘」「그냥 네 방식대로」 -> comply at once. 「알아서」「묻지 말고」 skip every question, not the tools. Privacy and safety still hold.
+- **Fast**: one file = one conversation. Do not hand a single-file job to a helper agent and do not add a planning step the user did not ask for; the scripts are the shortcut.
 - **Consent for cost**: before any install or long step show size/time and ask. Never auto-install big things.
 - **Stay small**: load only the one README you need; add no step the request did not need.
 - **Variety**: do not default to one look; legacy skins are used only when the user names one (R4); every new game is spec -> build with a fresh look.
@@ -92,6 +94,7 @@ Default order of work: fix quality FAILs yourself first (shorten text, change la
 | 파일 | 내용 |
 |---|---|
 | `scripts/studio.py` | list / fire / build / check / render / doctor |
+| `scripts/build_webapp.py` · `check_webapp.py` | web app / program from a spec (helper · runner · custom parts) + fast offline/browser check (`references/webapp.md`, `assets/webapp/examples/`) |
 | `scripts/direction.py` | direction step: inferred facts, open decisions, 3 pitch slots, mood preview cards (HTML + text) |
 | `scripts/coplan.py` | empty one-page plan skeleton |
 | `scripts/storyboard.py` · `deliver.py` | 콘티 sheet from a spec / 배포 꾸러미 for a finished file |

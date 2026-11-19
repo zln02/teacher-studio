@@ -11,6 +11,7 @@
 |---|---|---|
 | 게임, 퀴즈, 방탈출, 종 울리기, 단어·분류 | 🎮 수업 게임 | `skills/teacher-game` ✅ (spec → `build.py`로 어떤 게임이든 + 옛 미사일: quiz-show · escape-room · drag-deliver, 스킨 9) |
 | 타이머, 뽑기, 모둠 나누기, 대진표, 점수판 | 🧰 수업 도구 | `skills/teacher-class-tools` ✅ (spec → `build_tool.py`, 오프라인 HTML 1개, 가족·동호회도) |
+| 프로그램, 앱, 웹페이지, 도우미·챗봇, 계산기, 시뮬레이션, 연습장 | 🖥️ 웹 앱 | `skills/teacher-studio` ✅ (`references/webapp.md`: spec → `scripts/build_webapp.py` + `check_webapp.py`, 오프라인 HTML 1개, 프로젝터 모드, 「AI」는 솔직하게) |
 | 엑셀·CSV·설문·점수·가계부 분석, 그래프 | 📊 자료 분석 | `skills/teacher-data` ✅ (AI가 원본을 읽지 않고 스크립트가 집계 → 쉬운 그래프 보고서, 이름 가림·숫자 대조) |
 | 수업 슬라이드, 발표 자료(웹), 연수 자료 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 19종 × 배치 변형, 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |

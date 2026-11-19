@@ -1,0 +1,43 @@
+# 웹 앱 · 프로그램 만들기 (interactive web app)
+
+For any moving screen that no other row covers: 프로그램, 앱, 웹페이지, 사이트, 도우미, 챗봇, 튜터, 계산기, 시뮬레이션, 연습장, 대시보드, 「AI ○○ 도우미」.
+Not for: games (`teacher-game`), decks, videos, timer/picker/teams/scoreboard (`teacher-class-tools`), spreadsheet reports (`teacher-data`).
+Needs a server, login, database or app store -> R5.
+
+## Fast path (target: 3 minutes, one conversation)
+Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「알아서」「묻지 말고」 = 0 questions; still use this path.
+1. Say one line: 「바로 만들게요. (<가정: 학년·과목·언어>) 1~2분 걸려요.」
+2. Copy the closest example from `../assets/webapp/examples/` into the working folder as `app.json` and change only the content:
+   - `coding-helper.json`: question helper + JavaScript practice pad (코딩 도우미, 개념 튜터)
+   - `speed-sim.json`: custom part with sliders and a live result (계산기, 시뮬레이션, 연습기, 대시보드)
+3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds, then checks; wait for `READY`.
+4. FAIL -> fix the spec (shorter labels, a missing `<label>`, `?.`), rebuild. Max 2 fixes, then the plain way (no-regret rule).
+5. Final message: full path, 「더블클릭하면 브라우저에서 열려요」, the check line, the honest-AI line below, 2 tweak offers (예: 「질문 더 넣기」「파이썬 예시로」).
+
+## Spec
+```
+{"title": "≤40자", "subtitle": "학년 · 과목 · 핵심", "words": "style hint (코딩, 과학, 깔끔, 파스텔 …)", "style": "<optional id from shared/design/styles.py>",
+ "palette": {"primary": "#…"}, "ai": "rules" | "none", "about": "한 문장", "can": [...], "cannot": [...],
+ "parts": [ 1-3 of:
+   {"type": "helper", "name", "greeting", "placeholder", "fallback", "chips": [4-6 common questions],
+    "intents": [{"keys": ["반복", "for", "while"], "answer": "2-3 short plain lines", "code": "optional ≤8 lines"}]},
+   {"type": "runner", "name", "timeout_ms": 3000, "examples": [{"name", "code"}]},          // JavaScript only
+   {"type": "custom", "name", "icon", "html": "...", "css": "...", "js": "..."} ]}
+```
+- helper: 8-12 intents. Keys = Korean words + English/code words a student would type. Answers are plain text (no markdown marks), accurate for the grade; unsure -> 「확인 필요」. With a runner on the page, code in an answer gets a 「연습장에서 해 보기」 button.
+- runner: JavaScript in a Web Worker; `console.log` prints; endless loops stop after `timeout_ms`; errors come with a plain Korean hint.
+- custom: your own controls. Rules: ES2017 (no `?.` `??`), every input has a `<label>`, `autocomplete="off"`, sizes in rem, no fields for names/학번/phone, no storage, no network. Use `APP.el(id)`, `APP.onReset(fn)` (「처음으로」), `APP.say(text)` (screen readers), `APP.toRunner(code)`.
+- Built in, never re-implement: 가-/가+, projector mode (P), 「처음으로」, 「이 프로그램은?」 panel, keyboard (Enter, Ctrl+Enter, Esc, ?), skip link, phone layout, embedded Noto Sans KR, style from `words` (the user's `palette` wins).
+
+## Honest about "AI" (always)
+- Never put an API key, token or a call to an online AI in the file. The checker fails on keys and on network code.
+- `ai: "rules"` = prepared answers. Say it in the final message, one line: 「인터넷 AI(챗GPT 같은)가 아니라, 준비한 설명 N개에서 골라 답해요. 그래서 키·비용·인터넷이 필요 없어요.」 The page says the same in 「이 프로그램은?」.
+- If the user wants a real AI chatbot: it needs an account, a key and money, and students may not use AI services directly (18+). Offer the rules version for students and, for the teacher only, how to use an AI service themselves. Do not build a key into a file.
+
+## Offline by default
+- No CDN, no outside fonts or images. Python in the browser (Pyodide) is a ~10 MB+ download from the internet, so it breaks on a blocked school network: use the JavaScript pad, and if the class uses Python, show Python as read-only code in helper answers and say so in one line.
+- `"online"` is not supported here; if the user insists on an online library, that is the bare path (R5) with a 「인터넷이 있어야 열려요」 line.
+
+## Check (`check_webapp.py`, run by the build)
+Static: outside addresses, `?.`/`??`, network/storage APIs, keys/secrets, student-identity fields, title/lang/viewport.
+Browser (one headless Chromium, ~10 s): 1600x900, projector mode, 390 phone; JS errors, outside requests, sideways scroll, cut or vertically broken button text, overlapping controls, unnamed buttons, unlabeled inputs, small text, contrast; one click per part, then 「처음으로」 must clear it. `--deep` also proves the endless-loop stop. No Playwright -> static only (say so).

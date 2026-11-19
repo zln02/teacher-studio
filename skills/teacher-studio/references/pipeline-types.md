@@ -10,7 +10,8 @@
 | class tool (`teacher-class-tools`) | none; the spec list (what buttons, default minutes/teams) | none (merge); at most a 3-line layout note | `build_tool.py` | one HTML, pin on the TV, works offline |
 | data report (`teacher-data`) | analysis questions (what do you want to know?) | chart plan: one chart per question, kind + takeaway | teacher-data script (never read rows) | HTML/PDF print; hide names; no raw rows |
 | document / 가정통신문 | outline (headings) -> draft text, placeholders for names/dates | page layout list: header, body blocks, reply slip | docx/pptx/hwp skill or chat text | print/PDF, 한글 file; privacy check (no names) before sending |
-| web / app / dev (not in table = R5) | user stories (who needs what) | screen wireframe list + feature list | build with own ability, then test | say what is outside the harness; run tests; ask before deploy |
+| web app / program (`references/webapp.md`) | the spec: parts + helper answers / runner examples / custom controls | none (merge); the spec is the plan | `build_webapp.py` (checks included) | one HTML, works offline, projector mode; never deploy for them |
+| other dev: server, login, database, store app (R5) | user stories (who needs what) | screen wireframe list + feature list | build with own ability, then test | say what is outside the harness; run tests; ask before deploy |
 | co-plan (planning/research) | outline -> draft (one page) | skip | sources check (links + date) | one-page plan; 출처 list |
 
 ## 6 배포 menu (offer only what fits; run `scripts/deliver.py FILE`)

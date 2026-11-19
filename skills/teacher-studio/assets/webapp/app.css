@@ -1,0 +1,55 @@
+/* Teacher Studio web app shell. Colours come from --sk-* (shell kit tokens); sizes are rem so 가-/가+/projector scale everything. */
+*{box-sizing:border-box}
+html{font-size:20px;-webkit-text-size-adjust:100%}
+html.lv-1{font-size:17px}html.lv1{font-size:23px}html.lv2{font-size:26px}
+body{margin:0;min-height:100vh;color:var(--sk-ink);font-family:var(--sk-fb);line-height:1.5;word-break:keep-all;overflow-wrap:break-word;background:var(--app-bg)}
+button,input,textarea,select{font:inherit;color:inherit}
+.wa-skip{position:absolute;left:-999px;top:0}.wa-skip:focus{left:8px;z-index:9;background:var(--sk-sf);padding:.4rem .8rem;border-radius:8px}
+:focus-visible{outline:3px solid var(--sk-ac);outline-offset:2px}
+.wa-top{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;padding:.8rem 1.2rem;background:var(--app-top);border-bottom:1px solid var(--sk-ln);position:sticky;top:0;z-index:5;backdrop-filter:blur(8px)}
+.wa-brand{display:flex;align-items:center;gap:.7rem;min-width:0;flex:1 1 16rem}
+.wa-brand .sk-spot{width:3rem;height:3rem}
+.wa-title{margin:0;font-family:var(--sk-fd);font-weight:var(--sk-dw);letter-spacing:var(--sk-tr);font-size:1.6rem;line-height:1.15}
+.wa-sub{margin:.1rem 0 0;color:var(--sk-mu);font-size:.9rem}
+.wa-tools{display:flex;gap:.4rem;flex-wrap:wrap}
+.wa-tb{display:inline-flex;align-items:center;gap:.35rem;min-height:2.6rem;min-width:2.6rem;padding:.35rem .75rem;border-radius:var(--sk-r);border:1.5px solid var(--sk-ln);background:var(--sk-sf);color:var(--sk-ci);cursor:pointer;font-size:.85rem;font-weight:700;white-space:nowrap}
+.wa-tb:hover{border-color:var(--sk-pr)}.wa-tb[aria-pressed=true]{background:var(--sk-pr);color:var(--sk-op);border-color:var(--sk-pr)}
+.wa-tb .sk-i{width:1.1rem;height:1.1rem}
+.wa-main{display:grid;gap:1.2rem;padding:1.2rem;max-width:1600px;margin:0 auto;grid-template-columns:1fr}
+@media (min-width:1000px){.wa-main.cols2{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.wa-main.cols3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.wa-card{background:var(--sk-sf);color:var(--sk-ci);border:1px solid var(--sk-ln);border-radius:calc(var(--sk-r) + 6px);padding:1.1rem 1.2rem;box-shadow:0 .6rem 1.6rem -1rem rgba(0,0,0,.45);display:flex;flex-direction:column;gap:.8rem;min-width:0}
+.wa-card h2{display:flex;align-items:center;gap:.5rem;margin:0;font-family:var(--sk-fd);font-size:1.2rem;font-weight:var(--sk-dw);letter-spacing:var(--sk-tr)}
+.wa-card h2 .sk-i{width:1.4rem;height:1.4rem;color:var(--sk-pt)}
+.wa-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;min-height:2.8rem;padding:.45rem 1.1rem;border-radius:var(--sk-r);border:0;background:var(--sk-pr);color:var(--sk-op);font-weight:800;cursor:pointer;white-space:nowrap}
+.wa-btn.ghost{background:transparent;color:var(--sk-ci);border:1.5px solid var(--sk-ln)}
+.wa-btn .sk-i{width:1.1rem;height:1.1rem}
+.wa-row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.wa-in{flex:1 1 12rem;min-width:0;min-height:2.8rem;padding:.45rem .8rem;border-radius:var(--sk-r);border:1.5px solid var(--sk-ln);background:var(--sk-bg);color:var(--sk-ink)}
+.wa-chip{border:1.5px solid var(--sk-ln);background:transparent;color:var(--sk-ci);border-radius:999px;padding:.3rem .8rem;min-height:2.4rem;cursor:pointer;font-size:.85rem}
+.wa-chip:hover{border-color:var(--sk-pr)}
+.wa-log{display:flex;flex-direction:column;gap:.6rem;min-height:10rem;max-height:60vh;overflow:auto;padding:.2rem}
+.wa-msg{max-width:92%;padding:.65rem .9rem;border-radius:calc(var(--sk-r) + 4px);white-space:pre-wrap}
+.wa-msg.me{align-self:flex-end;background:var(--sk-pr);color:var(--sk-op);border-bottom-right-radius:4px}
+.wa-msg.bot{align-self:flex-start;background:var(--app-tint);border:1px solid var(--sk-ln);border-bottom-left-radius:4px}
+.wa-msg pre,.wa-code,.wa-out{font-family:Consolas,'D2Coding','Courier New',monospace;font-size:.9rem;line-height:1.45}
+.wa-msg pre{margin:.5rem 0 0;padding:.6rem .8rem;border-radius:8px;background:var(--sk-bg);color:var(--sk-ink);overflow:auto;white-space:pre}
+.wa-code{width:100%;min-height:12rem;resize:vertical;padding:.7rem .9rem;border-radius:var(--sk-r);border:1.5px solid var(--sk-ln);background:var(--sk-bg);color:var(--sk-ink);tab-size:2;white-space:pre}
+.wa-out{min-height:5rem;max-height:40vh;overflow:auto;margin:0;padding:.7rem .9rem;border-radius:var(--sk-r);background:var(--sk-bg);color:var(--sk-ink);white-space:pre-wrap;border:1px dashed var(--sk-ln)}
+.wa-out .err{color:var(--sk-bd)}.wa-out .ok{color:var(--sk-gd)}
+.wa-hint{margin:0;color:var(--sk-mu);font-size:.8rem}
+.wa-foot{max-width:1600px;margin:0 auto;padding:0 1.2rem 1.2rem;color:var(--sk-mu);font-size:.8rem}
+.wa-sel{min-height:2.6rem;border-radius:var(--sk-r);border:1.5px solid var(--sk-ln);background:var(--sk-bg);color:var(--sk-ink);padding:.3rem .6rem;max-width:100%}
+dialog.wa-about{max-width:min(40rem,92vw);border:0;border-radius:calc(var(--sk-r) + 6px);padding:1.4rem 1.5rem;background:var(--sk-sf);color:var(--sk-ci);box-shadow:0 1.5rem 3rem -1rem rgba(0,0,0,.6)}
+dialog.wa-about::backdrop{background:rgba(0,0,0,.55)}
+dialog.wa-about h2{margin:0 0 .6rem;font-family:var(--sk-fd);font-size:1.3rem}
+dialog.wa-about h3{margin:.8rem 0 .2rem;font-size:1rem}
+dialog.wa-about ul{margin:.2rem 0;padding-left:1.2rem}
+.wa-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* projector: bigger, flatter, stronger lines; no background pattern */
+html.projector{font-size:27px}html.projector.lv1{font-size:31px}html.projector.lv2{font-size:35px}html.projector.lv-1{font-size:24px}
+html.projector body{background:var(--sk-bg)}
+html.projector .wa-card{box-shadow:none;border-width:2px}
+html.projector .wa-sub,html.projector .wa-hint{display:none}
+html.projector .wa-main{max-width:none}
+@media (max-width:640px){html{font-size:18px}html.projector{font-size:21px}.wa-top{padding:.6rem .8rem}.wa-main{padding:.8rem;gap:.8rem}.wa-tb .wa-lbl{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
