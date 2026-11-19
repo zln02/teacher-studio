@@ -26,7 +26,7 @@ for _s in (sys.stdout, sys.stderr):
 
 PATH = Path.home() / ".teacher-studio" / "prefs.json"
 LEVELS = ["초등학교", "중학교", "고등학교", "특수·기타"]
-DEVICES = {"board": "칠판 TV", "tablet": "태블릿", "pc": "개인 PC"}
+DEVICES = {"board": "칠판 TV", "phone": "폰", "tablet": "태블릿", "pc": "개인 PC"}
 DEFAULTS = {"level": "중학교", "subject": "전과목", "device": "board"}
 ALLOWED = set(DEFAULTS)  # only these keys are ever stored
 

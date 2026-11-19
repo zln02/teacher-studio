@@ -73,6 +73,7 @@ python3 scripts/design_review.py game.html --out review/
 ```
 제목·문제·정답·오답·결과 화면을 찍어 **접촉 시트 PNG**와 수치(장식 밀도·휑함·색 수·시선·글자 대비·겹침)를 만든다. **PNG를 직접 눈으로 보고** `references/design-rubric.md` 8가지(장면·시선·휑함·캐릭터/소품·축하 연출 …)를 확인 → 모자라면 spec의 `design.words`/`mood`/`seed`만 고쳐 다시 build (최대 2번). 수치가 옛 스킨 9개 기준보다 낮으면 WARN과 고칠 방법이 나온다.
 - 한 줄 명령: `python3 ../teacher-studio/scripts/studio.py build game --spec spec.json --open`
+- **고치는 동안은 빠르게**: `build.py --no-check`(만들기만, 몇 초) + `design_review.py`로 그림을 보고, 마지막 한 번만 `check_game.py`(약 1분). 폰용(`device:"phone"`)은 두 점검이 390×844 세로·844×390 가로도 직접 재요(글자 16px·버튼 44px 이상, 못 읽으면 FAIL, 그림은 `<이름>-phone.png`).
 
 ### 4.3단계 · Game Wow kit (자동 포함, 따로 할 일 없음)
 모든 방식(퀴즈·서바이벌·방탈출·짝맞추기·빙고·말판·분류)에 `shared/juice` 키트가 자동으로 붙어요: 정답 = 눌림 찌그러짐+멈칫+파티클+화면 살짝 흔들림+3겹 효과음(연속 정답이면 음이 한 칸씩 올라감), 오답 = 부드러운 흔들림 한 번+✖+글자(색만으로 구분 금지, 놀리지 않음), 3·5·10연속 축하, 타이머 마지막 5초는 깜빡임 없이 부드럽게 커졌다 작아짐, 마지막 문제 전 음악 빨라짐, 결과 = 북소리→숫자 감속→폭죽 / 팀전은 시상대(3등→2등→1등).
@@ -108,7 +109,7 @@ python3 scripts/design_review.py game.html --out review/
 1. **학생 정보 금지**: 이름·학번·사진 입력칸, 결과 저장, 순위 공개(실명)를 만들지 않는다. 팀 이름은 동물 이름 기본.
 2. **문제는 확인받은 그대로**. 사실이 확실하지 않으면 2단계 표에 「확인 필요」라고 표시한다.
 3. **저작권은 막지 말고 권고만**: 선생님이 올린 노래·글꼴·영상·이미지는 그대로 쓰고 한 줄 권고(`references/legal-advisory.md`). 가사·유명 캐릭터를 직접 그려 내지는 않는다.
-4. **외부 자원**: 이미지·오디오 파일 금지. 스크립트는 cdnjs.cloudflare.com만(정확한 버전), 글꼴은 Google Fonts만.
+4. **외부 자원**: 이미지·오디오 파일 금지. **기본은 바깥 주소가 하나도 없는 파일**(글꼴은 Noto KR을 파일 안에 넣어요; Google 글꼴 링크·CDN은 spec에 `online:true`를 적을 때만, 그때는 cdnjs 정확한 버전만). `check_game.py`가 link·script·img·css url/@import·fetch의 바깥 주소를 FAIL로 막아요.
 5. **오래된 크롬 대응(ES2017)**: `?.` `??` `replaceAll` `.at(` `#private` `structuredClone` 금지. CSS `aspect-ratio` `:has` `dvh` 금지.
 6. **선생님 메뉴·소리 끄기·전체 화면 버튼은 지우지 않는다.**
 7. 팀전 기본: 팀 점수만, 넉넉한 타이머(20초+), 역전 요소(보너스), 오답 망신 금지.

@@ -8,6 +8,9 @@
 - `teacher-data` 문구 정리: 점수대 그래프 설명이 설문 문구를 쓰던 것 수정, 「가장 높은 A와 가장 낮은 B의 차이」처럼 두 곳을 밝힘, 소수 자릿수 통일(-0.4점, 6.0점)
 - `docs/training/deck.json`을 새 슬라이드 spec으로 다시 만듦(21장, 점검 통과)
 
+### Testbed fixes (2026-11-19, `docs/research/testbed-fix-2026-11.md`)
+- 폰 세로 화면(quiz): 600칸 세로 무대 + 폰 점검(390×844·844×390, 글자·넘침·버튼 44px). 기본 오프라인(바깥 주소 FAIL, `online:true`만 허용). 스타일은 words가 제목보다 우선 + `--spec` 미리 보기. `color_from.py` 여러 파일·이름 있는 색. `design.font`, 비네트 밝기별. `direction.py` 폰 인식. 라우터 새 게임은 spec→build. 제작 공정표 번호 규칙(haiku 0.81→1.0). `teacher-data` 설명 YAML 복원 + `sync_shared --check` 설명 검사.
+
 ### Added
 - **제작 공정표(production pipeline)**: 모든 결과물이 같은 줄을 따른다: 기획 → 대본·내용 → 연출·콘티 → 제작 → 수정 → 배포. 단계마다 눈에 보이는 작은 결과물 하나, 확인 지점은 최대 3번(기획 뒤·콘티 뒤·첫 제작 뒤, 「네」로 계속), 「알아서」는 건너뜀, 작고 분명한 일은 단계를 합치거나 생략, 되돌릴 수 없는·밖으로 나가는 일·법/개인정보·내 자료 필요·점검 두 번 실패는 언제나 묻기. `references/pipeline.md` + 종류별 표 `pipeline-types.md`(슬라이드·게임·영상·수업 도구·데이터·문서·웹/앱·같이 기획). 각 스킬 SKILL.md에 「Pipeline」 두세 줄.
 - `scripts/storyboard.py`: spec(슬라이드·게임·컷 목록·`{"frames":[…]}`)을 번호 붙은 콘티 한 장(오프라인 HTML + 글자본)으로, 기존 spec 형식은 그대로 읽음, 저장한 내 색 반영. `scripts/deliver.py`: 완성 파일의 「배포 꾸러미」(크기·인터넷 없이 열림·폰/TV·인쇄/PDF·개인정보 확인표·출처 한 줄, 내 링크만 오프라인 QR, 아무것도 올리지 않음). 시험 `py tools/test_pipeline.py`(17개), 입구 평가에 공정표 사례 8개 추가(`docs/research/pipeline-eval-2026-11.md`).

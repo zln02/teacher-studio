@@ -11,13 +11,19 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 | 5 | 수정 fix | the changed file, 2 tweak offers | `vague-fix.md`; max 2 loops |
 | 6 | 배포 deliver | 배포 꾸러미 (size, phone/TV, print, privacy, 출처) | `scripts/deliver.py FILE` |
 
-## Checkpoints (at most 3; each shows the artifact + one recommended next action, so 「네」 continues)
-- **CP1 after 1 기획**: the pitches/plan line. Next: 「이 방향(추천 B)으로 대본부터 쓸까요?」
-- **CP2 after 3 콘티**: the storyboard sheet. Next: 「이 흐름으로 만들까요?」 Stages 2+3 are shown together as one sheet (script text sits inside the frames); do not stop after 2 alone.
-- **CP3 after 4 제작**: the first build, opened. Next: 「이대로 쓸까요, 한 군데만 고칠까요? (추천: 이대로)」 with exactly 2 tweak offers.
-- Between checkpoints keep going without asking. One question per checkpoint, answerable by 「네」.
-- 「알아서」「바로」「그냥 해 줘」: no checkpoint at all. Run 1-6 straight, state assumptions in one line at the start (no-regret rule). Still stop for the always-ask list below.
-- User says 「바꿔 줘」 at any checkpoint: change that artifact only, re-show, go on. Never restart from stage 1.
+## Pick the checkpoint (first rule that matches; the router line in SKILL.md is the same list)
+| # | The message is | Checkpoint = where the first reply stops | Skips | Questions |
+|---|---|---|---|---|
+| 1 | has 「알아서」「바로」「그냥 해 줘」 | `none`: build, show, 2 tweak offers (assumptions in one line) | all stops | 0 |
+| 2 | a change to an existing file | `build`: the changed file + 2 tweak offers | plan, script, storyboard | 0 |
+| 3 | send / share / post / publish | `deliver`: the privacy check first | build | 1 (recommended answer) |
+| 4 | one-screen tool (timer, picker, team maker, scoreboard, countdown, notice) | `none` | storyboard | 0 |
+| 5 | vague (no topic or purpose) | `plan`: 3 pitches, one 추천 | everything after | up to 5 in one round |
+| 6 | clear game / video / 10+ slide deck / report | `storyboard`: the 콘티 sheet (script text inside the frames); build only after the user reacts | plan | 1 |
+| 7 | anything else clear | `build`: first working file, then 「이대로 쓸까요, 한 군데만 고칠까요?」 | | 1 |
+- A game or a video is rule 6 even when the request is short; never go straight to a finished file. Rule 1 beats every other row, so 「알아서」 never stops at `build`.
+- Each stop shows the artifact + one recommended next action, so 「네」 continues. At most 3 stops in a whole job (plan, storyboard, first build).
+- Between stops keep going without asking. User says 「바꿔 줘」 at a stop: change that artifact only, re-show, go on. Never restart from stage 1.
 
 ## When to skip or merge stages (small and clear jobs)
 - Clear request + one-screen result (timer, picker, team maker, scoreboard, countdown, 5-line notice): merge 1-3 into the spec; no storyboard, no CP1/CP2. Build, then CP3 only if the user has not said 「바로」.

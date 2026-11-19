@@ -33,9 +33,14 @@
     "style": {"enum": ["neon-cyber", "gold-luxury", "pop-colorful", "festival-party", "tv-gameshow", "glass-3d", "anime-cartoon", "pastel-cute", "retro-pixel", "minimal-premium", "chalk-paper", "nature-calm"], "description": "general style taxonomy: each style has its own palette, background, composition and component look (default: picked from words/world/seed)"},
     "layout": {"enum": ["stack", "split", "bento", "news", "poster"]}, "choice": {"enum": ["pill", "tile", "stamp", "neon", "note"]}, "card": {"enum": ["round", "ticket", "polaroid", "hex"]}, "score": {"enum": ["led", "chalk", "sticker", "banner"]}, "title_style": {"enum": ["outline", "stack3d", "stamp", "underline"]},
     "words": {"type": "array", "items": {"type": "string"}, "description": "mood/scene words for theme:auto, e.g. [\"우주\",\"동화\",\"바다\",\"긴장감\",\"따뜻하게\",\"고급스럽게\"]"},
-    "large": {"type": "boolean", "description": "personal use only: class-size type (grandparents, far screens)"}
+    "large": {"type": "boolean", "description": "personal use only: class-size type (grandparents, far screens)"},
+    "font": {"enum": ["sans", "serif", "rounded", "system"], "description": "overrides the style font; system = no embedded font file"},
+    "title_style": {"enum": ["default", "outline", "stack3d", "stamp", "underline"], "description": "title treatment (design.title is accepted too)"}
    }
   },
+  "online": {"type": "boolean", "description": "default false: the file makes no outside request (no Google Fonts/CDN). true only when really needed"},
+  "back": {"type": "object", "properties": {"href": {"type": "string"}, "label": {"type": "string"}}, "description": "a line in the teacher menu that goes back to the site (relative address only)"},
+  "head_meta": {"type": "array", "items": {"type": "object", "properties": {"name": {"enum": ["robots", "description", "theme-color", "author"]}, "content": {"type": "string"}}}},
   "custom_css": {"type": "string", "maxLength": 6000, "description": "AI extra flair (sandboxed: no external urls, no ?. ??)"}, "custom_svg": {"type": "string", "maxLength": 12000, "description": "full-stage svg decoration, viewBox 0 0 1920 1080 (no script/href/external)"},
   "world": {"type": "object", "description": "optional texts: qLabel, lockName, goodText, speak (bingo read-aloud), lang"},
   "items": {

@@ -13,8 +13,9 @@ import re
 VERSION = "0.2.0"
 NAME = "Teacher Studio (교사 스튜디오) by 박진영 (zln02)"
 REPO = "https://github.com/zln02/teacher-studio"
-META = f'<meta name="generator" content="{NAME} — {REPO}">'
-COMMENT = f"<!-- {NAME} — {REPO} · v{VERSION} · Apache-2.0 -->"
+# The mark carries the name and version only: no web address, so a finished page makes no outside reference at all (the repo is in the credits, NOTICE and README).
+META = f'<meta name="generator" content="{NAME} v{VERSION}">'
+COMMENT = f"<!-- {NAME} · v{VERSION} · Apache-2.0 -->"
 
 
 def stamp(html: str) -> str:

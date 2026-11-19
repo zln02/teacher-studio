@@ -46,7 +46,9 @@ VAGUE_MOOD = ["느낌", "분위기", "멋지", "예쁘", "세련", "좋게", "�
 MOODS = ["귀엽", "귀여", "차분", "신나", "신남", "발랄", "고급", "미니멀", "깔끔", "심플", "따뜻", "긴장", "네온", "레트로", "파스텔", "칠판", "자연", "화려"]
 PURPOSE = ["복습", "도입", "수업 시작", "시험", "정리", "연수", "행사", "홍보", "상담", "첫 시간", "총회", "발표", "소개", "오리엔테이션", "대회", "송년", "졸업", "축하"]
 AUDIENCE = ["학부모", "학생", "친구", "동료", "선생님", "가족", "아이들", "어르신", "신입", "고객", "회원"]
-DEVICE_WORDS = {"board": ["칠판", "TV", "tv", "전자칠판", "빔"], "tablet": ["태블릿", "패드", "각자 폰", "폰으로"], "pc": ["개인 PC", "노트북"]}
+DEVICE_WORDS = {"board": ["칠판", "TV", "tv", "전자칠판", "빔"], "phone": ["폰", "핸드폰", "휴대폰", "스마트폰", "휴대전화", "모바일", "스마트 기기"],
+                "tablet": ["태블릿", "패드", "아이패드", "갤럭시탭"], "pc": ["개인 PC", "노트북"]}
+PHONE_NOT = re.compile(r"(헤드|이어|마이크|스피커|블루투스|전화기|공중전화)\s*폰|폰트|폰티")  # headphone, earphone, microphone, font (폰트) ... are not a phone
 SUBJECTS = ["국어", "영어", "수학", "과학", "사회", "역사", "도덕", "음악", "미술", "체육", "기술", "정보", "한문", "실과", "통합", "전과목"]
 MATERIAL = ["첨부", "학습지", "이 파일", "이 자료", "사진", "교과서", "내 양식", "양식", "로고", "pdf", "PDF", "엑셀 파일"]
 LENGTH = ["분", "장", "문제", "개", "쪽", "초", "시간"]
@@ -104,7 +106,8 @@ def infer(request: str, prefs: dict | None = None) -> dict:
         kind = order[0]
     grade = re.search(r"(초|중|고)\s*([1-6])|([1-6])\s*학년", req)
     level = {"초": "초등학교", "중": "중학교", "고": "고등학교"}.get(grade.group(1)) if grade and grade.group(1) else None
-    device = next((d for d, ws in DEVICE_WORDS.items() if _has(req, ws)), None)
+    req_dev = PHONE_NOT.sub("", req)  # 「폰으로」 = phone (it used to be read as tablet)
+    device = next((d for d, ws in DEVICE_WORDS.items() if _has(req_dev, ws)), None)
     subject = next((s for s in SUBJECTS if s in req), None)
     return {
         "kind": kind, "skill": KINDS[kind][1] if kind else None,
