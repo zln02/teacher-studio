@@ -1,0 +1,98 @@
+{
+ "file": "light-review.html",
+ "sheet": "C:\\Users\\User\\AppData\\Local\\Temp\\claude\\d85f5c5f00edac37\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\runs\\game\\harness\\review\\light-review-sheet.png",
+ "screens": {
+  "title": {
+   "plain_cards": 0,
+   "deco_density": 0.076,
+   "empty_ratio": 0.796,
+   "colors": 64,
+   "hierarchy": 1.0,
+   "min_contrast": 5.41,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "question": {
+   "plain_cards": 0,
+   "deco_density": 0.066,
+   "empty_ratio": 0.612,
+   "colors": 49,
+   "hierarchy": 1.28,
+   "min_contrast": 5.62,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "correct": {
+   "plain_cards": 0,
+   "deco_density": 0.048,
+   "empty_ratio": 0.576,
+   "colors": 48,
+   "hierarchy": 1.33,
+   "min_contrast": 6.92,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "wrong": {
+   "plain_cards": 0,
+   "deco_density": 0.039,
+   "empty_ratio": 0.599,
+   "colors": 45,
+   "hierarchy": 1.33,
+   "min_contrast": 5.25,
+   "low_contrast": 0,
+   "overlaps": 0
+  },
+  "result": {
+   "plain_cards": 0,
+   "deco_density": 0.259,
+   "empty_ratio": 0.599,
+   "colors": 49,
+   "hierarchy": 1.5,
+   "min_contrast": 4.27,
+   "low_contrast": 1,
+   "overlaps": 1
+  }
+ },
+ "summary": {
+  "deco_density": 0.051,
+  "empty_ratio": 0.596,
+  "colors": 47.333,
+  "hierarchy": 1.5,
+  "min_contrast": 5.25,
+  "overlaps": 0,
+  "title_empty_ratio": 0.796,
+  "title_deco_density": 0.076,
+  "plain_cards": 0
+ },
+ "verdict": "WARN",
+ "hints": [
+  "배경 장식이 최소 기준보다 적어요 → 장면이 있는 스타일(design.style: 네온·글래스·팝·파스텔 …)이나 분위기 낱말을 더해 보세요"
+ ],
+ "missing_screens": [],
+ "prop_relevance": {
+  "checked": true,
+  "world": [
+   "space"
+  ],
+  "bad": []
+ },
+ "mechanic": "quiz",
+ "layout": {
+  "family": "pop-colorful",
+  "style": "pop-colorful",
+  "css": "pop",
+  "seed": 57804,
+  "mechanic": "quiz",
+  "layout": "poster",
+  "mech": "",
+  "choice": "tile",
+  "card": "ticket",
+  "score": "sticker",
+  "title": "stamp",
+  "titleScale": "sm",
+  "tpos": "center",
+  "transition": "wipe"
+ },
+ "fingerprint": "000000000000000000000000000000000000000000000000001111111110000000000000001111111110101111000000001111111110000000000000001111111110101100000000001111111110000000000000001111111110000000000000001111111110100000000000001111111110000000000000001111111110101111100000000000000000000000000000000000000000000000000000000000000000000000000000",
+ "similar_to": []
+}

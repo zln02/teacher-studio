@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>빛 탐험대 - 중2 과학 빛 복습 게임</title>
+<style>
+:root{--bg1:#eef3ff;--bg2:#e6f7ff;--ink:#1f2a44;--sub:#5b6785;--acc:#5b5bf0;--acc2:#00a6d6;--ok:#16a34a;--ng:#e11d48;--card:#ffffff;--line:#d5def5;--warn:#f59e0b}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);background:radial-gradient(circle at 15% 10%,#fff 0,transparent 40%),linear-gradient(160deg,var(--bg1),var(--bg2));min-height:100vh;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#9db4ff 1.2px,transparent 1.5px),radial-gradient(#7fd8f5 1px,transparent 1.3px);background-size:90px 90px,130px 130px;background-position:10px 20px,50px 60px;opacity:.35}
+#app{position:relative;max-width:760px;margin:0 auto;padding:14px 14px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.logo{font-weight:800;color:var(--acc);cursor:pointer}
+button{font-family:inherit;cursor:pointer}
+.btn{background:var(--acc);color:#fff;border:0;border-radius:14px;padding:12px 22px;font-size:17px;font-weight:700;box-shadow:0 4px 0 #3c3cb8;transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #3c3cb8}
+.btn.alt{background:#fff;color:var(--acc);border:2px solid var(--acc);box-shadow:0 4px 0 #c9cffa}
+.btn.sm{padding:8px 14px;font-size:14px}
+.btn:disabled{opacity:.5}
+.mute{background:#fff;border:1px solid var(--line);border-radius:20px;padding:6px 12px;font-size:14px}
+.screen{display:none}.screen.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:0 8px 24px rgba(70,90,170,.10);margin-bottom:12px}
+h1{font-size:clamp(28px,7vw,42px);margin:6px 0;text-align:center;background:linear-gradient(90deg,#e11d48,#f59e0b,#16a34a,#00a6d6,#5b5bf0);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{text-align:center;color:var(--sub);margin-bottom:16px}
+.modes{display:grid;gap:12px}
+.mode{display:flex;gap:14px;align-items:center;text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;width:100%;color:var(--ink);font-size:15px}
+.mode:hover{border-color:var(--acc)}
+.mode .ic{font-size:34px}
+.mode b{font-size:18px;display:block}
+.mode small{color:var(--sub)}
+.mode .hi{margin-left:auto;font-size:13px;color:var(--warn);font-weight:700;white-space:nowrap}
+.hud{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-weight:700;margin-bottom:8px}
+.hud span{background:#fff;border:1px solid var(--line);border-radius:12px;padding:4px 10px;font-size:14px}
+.bar{height:12px;background:#e3e9fb;border-radius:8px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--acc2),var(--acc));transition:width .1s linear}
+.bar i.low{background:var(--ng)}
+.q{font-size:clamp(17px,4.5vw,21px);font-weight:700;line-height:1.5;margin:4px 0 10px}
+canvas{display:block;max-width:100%;border-radius:14px}
+#qcv{margin:0 auto 10px;background:#f4f7ff;border:1px solid var(--line);width:100%;max-width:360px;height:auto}
+.ch{display:grid;gap:8px}
+.ch button{background:#f6f8ff;border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:16px;text-align:left;color:var(--ink)}
+.ch button:hover:not(:disabled){border-color:var(--acc)}
+.ch button.right{background:#dcfce7;border-color:var(--ok)}
+.ch button.bad{background:#ffe4ea;border-color:var(--ng)}
+.fb{margin-top:12px;border-radius:14px;padding:12px 14px;line-height:1.6;display:none}
+.fb.ok{display:block;background:#ecfdf3;border:1px solid var(--ok)}
+.fb.ng{display:block;background:#fff1f3;border:1px solid var(--ng)}
+.fb .btn{margin-top:8px}
+#rcv{width:100%;height:auto;background:#10172e;touch-action:none;border:2px solid #2b3868}
+.ctrl{display:grid;gap:6px;margin:10px 0}
+.ctrl label{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700}
+.ctrl input[type=range]{flex:1;height:28px}
+.msg{min-height:24px;font-weight:700;margin:6px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.sw{display:flex;gap:14px;justify-content:center;margin:10px 0;flex-wrap:wrap}
+.sw div{text-align:center;font-size:14px;font-weight:700}
+.sw i{display:block;width:96px;height:64px;border-radius:14px;border:2px solid var(--line);margin-top:4px}
+#ccv{margin:0 auto;background:#000;width:100%;max-width:360px;height:auto}
+.rg{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin:6px 0;font-weight:700}
+.rg .t{border:0;border-radius:10px;color:#fff;padding:8px 12px;font-size:14px}
+.stars{font-size:54px;text-align:center;color:#f5b301;letter-spacing:6px}
+.big{font-size:42px;text-align:center;font-weight:800;color:var(--acc)}
+.rv{border-left:5px solid var(--ng);background:#fff7f8;border-radius:10px;padding:10px 12px;margin:8px 0;line-height:1.55;font-size:15px}
+.center{text-align:center}
+</style>
+</head>
+<body>
+<div id="app">
+ <div class="top"><div class="logo" onclick="go('menu')">🔦 빛 탐험대</div><button class="mute" id="mute" onclick="toggleMute()">🔊 소리 켜짐</button></div>
+
+ <section id="menu" class="screen on">
+  <div class="card">
+   <h1>빛 탐험대</h1>
+   <div class="tag">중학교 2학년 과학 · 빛 단원 복습 게임</div>
+   <div class="center" style="margin-bottom:14px"><button class="btn" onclick="startQuiz()">▶ 시작하기 (빛 퀴즈 러시)</button></div>
+   <div class="modes">
+    <button class="mode" onclick="startQuiz()"><span class="ic">❓</span><span><b>A. 빛 퀴즈 러시</b><small>10문제 · 15초 제한 · 콤보 · 라이프 3개</small></span><span class="hi" id="hiA"></span></button>
+    <button class="mode" onclick="startReflect()"><span class="ic">🔦</span><span><b>B. 반사 챌린지</b><small>거울 각도를 조절해 레이저를 목표에 맞추세요</small></span><span class="hi" id="hiB"></span></button>
+    <button class="mode" onclick="startColor()"><span class="ic">🎨</span><span><b>C. 색 합성 연구소</b><small>빛의 삼원색으로 목표 색을 만드세요</small></span><span class="hi" id="hiC"></span></button>
+   </div>
+  </div>
+ </section>
+
+ <section id="quiz" class="screen">
+  <div class="hud"><span id="qn">문제 1/10</span><span id="ql">❤❤❤</span><span id="qc">콤보 0</span><span id="qs">점수 0</span></div>
+  <div class="bar"><i id="qbar"></i></div>
+  <div class="card">
+   <div class="q" id="qtext"></div>
+   <canvas id="qcv" width="320" height="170"></canvas>
+   <div class="ch" id="qch"></div>
+   <div class="fb" id="qfb"></div>
+  </div>
+ </section>
+
+ <section id="reflect" class="screen">
+  <div class="hud"><span id="rl">레벨 1/6</span><span id="rm">시도 0</span><span id="rs">점수 0</span></div>
+  <div class="card">
+   <canvas id="rcv" width="640" height="400"></canvas>
+   <div class="msg" id="rmsg"></div>
+   <div class="ctrl" id="rctrl"></div>
+   <div class="row">
+    <button class="btn" id="rfire" onclick="rFire()">🔴 발사!</button>
+    <button class="btn alt sm" onclick="rHint()">💡 힌트 (-100점)</button>
+    <button class="btn alt sm" onclick="go('menu')">나가기</button>
+   </div>
+   <div class="tag" style="margin:10px 0 0;font-size:13px">캔버스의 거울을 드래그(터치)해도 돌릴 수 있어요. 입사각 = 반사각!</div>
+  </div>
+ </section>
+
+ <section id="color" class="screen">
+  <div class="hud"><span id="cl">라운드 1/7</span><span id="cm">시도 0</span><span id="cs">점수 0</span></div>
+  <div class="card">
+   <canvas id="ccv" width="360" height="240"></canvas>
+   <div class="sw"><div>목표: <span id="cname"></span><i id="ctar"></i></div><div>내가 만든 색<i id="cmine"></i></div></div>
+   <div class="rg"><button class="t" style="background:#e11d48" onclick="cTog(0)" id="tg0">빨강 R</button><input type="range" id="sl0" min="0" max="100" value="0"><span id="v0">0%</span></div>
+   <div class="rg"><button class="t" style="background:#16a34a" onclick="cTog(1)" id="tg1">초록 G</button><input type="range" id="sl1" min="0" max="100" value="0"><span id="v1">0%</span></div>
+   <div class="rg"><button class="t" style="background:#2563eb" onclick="cTog(2)" id="tg2">파랑 B</button><input type="range" id="sl2" min="0" max="100" value="0"><span id="v2">0%</span></div>
+   <div class="msg center" id="cmsg"></div>
+   <div class="row"><button class="btn" id="ccheck" onclick="cCheck()">✔ 확인</button><button class="btn alt sm" onclick="go('menu')">나가기</button></div>
+  </div>
+ </section>
+
+ <section id="result" class="screen">
+  <div class="card">
+   <div class="center" style="font-weight:800" id="rtitle"></div>
+   <div class="stars" id="rstars"></div>
+   <div class="big" id="rscore"></div>
+   <div class="center" id="rhi" style="color:var(--sub);margin:6px 0"></div>
+   <div class="center" id="rinfo" style="margin-bottom:8px"></div>
+   <div class="row"><button class="btn" id="rretry">다시하기</button><button class="btn alt" onclick="go('menu')">메인으로</button></div>
+  </div>
+  <div class="card"><b>📝 복습 목록</b><div id="rrev"></div></div>
+ </section>
+</div>
+
+<script>
+"use strict";
+/* ---------- 공통 ---------- */
+const $=id=>document.getElementById(id);
+function go(n){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===n));if(n==='menu'){stopTimers();showHi();}window.scrollTo(0,0);}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function stopTimers(){clearInterval(qTimer);clearTimeout(qAuto);}
+function getHi(m){try{return +localStorage.getItem('lightgame_hi_'+m)||0;}catch(e){return 0;}}
+function setHi(m,v){try{localStorage.setItem('lightgame_hi_'+m,String(v));}catch(e){}}
+function showHi(){['A','B','C'].forEach(m=>{const v=getHi(m);$('hi'+m).textContent=v?'🏆 '+v:'';});}
+/* 소리 */
+let muted=false,AC=null;
+try{muted=localStorage.getItem('lightgame_mute')==='1';}catch(e){}
+function toggleMute(){muted=!muted;try{localStorage.setItem('lightgame_mute',muted?'1':'0');}catch(e){}$('mute').textContent=muted?'🔇 소리 꺼짐':'🔊 소리 켜짐';}
+$('mute').textContent=muted?'🔇 소리 꺼짐':'🔊 소리 켜짐';
+function tone(f,d,type,t0,vol){if(muted)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();const o=AC.createOscillator(),g=AC.createGain(),t=AC.currentTime+(t0||0);o.type=type||'sine';o.frequency.value=f;g.gain.setValueAtTime(vol||.15,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+d+.02);}catch(e){}}
+const SFX={ok(){tone(660,.12,'triangle');tone(880,.18,'triangle',.1);},ng(){tone(220,.25,'sawtooth',0,.1);tone(165,.3,'sawtooth',.12,.1);},click(){tone(500,.05,'square',0,.06);},win(){[523,659,784,1047].forEach((f,i)=>tone(f,.2,'triangle',i*.1));},tick(){tone(900,.04,'square',0,.04);}};
+
+/* ---------- 결과 화면 ---------- */
+function showResult(o){ /* {mode,title,score,stars,info,wrong[],retry} */
+  stopTimers();
+  const prev=getHi(o.mode);let nh=o.score>prev;if(nh)setHi(o.mode,o.score);
+  $('rtitle').textContent=o.title;
+  $('rstars').textContent='★'.repeat(o.stars)+'☆'.repeat(3-o.stars);
+  $('rscore').textContent=o.score+'점';
+  $('rhi').textContent=nh?'🎉 최고 점수 갱신!':'최고 점수: '+prev+'점';
+  $('rinfo').textContent=o.info||'';
+  $('rretry').onclick=o.retry;
+  const rv=$('rrev');rv.innerHTML='';
+  if(!o.wrong.length)rv.innerHTML='<div class="center" style="padding:10px">틀린 문제가 없어요! 완벽해요 👏</div>';
+  o.wrong.forEach(w=>{const d=document.createElement('div');d.className='rv';d.innerHTML='<b></b><br><span class="ans"></span><br><span class="ex"></span>';d.querySelector('b').textContent=w.q;d.querySelector('.ans').textContent=w.a?'정답: '+w.a:'';d.querySelector('.ex').textContent='해설: '+w.e;rv.appendChild(d);});
+  go('result');(o.stars>=2?SFX.win:SFX.click)();
+}
+
+/* ---------- 도식 그리기(퀴즈용) ---------- */
+function dl(c,x1,y1,x2,y2,col,w,dash){c.beginPath();c.setLineDash(dash||[]);c.strokeStyle=col||'#333';c.lineWidth=w||2;c.moveTo(x1,y1);c.lineTo(x2,y2);c.stroke();c.setLineDash([]);}
+function dt(c,s,x,y,col,sz,al){c.fillStyle=col||'#1f2a44';c.font=(sz||12)+'px "Malgun Gothic",sans-serif';c.textAlign=al||'center';c.fillText(s,x,y);}
+function dar(c,x1,y1,x2,y2,col){dl(c,x1,y1,x2,y2,col,2);const a=Math.atan2(y2-y1,x2-x1);c.fillStyle=col;c.beginPath();c.moveTo(x2,y2);c.lineTo(x2-9*Math.cos(a-.4),y2-9*Math.sin(a-.4));c.lineTo(x2-9*Math.cos(a+.4),y2-9*Math.sin(a+.4));c.closePath();c.fill();}
+const RAY='#e8590c';
+const DIAG={
+ reflect(c){dl(c,40,120,280,120,'#2b6cb0',6);for(let x=40;x<280;x+=12)dl(c,x,126,x-6,134,'#8aa',1);dl(c,160,120,160,18,'#667',1.5,[4,4]);
+  const s=Math.sin(40*Math.PI/180),k=Math.cos(40*Math.PI/180);dar(c,160-100*s,120-100*k,160,120,RAY);dar(c,160,120,160+100*s,120-100*k,RAY);
+  dt(c,'법선',172,26,'#667');dt(c,'입사광선',80,40,RAY);dt(c,'반사광선',250,40,RAY);dt(c,'거울',250,146,'#2b6cb0');
+  dt(c,'40°',140,86,'#111',13);dt(c,'?',184,86,'#c026d3',16);},
+ refract(c){c.fillStyle='#e8f6ff';c.fillRect(0,0,320,85);c.fillStyle='#9fd6f5';c.fillRect(0,85,320,85);dl(c,0,85,320,85,'#357',2);dl(c,160,10,160,160,'#667',1.5,[4,4]);
+  const a=50*Math.PI/180,b=35*Math.PI/180;dar(c,160-90*Math.sin(a),85-90*Math.cos(a),160,85,RAY);dar(c,160,85,160+80*Math.sin(b),85+80*Math.cos(b),RAY);
+  dt(c,'공기',30,24,'#357',14);dt(c,'물',30,150,'#357',14);dt(c,'법선',178,20,'#667');dt(c,'입사각 50°',100,60,'#111',12);dt(c,'굴절각 ?',230,120,'#c026d3',13);},
+ fiber(c){c.fillStyle='#dbe7ff';c.fillRect(10,58,300,54);dl(c,10,58,310,58,'#357',3);dl(c,10,112,310,112,'#357',3);
+  const p=[[10,85],[100,58],[180,112],[260,58],[310,85]];for(let i=0;i<4;i++)dar(c,p[i][0],p[i][1],p[i][0]+(p[i+1][0]-p[i][0])*(i==3?1:.97),p[i][1]+(p[i+1][1]-p[i][1])*(i==3?1:.97),RAY);
+  dt(c,'광섬유 (코어)',160,32,'#357',14);dt(c,'빛이 안쪽 면에서 계속 반사되며 나아감',160,140,'#445',12);},
+ convex(c){dl(c,10,85,310,85,'#667',1);c.beginPath();c.fillStyle='rgba(100,170,255,.45)';c.strokeStyle='#357';c.lineWidth=2;c.ellipse(160,85,13,58,0,0,7);c.fill();c.stroke();
+  dt(c,'F',110,100,'#111');dt(c,'F',210,100,'#111');dl(c,110,81,110,89,'#111',2);dl(c,210,81,210,89,'#111',2);
+  dar(c,40,85,40,55,'#16a34a');dt(c,'물체',40,102,'#16a34a');
+  dl(c,40,55,160,55,RAY,1.5);dl(c,160,55,246,106.4,RAY,1.5);dl(c,40,55,246,106.4,RAY,1.5);
+  dar(c,245.7,85,245.7,106,'#c026d3');dt(c,'?',262,100,'#c026d3',15);dt(c,'물체는 2F보다 바깥',160,150,'#445',12);},
+ concave(c){dl(c,10,85,310,85,'#667',1);c.beginPath();c.fillStyle='rgba(100,170,255,.45)';c.strokeStyle='#357';c.lineWidth=2;c.moveTo(148,27);c.quadraticCurveTo(160,85,148,143);c.lineTo(172,143);c.quadraticCurveTo(160,85,172,27);c.closePath();c.fill();c.stroke();
+  dt(c,'F',110,100,'#111');dl(c,110,81,110,89,'#111',2);dar(c,40,85,40,55,'#16a34a');dt(c,'물체',40,102,'#16a34a');
+  dl(c,40,55,160,55,RAY,1.5);dl(c,160,55,250,1,RAY,1.5);dl(c,160,55,110,85,RAY,1.2,[4,4]);dl(c,40,55,300,111,RAY,1.5);dl(c,40,55,124.7,75.3,RAY,1.2,[4,4]);
+  dar(c,124.7,85,124.7,76,'#c026d3');dt(c,'상(?)',138,100,'#c026d3',13);},
+ prism(c){c.fillStyle='rgba(120,180,255,.35)';c.strokeStyle='#357';c.lineWidth=2;c.beginPath();c.moveTo(160,25);c.lineTo(100,135);c.lineTo(220,135);c.closePath();c.fill();c.stroke();
+  dar(c,15,105,128,86,'#555');dl(c,128,86,190,100,'#777',2);dt(c,'백색광',55,92,'#333',13);
+  const cols=['#e11d48','#f97316','#eab308','#16a34a','#2563eb','#4f46e5','#9333ea'];cols.forEach((k,i)=>dl(c,190,100,300,112+i*8,k,3));
+  dt(c,'빨강',304,106,'#e11d48',12,'left');dt(c,'보라',304,172,'#9333ea',12,'left');dt(c,'프리즘',160,150,'#357',12);}
+};
+
+/* ---------- 퀴즈 문제 풀 ---------- */
+const QS=[
+{q:"빛이 같은 물질(매질) 속에서 곧게 나아가는 성질을 무엇이라 하나요?",c:["빛의 직진","빛의 반사","빛의 굴절","빛의 분산"],a:0,e:"빛은 균일한 매질 속에서 직선으로 나아갑니다. 이를 빛의 직진이라 합니다."},
+{q:"불투명한 물체 뒤에 그림자가 생기는 가장 알맞은 까닭은?",c:["빛이 직진하기 때문","빛이 굴절하기 때문","빛이 분산되기 때문","빛이 합성되기 때문"],a:0,e:"빛이 곧게 나아가다 물체에 가려지면 그 뒤쪽에는 빛이 도달하지 못해 그림자가 생깁니다."},
+{q:"바늘구멍 사진기의 스크린에 맺힌 상이 거꾸로 보이는 것은 어떤 성질 때문일까요?",c:["빛의 직진","빛의 분산","빛의 전반사","빛의 합성"],a:0,e:"물체의 위쪽에서 온 빛은 구멍을 직진해 지나 스크린 아래쪽에 닿으므로 상이 상하좌우가 바뀐 거꾸로 된 모양이 됩니다."},
+{q:"빛의 반사 법칙으로 옳은 것은?",c:["입사각 = 반사각","입사각 > 반사각","입사각 < 반사각","입사각 + 반사각 = 90°"],a:0,e:"빛이 반사할 때 입사각과 반사각의 크기는 항상 같습니다. 각은 법선을 기준으로 잰다는 점에 유의하세요."},
+{q:"그림처럼 입사각이 40°일 때 반사각(?)은 얼마일까요?",d:"reflect",c:["40°","50°","80°","140°"],a:0,e:"반사 법칙에 따라 반사각은 입사각과 같은 40°입니다. (입사각과 반사각은 법선과 이루는 각)"},
+{q:"광선이 거울 면과 30°의 각을 이루며 입사했다면 반사각은?",c:["60°","30°","45°","90°"],a:0,e:"입사각은 법선과 이루는 각이므로 90°-30°=60°입니다. 반사각도 입사각과 같은 60°입니다."},
+{q:"평면거울 앞 2 m 지점에 서 있을 때, 거울 속의 내 모습(상)까지의 거리는 나로부터 얼마일까요?",c:["4 m","2 m","1 m","6 m"],a:0,e:"평면거울에서 상은 거울 뒤 2 m에 생기므로, 나와 상 사이의 거리는 2+2=4 m입니다."},
+{q:"평면거울에 생기는 상의 특징으로 옳지 않은 것은?",c:["물체와 크기가 같다","좌우가 바뀌어 보인다","거울 뒤쪽에 생긴 허상이다","스크린에 맺힐 수 있는 실상이다"],a:3,e:"평면거울의 상은 실제 빛이 모이지 않는 허상이므로 스크린에 맺히지 않습니다."},
+{q:"울퉁불퉁한 종이 표면에서 빛이 여러 방향으로 흩어져 반사되는 현상은?",c:["난반사","전반사","굴절","분산"],a:0,e:"난반사에서도 각각의 빛은 반사 법칙(입사각=반사각)을 따르지만, 표면이 고르지 않아 반사 방향이 제각각입니다. 덕분에 어느 방향에서도 물체가 보입니다."},
+{q:"빛이 서로 다른 매질의 경계면에서 진행 방향이 꺾이는 현상은?",c:["굴절","반사","직진","합성"],a:0,e:"빛이 다른 매질로 들어갈 때 속력이 달라져 경계면에서 꺾이는 현상을 굴절이라 합니다."},
+{q:"그림처럼 빛이 공기에서 물로 비스듬히 들어갈 때, 굴절각(?)은 입사각 50°보다 어떠한가요?",d:"refract",c:["작다","크다","같다","알 수 없다"],a:0,e:"공기에서 물로 들어가면 빛은 법선 쪽으로 꺾이므로 굴절각이 입사각보다 작아집니다."},
+{q:"빛이 물에서 공기로 비스듬히 나갈 때의 굴절 방향은?",c:["법선에서 멀어지는 쪽","법선 쪽","꺾이지 않는다","경계면과 평행하게 간다"],a:0,e:"속력이 느린 매질(물)에서 빠른 매질(공기)로 나가면 법선에서 멀어지는 쪽으로 꺾입니다."},
+{q:"물속에 잠긴 다리가 실제보다 짧아 보이는 까닭은?",c:["빛의 굴절","빛의 반사","빛의 직진","빛의 합성"],a:0,e:"물속 다리에서 나온 빛이 물에서 공기로 나올 때 굴절하여, 눈에는 빛이 꺾이기 전 연장선 위의 얕은 곳에 있는 것처럼 보입니다."},
+{q:"빛이 공기에서 유리로 비스듬히 들어갈 때 일어나는 일은?",c:["법선 쪽으로 꺾인다","법선에서 멀어지는 쪽으로 꺾인다","전혀 꺾이지 않는다","모두 반사된다"],a:0,e:"유리에서는 공기보다 빛의 속력이 느려, 공기에서 유리로 들어가면 법선 쪽으로 꺾입니다."},
+{q:"전반사가 일어날 수 있는 조건으로 옳은 것은?",c:["밀한 매질에서 소한 매질로, 입사각이 임계각보다 클 때","소한 매질에서 밀한 매질로, 입사각이 클 때","같은 매질에서 입사각이 0°일 때","매질에 관계없이 입사각이 작을 때"],a:0,e:"빛이 물이나 유리 같은 (빛의 속력이 느린) 매질에서 공기 쪽으로 나가며 입사각이 임계각보다 크면 경계면에서 전부 반사됩니다."},
+{q:"광섬유 속에서 빛이 밖으로 새지 않고 멀리까지 전달되는 원리는?",d:"fiber",c:["전반사","분산","난반사","합성"],a:0,e:"광섬유의 코어 속 빛은 경계면에서 전반사를 반복하며 손실 없이 나아갑니다. 통신과 내시경에 이용됩니다."},
+{q:"전반사를 이용한 예로 옳은 것은?",c:["광섬유를 이용한 인터넷 통신","평면거울로 얼굴 보기","일식이 일어나는 현상","그림자놀이"],a:0,e:"광섬유 통신(인터넷)과 의료용 내시경은 전반사를 이용합니다."},
+{q:"볼록렌즈에 광축과 평행하게 들어온 빛은 렌즈를 지난 뒤 어떻게 될까요?",c:["초점에 모인다","퍼져 나간다","그대로 평행하게 간다","렌즈에서 반사된다"],a:0,e:"볼록렌즈는 빛을 굴절시켜 한 점(초점)에 모읍니다."},
+{q:"물체를 볼록렌즈의 초점 안쪽에 두고 볼 때 보이는 상은?",c:["확대된 바로 선 허상","축소된 거꾸로 선 실상","확대된 거꾸로 선 실상","상이 생기지 않는다"],a:0,e:"초점 안쪽에서는 확대된 정립(바로 선) 허상이 보입니다. 이것이 확대경(돋보기)의 원리입니다."},
+{q:"그림처럼 물체를 볼록렌즈의 2F보다 바깥에 놓았을 때 생기는 상(?)의 성질은?",d:"convex",c:["축소된 거꾸로 선 실상","확대된 바로 선 허상","물체와 같은 크기의 바로 선 상","확대된 거꾸로 선 실상"],a:0,e:"초점 거리의 2배보다 먼 곳의 물체는 렌즈 반대편에 축소된 도립 실상을 만듭니다. (카메라가 이 경우)"},
+{q:"오목렌즈가 빛에 미치는 영향은?",c:["빛을 퍼지게 한다","빛을 한 점에 모은다","빛을 반사한다","빛을 흡수한다"],a:0,e:"오목렌즈는 가운데가 얇아 평행한 빛을 퍼지게 합니다."},
+{q:"그림처럼 오목렌즈로 물체를 볼 때 생기는 상(?)의 성질은?",d:"concave",c:["축소된 바로 선 허상","확대된 거꾸로 선 실상","확대된 바로 선 허상","축소된 거꾸로 선 실상"],a:0,e:"오목렌즈는 물체의 위치와 관계없이 항상 축소된 정립 허상을 만듭니다."},
+{q:"근시(먼 곳이 흐릿하게 보임)를 교정하는 안경에 쓰이는 렌즈는?",c:["오목렌즈","볼록렌즈","평면거울","프리즘"],a:0,e:"근시는 상이 망막 앞에 맺히므로, 빛을 퍼지게 하는 오목렌즈로 교정합니다."},
+{q:"돋보기로 햇빛을 모아 종이를 태울 수 있는 까닭은?",c:["볼록렌즈가 빛을 한 점에 모으기 때문","오목렌즈가 빛을 퍼뜨리기 때문","빛이 반사되기 때문","돋보기가 열을 만들기 때문"],a:0,e:"볼록렌즈는 햇빛을 초점에 모아 그 부분의 에너지를 집중시킵니다."},
+{q:"빛의 삼원색으로 알맞게 짝지은 것은?",c:["빨강, 초록, 파랑","빨강, 노랑, 파랑","시안, 마젠타, 노랑","빨강, 초록, 노랑"],a:0,e:"빛의 삼원색은 빨강(R), 초록(G), 파랑(B)입니다. 시안·마젠타·노랑은 두 빛이 섞인 2차색입니다."},
+{q:"빨간빛과 초록빛을 같은 곳에 비추면 어떤 색으로 보일까요?",c:["노란색","시안(청록)색","마젠타(자홍)색","흰색"],a:0,e:"빨강+초록=노랑입니다."},
+{q:"초록빛과 파란빛을 합성하면 어떤 색이 될까요?",c:["시안(청록)색","노란색","마젠타(자홍)색","흰색"],a:0,e:"초록+파랑=시안입니다."},
+{q:"빨간빛과 파란빛을 합성하면 어떤 색이 될까요?",c:["마젠타(자홍)색","시안(청록)색","노란색","검은색"],a:0,e:"빨강+파랑=마젠타입니다."},
+{q:"빛의 삼원색을 같은 세기로 모두 합성하면 무슨 색이 될까요?",c:["흰색","검은색","회색","갈색"],a:0,e:"빨강+초록+파랑을 모두 합성하면 흰색 빛이 됩니다."},
+{q:"TV나 스마트폰 화면이 다양한 색을 나타내는 원리는?",c:["빛의 삼원색을 섞어 여러 색을 만든다","백색광을 프리즘으로 나눈다","모든 색의 물감을 섞는다","빛을 전반사시킨다"],a:0,e:"화면은 R·G·B 세 색의 밝기를 조절해 합성함으로써 여러 가지 색을 만듭니다."},
+{q:"백색광이 프리즘을 통과하면 여러 색으로 나뉘는 까닭은?",c:["색깔(파장)마다 굴절하는 정도가 다르기 때문","프리즘이 색을 입히기 때문","빛이 전반사되기 때문","빛이 흡수되기 때문"],a:0,e:"백색광은 여러 색의 빛이 섞인 것으로, 색마다 굴절 정도가 달라 프리즘에서 분산됩니다."},
+{q:"그림의 프리즘에서 가장 많이 꺾여 아래쪽에 나타나는 색은?",d:"prism",c:["보라색","빨간색","초록색","노란색"],a:0,e:"보라색이 가장 많이 굴절하고 빨간색이 가장 적게 굴절합니다."},
+{q:"비가 갠 뒤 무지개가 생기는 주된 원리는?",c:["물방울에 의한 빛의 굴절과 분산","구름에 의한 빛의 합성","공기의 전반사","그림자의 생성"],a:0,e:"햇빛이 공기 중의 작은 물방울에서 굴절·반사·분산되면서 일곱 빛깔의 띠로 나뉘어 무지개가 보입니다."},
+{q:"빨간 사과가 빨갛게 보이는 까닭은?",c:["빨간빛만 반사하고 나머지 색은 흡수하기 때문","모든 색을 반사하기 때문","빨간빛을 흡수하기 때문","스스로 빨간빛을 내기 때문"],a:0,e:"물체의 색은 반사하는 빛의 색입니다. 빨간 사과는 빨간빛을 반사하고 나머지는 흡수합니다."},
+{q:"어두운 방에서 파란 빛만 빨간 사과에 비추면 사과는 어떻게 보일까요?",c:["검게 보인다","빨갛게 보인다","파랗게 보인다","흰색으로 보인다"],a:0,e:"사과는 빨간빛만 반사하는데, 파란빛에는 반사할 빨간 성분이 없어 파란빛을 흡수해 검게 보입니다."},
+{q:"흰 종이에 빨간빛만 비추면 종이는 어떤 색으로 보일까요?",c:["빨간색","흰색","검은색","시안색"],a:0,e:"흰 종이는 모든 색을 반사하므로 비추어 준 빨간빛을 그대로 반사해 빨갛게 보입니다."},
+{q:"검은색 물체가 검게 보이는 까닭은?",c:["거의 모든 색의 빛을 흡수하기 때문","모든 색의 빛을 반사하기 때문","검은빛을 반사하기 때문","빛을 굴절시키기 때문"],a:0,e:"검은색 물체는 거의 모든 빛을 흡수해 눈으로 들어오는 빛이 거의 없습니다."},
+{q:"노란색 바나나가 노랗게 보이는 것을 빛의 합성으로 설명하면?",c:["빨간빛과 초록빛을 반사하기 때문","파란빛만 반사하기 때문","모든 빛을 흡수하기 때문","파란빛과 초록빛을 반사하기 때문"],a:0,e:"노랑은 빨강+초록의 합성색입니다. 바나나는 빨간빛과 초록빛을 반사하고 파란빛은 흡수합니다."},
+{q:"뜨거운 사막이나 도로 위에서 멀리 물웅덩이처럼 보이는 신기루가 생기는 까닭은?",c:["밀도가 다른 공기층을 지나며 빛이 굴절하기 때문","빛이 직진하기 때문","빛이 합성되기 때문","물이 증발하기 때문"],a:0,e:"온도에 따라 공기의 밀도가 달라, 빛이 층을 지나며 계속 굴절해 실제와 다른 곳에 물체(하늘 등)가 있는 것처럼 보입니다."},
+{q:"볼록렌즈가 만든 상 중 스크린에 맺힐 수 있는 상은?",c:["실상","허상","그림자","모두 불가능"],a:0,e:"실상은 실제로 빛이 모여 생기므로 스크린에 맺힙니다. 허상은 빛의 연장선이 만나 생기므로 스크린에 맺히지 않습니다."}
+];
+
+/* ---------- 모드 A: 퀴즈 ---------- */
+let qTimer=0,qAuto=0,QL=[],qi=0,qScore=0,qCombo=0,qMax=0,qLives=3,qWrong=[],qCorrect=0,qT0=0,qLock=false,qCur=null;
+const QTIME=15000,QN=10;
+function startQuiz(){QL=shuffle(QS.slice()).slice(0,QN);qi=0;qScore=0;qCombo=0;qMax=0;qLives=3;qWrong=[];qCorrect=0;go('quiz');showQ();}
+function qHud(){$('qn').textContent='문제 '+Math.min(qi+1,QN)+'/'+QN;$('ql').textContent='❤'.repeat(qLives)+'🖤'.repeat(3-qLives);$('qc').textContent='콤보 '+qCombo;$('qs').textContent='점수 '+qScore;}
+function showQ(){
+  clearInterval(qTimer);clearTimeout(qAuto);qLock=false;
+  const q=QL[qi],order=shuffle([0,1,2,3]);qCur={q,order,ans:order.indexOf(q.a)};
+  $('qtext').textContent=q.q;
+  const cv=$('qcv');if(q.d){cv.style.display='block';const c=cv.getContext('2d');c.clearRect(0,0,320,170);c.fillStyle='#f4f7ff';c.fillRect(0,0,320,170);DIAG[q.d](c);}else cv.style.display='none';
+  const ch=$('qch');ch.innerHTML='';
+  order.forEach((oi,k)=>{const b=document.createElement('button');b.textContent=(k+1)+'. '+q.c[oi];b.onclick=()=>qAnswer(k);ch.appendChild(b);});
+  const fb=$('qfb');fb.className='fb';fb.innerHTML='';
+  qHud();qT0=performance.now();const bar=$('qbar');bar.style.width='100%';bar.className='';
+  qTimer=setInterval(()=>{const r=1-(performance.now()-qT0)/QTIME;bar.style.width=Math.max(0,r*100)+'%';bar.className=r<.3?'low':'';if(r<=0)qAnswer(-1);},100);
+}
+function qAnswer(k){
+  if(qLock)return;qLock=true;clearInterval(qTimer);
+  const left=Math.max(0,QTIME-(performance.now()-qT0))/1000,ok=k===qCur.ans,q=qCur.q;
+  const btns=$('qch').children;for(let i=0;i<btns.length;i++){btns[i].disabled=true;if(i===qCur.ans)btns[i].classList.add('right');}
+  let msg;
+  if(ok){qCombo++;qMax=Math.max(qMax,qCombo);qCorrect++;const gain=100+Math.round(left*5)+(qCombo-1)*20;qScore+=gain;msg='⭕ 정답! +'+gain+'점'+(qCombo>1?' (콤보 보너스 +'+(qCombo-1)*20+')':'');SFX.ok();}
+  else{btns[k]&&btns[k].classList.add('bad');qCombo=0;qLives--;qWrong.push({q:q.q,a:q.c[q.a],e:q.e});msg=(k<0?'⏰ 시간 초과!':'❌ 오답!')+' 라이프 -1';SFX.ng();}
+  qHud();
+  const last=qLives<=0||qi>=QN-1;
+  const fb=$('qfb');fb.className='fb '+(ok?'ok':'ng');
+  fb.innerHTML='<b></b><br><span></span><br>';fb.querySelector('b').textContent=msg;fb.querySelector('span').textContent='해설: '+q.e;
+  const nb=document.createElement('button');nb.className='btn sm';nb.textContent=last?'결과 보기':'다음 ▶';nb.onclick=qNext;fb.appendChild(nb);
+  if(ok)qAuto=setTimeout(qNext,3500);
+}
+function qNext(){clearTimeout(qAuto);if(qLives<=0||qi>=QN-1)return qEnd();qi++;showQ();}
+function qEnd(){
+  const stars=qCorrect>=9?3:qCorrect>=6?2:1;
+  showResult({mode:'A',title:'빛 퀴즈 러시 결과'+(qLives<=0?' (라이프 소진)':''),score:qScore,stars,info:'정답 '+qCorrect+'문제 · 최대 콤보 '+qMax,wrong:qWrong,retry:startQuiz});
+}
+
+/* ---------- 모드 B: 반사 챌린지 ---------- */
+const W=640,H=400,HL=45;
+const RL=[
+ {src:[40,330],dir:[1,0],m:[[360,330]],t:[360,70],w:[],note:'거울 1개: 레이저를 위쪽 과녁으로!'},
+ {src:[40,70],dir:[1,0],m:[[300,70]],t:[560,330],w:[[450,0,450,150]],note:'벽을 피해 아래쪽 과녁으로!'},
+ {src:[40,200],dir:[1,0],m:[[250,200]],t:[580,60],w:[[400,160,400,400]],note:'벽 위쪽으로 지나가야 해요.'},
+ {src:[40,350],dir:[1,0],m:[[200,350],[480,120]],t:[600,330],w:[[330,300,330,400]],note:'거울 2개를 차례로 맞추세요.'},
+ {src:[40,360],dir:[1,0],m:[[320,360],[320,40],[560,40]],t:[560,340],w:[[440,100,440,400]],note:'거울 3개! 입사각=반사각을 떠올리세요.'},
+ {src:[40,200],dir:[1,0],m:[[160,200],[300,360],[460,60]],t:[600,300],w:[[230,0,230,120],[540,280,540,400]],note:'마지막 단계: 거울 3개와 장애물!'}
+];
+let rLv=0,rAng=[],rMiss=0,rScore=0,rHinted=0,rLocked=false,rDrag=-1,rcv,rc;
+function rSolve(L){ // 각 거울의 이상적인 각도(도)
+  const res=[];let din=L.dir;
+  L.m.forEach((p,i)=>{const nx=i+1<L.m.length?L.m[i+1]:L.t;let dx=nx[0]-p[0],dy=nx[1]-p[1];const l=Math.hypot(dx,dy);dx/=l;dy/=l;
+    const nxv=dx-din[0],nyv=dy-din[1];let a=Math.atan2(nxv,-nyv)*180/Math.PI;a=((a%180)+180)%180;res.push(a);din=[dx,dy];});
+  return res;
+}
+function cr(a,b){return a[0]*b[1]-a[1]*b[0];}
+function segInt(p,d,a,e){const den=cr(d,e);if(Math.abs(den)<1e-9)return null;const ap=[a[0]-p[0],a[1]-p[1]];const t=cr(ap,e)/den,s=cr(ap,d)/den;if(s<0||s>1)return null;return{t,s};}
+function rTrace(L,ang){
+  let p=L.src.slice(),d=L.dir.slice(),pts=[p.slice()],hits=[],last=-1;
+  for(let k=0;k<10;k++){
+    let best=1e9,bm=-1,tb;
+    tb=d[0]>0?(W-p[0])/d[0]:d[0]<0?-p[0]/d[0]:1e9;best=Math.min(best,tb);
+    tb=d[1]>0?(H-p[1])/d[1]:d[1]<0?-p[1]/d[1]:1e9;best=Math.min(best,tb);
+    let stop=true;
+    L.m.forEach((m,i)=>{const th=ang[i]*Math.PI/180,tx=Math.cos(th),ty=Math.sin(th);const r=segInt(p,d,[m[0]-tx*HL,m[1]-ty*HL],[2*HL*tx,2*HL*ty]);if(r&&r.t>1e-4&&r.t<best&&i!==last){best=r.t;bm=i;}});
+    L.w.forEach(w=>{const r=segInt(p,d,[w[0],w[1]],[w[2]-w[0],w[3]-w[1]]);if(r&&r.t>1e-4&&r.t<best){best=r.t;bm=-1;stop=true;}});
+    const q=[p[0]+d[0]*best,p[1]+d[1]*best];
+    // 벽에 막혔는지/거울인지 판정
+    let isM=false;if(bm>=0){const m=L.m[bm],th=ang[bm]*Math.PI/180,tx=Math.cos(th),ty=Math.sin(th);const r=segInt(p,d,[m[0]-tx*HL,m[1]-ty*HL],[2*HL*tx,2*HL*ty]);if(r&&Math.abs(r.t-best)<1e-6)isM=true;}
+    pts.push(q);
+    if(!isM)break;
+    const th=ang[bm]*Math.PI/180,n=[-Math.sin(th),Math.cos(th)];const dn=d[0]*n[0]+d[1]*n[1];
+    const inc=Math.acos(Math.min(1,Math.abs(dn)))*180/Math.PI;
+    hits.push({p:q,n:dn>0?[-n[0],-n[1]]:n,inc});
+    d=[d[0]-2*dn*n[0],d[1]-2*dn*n[1]];p=q;last=bm;
+  }
+  return{pts,hits};
+}
+function pSeg(p,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],l2=dx*dx+dy*dy;let t=l2?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/l2:0;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy);}
+const TR=24;
+function rHit(tr){const L=RL[rLv];for(let i=0;i<tr.pts.length-1;i++)if(pSeg(L.t,tr.pts[i],tr.pts[i+1])<TR)return true;return false;}
+function startReflect(){rLv=0;rScore=0;go('reflect');rcv=$('rcv');rc=rcv.getContext('2d');rLoad();}
+function rLoad(){
+  const L=RL[rLv];rAng=L.m.map((_,i)=>100+i*25);rMiss=0;rHinted=0;rLocked=false;
+  $('rl').textContent='레벨 '+(rLv+1)+'/'+RL.length;$('rs').textContent='점수 '+rScore;$('rm').textContent='시도 0';
+  $('rmsg').style.color='var(--ink)';$('rmsg').textContent=L.note;
+  const ct=$('rctrl');ct.innerHTML='';
+  L.m.forEach((_,i)=>{const lb=document.createElement('label');lb.innerHTML='<span style="min-width:96px">거울 '+(i+1)+' 각도 <b id="ra'+i+'">'+rAng[i]+'</b>°</span><input type="range" min="0" max="180" step="1" value="'+rAng[i]+'" id="rsl'+i+'">';ct.appendChild(lb);
+    lb.querySelector('input').oninput=e=>{rAng[i]=+e.target.value;rSync();};});
+  $('rfire').disabled=false;rDraw();
+}
+function rSync(){rAng.forEach((a,i)=>{$('ra'+i).textContent=Math.round(a);$('rsl'+i).value=Math.round(a);});rDraw();}
+function rDraw(){
+  const L=RL[rLv],c=rc;c.clearRect(0,0,W,H);c.fillStyle='#10172e';c.fillRect(0,0,W,H);
+  c.strokeStyle='rgba(120,150,255,.12)';c.lineWidth=1;for(let x=0;x<=W;x+=40){c.beginPath();c.moveTo(x,0);c.lineTo(x,H);c.stroke();}for(let y=0;y<=H;y+=40){c.beginPath();c.moveTo(0,y);c.lineTo(W,y);c.stroke();}
+  L.w.forEach(w=>dl(c,w[0],w[1],w[2],w[3],'#7c86a8',10));
+  const tr=rTrace(L,rAng),hit=rHit(tr);
+  // 목표
+  [TR,TR*.66,TR*.33].forEach((r,i)=>{c.beginPath();c.arc(L.t[0],L.t[1],r,0,7);c.fillStyle=i%2?'#fff':(hit?'#22c55e':'#ef4444');c.fill();});
+  // 법선
+  tr.hits.forEach(h=>{dl(c,h.p[0]-h.n[0]*55,h.p[1]-h.n[1]*55,h.p[0]+h.n[0]*55,h.p[1]+h.n[1]*55,'rgba(255,255,255,.55)',1.2,[5,5]);});
+  // 광선
+  c.save();c.shadowColor='#ff3b3b';c.shadowBlur=14;c.strokeStyle='#ff5252';c.lineWidth=3;c.lineJoin='round';c.beginPath();tr.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();c.restore();
+  c.strokeStyle='#fff';c.lineWidth=1;c.beginPath();tr.pts.forEach((p,i)=>i?c.lineTo(p[0],p[1]):c.moveTo(p[0],p[1]));c.stroke();
+  // 거울
+  L.m.forEach((m,i)=>{const th=rAng[i]*Math.PI/180,tx=Math.cos(th),ty=Math.sin(th);dl(c,m[0]-tx*HL,m[1]-ty*HL,m[0]+tx*HL,m[1]+ty*HL,'#9ad7ff',7);dl(c,m[0]-tx*HL,m[1]-ty*HL,m[0]+tx*HL,m[1]+ty*HL,'#fff',2);c.beginPath();c.arc(m[0],m[1],5,0,7);c.fillStyle='#ffd24a';c.fill();dt(c,String(i+1),m[0]+12,m[1]-12,'#ffd24a',14);});
+  // 광원
+  c.fillStyle='#cbd5ff';c.save();c.translate(L.src[0],L.src[1]);c.rotate(Math.atan2(L.dir[1],L.dir[0]));c.fillRect(-26,-9,26,18);c.fillStyle='#ef4444';c.fillRect(-4,-4,6,8);c.restore();
+  // 각도 표시
+  c.font='bold 13px "Malgun Gothic",sans-serif';c.textAlign='left';
+  tr.hits.forEach((h,i)=>{const s='거울'+(L.m.findIndex((m,j)=>Math.hypot(m[0]-h.p[0],m[1]-h.p[1])<1))+'';});
+  const info=tr.hits.map((h,i)=>'입사각 '+h.inc.toFixed(0)+'° = 반사각 '+h.inc.toFixed(0)+'°');
+  info.forEach((s,i)=>{c.fillStyle='#ffe38a';c.fillText((i+1)+'번째 반사: '+s,10,H-10-(info.length-1-i)*18);});
+  if(hit){c.fillStyle='#86efac';c.textAlign='right';c.fillText('목표 적중! 발사 버튼을 누르세요',W-10,H-10);}
+  return hit;
+}
+function rFire(){
+  if(rLocked)return;const L=RL[rLv];const hit=rHit(rTrace(L,rAng));
+  if(hit){rLocked=true;const pts=Math.max(300-60*rMiss-(rHinted?100:0),50);rScore+=pts;$('rs').textContent='점수 '+rScore;$('rmsg').style.color='var(--ok)';$('rmsg').textContent='🎯 명중! +'+pts+'점';SFX.ok();$('rfire').disabled=true;
+    setTimeout(()=>{if(rLv>=RL.length-1)rEnd();else{rLv++;rLoad();}},1300);}
+  else{rMiss++;$('rm').textContent='시도 '+rMiss;$('rmsg').style.color='var(--ng)';$('rmsg').textContent='아쉽게 빗나갔어요. 반사 후 광선이 목표를 향하도록 각도를 조절해 보세요.';SFX.ng();}
+}
+function rHint(){
+  if(rLocked)return;const L=RL[rLv],sol=rSolve(L);
+  for(let i=0;i<sol.length;i++){let df=Math.abs(rAng[i]-sol[i]);df=Math.min(df,180-df);if(df>0.3){rAng[i]=sol[i];break;}}
+  rHinted=1;rScore=Math.max(0,rScore-0);rSync();$('rmsg').style.color='var(--warn)';$('rmsg').textContent='💡 힌트: 거울 하나를 올바른 각도로 돌렸어요. (이 레벨 -100점)';SFX.click();
+}
+function rEnd(){
+  const max=RL.length*300,r=rScore/max,stars=r>=.8?3:r>=.5?2:1;
+  showResult({mode:'B',title:'반사 챌린지 클리어!',score:rScore,stars,info:RL.length+'개 레벨 완료',wrong:[{q:'반사의 법칙 복습',a:'입사각 = 반사각',e:'입사각과 반사각은 법선을 기준으로 재며, 항상 크기가 같습니다. 입사광선, 법선, 반사광선은 한 평면 위에 있습니다.'}].slice(0,0),retry:startReflect});
+}
+// 캔버스 드래그
+function rPos(e){const r=rcv.getBoundingClientRect();return[(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height];}
+function rSetAng(i,p){const m=RL[rLv].m[i];let a=Math.atan2(p[1]-m[1],p[0]-m[0])*180/Math.PI;a=((a%180)+180)%180;rAng[i]=Math.round(a);rSync();}
+document.addEventListener('DOMContentLoaded',()=>{
+  const cv=$('rcv');
+  cv.addEventListener('pointerdown',e=>{if(rLocked)return;const p=rPos(e);let b=-1,bd=70;RL[rLv].m.forEach((m,i)=>{const d=Math.hypot(m[0]-p[0],m[1]-p[1]);if(d<bd){bd=d;b=i;}});rDrag=b;if(b>=0){cv.setPointerCapture(e.pointerId);rSetAng(b,p);}});
+  cv.addEventListener('pointermove',e=>{if(rDrag>=0)rSetAng(rDrag,rPos(e));});
+  const up=()=>{rDrag=-1;};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+  showHi();
+});
+
+/* ---------- 모드 C: 색 합성 연구소 ---------- */
+const CR=[
+ {n:'노랑',c:[1,1,0],e:'빨강 + 초록 = 노랑. 두 빛이 합쳐지면 더 밝은 2차색이 됩니다.'},
+ {n:'시안(청록)',c:[0,1,1],e:'초록 + 파랑 = 시안(청록)입니다.'},
+ {n:'마젠타(자홍)',c:[1,0,1],e:'빨강 + 파랑 = 마젠타(자홍)입니다.'},
+ {n:'흰색',c:[1,1,1],e:'빨강 + 초록 + 파랑을 같은 세기로 합성하면 흰색 빛이 됩니다.'},
+ {n:'주황',c:[1,.5,0],e:'빨강은 최대, 초록은 절반 밝기로 합성하면 주황색이 됩니다. 밝기를 조절하면 더 다양한 색을 만들 수 있어요.'},
+ {n:'회색',c:[.5,.5,.5],e:'빨강·초록·파랑을 같은 비율로 약하게 합성하면 흰빛이 어두워진 회색이 됩니다.'},
+ {n:'연한 하늘색(밝은 시안)',c:[.5,1,1],e:'시안(초록+파랑)에 빨간빛을 절반 더하면 흰빛이 섞여 연한 하늘색이 됩니다.'}
+];
+let cRd=0,cMiss=0,cScore=0,cWrong=[],cVal=[0,0,0],cLock=false;
+const CTOL=.14;
+function startColor(){cRd=0;cScore=0;cWrong=[];go('color');cLoad();}
+function cLoad(){
+  const R=CR[cRd];cMiss=0;cLock=false;cVal=[0,0,0];
+  $('cl').textContent='라운드 '+(cRd+1)+'/'+CR.length;$('cs').textContent='점수 '+cScore;$('cm').textContent='시도 0';
+  $('cname').textContent=R.n;$('ctar').style.background=cCss(R.c);
+  $('cmsg').style.color='var(--ink)';$('cmsg').textContent='R·G·B 밝기를 조절해 목표 색을 만들어 보세요.';$('ccheck').disabled=false;cUpd();
+}
+function cCss(v){return 'rgb('+v.map(x=>Math.round(x*255)).join(',')+')';}
+function cUpd(){
+  for(let i=0;i<3;i++){$('sl'+i).value=Math.round(cVal[i]*100);$('v'+i).textContent=Math.round(cVal[i]*100)+'%';}
+  $('cmine').style.background=cCss(cVal);
+  const c=$('ccv').getContext('2d');c.globalCompositeOperation='source-over';c.fillStyle='#000';c.fillRect(0,0,360,240);c.globalCompositeOperation='lighter';
+  [[130,95,[255,0,0]],[230,95,[0,255,0]],[180,170,[0,0,255]]].forEach((o,i)=>{const v=cVal[i];const g=c.createRadialGradient(o[0],o[1],10,o[0],o[1],85);g.addColorStop(0,'rgba('+o[2]+','+v+')');g.addColorStop(.85,'rgba('+o[2]+','+v+')');g.addColorStop(1,'rgba('+o[2]+',0)');c.fillStyle=g;c.beginPath();c.arc(o[0],o[1],85,0,7);c.fill();});
+  c.globalCompositeOperation='source-over';c.fillStyle='#fff';c.font='bold 14px "Malgun Gothic",sans-serif';c.textAlign='center';c.fillText('R',70,40);c.fillText('G',290,40);c.fillText('B',180,232);
+}
+function cTog(i){cVal[i]=cVal[i]>0?0:1;SFX.click();cUpd();}
+document.addEventListener('DOMContentLoaded',()=>{for(let i=0;i<3;i++)$('sl'+i).addEventListener('input',e=>{if(cLock)return;cVal[i]=e.target.value/100;cUpd();});});
+function cCheck(){
+  if(cLock)return;const R=CR[cRd];const ok=R.c.every((t,i)=>Math.abs(t-cVal[i])<=CTOL);
+  if(ok){cLock=true;const pts=Math.max(100-20*cMiss,30);cScore+=pts;$('cs').textContent='점수 '+cScore;$('cmsg').style.color='var(--ok)';$('cmsg').textContent='✨ 성공! +'+pts+'점 — '+R.e;SFX.ok();$('ccheck').disabled=true;
+    const nb=document.createElement('button');nb.className='btn sm';nb.textContent=cRd>=CR.length-1?'결과 보기':'다음 ▶';nb.onclick=()=>{if(cRd>=CR.length-1)cEnd();else{cRd++;cLoad();}};$('cmsg').appendChild(document.createElement('br'));$('cmsg').appendChild(nb);}
+  else{cMiss++;$('cm').textContent='시도 '+cMiss;$('cmsg').style.color='var(--ng)';$('cmsg').textContent='목표 색과 달라요. 어떤 색 빛을 더하거나 줄여야 할까요?';SFX.ng();
+    if(cMiss===1)cWrong.push({q:'목표 색 만들기: '+R.n,a:'R '+Math.round(R.c[0]*100)+'%, G '+Math.round(R.c[1]*100)+'%, B '+Math.round(R.c[2]*100)+'%',e:R.e});}
+}
+function cEnd(){const max=CR.length*100,r=cScore/max,stars=r>=.85?3:r>=.55?2:1;showResult({mode:'C',title:'색 합성 연구소 결과',score:cScore,stars,info:CR.length+'개 라운드 완료 · 처음에 막힌 색 '+cWrong.length+'개',wrong:cWrong,retry:startColor});}
+</script>
+</body>
+</html>

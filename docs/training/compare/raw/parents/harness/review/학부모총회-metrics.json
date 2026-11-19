@@ -1,0 +1,227 @@
+{
+ "file": "학부모총회.html",
+ "caps": {
+  "elements": 36,
+  "icons": 3,
+  "colors": 6,
+  "colors_media": 9
+ },
+ "slides": [
+  {
+   "n": 1,
+   "layout": "title.center",
+   "elements": 4,
+   "icons": 0,
+   "media": false,
+   "texts": 4,
+   "weight": 0.228,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 2,
+   "layout": "statement.split",
+   "elements": 3,
+   "icons": 0,
+   "media": false,
+   "texts": 4,
+   "weight": 0.316,
+   "colors": 3,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 3,
+   "layout": "bullets.stack",
+   "elements": 9,
+   "icons": 0,
+   "media": false,
+   "texts": 6,
+   "weight": 0.246,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 4,
+   "layout": "steps.row",
+   "elements": 14,
+   "icons": 0,
+   "media": false,
+   "texts": 14,
+   "weight": 0.316,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 5,
+   "layout": "compare.table",
+   "elements": 16,
+   "icons": 0,
+   "media": false,
+   "texts": 10,
+   "weight": 0.372,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 6,
+   "layout": "timeline.vertical",
+   "elements": 18,
+   "icons": 0,
+   "media": false,
+   "texts": 14,
+   "weight": 0.242,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 7,
+   "layout": "bullets.cards",
+   "elements": 13,
+   "icons": 0,
+   "media": false,
+   "texts": 9,
+   "weight": 0.353,
+   "colors": 1,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  },
+  {
+   "n": 8,
+   "layout": "closing.big",
+   "elements": 8,
+   "icons": 1,
+   "media": false,
+   "texts": 5,
+   "weight": 0.404,
+   "colors": 3,
+   "min_contrast": null,
+   "low_contrast": [],
+   "small": [],
+   "overflow": [],
+   "offstage": [],
+   "midword": [],
+   "keepall": []
+  }
+ ],
+ "fingerprint": [
+  "title.center",
+  "statement.split",
+  "bullets.stack",
+  "steps.row",
+  "compare.table",
+  "timeline.vertical",
+  "bullets.cards",
+  "closing.big"
+ ],
+ "results": [
+  [
+   "PASS",
+   "external requests = 0"
+  ],
+  [
+   "PASS",
+   "no JavaScript errors"
+  ],
+  [
+   "PASS",
+   "color-blind safe: meaning colours stay apart in protan/deutan/tritan (OKLab ΔE >= 0.1)"
+  ],
+  [
+   "PASS",
+   "all text >= 28px"
+  ],
+  [
+   "PASS",
+   "no text overflow"
+  ],
+  [
+   "PASS",
+   "everything inside the stage and the 96px safe margin"
+  ],
+  [
+   "PASS",
+   "keep-all line breaking on Korean text"
+  ],
+  [
+   "PASS",
+   "no Korean word split across lines"
+  ],
+  [
+   "PASS",
+   "contrast >= 4.5:1 on real pixels"
+  ],
+  [
+   "PASS",
+   "no empty-looking slide (visual weight >= 0.05)"
+  ],
+  [
+   "PASS",
+   "visual weight min 0.23 / mean 0.31"
+  ],
+  [
+   "PASS",
+   "CLUTTER colours: <= 6 big colour bins per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER elements: <= 36 per slide"
+  ],
+  [
+   "PASS",
+   "CLUTTER icons: <= 3 per slide"
+  ],
+  [
+   "PASS",
+   "no 3 consecutive identical layouts"
+  ],
+  [
+   "PASS",
+   "no identical layout twice in a row"
+  ],
+  [
+   "PASS",
+   "layout variety 8/8"
+  ]
+ ]
+}

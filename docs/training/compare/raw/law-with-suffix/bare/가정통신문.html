@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가정통신문</title>
+<style>
+  @page { size: A4; margin: 15mm; }
+  body { font-family: "Malgun Gothic","맑은 고딕",sans-serif; color:#222; background:#f4f4f4; margin:0; }
+  .page { width:180mm; min-height:260mm; margin:10px auto; background:#fff; padding:12mm; box-sizing:border-box; border:3px solid #ffb703; border-radius:12px; }
+  header { display:flex; align-items:center; gap:16px; border-bottom:3px dashed #ffb703; padding-bottom:10px; }
+  header h1 { margin:0; font-size:28px; color:#e07a00; }
+  header p { margin:4px 0 0; color:#666; font-size:14px; }
+  h2 { font-size:18px; background:#fff3d6; padding:6px 10px; border-left:6px solid #ffb703; margin:22px 0 8px; }
+  table { width:100%; border-collapse:collapse; font-size:15px; }
+  th,td { border:1px solid #ccc; padding:7px 10px; text-align:left; }
+  th { background:#fafafa; width:22%; }
+  .greet { line-height:1.8; font-size:15px; margin-top:16px; }
+  .sign { text-align:right; margin-top:26px; font-size:16px; line-height:1.8; }
+  .cut { border-top:2px dashed #999; margin:26px 0 10px; text-align:center; color:#999; font-size:12px; }
+  .reply { border:1px solid #bbb; padding:12px; border-radius:8px; font-size:15px; line-height:2; }
+  @media print { body{background:#fff} .page{margin:0;border:none;width:auto} }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <!-- 직접 그린 오리지널 캐릭터 (저작권 문제 없음) -->
+    <svg width="90" height="90" viewBox="0 0 100 100" role="img" aria-label="별이 캐릭터">
+      <polygon points="50,6 62,36 94,38 69,58 78,90 50,72 22,90 31,58 6,38 38,36" fill="#ffd23f" stroke="#e07a00" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="40" cy="50" r="4" fill="#222"/><circle cx="60" cy="50" r="4" fill="#222"/>
+      <circle cx="34" cy="58" r="5" fill="#ff8fa3" opacity=".7"/><circle cx="66" cy="58" r="5" fill="#ff8fa3" opacity=".7"/>
+      <path d="M42 60 Q50 68 58 60" fill="none" stroke="#222" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <h1>○○초등학교 가정통신문</h1>
+      <p>제 2026-00호 · 2026년 00월 00일 · ○학년 ○반</p>
+    </div>
+  </header>
+
+  <p class="greet">
+    학부모님께,<br>
+    안녕하십니까? 가정에 건강과 행복이 가득하시길 바랍니다.<br>
+    아래와 같이 <b>[행사/안내 제목]</b>을(를) 실시하오니 안내드립니다.
+    자녀 지도에 협조해 주시기 바랍니다.
+  </p>
+
+  <h2>⭐ 안내 사항</h2>
+  <table>
+    <tr><th>행사명</th><td>[행사명을 입력하세요]</td></tr>
+    <tr><th>일 시</th><td>2026년 00월 00일(○) 00:00 ~ 00:00</td></tr>
+    <tr><th>장 소</th><td>[장소]</td></tr>
+    <tr><th>대 상</th><td>○학년 ○반 전체</td></tr>
+    <tr><th>준비물</th><td>[준비물]</td></tr>
+    <tr><th>문 의</th><td>담임교사 ○○○ (☎ 000-0000-0000)</td></tr>
+  </table>
+
+  <h2>⭐ 유의 사항</h2>
+  <ul class="greet" style="margin:0;padding-left:22px">
+    <li>[유의 사항 1]</li>
+    <li>[유의 사항 2]</li>
+    <li>우천 시 일정이 변경될 수 있으며, 변경 시 별도로 안내드립니다.</li>
+  </ul>
+
+  <div class="sign">2026년 00월 00일<br><b>○○초등학교장</b></div>
+
+  <div class="cut">✂ - - - - - - - - - - 절 취 선 - - - - - - - - - - ✂</div>
+
+  <h2>⭐ 회신서</h2>
+  <div class="reply">
+    위 안내문을 확인하였습니다. &nbsp; □ 참여합니다 &nbsp; □ 참여하지 않습니다<br>
+    ○학년 ○반 &nbsp; 학생 이름: ____________ &nbsp; 학부모: ____________ (서명)
+  </div>
+</div>
+</body>
+</html>
