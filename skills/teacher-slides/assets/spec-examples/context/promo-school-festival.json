@@ -1,0 +1,52 @@
+{
+ "context": "promo",
+ "purpose": "홍보",
+ "title": "가을 축제 홍보",
+ "mood": "힙하게",
+ "slides": [
+  {
+   "type": "hero",
+   "file": "photos/stage.jpg",
+   "kicker": "11월 28일 금요일",
+   "headline": "**가을 축제**에 초대해요",
+   "sub": "공연 · 체험 부스 · 먹거리 장터",
+   "cta": "프로그램 보기",
+   "url": "https://example.org/festival"
+  },
+  {
+   "type": "steps",
+   "title": "축제 **하루 코스**",
+   "steps": [
+    {
+     "title": "체험 부스",
+     "text": "10시부터 운동장"
+    },
+    {
+     "title": "먹거리 장터",
+     "text": "12시 급식실 앞"
+    },
+    {
+     "title": "무대 공연",
+     "text": "2시 강당"
+    }
+   ]
+  },
+  {
+   "type": "bignumber",
+   "value": "24",
+   "unit": "개",
+   "caption": "학생들이 직접 준비한 체험 부스"
+  },
+  {
+   "type": "statement",
+   "text": "올해는 **가족과 함께**",
+   "sub": "학부모님과 동생도 모두 환영해요"
+  },
+  {
+   "type": "closing",
+   "title": "축제에서 **만나요**",
+   "sub": "11. 28.(금) 10:00 ~ 16:00",
+   "url": "https://example.org/festival"
+  }
+ ]
+}

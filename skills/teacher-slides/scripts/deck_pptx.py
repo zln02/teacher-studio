@@ -32,6 +32,7 @@ for _p in (SKILL / "shared" / "tools", SKILL.parent.parent / "shared" / "tools")
         sys.path.insert(0, str(_p))
         break
 sys.path.insert(0, str(HERE))
+import deck_context as dctx  # noqa: E402
 import deck_spec as dspec  # noqa: E402
 import deck_style as dstyle  # noqa: E402
 import pptx_fit as pfit  # noqa: E402
@@ -82,9 +83,16 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
 
     spec = dict(spec)
     spec.update({k: v for k, v in (overrides or {}).items() if v})
+    spec = dctx.pre(spec)
     spec, warns, errs = dspec.normalize(spec, base)
     rep = {"ok": False, "warnings": warns, "errors": errs}
     if errs:
+        return rep
+    spec = dctx.post(spec)
+    cerrs, cwarns = dctx.lint(spec)
+    rep["warnings"] += cwarns
+    if cerrs:
+        rep["errors"] = cerrs
         return rep
     pf = (spec.get("design") or {}).get("palette_from")
     if isinstance(pf, str) and pf.strip().lower() not in ("saved", "prefs") and not Path(pf).is_absolute():
@@ -94,6 +102,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     if dstyle.contrast_report(dz):
         dz = dstyle.resolve({**spec, "design": {**(spec.get("design") or {}), "style": dz["style"]}}, seed + 1000)
     C = dz["colors"]
+    ctx_name = dz.get("context", "")
+    from deck_ctx_layouts import source_line as ctx_source
     serif = dz["lang"]["font"] == "serif"
     fdisp, fbody = ("Noto Serif KR" if serif else "Noto Sans KR"), "Noto Sans KR"
 
@@ -260,7 +270,112 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         bg(s, t)
         kicker(s, it.get("kicker"))
         notes = [it.get("note", "")] if it.get("note") else []
-        if t == "title":
+        pub = ctx_name == "public"
+        if pub and t not in ("title", "section", "closing"):  # public header: section name left, 기관 right, thin rule
+            sec, org = str(it.get("_section") or ""), str(spec.get("org") or spec.get("agency") or "")
+            if sec:
+                tbox(s, 0.8, 0.12, 7.5, 0.36, sec, 12, C["mu"], True)
+            if org:
+                tbox(s, 7.5, 0.12, 5.0, 0.36, org, 12, C["mu"], True, "r")
+            rect(s, 0.8, 0.5, 11.7, 0.02, C["line"], round_=False).name = "rule"
+        src = ctx_source(it)
+        if src:  # 자료/주 line on data slides
+            tbox(s, 0.8, 6.85, 11.7, 0.4, src, 12, C["mu"])
+        if t == "title" and pub:
+            rect(s, 0, 0, 13.333, 0.2, C["pr"], round_=False).name = "decor"
+            if it.get("_org"):
+                tbox(s, 0.8, 1.0, 11.7, 0.5, it["_org"], 20, C["mu"], True, "c")
+            rect(s, 3.9, 1.7, 5.5, 0.03, C["pr"], round_=False).name = "rule"
+            put_title(s, plain(it["title"]), 1.2, 2.0, 10.9, 2.2, 40, align="c", anchor="m")
+            if it.get("subtitle"):
+                tbox(s, 1.2, 4.25, 10.9, 0.6, it["subtitle"], 20, C["mu"], align="c")
+            rect(s, 3.9, 5.0, 5.5, 0.03, C["pr"], round_=False).name = "rule"
+            if it.get("_date"):
+                tbox(s, 0.8, 5.35, 11.7, 0.5, it["_date"], 20, C["tx"], align="c")
+            if it.get("_dept"):
+                tbox(s, 0.8, 5.9, 11.7, 0.5, it["_dept"], 18, C["mu"], align="c")
+        elif t == "bullets" and pub:
+            put_title(s, plain(it["title"]), 0.8, 0.65, 11.7, 0.85, 28)
+            rect(s, 0.8, 1.55, 11.7, 0.03, C["pr"], round_=False).name = "rule"
+            cnt = {1: 0, 2: 0, 3: 0}
+            lines = []
+            for x_ in it["items"]:
+                lv, tx_ = dctx.item_level(x_)
+                m = dctx.marker(lv, cnt[lv], str(it.get("marks", "box")))
+                cnt[lv] += 1
+                for dd in range(lv + 1, 4):
+                    cnt[dd] = 0
+                lines.append(("    " * (lv - 1)) + m + " " + plain(tx_))
+            tbox(s, 0.9, 1.8, 11.5, 4.9, "\n".join(lines), 20, C["tx"], spacing=1.35)
+        elif t == "table":
+            put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
+            cols, rows = it["columns"], it["rows"]
+            if it.get("unit"):
+                tbox(s, 8.5, 1.5, 4.0, 0.35, f"(단위: {it['unit']})", 12, C["mu"], align="r")
+            gt = s.shapes.add_table(len(rows) + 1, len(cols), I(0.8), I(1.9), I(11.7), I(min(4.8, 0.62 * (len(rows) + 1))))
+            tb = gt.table
+            hi = it.get("highlight")
+            for r in range(len(rows) + 1):
+                for c_ in range(len(cols)):
+                    cell = tb.cell(r, c_)
+                    txt = plain(str(cols[c_] if r == 0 else rows[r - 1][c_]))
+                    cell.fill.solid()
+                    cell.fill.fore_color.rgb = rgb(C["pr"] if r == 0 else ("#ffffff" if r % 2 else C["bg2"]))
+                    tf = cell.text_frame
+                    tf.paragraphs[0].text = ""
+                    num_ = bool(re.match(r"^[\s+\-]?[\d,.]+\s*\S{0,2}$", txt))
+                    tf.paragraphs[0].alignment = PP_ALIGN.CENTER if r == 0 else (PP_ALIGN.RIGHT if num_ else PP_ALIGN.LEFT)
+                    fill_runs(tf.paragraphs[0], txt, 16, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
+                    cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+        elif t == "summary":
+            put_title(s, plain(it.get("title") or "요약"), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
+            y0 = 1.8
+            if it.get("text"):
+                tbox(s, 0.8, y0, 11.7, 0.6, it["text"], 20, C["tx"], True)
+                y0 += 0.8
+            rect(s, 0.8, y0 + 0.2, 11.7, 6.6 - y0 - 0.2, None, line=C["pr"], round_=False, lw=2.5)
+            lab = rect(s, 1.1, y0, 1.4, 0.42, C["pr"], round_=False)
+            tbox(s, 1.1, y0, 1.4, 0.42, it.get("label") or "핵심", 16, C["bt"], True, "c", "m", shape=lab)
+            tbox(s, 1.2, y0 + 0.75, 10.9, 6.3 - y0 - 0.9, "\n".join("□ " + plain(x_) for x_ in it["points"]), 22, C["tx"], spacing=1.4)
+        elif t == "toc":
+            put_title(s, plain(it.get("title") or "목차"), 0.8, 0.6, 5, 1.0, 40)
+            rect(s, 0.8, 1.7, 0.7, 0.07, C["pr"], round_=False).name = "accent"
+            its = it.get("items") or []
+            rh = min(0.8, 4.6 / max(len(its), 1))
+            for i_, x_ in enumerate(its):
+                y = 2.0 + i_ * rh
+                lab = f"{dctx.roman(i_ + 1)}." if pub else f"{i_ + 1:02d}"
+                tbox(s, 4.6, y, 1.0, rh, lab, 24, C["emc"], True, anchor="m", name="disp")
+                tbox(s, 5.6, y, 6.9, rh, re.sub(r"^\s*[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+\.\s*", "", plain(str(x_))), 24, C["tx"], anchor="m")
+                rect(s, 4.6, y + rh - 0.02, 7.9, 0.015, C["line"], round_=False).name = "rule"
+        elif t == "hero":
+            if it.get("file"):
+                p_ = Path(it["file"])
+                p_ = p_ if p_.is_absolute() else base / p_
+                pic = s.shapes.add_picture(str(p_), 0, 0, prs.slide_width, prs.slide_height)
+                pic.name = "image"
+                pic._element.nvPicPr.cNvPr.set("descr", plain(it.get("headline", "")))
+                sc_ = rect(s, 0, 3.4, 13.333, 4.1, "#000000", round_=False)
+                sc_.name = "scrim"
+                from pptx.oxml.ns import qn
+                sf = sc_.fill._xPr.find(qn("a:solidFill"))
+                if sf is not None and len(sf):
+                    sf[0].append(sf[0].makeelement(qn("a:alpha"), {"val": "55000"}))
+                hc, mc = "#ffffff", "#f2f2f2"
+            else:
+                rect(s, 8.6, 0, 4.733, 7.5, C["pr"], round_=False).name = "decor"
+                hc, mc = C["tx"], C["mu"]
+            if it.get("kicker"):
+                tbox(s, 0.8, 3.6, 7.6, 0.4, it["kicker"], 16, mc, True)
+            put_title(s, plain(it["headline"]), 0.8, 4.0, 7.6 if not it.get("file") else 9.0, 1.6, 54, hc)
+            if it.get("sub"):
+                tbox(s, 0.8, 5.65, 9.0, 0.6, it["sub"], 20, mc)
+            if it.get("cta"):
+                b_ = rect(s, 0.8, 6.4, 3.2, 0.7, C["pr"], shape=MSO_SHAPE.ROUNDED_RECTANGLE)
+                tbox(s, 0.8, 6.4, 3.2, 0.7, it["cta"], 20, C["bt"], True, "c", "m", shape=b_)
+            if it.get("url"):
+                qr_shapes(s, it["url"], 10.2, 4.1, 2.4)
+        elif t == "title":
             rect(s, 0.8, 2.0, 0.18, 2.3, C["pr"], round_=False).name = "accent"
             put_title(s, plain(it["title"]).replace("\n", "\n"), 1.25, 1.8, 10.5, 2.6, 54, align="l", anchor="m")
             if it.get("subtitle"):

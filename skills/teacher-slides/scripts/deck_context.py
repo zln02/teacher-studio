@@ -245,6 +245,8 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
                 if not str(it.get("source") or "").strip():
                     errs.append(f"slide {i} {t}: 공공 보고 자료 장에는 출처가 필요해요 -> \"source\": \"기관명, 자료명(연도)\" (주석은 \"footnote\")")
             texts = []
+            if t in ("closing", "quote"):  # 「감사합니다」 and quotations are not 개조식 body text
+                continue
             for k in ("title", "text", "sub", "caption", "takeaway"):
                 if isinstance(it.get(k), str):
                     texts.append(it[k])

@@ -17,6 +17,9 @@ The user's own template or reference comes first. (The user-template weapon - bu
 - **Editable PowerPoint** (「PPT」「파워포인트」「피피티」「.pptx」, or 「나중에 내가 고칠 거예요」) -> ALWAYS deliver an editable `.pptx` next to the web deck: add `--pptx` (same spec, same look; real text boxes, native charts and tables, speaker notes, QR as shapes). Say honestly what changes in PPT: 「단계별 나타나기·타이머·수식·아이콘 그림은 단순해져요」 and 「글꼴은 PC에 없으면 비슷한 글꼴로 바뀌어요」. python-pptx is installed on first need only after the teacher says yes (`shared/tools/ensure.py`, `--yes`). The teacher's own `.pptx/.potx` -> `--pptx --template mine.pptx` (their masters and layouts are used: template first). If the official `pptx` skill is listed by `doctor` (`official_doc_skills`) you may hand the file work to it for extras (animations, SmartArt, tracked edits); we still bring the structure, design and checks. PDF: 「Ctrl+P → PDF로 저장」.
 - Intro video / countdown -> teacher-motion. Quiz game -> teacher-game.
 
+## Pick the context from the request (one spec key)
+`"context"`: **class** (수업·차시·학습 목표) · **promo** (홍보·모집·축제·알리기) · **public** (기관 보고·업무 보고·교육청·결과 보고) · **personal** (가족·자기소개·동호회·여행). It switches layouts, type scale, palette, numbering and slide defaults for the web deck and the .pptx; unsure -> ask once in the first question ("수업용 / 홍보용 / 기관 보고용 / 개인용"). Public = 표지(`org`,`date`,`dept`) + auto 목차 + `summary` + Ⅰ./1. + 개조식 + `table` + `source` on every data slide (required). Class = `objectives` + quiz/activity + `recap`. Promo = `hero` + CTA/QR. Personal = photo `hero`. Details, keys, sources: `references/context-recipes.md`; examples: `assets/spec-examples/context/`. A user template still wins (`--template`, `palette_from`).
+
 ## Flow
 1. **Ask only what is missing, once** (numbered, with defaults): ① who watches (grade / teachers / parents / club) ② topic or source file ③ length (default 10 slides) ④ mood in the teacher's words (따뜻하게, 깔끔하게, 신나게, 힙하게 ...) ⑤ date/presenter line.
 2. **Outline table** (번호 | 종류 | 화면 글 | 메모) -> teacher says OK. Skip if they said 「바로 만들어」 (show the table with the result).
@@ -58,6 +61,10 @@ Words in `**stars**` are emphasised; `\n` breaks a line. Every slide may have `n
 | image | file (local path -> inlined, resized to <= 1920px / 3MB), title, caption |
 | video | file (<= 8MB embedded, bigger -> 「영상 열기」 button), title |
 | closing | title, sub, next[<=4], url (adds a QR) |
+| table | title, columns 2-6, rows 1-8 (cells <= 40), unit, highlight, source, footnote |
+| summary | title, text, label (핵심), points 2-5 |
+| toc | title, items 2-8 (public: filled from sections) |
+| hero | headline <= 34, sub, kicker, cta, url (QR), file (photo) |
 
 **No blanks, ever.** Never write `[학교명]`, `[날짜]`, `20XX`, `OO초`, `○○`, `000-0000` in a spec. Fill with a plausible stated assumption (today's date, 2026학년도 / the current school year, generic 「우리 학교」·「3학년」) and say it in one line. Facts only the teacher knows (the real school name, phone, meeting date) go in `"fillins": ["학교 전화번호", ...]` (top-level list, words as they appear): the deck may then still contain them, and you show a short 「바꿔 넣을 곳」 list in the last message. Any other leftover is a FAIL (HTML review and `pptx_check.py`). **The user wins:** 「양식으로 해 줘」「빈칸 있는 틀로」「서식만」 -> spec `"template_blanks": true` (top level): all blanks stay, are reported as 「바꿔 넣을 곳」, and the build prints one caution line (`pptx_check.py --allow-blanks` for a lone file).
 Rules: one message per slide, <= 330 characters of text on a slide, no emoji (stripped). Text is projection-sized (>= 28px) — never ask for smaller. Do not invent statistics; unsure facts -> note 「확인 필요」. No student names/photos.

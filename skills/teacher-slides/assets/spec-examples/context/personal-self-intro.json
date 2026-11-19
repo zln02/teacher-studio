@@ -1,0 +1,40 @@
+{
+ "context": "personal",
+ "purpose": "개인",
+ "title": "자기소개",
+ "mood": "따뜻하게",
+ "slides": [
+  {
+   "type": "hero",
+   "file": "photos/forest.jpg",
+   "kicker": "반가워요",
+   "headline": "걷는 걸 좋아하는 **사람**",
+   "sub": "동호회 첫 모임 자기소개"
+  },
+  {
+   "type": "bullets",
+   "title": "저는 이런 **사람**이에요",
+   "items": [
+    "주말마다 동네 숲길을 걸어요",
+    "사진 찍기가 취미예요",
+    "따뜻한 차를 좋아해요"
+   ]
+  },
+  {
+   "type": "image",
+   "file": "photos/forest.jpg",
+   "title": "제가 **가장 좋아하는** 길",
+   "caption": "봄에는 꽃, 가을에는 단풍이 예뻐요"
+  },
+  {
+   "type": "statement",
+   "text": "함께 **걷는 친구**를 찾고 있어요",
+   "sub": "편하게 말 걸어 주세요"
+  },
+  {
+   "type": "closing",
+   "title": "잘 부탁드려요",
+   "sub": "다음 모임에서 만나요"
+  }
+ ]
+}

@@ -1,0 +1,66 @@
+{
+ "context": "promo",
+ "purpose": "홍보",
+ "title": "코딩 동아리 모집",
+ "slides": [
+  {
+   "type": "hero",
+   "kicker": "2026 신입 부원 모집",
+   "headline": "상상을 **코드로**",
+   "sub": "게임도, 앱도, 로봇도 우리가 직접 만들어요",
+   "cta": "지금 신청하기",
+   "url": "https://example.org/club"
+  },
+  {
+   "type": "bignumbers",
+   "title": "작년 우리 동아리",
+   "items": [
+    {
+     "value": "12",
+     "unit": "개",
+     "caption": "직접 만든 게임"
+    },
+    {
+     "value": "3",
+     "unit": "회",
+     "caption": "교내 발표회"
+    },
+    {
+     "value": "100",
+     "unit": "%",
+     "caption": "초보도 환영"
+    }
+   ]
+  },
+  {
+   "type": "bullets",
+   "title": "이런 걸 **해요**",
+   "items": [
+    "**게임 만들기** · 블록 코딩부터",
+    "**로봇 움직이기** · 센서와 모터",
+    "**앱 발표회** · 친구들 앞에서"
+   ]
+  },
+  {
+   "type": "image",
+   "file": "photos/stage.jpg",
+   "title": "작년 발표회의 **함성**",
+   "caption": "무대 위에서 우리가 만든 게임을 소개했어요"
+  },
+  {
+   "type": "quote",
+   "text": "처음엔 아무것도 몰랐는데, 지금은 **내 게임**이 있어요",
+   "source": "작년 부원 인터뷰"
+  },
+  {
+   "type": "closing",
+   "title": "같이 **만들자**",
+   "sub": "매주 목요일 방과 후 · 컴퓨터실",
+   "url": "https://example.org/club",
+   "next": [
+    "신청 마감 3월 20일",
+    "준비물 없음"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,57 @@
+{
+ "context": "personal",
+ "purpose": "개인",
+ "title": "우리 가족 여름 여행",
+ "slides": [
+  {
+   "type": "hero",
+   "file": "photos/sea.jpg",
+   "kicker": "2026 여름",
+   "headline": "바다에서 보낸 **사흘**",
+   "sub": "우리 가족 여름 여행 이야기"
+  },
+  {
+   "type": "timeline",
+   "title": "여행 **일정**",
+   "events": [
+    {
+     "when": "첫째 날",
+     "title": "출발",
+     "text": "기차 타고 바다로"
+    },
+    {
+     "when": "둘째 날",
+     "title": "바다",
+     "text": "모래성 쌓기 대회"
+    },
+    {
+     "when": "셋째 날",
+     "title": "숲길",
+     "text": "아침 산책과 귀가"
+    }
+   ]
+  },
+  {
+   "type": "image",
+   "file": "photos/sea.jpg",
+   "title": "노을이 **가장 예뻤던** 저녁",
+   "caption": "모두 말없이 바다만 바라봤어요"
+  },
+  {
+   "type": "image",
+   "file": "photos/forest.jpg",
+   "title": "셋째 날 아침 **숲길**",
+   "caption": "새소리를 들으며 천천히 걸었어요"
+  },
+  {
+   "type": "quote",
+   "text": "다음에도 **또 같이** 오자",
+   "source": "막내의 한마디"
+  },
+  {
+   "type": "closing",
+   "title": "함께여서 **고마워**",
+   "sub": "우리 가족 여름 여행 2026"
+  }
+ ]
+}
