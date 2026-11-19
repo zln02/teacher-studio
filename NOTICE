@@ -82,6 +82,10 @@ This product includes third-party components:
 19. python-pptx 1.0.2 (Steve Canny, MIT) and openpyxl 3.1.5 (MIT) — install-on-need, NOT vendored: pip installs them on the teacher's own PC after
    consent (shared/tools/ensure.py). Used for the editable .pptx export and the optional .xlsx summary. Listed under "install_on_need" in shared/vendor/manifest.json.
 
+20. Shell kit (shared/shell/, copied into every skill): icons.json holds the Tabler Icons outline set from item 14 (MIT, Copyright (c) 2020-2026
+   Paweł Kuna; LICENSE-tabler.txt) reduced to their inner SVG markup, and characters/ holds four DiceBear thumbs faces from item 13 (CC0 1.0,
+   LICENSE-thumbs.txt). Device frames, patterns and spot illustrations are original work of this project (Apache-2.0).
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 

@@ -3,7 +3,7 @@
 """Copy shared runtime files into every skill that uses them, then zip each skill.
 
 shared/ is the source of truth. Each skill must stay self-contained when zipped, so its own copy lives in
-skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice) and, for the stage skills, assets/ + scripts/.
+skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice, shell) and, for the stage skills, assets/ + scripts/.
 
 Usage:
     python3 tools/sync_shared.py            # copy shared -> skills, then rebuild dist/*.zip
@@ -31,7 +31,7 @@ PLAN = {
     "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "juice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
     "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti", "qrcodegen"]},
     "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
-    "teacher-studio": {"design": True, "fonts": False, "tools": True, "video_eyes": True, "vendor": []},
+    "teacher-studio": {"design": True, "fonts": True, "tools": True, "video_eyes": True, "vendor": []},
     "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
     "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
 }
@@ -76,6 +76,9 @@ def expected() -> dict[Path, bytes]:
             for f in _files(SHARED / "assets"):
                 if f.name != "verify_assets.py":
                     add(f, base / "assets" / f.relative_to(SHARED / "assets"))
+        if cfg.get("shell", True):  # shell kit (껍데기 키트): device frames, patterns, icons for previews - every skill
+            for f in _files(SHARED / "shell"):
+                add(f, base / "shell" / f.relative_to(SHARED / "shell"))
         if cfg.get("voice"):
             add(SHARED / "voice" / "voice.js", base / "voice" / "voice.js")
         if cfg["vendor"]:

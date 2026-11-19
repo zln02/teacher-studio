@@ -150,5 +150,24 @@
    "use": "optional .xlsx summary export with native charts (skills/teacher-data/scripts/export_xlsx.py)",
    "license_file": "openpyxl-3.1.5.dist-info/LICENCE.rst"
   }
+ },
+ "shell_kit": {
+  "_note": "shared/shell (껍데기 키트): copies of already-vetted assets, built by tools/build_shell_kit.py; no new download.",
+  "items": {
+   "tabler-icons": {
+    "license": "MIT",
+    "license_file": "shell/LICENSE-tabler.txt",
+    "source": "shared/assets/icons/tabler (Tabler Icons 3.52.0, outline)",
+    "path": "shell/icons.json",
+    "notes": "inner SVG markup of each 24x24 icon; xmlns/class/bounding path removed"
+   },
+   "dicebear-thumbs": {
+    "license": "CC0-1.0",
+    "license_file": "shell/characters/LICENSE-thumbs.txt",
+    "source": "shared/assets/characters/dicebear/thumbs a-d (DiceBear 9.4.2)",
+    "path": "shell/characters/thumbs-[a-d].svg",
+    "notes": "unmodified files; metadata/xmlns stripped only when inlined"
+   }
+  }
  }
 }
