@@ -19,7 +19,7 @@ from pathlib import Path
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 SKILLS = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
@@ -109,7 +109,7 @@ def report(agent: str = "") -> dict:
     """Probe tools, decide capabilities, cache and return them with a Korean summary."""
     agent = agent or guess_agent()
     node = shutil.which("node")
-    node_ver = subprocess.run([node, "-v"], capture_output=True, text=True).stdout.strip() if node else ""
+    node_ver = subprocess.run([node, "-v"], capture_output=True, text=True, encoding="utf-8", errors="replace").stdout.strip() if node else ""
     caps = {
         "agent": agent,
         "os": platform.system(),

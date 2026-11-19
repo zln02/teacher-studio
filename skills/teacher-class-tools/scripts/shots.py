@@ -16,7 +16,7 @@ from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 SILENT_JS = ("(function(){try{if(window.AudioNode&&window.AudioDestinationNode){var oc=AudioNode.prototype.connect;"
              "AudioNode.prototype.connect=function(d){if(d instanceof AudioDestinationNode)return d;return oc.apply(this,arguments);};}}catch(e){}})()")

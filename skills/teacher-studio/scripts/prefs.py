@@ -22,7 +22,7 @@ from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 PATH = Path.home() / ".teacher-studio" / "prefs.json"
 LEVELS = ["초등학교", "중학교", "고등학교", "특수·기타"]

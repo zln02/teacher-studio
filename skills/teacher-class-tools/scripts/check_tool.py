@@ -23,7 +23,7 @@ from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
@@ -127,7 +127,7 @@ def static_checks(html: str, path: Path) -> list[tuple[str, str]]:
     if node:
         with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as tmp:
             tmp.write(js)
-        p = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
+        p = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True, encoding="utf-8", errors="replace")
         add("PASS" if p.returncode == 0 else "FAIL", "JavaScript syntax" + ("" if p.returncode == 0 else ": " + p.stderr.strip().splitlines()[-1][:160]))
     else:
         add("WARN", "node not found; JavaScript syntax not checked")

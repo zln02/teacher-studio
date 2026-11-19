@@ -29,7 +29,7 @@ from pathlib import Path
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 HERE = Path(__file__).resolve().parent
 SKILLS = HERE.parent.parent  # .../skills

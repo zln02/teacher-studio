@@ -26,7 +26,7 @@ sys.path.insert(0, str(HERE))
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
-        _s.reconfigure(errors="replace")
+        _s.reconfigure(encoding=None if _s.isatty() else "utf-8", errors="replace")
 
 ALLOWED_HOSTS = ("cdnjs.cloudflare.com", "cdn.jsdelivr.net/npm/", "unpkg.com", "fonts.googleapis.com", "fonts.gstatic.com")
 FORBIDDEN_JS = {
@@ -361,7 +361,7 @@ def main(path: Path, play: bool = True) -> int:
     if node:
         with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as tmp:
             tmp.write(js)
-        proc = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True)
+        proc = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True, encoding="utf-8", errors="replace")
         add("PASS" if proc.returncode == 0 else "FAIL", "JavaScript syntax" + ("" if proc.returncode == 0 else ": " + proc.stderr.strip().splitlines()[-1][:160]))
     else:
         add("WARN", "node not found; JavaScript syntax not checked")

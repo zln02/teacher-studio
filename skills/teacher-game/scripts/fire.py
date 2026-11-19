@@ -69,7 +69,7 @@ def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> None:
     elif rep.get("prompt"):
         note = ", fonts not embedded - ASK TEACHER: " + rep["prompt"]
     print(f"fired {missile}/{skin} -> {out} ({size // 1024} KB{note})")
-    result = subprocess.run([sys.executable, str(SKILL / "scripts" / "check_game.py"), str(out)], capture_output=True, text=True)
+    result = subprocess.run([sys.executable, str(SKILL / "scripts" / "check_game.py"), str(out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     print(result.stdout.strip().splitlines()[-1] if result.stdout.strip() else result.stderr)
     if result.returncode:
         raise SystemExit(result.stdout)
