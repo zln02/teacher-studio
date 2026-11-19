@@ -35,7 +35,7 @@ Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", 
 | teams | `items` or `numbers`, `team_count` (2-8) or `team_size`, `team_names` |
 | bracket | `items` or `numbers` (2-16 entries), `shuffle` |
 | scoreboard | `teams` (2-8 names), `steps` e.g. [1,5,10], `start` |
-Design uses the shared design system (palette from subject/grade/mood), one embedded Korean font, no external files.
+Design uses the shared design system (palette from subject/grade/mood), one embedded Korean font, no external files. The user's own logo/template colours come first: `"design": {"palette_from": "pal.json"}` (made by `shared/design/color_from.py`, see `../teacher-studio/references/user-colors.md`). `check_tool.py` WARNs when correct/wrong or team colours look alike to colour-blind eyes.
 
 ## Privacy rules (non-negotiable)
 - Prefer numbers (1번, 2번...) over real student names. Default is numbers; if the teacher wants names, say once: "실제 이름보다 번호를 추천해요" and continue.

@@ -20,6 +20,9 @@
 | meta/astryx | React 디자인 시스템 | MIT, React 19 필요 | 넘어감(웹앱 무기 후보) | 빌드 없는 결과물과 안 맞음 |
 | pingdotgg/t3code | 코딩 에이전트 GUI | MIT, Windows 지원 | 참고 | 개발자용 |
 | claude-video (/watch) | 영상 → 장면 사진 + 자막 | MIT, Gemini 자동 업로드·yt-dlp | 직접 안전판 제작 완료 (`shared/tools/video_eyes.py`) | 로컬 파일만, 외부 전송 없이 |
+| OKLab / OKLCH (Björn Ottosson) | 사람 눈에 고른 색 공간: 변환·조화색·같은 간격 명암 | 행렬은 공개 도메인(저자 공개) | 채택(직접 구현 `shared/design/oklch.py`, 외부 코드 없음) | 색 뽑기·색약 점검의 거리 계산 |
+| Machado·Oliveira·Fernandes 2009 색각 이상 시뮬레이션 | 적·녹·청황색약에서 색이 어떻게 보이는지 | 논문의 공개 행렬(심한 정도 1.0) | 채택(직접 구현 `shared/design/color_check.py`) | 정답·오답, 모둠, 그래프 색이 비슷하면 WARN |
+| Pillow | JPG·GIF·WEBP 사진에서 색 뽑기 | HPND(허용형) | 채택(선택, 필요할 때 동의 후 `ensure.py pillow`) | PNG는 설치 없이 직접 읽음 |
 | Alpine.js | 작은 화면 상호작용 | MIT | 사용 중(노안중 사이트) | 빌드 없이 한 줄로, 이 하네스 결과물에는 넣지 않음(바닐라 JS 유지) |
 | Open Props | CSS 변수 모음 | MIT | 사용 중(노안중 사이트) | 색·간격 기준 참고 |
 | Web Awesome | 웹 컴포넌트 | MIT(무료판) | 사용 중(노안중 사이트) | 하네스 결과물은 단일 HTML·외부 요청 0 원칙이라 번들하지 않음 |

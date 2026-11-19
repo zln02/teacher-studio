@@ -57,6 +57,7 @@
 | 폴더 | 내용 | 쓰는 법 |
 |---|---|---|
 | `shared/design/` | 디자인 생성기 `design.py` + 팔레트 15 + 글자 크기표 (게임·발표·포스터·초대장·인쇄·웹) | `design.py --use present --mood 고급스럽게` → 색·글꼴·글자 크기 한 세트 |
+| `shared/design/color_from.py` · `color_check.py` · `oklch.py` | 내 로고·사진·PPT/POTX·워드·한글(HWPX)·사이트 CSS에서 색 뽑기 → 디자인 값(글자 대비 4.5, 밝기만 조정) / 색약(적·녹·청황) 점검 WARN / OKLCH 변환·조화색·같은 간격 명암 | `color_from.py logo.png --out pal.json` → spec `design.palette_from`. 점검기가 자동으로 WARN. 가이드 `skills/teacher-studio/references/user-colors.md` |
 | `shared/vendor/` | Motion · canvas-confetti · Chart.js · KaTeX · Lucide · Phaser · anime.js · axe-core(점검기 전용) | `inline.py`로 쓴 것만 파일에 넣기 (`manifest.json`에 버전·라이선스) |
 | `shared/fonts/` | Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
 | `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |

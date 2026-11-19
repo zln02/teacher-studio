@@ -22,6 +22,7 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `teams` | 0 | 모둠전이면 2~4 (survival은 2~4 권장) |
 | `rounds` / `timer` | 전부 / 없음 | 수업 시작 5분 → 문제 5~6개. 칠판 팀전은 timer 20~30 |
 | `design.subject/grade/mood` | 과목·학년·분위기 | 분위기: 긴장감·신남·차분·따뜻함·밝음 (「따뜻하게」「고급스럽게」 같은 말도 알아들어요) |
+| `design.palette_from` | 없음 | 선생님 로고·양식 색(`shared/design/color_from.py`가 만든 JSON 경로, 또는 `"saved"`). 있으면 테마 색 대신 이 색을 쓰고 글자 대비 4.5는 밝기만 조정해 지켜요. 점검기는 정답·오답 색이 색약에서 비슷하면 WARN (모양·글자도 같이 쓰기) |
 | `design.large` | false | 어르신·먼 화면 → true (personal에서 칠판 수준 글자) |
 | `design.style` | 자동 | **12가지 스타일 중 하나** (네온/사이버 `neon-cyber` · 골드 럭셔리 `gold-luxury` · 팝 컬러풀 `pop-colorful` · 축제/파티 `festival-party` · TV 게임쇼 `tv-gameshow` · 글래스/3D `glass-3d` · 애니/카툰 `anime-cartoon` · 파스텔 귀여움 `pastel-cute` · 레트로/픽셀 `retro-pixel` · 미니멀 프리미엄 `minimal-premium` · 칠판/종이 `chalk-paper` · 자연/차분 `nature-calm`). 스타일마다 색·배경·배치·버튼·카드·점수판·제목·전환이 다른 「구성 언어」예요. 안 적으면 `design.words`의 스타일 낱말(네온·미니멀·글래스 …)이나 세계(우주·바다 …)에 어울리는 것이 `seed`로 뽑혀요 |
 | `design.seed` | **매번 새로** | 안 적으면 만들 때마다 새 조합(스타일·배치·버튼·카드·점수판·제목)이 뽑히고, 뽑힌 숫자가 화면에 출력돼요(파일 안 `<meta name="ts-seed">`에도 있어요). 「아까 그거 다시」는 그 숫자를 `design.seed`에 적으면 똑같이 나와요 |

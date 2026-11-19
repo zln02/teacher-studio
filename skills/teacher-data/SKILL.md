@@ -22,7 +22,7 @@ Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가�
 2. `python3 scripts/profile_data.py FILE [--sheet S] --json` -> schema, types, missing, units, PII, suggestions. `.xlsx` needs openpyxl: if the output has `need_install`, show its `prompt` and rerun with `--yes` only after consent.
 3. Write a plan (copy from `assets/spec-examples/`): `python3 scripts/analyze.py --data FILE --plan plan.json --out agg.json`
    Types: `groupby` (compare), `change` (before/after per group), `trend` (over time), `distribution` (counts/bins), `likert` (survey scale), `crosstab`, `correlation`. Filters, `top`, `test` (significance, only with n>=5 per group), `metric`, `unit` are optional.
-4. `python3 scripts/report.py --agg agg.json --out report.html --audience 초등|학부모|선생님|전문가 [--xlsx r.xlsx] [--csv a.csv]`. Wording and numbers come from the aggregates; override only via plan `narrative` (numbers still checked).
+4. `python3 scripts/report.py --agg agg.json --out report.html --audience 초등|학부모|선생님|전문가 [--xlsx r.xlsx] [--csv a.csv]`. Wording and numbers come from the aggregates; override only via plan `narrative` (numbers still checked). If the user gave a logo/template, use its colours first: `--palette-from pal.json` (from `shared/design/color_from.py`, see `../teacher-studio/references/user-colors.md`; a means, not our design). `check_report.py` WARNs when chart colours look alike to colour-blind eyes.
 5. `python3 scripts/check_report.py report.html --agg agg.json --source FILE` must print PASS. Fix the plan (not the HTML) and rebuild, max 2 times.
 6. Show the page. Offer 2 tweaks (다른 눈높이로 / 엑셀로도). Mention correlation is not cause and small samples (the report already says so).
 

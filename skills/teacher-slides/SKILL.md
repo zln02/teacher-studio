@@ -10,7 +10,7 @@ Teacher (no coding) asks in plain words for a PPT / talk / training / parent-mee
 Principle: tools guarantee the floor (type scale, contrast, safe margins, keep-all Korean, density), you add the message. Restraint beats decoration: one focal element per slide, one accent colour.
 
 Respond in the user's language. Follow the ask-first rule: `../teacher-studio/references/ask-first.md`.
-The user's own template or reference comes first. (The user-template weapon - building from a PPT/design the user supplies - is planned, not built yet; until then, learn its colours, type and layout from the file via `../teacher-studio/references/learn-from-reference.md` and say honestly that it is an approximation, not a copy.)
+The user's own template or reference comes first. (The user-template weapon - building from a PPT/design the user supplies - is planned, not built yet. Colours are covered: `shared/design/color_from.py deck.pptx --out pal.json`, then `"design": {"palette_from": "pal.json"}` in the spec, see `../teacher-studio/references/user-colors.md`; the composition stays ours. For type and layout learn from the file via `../teacher-studio/references/learn-from-reference.md` and say honestly that it is an approximation, not a copy.)
 
 ## Words
 - Never show code or file names to the teacher. 「PPT 만들어 줘」「칠판에 띄울 거」「글씨 더 크게」 -> `references/teacher-language.md`.
@@ -64,7 +64,7 @@ Build errors are lists of 「고칠 곳」: fix exactly those and rerun.
 Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest priority**: use it only if the teacher names a legacy look.
 
 ## Design language (automatic)
-`scripts/deck_style.py` maps purpose + mood + subject to one of the 12 shared styles (`shared/design/styles.py`) and a palette; each style has its own composition (title treatment, card, emphasis, background motif, transition, preferred layout families). Every slide type has 2-4 layout variants (asymmetric splits, full-bleed type, bento cards, editorial rows, numbered steps, comparison panels); the picker never repeats a layout twice in a row. Custom flair is allowed per slide and sandboxed: `"flair":{"css":"...","svg":"<svg>..</svg>"}` (no external urls, scripts, fixed positioning; css is scoped to that slide). Keep it rare.
+`scripts/deck_style.py` maps purpose + mood + subject to one of the 12 shared styles (`shared/design/styles.py`) and a palette; each style has its own composition (title treatment, card, emphasis, background motif, transition, preferred layout families). Every slide type has 2-4 layout variants (asymmetric splits, full-bleed type, bento cards, editorial rows, numbered steps, comparison panels); the picker never repeats a layout twice in a row. Use the user's logo/template colours first (`design.palette_from`; means, not our design). `slides_review.py` and `check` WARN when correct/wrong or chart colours look alike to colour-blind eyes (add shapes or text). Custom flair is allowed per slide and sandboxed: `"flair":{"css":"...","svg":"<svg>..</svg>"}` (no external urls, scripts, fixed positioning; css is scoped to that slide). Keep it rare.
 
 ## Review gate (`scripts/slides_review.py`)
 External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflow / safe margin / keep-all · not empty · **clutter caps** (elements <= 36, icons <= 3, big colours <= 5) · no 3 identical layouts in a row. Compare decks: `slides_review.py --compare a.html b.html` (distance >= 0.35).
