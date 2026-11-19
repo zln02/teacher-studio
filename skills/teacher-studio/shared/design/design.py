@@ -71,6 +71,18 @@ def palette_issues(name: str, p: dict) -> list[str]:
     return out
 
 
+def is_ai_house(colors: dict, display_font: str) -> bool:
+    """True when colours + headline font form the cream + clay + serif "AI house" look (ai_look.py). Selection avoids it by default;
+    the user's own palette (palette_from) is applied after selection and is never judged."""
+    if str(HERE) not in sys.path:
+        sys.path.insert(0, str(HERE))
+    try:
+        import ai_look
+    except ImportError:
+        return False
+    return ai_look.is_house(colors.get("bg1", ""), [colors.get("primary", ""), colors.get("accent", "")], display_font)
+
+
 def load() -> dict:
     """Load palettes.json."""
     return json.loads(PAL_PATH.read_text(encoding="utf-8"))
@@ -166,9 +178,12 @@ def generate(subject: str = "", grade: int = 5, mood: str = "", use: str = "clas
     calm_moods = set(data["moods"]["calm"])
     high_moods = set(data["moods"]["high"])
     pals = {n: p for n, p in data["palettes"].items() if use in p.get("uses", GAME_USES)}
+    pairs = {x["id"]: x for x in data["fonts"]["pairs"]}
     scored = []
     for name, p in pals.items():
         score = (3 if mood and mood in p["mood"] else 0) + (2 if subject and subject in p["subject"] else 0)
+        if is_ai_house(p, pairs.get(p["font"], {}).get("display", "")):  # never default to an AI-company house look (ai_look.py)
+            score -= 100
         if use == "personal" and "가족" in p["subject"]:
             score += 2
         scored.append((-score, _rank(f"{subject}|{grade}|{mood}|{name}", seed), name))

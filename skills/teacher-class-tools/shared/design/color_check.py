@@ -123,7 +123,21 @@ def check_html(html: str) -> list[dict]:
 
 
 def html_results(html: str) -> list[tuple[str, str]]:
-    """For the checkers: [("WARN", plain-Korean hint)...] or one PASS line when meaning colours were found and are fine; [] when there was nothing to check."""
+    """For the checkers: [("WARN", plain-Korean hint)...] or one PASS line when meaning colours were found and are fine; [] when there was nothing to check.
+    Also carries the anti AI-default-look result (ai_look.py: cream + clay + serif, blue-purple gradient + emoji)."""
+    return _cvd_results(html) + _ai_look_results(html)
+
+
+def _ai_look_results(html: str) -> list[tuple[str, str]]:
+    """Anti AI-default-look hint (ai_look.py) rides along so every checker that calls html_results gets it."""
+    try:
+        import ai_look
+        return ai_look.html_results(html)
+    except Exception:  # never break a check
+        return []
+
+
+def _cvd_results(html: str) -> list[tuple[str, str]]:
     groups = _groups(html)
     if not groups:
         return []

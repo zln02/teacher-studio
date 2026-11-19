@@ -15,7 +15,7 @@ palette, background generator, layout, button/card/scoreboard/title treatments, 
   anime-cartoon     애니/카툰        speed lines + halftone, heavy ink outlines
   pastel-cute       파스텔 귀여움    soft clouds and hills, rounded pills, sticker scores
   retro-pixel       레트로/픽셀      blocky pixel backdrop, square hard-edged UI
-  minimal-premium   미니멀 프리미엄  off-white paper, hairlines, lots of whitespace, one accent, no props
+  minimal-premium   미니멀 프리미엄  cool off-white (not cream), sans headline, hairlines, lots of whitespace, one accent, no props
   chalk-paper       칠판/종이        chalkboard with dust and dashed chalk frames
   nature-calm       자연/차분        hills and leaves, calm motion, soft rounded UI
 Usage: python3 styles.py --words "우주 미니멀" --seed 3
@@ -68,8 +68,8 @@ STYLES: dict[str, dict] = {
         "pal": {"bg1": "#1a0f2e", "bg2": "#2b1850", "text": "#f4ecff", "card": "#2b1850", "cardText": "#fff7d6", "cardBorder": "#5cff8a", "primary": "#5cff8a", "btnText": "#07210f", "accent": "#ff5c5c", "good": "#5cff8a", "bad": "#ff7a7a"},
         "layout": {"split": 3, "news": 3, "bento": 2, "stack": 2}, "choice": {"tile": 5, "stamp": 2}, "card": {"default": 4, "hex": 1}, "score": {"led": 5, "banner": 1}, "title": {"outline": 3, "stack3d": 3},
         "transition": {"wipe": 5}, "props": True, "css": "pixel"},
-    "minimal-premium": {"keys": ["미니멀", "심플", "프리미엄", "깔끔", "모노", "화이트"], "dark": False, "bg": "minimal", "pattern": "none", "font": "Noto Serif KR", "music": "mystery", "motion": "calm",
-        "pal": {"bg1": "#f6f4ef", "bg2": "#ebe7de", "text": "#1a1a1a", "card": "#ffffff", "cardText": "#1a1a1a", "cardBorder": "#1a1a1a", "primary": "#1a1a1a", "btnText": "#f6f4ef", "accent": "#b08d3c", "good": "#1d6f45", "bad": "#b3261e"},
+    "minimal-premium": {"keys": ["미니멀", "심플", "프리미엄", "깔끔", "모노", "화이트"], "dark": False, "bg": "minimal", "pattern": "none", "font": "Noto Sans KR", "music": "mystery", "motion": "calm",
+        "pal": {"bg1": "#f4f6f8", "bg2": "#e6ebf0", "text": "#1a1a1a", "card": "#ffffff", "cardText": "#1a1a1a", "cardBorder": "#1a1a1a", "primary": "#1a1a1a", "btnText": "#f4f6f8", "accent": "#b08d3c", "good": "#1d6f45", "bad": "#b3261e"},
         "layout": {"poster": 4, "split": 4, "news": 1, "stack": 1}, "choice": {"tile": 4, "pill": 2}, "card": {"default": 4, "round": 1}, "score": {"banner": 3, "chalk": 3}, "title": {"underline": 4, "default": 3},
         "transition": {"fade": 6}, "props": False, "css": "minimal"},
     "chalk-paper": {"keys": ["칠판", "종이", "분필", "노트", "교실", "수업"], "dark": True, "bg": "chalk", "pattern": "none", "font": "Gowun Dodum", "music": "cute", "motion": "calm",

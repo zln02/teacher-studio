@@ -22,6 +22,7 @@ SILENT_JS = ("(function(){try{if(window.speechSynthesis){window.speechSynthesis.
              "try{if(window.AudioNode&&window.AudioDestinationNode){var oc=AudioNode.prototype.connect;AudioNode.prototype.connect=function(d){if(d instanceof AudioDestinationNode)return d;return oc.apply(this,arguments);};}}catch(e){}})()")  # tests stay silent
 MUTE = ["--mute-audio"]
 sys.path.insert(0, str(HERE))
+from clipcheck import CLIP_JS  # noqa: E402
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
@@ -201,7 +202,7 @@ def _wow_drive(pg, audit) -> None:
     pg.click("#t-start")
     pg.wait_for_timeout(4000)
     audit()
-    for i in range(16):
+    for i in range(8):  # 8 answers show every effect; more only repeat them
         try:
             if json.loads(pg.evaluate("render_game_to_text()"))["scene"] == "result":
                 break
@@ -216,7 +217,7 @@ def _wow_drive(pg, audit) -> None:
             pg.evaluate("NG.finish({total: Math.max(1, NG.state.total || 1)})")
     except Exception:
         pass
-    pg.wait_for_timeout(8000)
+    pg.wait_for_timeout(4500)
     audit()
 
 
@@ -261,11 +262,14 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                 return [("WARN", "no headless browser found (playwright chromium / Chrome / Edge): autoplay skipped, static checks only")]
             pg = b.new_page(viewport={"width": 1920, "height": 1080})
             pg.add_init_script(SILENT_JS)
+            pg.add_init_script(CLIP_JS)
             pg.on("pageerror", lambda e: errors.append(str(e)[:160]))
             pg.goto(path.resolve().as_uri())
-            pg.wait_for_timeout(600)
+            pg.wait_for_timeout(400)
             pg.click("#t-start")
-            pg.wait_for_timeout(3700)
+            pg.evaluate("advanceTime(3300)")  # the game clock is virtual: no need to sit through the real 3.7 s countdown
+            pg.wait_for_timeout(300)
+            checked: set = set()  # one overflow/clip measurement per question screen, not one per step
             while steps < 500:
                 st = json.loads(pg.evaluate("render_game_to_text()"))
                 final = st["scene"]
@@ -275,12 +279,15 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                 idle = 0 if acted else idle + 1
                 if idle > 25:
                     break
-                pg.wait_for_timeout(260)
+                pg.wait_for_timeout(40)
                 pg.evaluate("advanceTime(600)")
-                pg.wait_for_timeout(260)
-                now = json.loads(pg.evaluate("render_game_to_text()"))["scene"]
-                if now == final and final not in ("title", "countdown", "result"):
-                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor):
+                st2 = json.loads(pg.evaluate("render_game_to_text()"))
+                now = st2["scene"]
+                key = (now, str(st2.get("question") or st2.get("index") or steps))
+                if now == final and final not in ("title", "countdown", "result") and key not in checked:
+                    checked.add(key)
+                    pg.wait_for_timeout(350)  # let the entrance animation finish so sizes are real
+                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()"):
                         problems.setdefault(f"{kind}:{tag}:{txt}", f"{kind} in scene {final}: <{tag}> '{txt}'")
                 steps += 1
             b.close()
@@ -289,9 +296,9 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
     out.append(("PASS" if final == "result" else "FAIL", f"autoplay reaches the result screen ({steps} steps)" + ("" if final == "result" else f": stuck at scene '{final}' -> check item counts/answers in the spec")))
     out.append(("FAIL" if errors else "PASS", "no JavaScript errors while playing" + (f": {errors[:2]}" if errors else "")))
-    ov = [v for k, v in problems.items() if k.startswith(("overflow", "offstage"))]
+    ov = [v for k, v in problems.items() if k.startswith(("overflow", "offstage", "clipped"))]
     sm = [v for k, v in problems.items() if k.startswith("smalltext")]
-    out.append(("FAIL" if ov else "PASS", "no text overflow / off-stage elements" + (f": {ov[:3]} -> shorten the text or use fewer choices" if ov else "")))
+    out.append(("FAIL" if ov else "PASS", "no text overflow / clipped answers / off-stage elements" + (f": {ov[:3]} -> shorten the text, use fewer choices, or a layout with wider buttons (design.layout split|stack)" if ov else "")))
     mw = [v for k, v in problems.items() if k.startswith("midword")]
     out.append(("WARN" if mw else "PASS", "no Korean word broken across lines" + (f": {mw[:3]} -> shorten the text so words are not split" if mw else "")))
     orph = [v for k, v in problems.items() if k.startswith("orphan")]
