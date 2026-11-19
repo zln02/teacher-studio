@@ -70,3 +70,49 @@
 6. **점검 도구**: `closeup(name)`으로 물건 하나씩 따로 찍는 기능 + `shoot.py --closeup`이 만드는 물건 모음 사진(`deck-v2-3d-closeup.png`). 새 물건을 넣으면 이 사진에서 「기본 도형 같지 않은가」를 사람이 본다. 점검기(`check_page.py`)에는 캔버스가 비었는지, WebGL 없는 화면, 움직임 줄인 화면을 넣는다.
 7. **저사양 규칙**: 렌더러 하나, 보이는 장만 그림, DPR 상한 1.5, 프레임이 느리면 해상도를 낮추고 그림자 갱신을 멈춤(`shadowMap.autoUpdate=false`), WebGL이 없으면 2D 카드 대체 화면.
 8. **이름표는 HTML**: 3D 위 글씨는 캔버스가 아니라 투영한 HTML(`lbl`)로. 글꼴·대비·크기를 CSS 토큰이 책임지고, 슬라이드 캡션과 같은 단어를 쓴다.
+
+## 6. 시네마틱 판 (CC0 사진 환경 · 진짜 재질 · 후처리 · 유리 판): 하네스로 옮기는 법
+
+이번 판에서 손으로 한 일을 세 가지 무기로 나누면, 다음부터는 AI가 「무엇을 보여 줄지」만 정하면 돼요.
+
+### 6-1. `shared/tools/cc0_fetch.py` (필요할 때만 받아 오는 CC0 환경·텍스처·모델 도구)
+- 입력: 종류(`hdri` · `texture` · `model`)와 자산 id 또는 낱말(예: `kitchen`, `asphalt`, `school`). Poly Haven API(`api.polyhaven.com/assets?t=…`, `/files/<id>`)와 ambientCG API(`ambientcg.com/api/v2/full_json`)만 씀.
+- 하는 일: 새 빈 폴더에 받기 → 그림·JSON으로만 열기(실행 금지, `py -I`) → 줄이기(`deck-v2-src/prep_assets.py`와 같은 일):
+  HDRI는 4k .hdr를 필름 곡선으로 톤 매핑해 반사용 1024×512 + 장면 배경용 흐린 자르기 1600×900 + HTML 장 배경용 아주 흐린 960×540,
+  텍스처는 색 1k · 노멀/거칠기 512, glTF 모델은 버퍼·그림을 data URI로 묶고 텍스처 512로.
+- 출처 URL·라이선스(CC0)·고른 이유를 NOTICE 표에 자동으로 한 줄씩. 받은 원본은 저장소에 넣지 않음.
+- 크기 예산을 지키게: 이번 덱은 사진·텍스처 19개 + 모델 2개를 넣고도 약 6~7MB.
+
+### 6-2. `scene3d` 프리셋 (이름 있는 함수 + 인자)
+- `dress(S, kind)`: 장면 종류 → 환경(`SEG` 표: road · hall · kitchen) → PMREM 반사 + 흐린 사진 배경(살짝 시차) + 직접 빛 줄이기(`lightK`) + 후처리 기본값.
+- 재질 프리셋 `PH`: `plastic`(클리어코트) · `metal` · `paint`(자동차 도장) · `glass`(환경 반사만 더하는 유리 층) · `tint`(옅은 유리색), `pbr(set, 반복)`(색·노멀·거칠기 묶음).
+- 후처리 `draw()`: RenderPass → UnrealBloom(문턱 0.9, 정말 밝은 것만) → 마지막 셰이더(초점 밖 흐림 · 비네트 · 그레인 · 부드러운 S 곡선). 장면은 `S.fx = {focus, r, blur, bloom}` 또는 `S.focusObj`(그 물건에 초점)만 정함.
+- 카메라: 단계마다 `[위치, 바라볼 곳]` 표를 두고 부드럽게 옮김 + `camDrift`(아주 느린 트럭·달리, 매 프레임 원위치 후 더하기라 장면 코드와 안 싸움).
+- 약한 PC: 평균 40ms가 넘으면 ① 후처리 끄기 ② 해상도 1.5→1→0.75→0.5 ③ 그림자 갱신 멈춤. `?fx=1` 늘 켬(점검·사진), `?fx=0` 끔.
+- WebGL 없을 때: `shoot.py --stills`가 장면마다 마지막 단계를 1280×720으로 찍고, build.py가 `.fb` 배경으로 넣음. 같은 장면 사진이 보여요.
+- 실제 모델이 손으로 만든 것보다 나을 때만 모델(이번엔 도자기 말 조각상, 둥근 안경). 나머지(웍·그릇·밥알·김치·달걀)는 lathe/instanced로 직접.
+
+### 6-3. 유리 판 슬라이드 스킨 (`glass` 스킨)
+- 배경: HDRI에서 자른 아주 흐린 사진(`--hb-road` · `--hb-hall`) 위에 위→아래 어둠막 + 강조색 빛 한 점 + 가장자리 비네트. 밝은 구간 = 길, 어두운 구간 = 시험장.
+- 판: `backdrop-filter: blur(22px) saturate(150%)` + 흰 빛 위 테두리(inset 1px) + 왼쪽 위 흰 빛 → 오른쪽 아래 강조색으로 흐르는 빛 테두리(mask 한 겹). 지원 안 하면 짙은 단색 판.
+- 아이콘: Lucide 하나만, 선 굵기 2 하나만, 둥근 사각 「배지」(`.bd`)에 넣고 강조색 빛.
+- 움직임: 빌드마다 흐림 10px→0 + 28px 올라오기 + 0.97→1 (outExpo), 섹션이 바뀌면 빛 한 줄기가 화면을 훑음(`#wipe`). 길이는 400ms·700ms 두 가지만.
+- 대비: 글자 #eef2ff / 보조 #a9b3cf가 판 위에서 4.5 이상이 되게 배경을 충분히 어둡게.
+
+### 6-4. 디자인 시스템을 한 곳에 (다음 판 규칙)
+- 토큰은 `deck.css` 맨 위 `:root` 두 곳(색 · 글자 크기 · 간격 · 모서리 · 움직임 시간)과 `deck.js`의 `P`(3D 색) 하나뿐. 슬라이드는 토큰만 씀.
+- 부품: 유리 판(`.card` 등) · 나란히 비교(`.pair`/`.screens`) · 시간 줄(`.tl`) · 카드 격자(`.trio` `.appgrid` `.board`) · 큰 문장(`.stmt .big`, `.capline`) · 부탁 카드(`.prompt`) · 등식 막대(`.eqbar`).
+- 3D 프리셋: `SCENES.<이름>`은 모두 `{scene, camera, labels, setStep(n, snap), update(dt, t, snap), fx, focusObj}` 모양. 새 장면은 `dress`가 환경·후처리를 입혀 줌.
+
+### 6-5. 최고의 재료 목록 (라이선스 깨끗한 것만)
+| 무엇 | 고른 것 | 라이선스 | 왜 |
+|---|---|---|---|
+| 한글 글꼴 | Pretendard 1.3.9 가변(이 페이지 글자만 잘라 이름을 「TS Deck Sans」로 바꿔 넣음) | SIL OFL 1.1 (예약 이름 때문에 수정본은 이름 변경) | 한글 UI·제목에 가장 많이 쓰는 글꼴, 굵기 45~920 하나로 |
+| 비상 글꼴 | Noto Sans KR 부분 글꼴 | SIL OFL 1.1 | 저장소 기본. Serif는 빼서 약 200KB 절약 |
+| 아이콘 | Lucide 1.75 | ISC | 이미 동봉, 선 굵기 하나로 통일 |
+| 3D 엔진 · 후처리 · 모델 읽기 | three.js r128 + examples/js(EffectComposer · UnrealBloomPass · GLTFLoader) | MIT | ES5 빌드라 학교 PC에서도 돎 |
+| 움직임 | anime.js 4.5 | MIT | 동봉 |
+| 환경 사진(HDRI) | Poly Haven: evening_road_01 · school_hall · blinds | CC0 | 실제 하늘·강당·부엌 빛과 반사 |
+| 재질 | Poly Haven: asphalt_02 · aerial_grass_rock · wood_table_001 · marble_01 / ambientCG: Paper003 | CC0 | 바닥·풀·책상·조리대·종이 |
+| 모델 | Poly Haven: horse_statue_01 · round_spectacles | CC0 | 손으로 만든 것보다 확실히 나은 두 가지 |
+| 쓰지 않은 것 | 유료 이미지·영상 생성, 출처 불명 사진, GSAP, ffmpeg | - | 저장소 규칙 |

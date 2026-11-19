@@ -56,12 +56,42 @@ def crop(im: Image.Image, fx0, fy0, fx1, fy1) -> Image.Image:
     return im.crop((int(w * fx0), int(h * fy0), int(w * fx1), int(h * fy1)))
 
 
+def pack_model(folder: Path, name: str, tex_px: int = 512) -> None:
+    """Poly Haven glTF (1k) → one self-contained .gltf JSON (buffers/images as data URIs, textures shrunk).
+    The .gltf is only parsed as JSON; uris must be plain relative file names inside the folder."""
+    import base64
+    import json
+    import re
+    g = json.loads(next(folder.glob("*.gltf")).read_text(encoding="utf-8"))
+    ok = re.compile(r"^[A-Za-z0-9_./-]+$")
+    for b in g.get("buffers", []):
+        u = b["uri"]
+        assert ok.match(u) and ".." not in u, u
+        b["uri"] = "data:application/octet-stream;base64," + base64.b64encode((folder / u).read_bytes()).decode()
+    for im in g.get("images", []):
+        u = im["uri"]
+        assert ok.match(u) and ".." not in u, u
+        pic = Image.open(folder / u).convert("RGB").resize((tex_px, tex_px), Image.LANCZOS)
+        buf = io.BytesIO(); pic.save(buf, "JPEG", quality=80, optimize=True)
+        im["uri"] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+        im["mimeType"] = "image/jpeg"
+    p = OUT / f"m_{name}.gltf"
+    p.write_text(json.dumps(g, separators=(",", ":")), encoding="utf-8")
+    print(f"  m_{name}.gltf {p.stat().st_size // 1024} KB")
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", required=True)
+    ap.add_argument("--models", default="", help="Poly Haven glTF 폴더들이 든 상위 폴더 (horse_statue_01, round_spectacles)")
     a = ap.parse_args()
     src = Path(a.src)
     OUT.mkdir(exist_ok=True)
+    if a.models:
+        m = Path(a.models)
+        pack_model(m / "horse_statue_01", "horse")
+        pack_model(m / "round_spectacles", "specs")
+        return 0
     NAVY, PLUM = (40, 70, 150), (120, 50, 90)
     # 1) 길 장면: evening_road_01 (해 질 녘 시골길)
     road = tonemap(src / "evening_road_01_4k.hdr", 0.38)
@@ -75,8 +105,13 @@ def main() -> int:
     bd = crop(hall, 0.70, 0.33, 0.97, 0.565).resize((1600, 900), Image.LANCZOS).filter(ImageFilter.GaussianBlur(5))
     save(grade(bd, PLUM, 0.55, 0.8), "bd_hall.jpg", 72)
     save(grade(bd, PLUM, 0.36, 0.6).resize((960, 540), Image.LANCZOS).filter(ImageFilter.GaussianBlur(16)), "hb_hall.jpg", 70)
+    # 2-1) 부엌 장면: blinds (블라인드 창이 있는 실제 부엌)
+    kit = tonemap(src / "blinds_4k.hdr", 0.5)
+    save(kit.resize((1024, 512), Image.LANCZOS), "env_kitchen.jpg", 80)
+    bd = crop(kit, 0.46, 0.34, 0.86, 0.565).resize((1600, 900), Image.LANCZOS).filter(ImageFilter.GaussianBlur(6))
+    save(grade(bd, (150, 80, 50), 0.85, 0.85), "bd_kitchen.jpg", 72)
     # 3) 텍스처 (1k 색 · 512 노멀/거칠기)
-    for t in ("asphalt_02", "aerial_grass_rock", "wood_table_001"):
+    for t in ("asphalt_02", "aerial_grass_rock", "wood_table_001", "marble_01"):
         save(Image.open(src / f"{t}_diff_1k.jpg").convert("RGB"), f"t_{t}_diff.jpg", 74)
         save(Image.open(src / f"{t}_nor_gl_1k.jpg").convert("RGB").resize((512, 512), Image.LANCZOS), f"t_{t}_nor.jpg", 82)
         save(Image.open(src / f"{t}_rough_1k.jpg").convert("L").resize((512, 512), Image.LANCZOS).convert("RGB"), f"t_{t}_rough.jpg", 72)

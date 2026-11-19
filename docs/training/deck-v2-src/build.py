@@ -64,10 +64,10 @@ def compare_slides() -> str:
   <div class="kicker">같은 부탁, 다른 결과</div><div class="cno">{k} / {len(CASES)}</div>
   <div class="ask"><svg class="ic"><use href="#message-square"/></svg>「{ask}」</div>
   <div class="pair">
-    <div class="shot" data-b="1"><div class="hd">내비 없이<i>ChatGPT·Claude 그대로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
-    <div class="shot h" data-b="2"><div class="hd"><svg class="ic"><use href="#navigation"/></svg>내비 켜고<i>하네스</i></div>{shot(case, "harness")}<p>{cap}</p></div>
+    <div class="shot" data-b="1"><div class="hd">그냥 AI<i>ChatGPT·Claude 그대로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
+    <div class="shot h" data-b="2"><div class="hd"><svg class="ic"><use href="#sparkles"/></svg>하네스 AI<i>하네스를 채우고</i></div>{shot(case, "harness")}<p>{cap}</p></div>
   </div>
-  <aside class="note">[10~18분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
+  <aside class="note">[8~15분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
 </section>""")
     return "\n".join(out)
 
@@ -85,6 +85,72 @@ def icons(html: str, js: str = "") -> str:
             raise SystemExit(f"icon missing: {name}")
         out.append(re.sub(r"\s+", " ", m.group(0)))
     return '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><!-- Lucide icons 1.75.0 · ISC License · Copyright (c) 2026 Lucide Icons and Contributors --><defs>' + "".join(out) + "</defs></svg>"
+
+
+ASSETS = HERE / "assets"          # CC0 사진·텍스처 (prep_assets.py가 만든 작은 JPEG)
+STILLS = HERE / "stills"          # WebGL 없을 때 보여 줄 같은 장면 사진 (shoot.py --stills가 만들어요)
+POST = HERE / "vendor" / "three-post"
+POST_FILES = ["CopyShader.js", "LuminosityHighPassShader.js", "EffectComposer.js", "RenderPass.js", "ShaderPass.js", "UnrealBloomPass.js", "GLTFLoader.js"]
+PRETENDARD = HERE / "vendor" / "pretendard" / "PretendardVariable.woff2"   # Pretendard 1.3.9 (SIL OFL 1.1, RFN "Pretendard")
+DECK_FONT = "TS Deck Sans"   # OFL: 잘라 낸 글꼴(수정본)은 예약 이름(Pretendard)을 쓰지 않아요
+
+
+def deck_font_css(html: str) -> str:
+    """Pretendard 가변 글꼴을 이 페이지 글자만 남기고 잘라, 이름을 바꿔 WOFF2로 넣어요 (저작권·라이선스 이름표는 그대로)."""
+    import base64
+    import io
+    from fontTools import subset
+    from fontTools.ttLib import TTFont
+    from embed import _chars
+    f = TTFont(str(PRETENDARD), lazy=False)
+    o = subset.Options()
+    o.flavor = "woff2"; o.layout_features = ["kern", "locl", "tnum"]; o.name_IDs = ["*"]; o.hinting = False; o.notdef_outline = True
+    sub = subset.Subsetter(o); sub.populate(text=_chars(html)); sub.subset(f)
+    nm = f["name"]
+    nm.names = [r for r in nm.names if r.nameID not in (1, 3, 4, 6, 16, 17, 21, 22, 25)]
+    for nid, val in ((1, DECK_FONT), (4, DECK_FONT), (6, DECK_FONT.replace(" ", "")), (16, DECK_FONT), (3, DECK_FONT + " (subset of Pretendard 1.3.9, OFL)")):
+        nm.setName(val, nid, 3, 1, 0x409)
+    buf = io.BytesIO(); f.flavor = "woff2"; f.save(buf)
+    b = buf.getvalue()
+    print(f"  deck font (Pretendard subset): {len(b) // 1024} KB")
+    return ('<style id="deck-font">/* %s = Pretendard 1.3.9 subset · Copyright (c) 2021 Kil Hyung-jin · SIL OFL 1.1 (renamed per Reserved Font Name) */\n'
+            '@font-face{font-family:"%s";font-style:normal;font-weight:45 920;font-display:swap;src:url(data:font/woff2;base64,%s) format("woff2")}</style>\n'
+            % (DECK_FONT, DECK_FONT, base64.b64encode(b).decode()))
+
+
+def models_js() -> str:
+    import json
+    out = {p.stem[2:]: p.read_text(encoding="utf-8") for p in sorted(ASSETS.glob("m_*.gltf"))}
+    print(f"  models: {list(out)} ({sum(len(v) for v in out.values()) // 1024} KB)")
+    return json.dumps(out)
+
+
+def data_uri(p: Path) -> str:
+    import base64
+    return "data:image/jpeg;base64," + base64.b64encode(p.read_bytes()).decode()
+
+
+def cine_assets() -> tuple[str, str]:
+    """(JS object of 3D assets, CSS with photo backdrops + no-WebGL stills)."""
+    import json
+    js = {p.stem: data_uri(p) for p in sorted(ASSETS.glob("*.jpg")) if not p.stem.startswith("hb_")}
+    css = [":root{" + "".join(f"--hb-{p.stem[3:]}:url({data_uri(p)});" for p in sorted(ASSETS.glob("hb_*.jpg"))) + "}"]
+    for p in sorted(STILLS.glob("*.jpg")):
+        k = p.stem
+        css.append(f'.slide[data-scene="{k}"] .fb{{background-image:url({data_uri(p)})}}'
+                   f'.slide[data-scene="{k}"] .fbcards,.slide[data-scene="{k}"] .fbword{{display:none}}'
+                   f'.slide[data-scene="{k}"] .fbrow{{top:auto;bottom:300px}}')
+    kb = sum(len(v) for v in js.values()) // 1024
+    print(f"  cine assets: {len(js)} textures/env ({kb} KB b64), stills: {len(list(STILLS.glob('*.jpg')))}")
+    return json.dumps(js), "\n".join(css)
+
+
+def post_fx() -> str:
+    out = []
+    for f in POST_FILES:
+        out.append(f"/* three.js r128 examples/js/{'shaders' if 'Shader.js' in f else 'postprocessing'}/{f} · MIT License · Copyright (c) 2010-2021 three.js authors */\n"
+                   + (POST / f).read_text(encoding="utf-8"))
+    return "\n".join(out)
 
 
 def main() -> int:
@@ -113,6 +179,10 @@ def main() -> int:
             nxt = js[m.end():m.end() + 1]
             if bad == "??" or re.match(r"[A-Za-z_$\[(]", nxt):
                 raise SystemExit(f"ES2017 rule: {bad} in deck.js at {m.start()}")
+    assets_js, cine_css = cine_assets()
+    js = js.replace("/*__ASSETS__*/{}", assets_js).replace("/*__MODELS__*/{}", models_js())
+    css = css + "\n" + cine_css
+    post = post_fx()
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -123,9 +193,13 @@ def main() -> int:
 <!--
   Third-party code inlined below (see docs/training/deck-v2-NOTICE.md):
   - three.js r128 (npm three@0.128.0, build/three.min.js) · MIT License · Copyright (c) 2010-2021 three.js authors
+  - three.js r128 examples/js post-processing (EffectComposer, RenderPass, ShaderPass, UnrealBloomPass, CopyShader, LuminosityHighPassShader) · MIT
+  - CC0 photos/textures: Poly Haven (evening_road_01, school_hall, blinds, asphalt_02, aerial_grass_rock, wood_table_001, marble_01), ambientCG (Paper003)
   - anime.js 4.5.0 · MIT License · Copyright (c) 2025 Julian Garnier
   - Lucide icons 1.75.0 · ISC License · Copyright (c) 2026 Lucide Icons and Contributors
-  - Noto Sans KR / Noto Serif KR subsets · SIL Open Font License 1.1
+  - Pretendard 1.3.9 subset, renamed "TS Deck Sans" · SIL Open Font License 1.1 · Copyright (c) 2021 Kil Hyung-jin
+  - Noto Sans KR subset (fallback) · SIL Open Font License 1.1
+  - CC0 models: Poly Haven horse_statue_01, round_spectacles (glTF, textures shrunk)
   - QR Code generator (Project Nayuki) · MIT License (drawn at build time)
 -->
 <style>
@@ -136,11 +210,15 @@ def main() -> int:
 {icons(slides, js)}
 <div id="stage">
 {slides}
+<div id="wipe"></div>
 </div>
 <div id="notes"></div>
 <div id="black"></div>
 <div id="bar"><button id="bprev" aria-label="이전">◀</button><button id="bnext" aria-label="다음">▶</button><button id="bnotes">노트 N</button><button id="bfs">전체 화면 F</button></div>
 {THREE_HEAD}{three}
+</script>
+<script>
+{post}
 </script>
 <script>/* anime.js 4.5.0 · MIT License · Copyright (c) 2025 Julian Garnier */
 {anime}
@@ -153,7 +231,8 @@ def main() -> int:
 """
     if not a.no_fonts:
         from embed import embed
-        html, rep = embed(html)
+        html, rep = embed(html, families=["Noto Sans KR"])   # 본문은 Pretendard(TS Deck Sans), Noto Sans KR는 대비용
+        html = html.replace("</head>", deck_font_css(html) + "</head>", 1)
         print("fonts:", {k: v for k, v in rep.items() if k != "prompt"})
     OUT.write_text(html, encoding="utf-8")
     print(f"wrote {OUT} ({len(html.encode('utf-8')) / 1024:.0f} KB)")

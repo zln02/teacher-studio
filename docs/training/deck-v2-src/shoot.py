@@ -38,8 +38,9 @@ def main() -> int:
     ap.add_argument("--reduced", action="store_true")
     ap.add_argument("--only", default="")
     ap.add_argument("--closeup", action="store_true")
+    ap.add_argument("--stills", action="store_true", help="WebGL 없을 때 쓸 장면 사진을 stills/에 저장")
     a = ap.parse_args()
-    q = []
+    q = [] if a.nogl else ["fx=1"]  # 점검·사진은 후처리를 늘 켠 상태로
     if a.nogl:
         q.append("nogl=1")
     if a.reduced:
@@ -78,7 +79,8 @@ def main() -> int:
                 pg.wait_for_timeout(120 if s < steps else 0)
             pg.wait_for_timeout(1500 if not a.reduced else 400)
             pg.evaluate("window.__deck.settle()")
-            pg.wait_for_timeout(300)
+            pg.evaluate("window.__deck.freeze(true)")  # 소프트웨어 WebGL에서도 사진을 빨리 찍게 그리기를 잠깐 멈춰요
+            pg.wait_for_timeout(200)
             png = pg.screenshot(timeout=120000)
             img = Image.open(io.BytesIO(png)).convert("RGB")
             info = pg.evaluate("window.__deck.state()")
@@ -95,6 +97,7 @@ def main() -> int:
                     note = f"3D {info['active']} gl={gl_ok} stddev={sd:.1f}"
                     if sd < 6:
                         note += " FAIL blank?"; fails += 1
+            pg.evaluate("window.__deck.freeze(false)")
             print(f"{i + 1:02d} steps={steps} {note}")
             if shots:
                 img.save(shots / f"s{i + 1:02d}.png")
@@ -115,7 +118,7 @@ def main() -> int:
             frames = []
             ctx2 = b.new_context(viewport={"width": 1280, "height": 720}, device_scale_factor=1)
             g = ctx2.new_page()
-            g.goto(DECK.as_uri())
+            g.goto(DECK.as_uri() + "?fx=1")
             g.wait_for_function("window.__deck && window.__deck.state().slide === 0", timeout=20000)
 
             def grab(ms, every=110):
@@ -129,18 +132,47 @@ def main() -> int:
                 g.evaluate(f"window.__deck.go({i}, {st})")
                 grab(ms)
             # 내비 = 길 안내 + 쓸 도구들: 도구가 차에 붙고, 차가 맞는 길로
-            g.evaluate("window.__deck.go(4, 0)"); g.wait_for_timeout(900)
-            grab(500); step(4, 1, 1500); step(4, 2, 2300)
-            # 평소 vs 부정행위: 입구·출구만 바뀌어요
-            g.evaluate("window.__deck.go(18, 0)"); g.wait_for_timeout(900)
-            grab(700); step(18, 1, 700); step(18, 2, 1900)
-            # 문제 하나 따라가기
-            g.evaluate("window.__deck.go(19, 0)"); g.wait_for_timeout(900)
+            fnd = lambda k: g.evaluate(f"window.__deck.find('{k}')")
+            # 하네스 한 단어: 글자가 떨어져 꽂히고 빛이 훑어요
+            rv = fnd("reveal")
+            g.evaluate(f"window.__deck.go({rv}, 0)"); grab(3000)
+            # 말과 하네스: 부품이 철컥 붙고 원하는 방향으로
+            hs = fnd("horse")
+            g.evaluate(f"window.__deck.go({hs}, 0)"); g.wait_for_timeout(900)
+            grab(300); step(hs, 1, 1800); step(hs, 2, 1500)
+            # 김치볶음밥: 하네스 AI
+            kb = fnd("kitchenB")
+            g.evaluate(f"window.__deck.go({kb}, 0)"); g.wait_for_timeout(900)
+            grab(300); step(kb, 1, 1800); step(kb, 2, 1200); step(kb, 3, 1200)
+            sy = fnd("story")
+            g.evaluate(f"window.__deck.go({sy}, 0)"); g.wait_for_timeout(900)
             for st in range(1, 8):
-                step(19, st, 1000 if st in (2, 3, 5) else 700)
-            pal = [f.quantize(colors=80, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in frames]
-            pal[0].save(GIF, save_all=True, append_images=pal[1:], duration=170, loop=0, optimize=True)
+                step(sy, st, 900 if st in (2, 3, 5) else 550)
+            # 사진 배경·그레인은 GIF에서 무거워요: 560px, 두 장에 한 장, 48색으로 3MB 안쪽
+            small = [f.resize((560, 315), Image.LANCZOS) for f in frames[::2]]
+            pal = [f.quantize(colors=48, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in small]
+            pal[0].save(GIF, save_all=True, append_images=pal[1:], duration=300, loop=0, optimize=True)
             print("gif:", GIF, f"{GIF.stat().st_size / 1e6:.2f} MB", len(frames), "frames")
+        if a.stills:
+            # 장면마다 마지막 단계 그림을 1280x720 JPEG로: 3D와 이름표만 남기고 글은 숨겨요
+            out = HERE / "stills"
+            out.mkdir(exist_ok=True)
+            pg.goto(url)
+            pg.wait_for_function("window.__deck && window.__deck.state().slide === 0", timeout=20000)
+            pg.add_style_tag(content=".slide.on>*:not(.gl):not(.labels){visibility:hidden!important}#stage:after,#bar,.foot{display:none!important}")
+            kinds = pg.evaluate("[].map.call(document.querySelectorAll('.slide[data-scene]'), function(s){return s.getAttribute('data-scene')})")
+            for k in kinds:
+                i = pg.evaluate(f"window.__deck.find('{k}')")
+                last = pg.evaluate(f"window.__deck.steps({i})")
+                pg.evaluate(f"window.__deck.go({i}, {last})")
+                pg.wait_for_timeout(1800)
+                pg.evaluate("window.__deck.settle()")
+                pg.evaluate("window.__deck.freeze(true)")
+                pg.wait_for_timeout(200)
+                im = Image.open(io.BytesIO(pg.screenshot(timeout=120000))).convert("RGB").resize((1280, 720), Image.LANCZOS)
+                im.save(out / f"{k}.jpg", "JPEG", quality=68, optimize=True, progressive=True)
+                pg.evaluate("window.__deck.freeze(false)")
+                print("  still", k, (out / f"{k}.jpg").stat().st_size // 1024, "KB")
         if a.closeup:
             import base64
             from PIL import ImageDraw, ImageFont
