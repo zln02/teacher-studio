@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<!-- Feel-capture, standalone page (no page to overlay): open this next to a screenshot (?img=file.png) in preview/artifact mode.
+     For a real output use `diagnose.py inject FILE.html` instead (adds feel.js to a PREVIEW copy). Never share this or a preview copy. -->
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>느낌 남기기</title>
+<style>html,body{margin:0;background:#f4f2ee;color:#111;font:16px/1.5 system-ui,"Malgun Gothic",sans-serif;word-break:keep-all}
+#shot{display:block;max-width:100%;margin:0 auto;cursor:crosshair}p{margin:12px 16px}</style></head>
+<body>
+<p>화면에서 아쉬운 곳을 누르면 표시돼요. 오른쪽 아래 패널에서 느낌을 골라 주세요.</p>
+<img id="shot" alt="결과 화면">
+<script>
+(function () { var m = /[?&]img=([^&]+)/.exec(location.search); if (m) document.getElementById('shot').src = decodeURIComponent(m[1]); else document.getElementById('shot').style.display = 'none'; })();
+window.FEEL_STANDALONE = true;
+</script>
+<script src="feel.js"></script>
+</body></html>

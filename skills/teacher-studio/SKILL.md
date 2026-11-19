@@ -21,6 +21,12 @@ license: Apache-2.0
 - **Stay small**: load only the one README you need; do not read engine/stage files; do not add steps the request did not need.
 - **Variety**: do not default to the same look; legacy skins are the lowest-priority option.
 - **Skill scout**: for 「우리 도구에 없는 일」 (office files, HWPX, video editing, security review...), look for an existing skill first (`references/skill-scout.md`, helper `scripts/skill_scout.py`). Vet it, ask the teacher before installing, keep installed third-party skills few.
+- **Vague feedback**: 「별로야/밤티야/뭔가 아쉬워」 gets self-diagnosis, not interrogation; fix loops still capped at 2, then show options (`references/vague-fix.md`).
+
+## 막연한 불평 (「별로야」 「이상해」 「뭔가 아쉬워」 「밤티야」 「아까가 나았어」)
+- 되묻지 않는다. 먼저 스스로 결과를 다시 점검하고(`scripts/diagnose.py scan FILE --feedback "선생님 말 그대로"` + 화면을 직접 보기), 상위 원인 1~2개를 고쳐 전/후를 보여 준다.
+- 고치기 전 `diagnose.py snapshot FILE` (「아까가 나았어」 → `restore`), 한 번 고쳐도 아쉬우면 느낌 남기기(`assets/feel.js`, 30초), 취향은 `prefs.py taste-*`에 기억.
+- 전체 절차·불평 사전: `references/vague-fix.md`.
 
 ## 1. 첫 대화 (설치 직후 / 새 대화의 첫 요청)
 1. 환경 확인 (1초): `~/.teacher-studio/env.json`이 있으면 읽고, 없으면
@@ -119,6 +125,7 @@ license: Apache-2.0
 | `scripts/studio.py` | list / fire / check / render / doctor — 모든 칸 공통 명령 |
 | `scripts/prefs.py` | 처음 한 번 설정(학교급·과목·기기) 저장·조회·초기화 (`~/.teacher-studio/prefs.json`) |
 | `references/ask-first.md` | 「AI가 먼저 묻기」 공통 규칙 (질문 1~3개 + 추천 답) |
+| `references/vague-fix.md` | 막연한 불평 → 스스로 진단·수정·되돌리기·느낌 남기기 (+ `scripts/diagnose.py`, `assets/feel.js`·`feel.html`) |
 | `references/skill-scout.md` | 우리 도구에 없는 일: 기존 스킬 찾기·검증·동의 설치 (+ `recommended-skills.json`, `scripts/skill_scout.py`) |
 | `scripts/doctor.py` | 이 환경에서 되는 것·처음 필요할 때 설치되는 도구·공식 문서 스킬 확인 → 선생님 말 요약 |
 | `shared/tools/ensure.py` | 도구 설치: 동의 받은 뒤 `ensure.py <이름> --yes` (fonttools·python-pptx·python-docx·openpyxl·python-hwpx·pypdf·pillow·qrcode·imageio-ffmpeg·playwright) |
