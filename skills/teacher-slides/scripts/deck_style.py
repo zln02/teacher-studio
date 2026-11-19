@@ -254,11 +254,12 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     hl_card = mix(card, pr, 0.28)
     if design_core.contrast(ct, hl_card) < 4.5:
         hl_card = mix(card, pr, 0.14)
+    # meaning colours: blue vs orange keep apart for colour-blind eyes (checked with shared/design/color_check.py); the layouts also say it in words (정답/오답)
     purpose_floor = 24 if purpose == "개인" else 28
     return {
         "style": style, "why": why, "purpose": purpose, "palette": pal_name, "seed": seed, "lang": lang, "dark": dark,
         "colors": {"bg1": bg1, "bg2": bg2, "tx": tx, "mu": mu, "card": card, "ct": ct, "cmu": cmu, "cb": mix(tx, bg1, 0.82), "line": mix(tx, bg1, 0.84), "pr": pr, "bt": pal["btnText"],
-                   "ac": ac, "good": pal["good"], "bad": pal["bad"], "emc": emc, "emcc": emcc, "emc2": emc2, "hl": hl, "hlc": hl_card,
+                   "ac": ac, "good": "#6ea8ff" if dark else "#1d4ed8", "bad": "#ffb454" if dark else "#c2410c", "emc": emc, "emcc": emcc, "emc2": emc2, "hl": hl, "hlc": hl_card,
                    "ink": "#1a1a1a" if not dark else "#f5f5f5"},
         "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "Noto Sans KR", "body": "Noto Sans KR"},
         "floor": purpose_floor, "motion": STYLES[style]["motion"],
