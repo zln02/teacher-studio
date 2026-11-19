@@ -62,6 +62,9 @@ PROBE_JS = r"""
     if (a > 0.6 && r.width * r.height > 15000 && cs.backgroundImage === 'none' && !e.querySelector('svg, img') && txt.replace(/[^가-힣A-Za-z0-9]/g, '').length === 0 && /[\S]/.test(e.textContent || '') && (e.textContent || '').trim().length <= 2) out.plain++;
     if (txt && /[가-힣A-Za-z0-9]/.test(txt)) out.texts.push({t: txt.slice(0, 20), r: [r.left, r.top, r.width, r.height], fs: parseFloat(cs.fontSize), color: cs.color, bgs: bgs(e)});
   }
+  out.hud = [];  // HUD pieces (timer bar + number, scoreboard teams, buttons, combo) must not sit on top of scene text or cards
+  var hs = document.querySelectorAll('#hud .timer, #hud .timer-num, #hud .scoreboard .team, #hud .icon-btn, #hud .combo');
+  for (var j = 0; j < hs.length; j++){ var hq = hs[j].getBoundingClientRect(); if (hq.width > 2 && hq.height > 2) out.hud.push({n: (hs[j].className || hs[j].id || 'hud').toString().split(' ')[0], r: [hq.left, hq.top, hq.width, hq.height]}); }
   var h = document.querySelector('#ts-deco .ts-host'); if (h){ var q = h.getBoundingClientRect(); out.host = [q.left, q.top, q.width, q.height]; }
   return out;
 })()
@@ -174,12 +177,19 @@ def measure(shot, backdrop, probe: dict) -> dict:
         ratio = strong / max(1, (bw - 1) * (bh - 1))
         if ratio > deco_text:
             deco_text, deco_where = ratio, t["t"]
+    hud_hits: list[str] = []  # HUD element x scene text / card overlap (>= 6px both ways)
+    for hd in probe.get("hud", []):
+        a = hd["r"]
+        for lab, b in [(t["t"], t["r"]) for t in texts if t["fs"] >= 20] + [("card", c) for c in probe["cards"]]:
+            if a[0] < b[0] + b[2] - 6 and b[0] < a[0] + a[2] - 6 and a[1] < b[1] + b[3] - 6 and b[1] < a[1] + a[3] - 6:
+                hud_hits.append(f"{hd['n']} x {lab}")
+                break
     host_ov = 0
     if probe.get("host"):
         h = probe["host"]
         host_ov = sum(1 for r in rects if r[0] < h[0] + h[2] * 0.55 and h[0] < r[0] + r[2] and r[1] < h[1] + h[3] and h[1] < r[1] + r[3] and r[0] < 120 and r[1] > h[1])
     return {"plain_cards": probe.get("plain", 0), "deco_density": round(bt / bn, 3), "empty_ratio": round(empty, 3), "colors": colors, "hierarchy": hier,
-            "min_contrast": round(mins if mins < 99 else 21, 2), "low_contrast": lows, "overlaps": ov + host_ov,
+            "min_contrast": round(mins if mins < 99 else 21, 2), "low_contrast": lows, "overlaps": ov + host_ov, "hud_overlaps": len(hud_hits), "hud_hits": hud_hits[:4],
             "deco_under_text": round(deco_text, 3), "deco_text": deco_where, "clipped": [list(c) for c in probe.get("clipped", [])]}
 
 
@@ -293,6 +303,8 @@ def summarise(metrics: dict) -> dict:
         out["overlaps"] = max(m["overlaps"] for m in metrics.values())
     out["deco_under_text"] = max(m["deco_under_text"] for m in metrics.values())
     out["clipped"] = sum(len(m["clipped"]) for m in metrics.values())
+    out["hud_overlaps"] = max(m.get("hud_overlaps", 0) for m in metrics.values())
+    out["hud_hits"] = next((m["hud_hits"] for m in metrics.values() if m.get("hud_hits")), [])
     if "title" in metrics:
         out["title_empty_ratio"] = metrics["title"]["empty_ratio"]
         out["title_deco_density"] = metrics["title"]["deco_density"]
@@ -317,6 +329,9 @@ def judge(summary: dict, style: str = "") -> tuple[str, list[str]]:
         hints.append("배경 장식이 제목·문제 글자 뒤를 지나가서 읽기 어려워요 → 장면이 덜 복잡한 style이나 design.mood(차분하게)로 바꿔 보세요")
     elif summary.get("deco_under_text", 0) >= DECO_TEXT_WARN:
         hints.append("배경 장식이 제목·문제 글자와 겹쳐요 → 장식이 가장자리에만 있는 style/layout을 써 보세요")
+    if summary.get("hud_overlaps", 0) > 0:
+        fail = True
+        hints.append(f"위쪽 표시(시간 막대·점수·버튼)가 문제 상자나 '차례' 표시를 가려요({summary.get('hud_hits')}) → 상자를 아래로 내리거나 design.layout을 바꿔 보세요")
     if summary.get("overlaps", 0) > 0:
         hints.append("글자 상자가 서로(또는 도우미 캐릭터와) 겹쳐요 → 문제·보기 글을 줄이거나 보기 수를 줄여 보세요")
     if summary.get("hierarchy", 9) < 1.25:

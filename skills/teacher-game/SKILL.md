@@ -135,3 +135,7 @@ python3 scripts/design_review.py game.html --out review/
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = questions, answers, rules (the `items` of the spec); 콘티 = screen flow + win/lose + juice moments: `py ../teacher-studio/scripts/storyboard.py spec.json --html sheet.html --open` (reads this spec as is). Checkpoint: show the 콘티 sheet before `build`/`fire` (「이 흐름으로 만들까요? (추천: 네)」), then show the first build; deliver with `deliver.py game.html`. Skip the sheet for 「바로/알아서」.
+
+## Last message (always)
+Finish every game job with a real answer, never a status: (1) the finished file's full path, (2) how to open it (「더블클릭하면 브라우저에서 열려요」, F로 전체 화면), (3) the check result in one line (`check_game.py` PASS, `design_review` verdict). Never end on 「서브 에이전트가 만드는 중이에요」 or any delegation / progress line: if a helper builds the game, wait for it, verify the file exists, then answer. If it truly is not finished, say so plainly and give the partial file. See `../teacher-studio/references/pipeline.md` (Final checkpoint).
+HUD rule: the timer bar, score and buttons live in the top band (y < 126); question boxes and 「팀 차례」 tags start below it. `check_game.py` (hudoverlap) and `design_review.py` (hud_overlaps) FAIL when a top-bar part covers a box or tag.
