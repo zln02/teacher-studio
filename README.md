@@ -18,7 +18,7 @@
 
 **AI에게 말 한 줄만 하세요. 전문가 이상의 결과가 나와요.**
 
-짧은 요청을 **전문가가 만든 것 같은 품질**로 바꿔 주는 Claude·Codex용 스킬 묶음이에요. AI가 하는 **모든 일**이 대상이에요. 우리가 직접 만든 전용 도구는 **게임 · 슬라이드 · 영상 · 수업 도구 · 자료(엑셀) 분석 · 법률 안내**(스킬 7개)이고, 코딩·문서·웹·보안 점검 같은 일은 **검증된 기존 스킬을 처음 필요할 때 찾아 동의받고 설치**해서 함께 써요. 그 밖에는 AI 자신의 실력 위에 점검 규칙을 얹어요. (자료 조사/비교 전용 도구는 준비 중)
+짧은 요청을 **전문가가 만든 것 같은 품질**로 바꿔 주는 Claude·Codex용 스킬 묶음이에요. AI가 하는 **모든 일**이 대상이에요. 우리가 직접 만든 전용 도구는 **게임 · 슬라이드 · 영상 · 수업 도구 · 자료(엑셀) 분석 · 문서(한글·워드·PDF) · 법률 안내**(스킬 8개)이고, 코딩·웹·보안 점검 같은 일은 **검증된 기존 스킬을 처음 필요할 때 찾아 동의받고 설치**해서 함께 써요. 그 밖에는 AI 자신의 실력 위에 점검 규칙을 얹어요. (자료 조사/비교 전용 도구는 준비 중)
 
 **선생님 맞춤이 기본, 누구나 쓸 수 있어요.** 직업이나 용도로 막지 않아요.
 
@@ -55,6 +55,7 @@
 - 🎮 **게임**: 7가지 방식(퀴즈·서바이벌·방탈출·짝 맞추기·빙고·말판·분류), 요청에 맞는 자동 테마, 정답·축하 연출과 효과음을 더하는 Wow 키트
 - 🖥 **슬라이드**: 목적·분위기에 맞춰 짜는 방식으로 개편 중
 - ✨ **영상·화면**: 과목 소개·수업 시작 화면, MP4 저장
+- 📄 **문서**: 공문·가정통신문·안내문·보고서를 한글(HWPX)·워드·PDF로, 받은 양식 채우기·한글 파일 고치기·PDF 합치기 (공문 형식 자동 점검)
 - ⚖️ **법률 안내**: 공식 출처에서 최신 법을 찾아 근거와 함께
 - 🧰 **수업 도구**(타이머·번호 뽑기·모둠·대진표·점수판): 저장소에 들어 있어요(설치 ZIP 묶음에는 아직 없어요)
 - 🎞 **영상 눈(video_eyes)**: 내 컴퓨터 안에서만 영상의 장면·자막을 읽어요
@@ -195,9 +196,9 @@
 
 ### 설치 방법 4단계 — 위에서부터 해 보세요
 1. **링크 한 줄**: Claude Code · Claude 데스크톱 앱의 Cowork·Code 탭 · Codex 앱에 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」 (일반 Chat 탭은 링크로 설치가 안 돼요 → 3번)
-2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 7개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
-3. **파일 올리기**: Claude 앱 Chat → [`dist/`](dist/)의 ZIP 7개를 Customize → Skills에 올리기
-4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 7개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
+2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 8개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
+3. **파일 올리기**: Claude 앱 Chat → [`dist/`](dist/)의 ZIP 8개를 Customize → Skills에 올리기
+4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 8개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
 
 자세한 설명은 [INSTALL.md](INSTALL.md). 아래는 1번의 자세한 형태입니다.
 
@@ -217,7 +218,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 | 쓰는 곳 | 방법 | 알아 둘 점 |
 |---|---|---|
 | Claude 데스크톱 · Cowork / Code 탭 | 「내가 준 링크에 하네스 세팅해 줘」, 또는 Customize → Plugins → Add marketplace → `zln02/teacher-studio` | Cowork·플러그인은 유료(Pro 이상). Team·Enterprise는 관리자가 켜야 해요 |
-| Claude Chat 탭 | 링크로는 안 돼요. ZIP 7개를 Customize → Skills에 올리고, Settings → Capabilities에서 코드 실행 켜기 | 제일 제한이 많아요 |
+| Claude Chat 탭 | 링크로는 안 돼요. ZIP 8개를 Customize → Skills에 올리고, Settings → Capabilities에서 코드 실행 켜기 | 제일 제한이 많아요 |
 | ChatGPT 개인 계정 | **Codex 앱**: 스킬 폴더 `~/.agents/skills`, skill-installer에 GitHub 폴더 주소, 또는 플러그인 | 일반 ChatGPT 화면에는 개인용 설치가 없어요 |
 | ChatGPT Business·Enterprise·Edu | Skills 파일 업로드 | 관리자가 허용해야 해요 |
 | Gemini 앱 | SKILL.md 형식 Skills 업로드 (2026-10부터) | 도구(스크립트)를 못 돌리면 결과가 제한적이에요 |
@@ -227,7 +228,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 <details>
 <summary><b>💬 Claude 앱 Chat(claude.ai)을 쓰는 경우</b></summary>
 
-1. 이 페이지의 [`dist/`](dist/) 폴더에서 ZIP 파일(묶음 파일) 7개를 받습니다: `teacher-studio` · `teacher-game` · `teacher-slides` · `teacher-motion` · `teacher-law` · `teacher-class-tools` · `teacher-data`
+1. 이 페이지의 [`dist/`](dist/) 폴더에서 ZIP 파일(묶음 파일) 8개를 받습니다: `teacher-studio` · `teacher-game` · `teacher-slides` · `teacher-motion` · `teacher-law` · `teacher-class-tools` · `teacher-data` · `teacher-docs`
 2. Claude 앱 → **Customize(맞춤 설정) → Skills** 에서 ZIP을 하나씩 올립니다. (메뉴 이름은 앱 버전에 따라 조금 다를 수 있어요)
 3. **설정 → Capabilities** 에서 코드 실행(AI가 도구를 직접 돌리는 기능)·파일 만들기가 켜져 있는지 확인합니다. (기본은 켜짐)
 4. 새 대화에서 **「교사 스튜디오 시작」** 이라고 말합니다.
@@ -275,7 +276,8 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 | 🎮 수업 게임 | **퀴즈쇼** | 방송국 · 강당 종 울리기 · 우주 정거장 | 퀴즈·OX·종 울리기, 칠판 모둠전 |
 | | **방탈출** | 거북선 작전실 · 해독제 실험실 · 태양 신전 | 단원 마무리, 반 전체 협동 (3~6단계) |
 | | **끌어서 보내기** | 달밤 우체국 · 세포 먹이 · 분리수거 로봇 | 단어 뜻, 분류, 짝 맞추기, 태블릿 |
-| 🖥 슬라이드 | **짧은 JSON → 디자인된 발표** (12 스타일 × 장 19종, QR·타이머·그래프·수식) | 목적·분위기에 따라 자동 | 수업·연수·설명회·회사·모임 |
+| 🖥 슬라이드 | **짧은 JSON → 디자인된 발표** (12 스타일 × 장 23종, QR·타이머·그래프·수식·표, 편집되는 PPT) | 용도 4가지: 수업·홍보·기관 보고·개인 | 수업·연수·설명회·회사·모임 |
+| 📄 문서 | **공문·가정통신문·안내문·보고서** (한글 HWPX·워드·PDF) | 공문 형식(1. 가. 1) …·끝·붙임·날짜) 자동, 양식 채우기·원본 서식 유지 고치기 | 교무 업무, 학부모 안내, PDF 정리 |
 | 🧰 수업 도구 | **타이머 · 뽑기 · 모둠 · 대진표 · 점수판** | 오프라인 HTML 1개 | 교실, 가족·동호회 |
 | 📊 자료 분석 | **엑셀·CSV → 쉬운 그래프 보고서** | 점수·설문·가계부·매출 | 이름은 가리고 숫자는 대조 |
 | ✨ 영상·화면 | **과목 소개 영상** | 과학 네온 · 국어 붓글씨 · 영어 뉴스 | 첫 시간, 과목 홍보 |
@@ -296,7 +298,7 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 
 | | Claude 앱·웹 | Claude Code | Codex |
 |---|---|---|---|
-| 설치 | Chat은 설정에서 ZIP 7개 올리기 (Cowork·Code 탭은 링크 한 줄) | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
+| 설치 | Chat은 설정에서 ZIP 8개 올리기 (Cowork·Code 탭은 링크 한 줄) | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
 | 만들기 + 자동 점검 | ✅ 코드 실행(AI가 도구를 직접 돌리는 기능) 켜기 | ✅ | ✅ |
 | 결과 받는 법 | 오른쪽 미리보기·다운로드 (클라우드에서 만들어 내 컴퓨터 폴더에는 직접 못 써요) | 내 컴퓨터에 파일로 저장, 크롬 자동 열기 | 내 컴퓨터에 파일로 저장, 크롬 열기 |
 | 공유 링크·QR | ✅ 「게시」 | ➖ 파일로 전달 | ➖ 파일로 전달 |

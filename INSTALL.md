@@ -7,22 +7,22 @@
 | 단계 | 방법 | 이럴 때 |
 |---|---|---|
 | ① 링크 한 줄 | AI에게 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」(또는 「내가 준 링크에 하네스 세팅해 줘」)라고 말한다. AI가 이 문서(INSTALL.md)를 읽고 알아서 설치한다. **되는 곳**: Claude Code, Claude 데스크톱 앱의 Cowork·Code 탭, Codex 앱. **안 되는 곳**: 일반 Chat 탭(링크만으로는 설치 못 함) → ③으로 | 가장 쉬움 |
-| ② 명령 한 줄 | 터미널(명령 창)에 `npx skills add zln02/teacher-studio` (Claude Code 안에서는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`). 스킬 7개를 **모두** 고르세요 | ①이 안 될 때 (Node.js 필요) |
-| ③ 파일 올리기 | Claude 앱·웹 Chat: [`dist/`](dist/)의 zip 7개를 Customize → Skills에 올리기 (설정 → Capabilities에서 코드 실행 켜기) | 일반 Chat 탭, 링크 설치가 안 될 때 |
-| ④ 폴더 복사 | 저장소를 내려받아(초록색 Code 버튼 → Download ZIP) 압축을 풀고, `skills` 안의 `teacher-` 폴더 7개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex) 폴더에 통째로 복사 (내 사용자 폴더 안) | 인터넷·명령이 막힌 학교 PC |
-- 일곱 개가 한 묶음이라 **하나라도 빠지면 일부 기능이 안 돼요.** 끝나면 새 대화에서 「교사 스튜디오 시작」.
+| ② 명령 한 줄 | 터미널(명령 창)에 `npx skills add zln02/teacher-studio` (Claude Code 안에서는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`). 스킬 8개를 **모두** 고르세요 | ①이 안 될 때 (Node.js 필요) |
+| ③ 파일 올리기 | Claude 앱·웹 Chat: [`dist/`](dist/)의 zip 8개를 Customize → Skills에 올리기 (설정 → Capabilities에서 코드 실행 켜기) | 일반 Chat 탭, 링크 설치가 안 될 때 |
+| ④ 폴더 복사 | 저장소를 내려받아(초록색 Code 버튼 → Download ZIP) 압축을 풀고, `skills` 안의 `teacher-` 폴더 8개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex) 폴더에 통째로 복사 (내 사용자 폴더 안) | 인터넷·명령이 막힌 학교 PC |
+- 여덟 개가 한 묶음이라 **하나라도 빠지면 일부 기능이 안 돼요.** 끝나면 새 대화에서 「교사 스튜디오 시작」.
 - 개발자용: Claude Code 플러그인(`.claude-plugin/`)·Codex 플러그인(`.codex-plugin/`, `.agents/plugins/`) 정보가 들어 있다. 아래 1~5단계(`setup.py`)는 그대로 쓸 수 있다.
 
 ## 앱별 설치 길 (2026-11-19 검색 요약으로 확인 — **연수 전 실제 화면 확인 필요**. 메뉴 이름은 앱 버전마다 달라요)
 | 쓰는 곳 | 방법 | 알아 둘 점 |
 |---|---|---|
 | **Claude 데스크톱 · Cowork / Code 탭** | 「내가 준 링크에 하네스 세팅해 줘」+ 링크. 또는 Customize → Plugins → Add marketplace → `zln02/teacher-studio` | Cowork·플러그인은 유료(Pro 이상). Team·Enterprise는 관리자가 플러그인을 켜 줘야 함 |
-| **Claude Chat 탭 (일반 대화)** | 링크로는 설치 불가. [`dist/`](dist/)의 zip 7개를 Customize → Skills에 올리기 | Settings → Capabilities에서 코드 실행 켜기. 스크립트가 도는 환경이라 가장 제한이 많음 |
+| **Claude Chat 탭 (일반 대화)** | 링크로는 설치 불가. [`dist/`](dist/)의 zip 8개를 Customize → Skills에 올리기 | Settings → Capabilities에서 코드 실행 켜기. 스크립트가 도는 환경이라 가장 제한이 많음 |
 | **ChatGPT 개인 계정** | **Codex 앱**을 쓴다. 스킬 폴더 `~/.agents/skills`에 복사, 또는 skill-installer에 GitHub 폴더 주소를 주기, 또는 플러그인(마켓플레이스) | 일반 ChatGPT 화면에는 개인용 스킬 설치가 없음 |
 | **ChatGPT Business·Enterprise·Edu** | Skills에 파일 업로드 | 관리자가 허용해야 함 |
 | **Gemini 앱** | SKILL.md 형식 Skills 업로드가 2026-10부터 있음 | 우리 도구는 스크립트를 돌려야 해서 **결과가 제한적**일 수 있음 (글 위주 기능만 기대) |
 | **Gemini CLI** | `gemini skills install https://github.com/zln02/teacher-studio` | 개발자용 |
-- 어느 길이든 일곱 개를 한 묶음으로. 설치가 막히면 AI가 「이 환경에서는 ○○까지만 돼요」라고 한 줄로 알린다.
+- 어느 길이든 여덟 개를 한 묶음으로. 설치가 막히면 AI가 「이 환경에서는 ○○까지만 돼요」라고 한 줄로 알린다.
 
 ## 0. 내가 어디서 실행 중인지 정하기
 스스로 판단해 `AGENT` 값을 정한다.
@@ -44,7 +44,7 @@ cd ~/teacher-studio
 python3 scripts/setup.py --agent <AGENT>
 ```
 - 파이썬 실행 이름은 환경마다 다르다. 이 문서의 `python3`는 Windows에서 `py`(없으면 `python`)로 바꿔 실행한다. 예: `py scripts/setup.py --agent <AGENT>`
-- 스킬 7개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`, `teacher-class-tools`, `teacher-data`)를 등록한다.
+- 스킬 8개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`, `teacher-class-tools`, `teacher-data`, `teacher-docs`)를 등록한다.
 
 ### 환경별 설치
 | 환경 | 설치 방법 | 알아 둘 점 |
@@ -53,7 +53,7 @@ python3 scripts/setup.py --agent <AGENT>
 | **Codex** (앱·CLI·IDE) | 위 명령 → `~/.agents/skills/`에 등록 | 내 컴퓨터에서 실행. 작업 폴더 밖에 쓸 때는 **승인 창**이 뜨니 허용하도록 안내. **인터넷은 기본 꺼짐**: `~/.codex/config.toml`에 `[sandbox_workspace_write]` 아래 `network_access = true`를 켜야 도구 설치·최신 법 확인이 된다. 웹 검색은 `--search`(live)로 켠다. 무료·Go 요금제에도 포함 |
 | **Claude 앱·웹** | 등록 대신 zip 올리기 (아래). 데스크톱 앱 Cowork·Code 탭은 링크 한 줄 | Chat은 클라우드 컨테이너에서 실행 → 내 컴퓨터 폴더·크롬에 접근 못 함, 결과는 미리보기·다운로드. 인터넷은 PyPI·npm·GitHub 정도만 허용. **Cowork·플러그인은 유료 요금제(Pro 이상)**, Team·Enterprise는 관리자가 켜야 함. 스킬 올리기·코드 실행이 무료에서도 되는지는 **연수 전 실제 화면 확인 필요** |
 
-**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 7개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`·`teacher-class-tools`·`teacher-data`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
+**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 8개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`·`teacher-class-tools`·`teacher-data`·`teacher-docs`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
 - 설정 → Capabilities에서 **코드 실행·파일 만들기**가 켜져 있어야 한다 (기본 켜짐). 최신 법 확인에는 **웹 검색**도 켠다.
 - AI가 이미 코드 실행 환경에 저장소를 받았다면 `python3 skills/teacher-studio/scripts/studio.py doctor --agent claude-app`로 환경만 확인한다.
 - 끝에 「🎉 준비 완료」 요약이 나온다 (Claude Code·Codex).

@@ -19,10 +19,10 @@ Teacher Studio is a skill bundle for Claude and Codex (Agent Skills, `SKILL.md`)
 
 The target is **all work you do with AI**, in two layers:
 
-- **Our own tools (creative and education work):** games (7 play styles, auto themes, a "Wow" kit for juice and sound), web slide decks (short JSON spec -> designed deck, 12 styles x 19 slide types), motion videos and opening screens (MP4 export), class tools (timer, picker, teams, bracket, scoreboard), data analysis (`teacher-data`: anyone's CSV/XLSX -> plain-language chart report, the AI never reads the raw rows), a legal guide (looks up current law from official sources), and `video_eyes` (reads frames and subtitles of a video locally only).
+- **Our own tools (creative and education work):** games (7 play styles, auto themes, a "Wow" kit for juice and sound), web slide decks (short JSON spec -> designed deck, 12 styles x 23 slide types, 4 contexts: class / promo / public report / personal, editable .pptx), motion videos and opening screens (MP4 export), class tools (timer, picker, teams, bracket, scoreboard), data analysis (`teacher-data`: anyone's CSV/XLSX -> plain-language chart report, the AI never reads the raw rows), documents (`teacher-docs`: 공문, 가정통신문, notices and reports as 한글 HWPX / Word / PDF with the official Korean format checked, form filling, editing an HWPX in place, PDF merge/split), a legal guide (looks up current law from official sources), and `video_eyes` (reads frames and subtitles of a video locally only).
 - **Direction first:** for a vague request it shows three directions (one recommended) and mood preview cards before asking anything, then one question round (max 5, each with a recommended answer; "yes" accepts all); "just do it" skips it. Planning, research and analysis go to a one-page co-plan draft. `tools/router_eval.py` measures this routing per model.
 - **One production line for everything:** plan, script, storyboard (콘티), build, fix, deliver, with at most three "does this look right?" checkpoints; small clear jobs skip steps and "just do it" skips the checkpoints. `storyboard.py` draws the frame sheet, `deliver.py` prepares the hand-out pack (offline QR for your own link, privacy checklist, credit line) and never uploads anything.
-- **Everything else (coding, documents, web, security review):** a skill scout finds an existing, vetted skill (for example Anthropic's official office-document skills, web guidance, a security-audit skill), asks you first, then installs it on first need. Otherwise the model's own ability is used, under the same no-regret rules and quality gates. Dedicated **research/compare tools are planned (준비 중)**. All 7 skills ship as ZIPs in `dist/`.
+- **Everything else (coding, web, security review):** a skill scout finds an existing, vetted skill (for example Anthropic's official office-document skills, web guidance, a security-audit skill), asks you first, then installs it on first need. Otherwise the model's own ability is used, under the same no-regret rules and quality gates. Dedicated **research/compare tools are planned (준비 중)**. All 8 skills ship as ZIPs in `dist/`.
 
 The AI asks 1 to 3 questions only when your request is vague (with a recommended answer each). A one-time setup stores your level, subject and device on your own computer.
 
@@ -44,9 +44,9 @@ The goal is **your design**. If you have a school or company template, brand col
 ## Install (try from the top)
 
 1. **One line:** tell Claude Code, the Claude desktop app's Cowork or Code tab, or the Codex app "Install this skill: https://github.com/zln02/teacher-studio" (plain Chat tab cannot install from a link, use step 3). Cowork and plugins need a paid plan (Pro+); Team/Enterprise admins must enable them.
-2. **One command:** `npx skills add zln02/teacher-studio` (choose all 7 skills). In Claude Code: `/plugin install teacher-studio --marketplace zln02/teacher-studio`.
-3. **Upload files:** Claude app Chat, upload the 7 ZIPs in [`dist/`](dist/) under Customize, Skills (turn on code execution in Settings, Capabilities).
-4. **Copy folders:** copy the seven `teacher-*` folders from `skills` into `.claude/skills` (Claude Code) or `.agents/skills` (Codex).
+2. **One command:** `npx skills add zln02/teacher-studio` (choose all 8 skills). In Claude Code: `/plugin install teacher-studio --marketplace zln02/teacher-studio`.
+3. **Upload files:** Claude app Chat, upload the 8 ZIPs in [`dist/`](dist/) under Customize, Skills (turn on code execution in Settings, Capabilities).
+4. **Copy folders:** copy the eight `teacher-*` folders from `skills` into `.claude/skills` (Claude Code) or `.agents/skills` (Codex).
 
 Other apps (verified 2026-11-19 from search summaries, **confirm on screen before a training**): ChatGPT personal accounts use the Codex app (skills folder `~/.agents/skills`, skill-installer with a GitHub folder URL, or plugins); plain ChatGPT Skills exist only on Business/Enterprise/Edu with admin approval. The Gemini app accepts SKILL.md-format Skills (since 2026-10) but our scripts need tools, so expect limited results; Gemini CLI: `gemini skills install https://github.com/zln02/teacher-studio` (developers).
 
