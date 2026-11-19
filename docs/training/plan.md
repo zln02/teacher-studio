@@ -29,7 +29,7 @@
 ## 준비물
 - 모둠당 공용 PC 1대 (크롬, 인터넷), 빔프로젝터·화면
 - 선생님 본인 Claude 계정(만 18세 이상) 로그인
-- 도구 파일(zip 7개) 또는 접속 가능한 GitHub 주소: https://github.com/zln02/teacher-studio
+- 도구 파일(zip 8개) 또는 접속 가능한 GitHub 주소: https://github.com/zln02/teacher-studio
 - 시연 백업 녹화·결과 파일, 포켓 카드·메뉴판 인쇄물, 설치 QR 출력본
 - 참가자가 가져올 것(선택): 평소 하는 업무 한 가지, 참고 자료(학습지·지난 안내문)
 

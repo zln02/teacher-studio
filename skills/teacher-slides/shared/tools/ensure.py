@@ -44,6 +44,7 @@ PACKAGES: dict[str, dict] = {
     "openpyxl": {"imports": ["openpyxl"], "pip": ["openpyxl"], "mb": 3, "why": "엑셀 파일(.xlsx)을 만들거나 읽으려면"},
     "python-hwpx": {"imports": ["hwpx"], "pip": ["python-hwpx"], "mb": 3, "why": "한글 파일(.hwpx)을 만들려면"},
     "pypdf": {"imports": ["pypdf"], "pip": ["pypdf"], "mb": 2, "why": "PDF를 합치거나 나누거나 읽으려면"},
+    "pdfplumber": {"imports": ["pdfplumber"], "pip": ["pdfplumber"], "mb": 8, "why": "PDF 안의 표를 읽으려면"},
     "pillow": {"imports": ["PIL"], "pip": ["pillow"], "mb": 3, "why": "사진 크기를 줄이거나 자르려면"},
     "qrcode": {"imports": ["qrcode"], "pip": ["qrcode"], "mb": 1, "why": "QR 코드를 만들려면"},
     "imageio-ffmpeg": {"imports": ["imageio_ffmpeg"], "pip": ["imageio-ffmpeg"], "mb": 40, "why": "영상 파일(MP4)을 만들거나 자르려면"},

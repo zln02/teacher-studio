@@ -92,6 +92,27 @@
    "copyright": "2010 openpyxl",
    "use": "optional .xlsx summary export with native charts (skills/teacher-data/scripts/export_xlsx.py)",
    "license_file": "openpyxl-3.1.5.dist-info/LICENCE.rst"
+  },
+  "python-docx": {
+   "version": "1.2.0",
+   "license": "MIT",
+   "copyright": "2013 Steve Canny",
+   "use": "Word .docx create / fill (skills/teacher-docs/scripts/docx_tools.py)",
+   "license_file": "python_docx-1.2.0.dist-info/licenses/LICENSE"
+  },
+  "pypdf": {
+   "version": "7.1.1",
+   "license": "BSD-3-Clause",
+   "copyright": "2006-2008 Mathieu Fenniak and contributors",
+   "use": "PDF merge / split / form fill / watermark / text (skills/teacher-docs/scripts/pdf_tools.py)",
+   "license_file": "pypdf-7.1.1.dist-info/licenses/LICENSE"
+  },
+  "pdfplumber": {
+   "version": "0.11.10",
+   "license": "MIT",
+   "copyright": "2015 Jeremy Singer-Vine",
+   "use": "PDF table extraction (skills/teacher-docs/scripts/pdf_tools.py)",
+   "license_file": "pdfplumber-0.11.10.dist-info/licenses/LICENSE.txt"
   }
  },
  "shell_kit": {
@@ -111,6 +132,22 @@
     "path": "shell/characters/thumbs-[a-d].svg",
     "notes": "unmodified files; metadata/xmlns stripped only when inlined"
    }
+  }
+ },
+ "data_files": {
+  "_note": "Vendored DATA files (not code, not inlined into pages). LICENSE files were read from the downloaded package.",
+  "hwpx-skeleton": {
+   "name": "HWPX blank document (Skeleton.hwpx from python-hwpx)",
+   "version": "6.12.0",
+   "license": "Apache-2.0",
+   "file": "Skeleton.hwpx",
+   "use": "한글 HWPX 만들기의 바탕 파일 (teacher-docs/hwpx_write.py, 표준 라이브러리로 내용을 씀)",
+   "notes": "data file only, unmodified; no python-hwpx code is copied. LICENSE + NOTICE copied next to it.",
+   "source": "pip:python-hwpx==6.12.0 (wheel, hwpx/data/Skeleton.hwpx)",
+   "license_file": "skills/teacher-docs/assets/hwpx/LICENSE-python-hwpx.txt",
+   "bytes": 7490,
+   "sha256": "c91fb77a9933a3e5645a25778e2d2b99e98137ed99572a5d1dd29ef0c0fd4c98",
+   "path": "skills/teacher-docs/assets/hwpx/Skeleton.hwpx"
   }
  }
 }

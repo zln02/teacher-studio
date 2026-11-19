@@ -56,7 +56,7 @@
 ### 두 창 시연 준비 체크리스트
 - [ ] 크롬(또는 앱) 창 2개를 화면 좌·우 반반으로 배치 (윈도우 키 + 좌/우 화살표)
 - [ ] 왼쪽 창: 하네스 없는 깡통 채팅 (새 대화, 교사 스튜디오 스킬이 꺼진 상태·다른 계정/프로젝트)
-- [ ] 오른쪽 창: 교사 스튜디오 스킬이 켜진 채팅 (zip 7개 미리 업로드)
+- [ ] 오른쪽 창: 교사 스튜디오 스킬이 켜진 채팅 (zip 8개 미리 업로드)
 - [ ] 두 창 모두 로그인, 같은 모델·같은 요금제로 확인
 - [ ] 요청 문장 3개 + 재료 파일(학습지 사진·PDF) 한 폴더에 미리 준비
 - [ ] 글씨 크게(Ctrl + +), 알림 끄기, 스톱워치 준비
@@ -67,11 +67,11 @@
 ## 25–35분 같이 설치 (13–15) — 모둠 대표가 공용 PC에서
 사전 점검(연수 전날 끝내 둠)
 - [ ] 모둠 PC에 Claude 앱(또는 claude.ai 접속)과 선생님 본인 계정 로그인 (만 18세 이상)
-- [ ] zip 7개를 `dist` 폴더에서 받아 모둠 PC 바탕화면에 (teacher-studio · game · slides · motion · law)
+- [ ] zip 8개를 `dist` 폴더에서 받아 모둠 PC 바탕화면에 (teacher-studio · game · slides · motion · law · class-tools · data · docs)
 - [ ] 학교망에서 claude.ai·GitHub 접속 확인
 
 14번 따라 하기 (캡처 자리: [스크린샷 삽입 예정])
-1. github.com/zln02/teacher-studio 의 `dist` 폴더에서 zip 7개 받기 [스크린샷]
+1. github.com/zln02/teacher-studio 의 `dist` 폴더에서 zip 8개 받기 [스크린샷]
 2. Claude 앱 → Customize(맞춤 설정) → Skills 열기 [스크린샷]
 3. zip을 하나씩 올리기 [스크린샷]
 4. 설정 → Capabilities에서 코드 실행·파일 만들기 켜져 있는지 확인 [스크린샷]
