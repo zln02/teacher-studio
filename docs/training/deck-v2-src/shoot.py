@@ -151,7 +151,13 @@ def main() -> int:
                 step(sy, st, 900 if st in (2, 3, 5) else 550)
             # 사진 배경·그레인은 GIF에서 무거워요: 560px, 두 장에 한 장, 48색으로 3MB 안쪽
             small = [f.resize((520, 292), Image.LANCZOS) for f in frames[::2]]
-            pal = [f.quantize(colors=40, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in small]
+            # 팔레트는 모든 프레임이 하나를 같이 써요: 프레임마다 다른 팔레트면 PIL의 '바뀐 부분만 저장'이 네모 얼룩을 남겨요
+            pick = small[::max(1, len(small) // 16)][:16]
+            mont = Image.new("RGB", (520 * 4, 292 * 4))
+            for k, f in enumerate(pick):
+                mont.paste(f, ((k % 4) * 520, (k // 4) * 292))
+            gp = mont.quantize(colors=56, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+            pal = [f.quantize(palette=gp, dither=Image.Dither.NONE) for f in small]
             pal[0].save(GIF, save_all=True, append_images=pal[1:], duration=300, loop=0, optimize=True)
             print("gif:", GIF, f"{GIF.stat().st_size / 1e6:.2f} MB", len(frames), "frames")
         if a.stills:
