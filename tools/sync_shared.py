@@ -54,7 +54,7 @@ def expected() -> dict[Path, bytes]:
         add(STAGE / "stage.html", skill / "assets" / "stage.html")
         for f in (STAGE / "vendor").iterdir():
             add(f, skill / "assets" / "vendor" / f.name)
-        for f in ("build_stage.py", "render_mp4.py", "check_page.py"):
+        for f in ("build_stage.py", "render_mp4.py", "check_page.py", "clipcheck.py"):
             add(STAGE / f, skill / "scripts" / f)
     for plan_skill, cfg in PLAN.items():
         base = ROOT / "skills" / plan_skill / "shared"
@@ -107,6 +107,10 @@ def _stage_source_in_sync() -> None:
     target = STAGE / "check_page.py"
     if not target.exists() or target.read_bytes() != game.read_bytes():
         target.write_bytes(game.read_bytes())
+    clip = ROOT / "skills" / "teacher-game" / "scripts" / "clipcheck.py"  # imported by the checker: travels with it
+    ct = STAGE / "clipcheck.py"
+    if not ct.exists() or ct.read_bytes() != clip.read_bytes():
+        ct.write_bytes(clip.read_bytes())
 
 
 DOC_FILES = ("README.md", "README.en.md", "INSTALL.md", "MAP.md")
@@ -189,6 +193,8 @@ def check() -> int:
     game = (ROOT / "skills" / "teacher-game" / "scripts" / "check_game.py").read_bytes()
     if (STAGE / "check_page.py").read_bytes() != game:
         problems.append("shared/stage/check_page.py != skills/teacher-game/scripts/check_game.py")
+    if (STAGE / "clipcheck.py").read_bytes() != (ROOT / "skills" / "teacher-game" / "scripts" / "clipcheck.py").read_bytes():
+        problems.append("shared/stage/clipcheck.py != skills/teacher-game/scripts/clipcheck.py")
     for dst, data in expected().items():
         rel = dst.relative_to(ROOT).as_posix()
         if not dst.exists():

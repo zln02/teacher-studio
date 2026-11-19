@@ -75,7 +75,7 @@ class AiLookTests(unittest.TestCase):
     def test_rides_along_in_every_checker(self):
         res = color_check.html_results(HOUSE_PAGE)
         self.assertTrue(any(lv == "WARN" and "AI 회사" in msg for lv, msg in res))
-        ok = color_check.html_results(HOUSE_PAGE.replace("#d97757", "#2f5bea"))
+        ok = color_check.html_results(HOUSE_PAGE.replace("#d97757", "#2f5bea").replace("'Tiempos','Noto Serif KR',serif", "'Noto Sans KR',sans-serif"))
         self.assertFalse(any(lv == "WARN" for lv, _ in ok))
 
     def test_selection_never_defaults_to_house(self):
