@@ -175,7 +175,119 @@
   /* =====================================================================
      3D (three.js r128) · 렌더러 하나를 돌려 쓰고, 보이는 슬라이드에서만 그려요
      ===================================================================== */
-  var GL = { ok: false, r: null, canvas: null, active: null, sceneEl: null, raf: 0, last: 0, slow: 0, pr: 1.5, cache: {} };
+  var GL = { ok: false, r: null, canvas: null, active: null, sceneEl: null, raf: 0, last: 0, slow: 0, pr: 1.5, cache: {}, fx: null, fxOn: false, env: {} };
+
+  /* ---------- 시네마틱 층: CC0 사진 환경(Poly Haven · ambientCG) · PBR 재질 · 후처리 ----------
+     사진은 만들 때 build.py가 data URI로 넣어요 (출처·라이선스: docs/training/deck-v2-NOTICE.md). 외부 요청 0개. */
+  var ASSET = /*__ASSETS__*/{};
+  var IMG = {};
+  var FXQ = /[?&]fx=([01])/.exec(location.search), FXMODE = FXQ ? +FXQ[1] : -1;   // 1=늘 켬(점검용) · 0=끔 · -1=자동
+  function preload(cb) {
+    var keys = Object.keys(ASSET), left = keys.length, done = false;
+    function fin() { if (!done) { done = true; cb(); } }
+    if (!left || NOGL) { fin(); return; }
+    keys.forEach(function (k) { var im = new Image(); im.onload = im.onerror = function () { if (im.naturalWidth) IMG[k] = im; if (--left === 0) fin(); }; im.src = ASSET[k]; });
+    setTimeout(fin, 5000);
+  }
+  var _tx = {};
+  function TX(key, rx, ry) {
+    if (!IMG[key]) return null;
+    var id = key + '|' + rx + '|' + ry;
+    if (_tx[id]) return _tx[id];
+    var t = new THREE.Texture(IMG[key]); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx || 1, ry || rx || 1);
+    t.anisotropy = 8; t.needsUpdate = true; _tx[id] = t; return t;
+  }
+  // PBR 묶음: 색 · 노멀 · 거칠기 (1k CC0 텍스처)
+  function pbr(set, rx, ry) {
+    var o = {}, d = TX('t_' + set + '_diff', rx, ry), n = TX('t_' + set + '_nor', rx, ry), r = TX('t_' + set + '_rough', rx, ry);
+    if (d) o.map = d; if (n) o.normalMap = n; if (r) o.roughnessMap = r; return o;
+  }
+  // 진짜처럼 보이는 재질: 플라스틱(클리어코트) · 금속 · 자동차 도장 · 유리(환경 반사만 더하기)
+  var PH = {
+    plastic: function (c, o) { return new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: 0.3, metalness: 0, clearcoat: 0.85, clearcoatRoughness: 0.1 }, o || {})); },
+    metal: function (c, r, o) { return new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: r === undefined ? 0.28 : r, metalness: 1 }, o || {})); },
+    paint: function (c, o) { return new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: 0.36, metalness: 0.5, clearcoat: 1, clearcoatRoughness: 0.05 }, o || {})); },
+    glass: function (o) { return new THREE.MeshStandardMaterial(Object.assign({ color: 0x3a414c, roughness: 0.03, metalness: 1, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, envMapIntensity: 1.8 }, o || {})); },
+    tint: function (c, op) { return new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.05, metalness: 0, transparent: true, opacity: op, depthWrite: false, clearcoat: 1 }); }
+  };
+  // 장면마다 어떤 사진 환경을 쓰는지: 길(해 질 녘 시골길) · 시험장(학교 강당)
+  var SEG = { cover: 'road', reveal: 'road', nav: 'road', tools: 'road', pipeline: 'road', made: 'road', swap: 'hall', recap: 'hall', story: 'hall', kit: 'hall', look: 'hall' };
+  function envTex(seg) {
+    if (GL.env[seg] !== undefined) return GL.env[seg];
+    var im = IMG['env_' + seg]; if (!im) { GL.env[seg] = null; return null; }
+    var t = new THREE.Texture(im); t.mapping = THREE.EquirectangularReflectionMapping; t.needsUpdate = true;
+    var pm = new THREE.PMREMGenerator(GL.r), rt = pm.fromEquirectangular(t); pm.dispose(); t.dispose();
+    GL.env[seg] = rt.texture; return rt.texture;
+  }
+  function dress(S, kind) {
+    var seg = SEG[kind] || 'road', sc = S.scene, env = envTex(seg);
+    if (env) sc.environment = env;
+    var bd = IMG['bd_' + seg];
+    if (bd && !S.noBg) { var t = new THREE.Texture(bd); t.needsUpdate = true; t.center.set(0.5, 0.5); t.repeat.set(0.9, 0.9); sc.background = t; S.bg = t; }
+    if (env) sc.traverse(function (o) { if (o.isHemisphereLight) o.intensity *= 0.4; });
+    S.fx = Object.assign({ focus: [0.5, 0.5], r: [0.62, 0.6], blur: 0.7, bloom: 0.55, grain: 0.035, vig: 0.42 }, S.fx || {});
+  }
+  // 후처리 마지막 단: 얕은 초점(초점 밖 흐림) · 비네트 · 필름 그레인 · 부드러운 S 곡선
+  function finalShader() {
+    return { uniforms: { tDiffuse: { value: null }, uRes: { value: new THREE.Vector2(1920, 1080) }, uFocus: { value: new THREE.Vector2(0.5, 0.5) }, uR: { value: new THREE.Vector2(0.6, 0.6) },
+      uBlur: { value: 0.7 }, uGrain: { value: 0.035 }, uVig: { value: 0.4 }, uTime: { value: 0 } },
+      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+      fragmentShader: [
+        'uniform sampler2D tDiffuse; uniform vec2 uRes; uniform vec2 uFocus; uniform vec2 uR; uniform float uBlur; uniform float uGrain; uniform float uVig; uniform float uTime; varying vec2 vUv;',
+        'float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }',
+        'void main(){',
+        '  vec2 d = (vUv - uFocus) / uR; float b = smoothstep(0.7, 1.6, length(d)) * uBlur;',
+        '  vec3 c = texture2D(tDiffuse, vUv).rgb;',
+        '  if (b > 0.02) { vec3 acc = c; float rad = b * 7.0 * (uRes.y / 1080.0);',
+        '    for (int i = 1; i < 16; i++) { float fi = float(i); float a = fi * 2.39996; float r = sqrt(fi / 15.0) * rad; acc += texture2D(tDiffuse, vUv + vec2(cos(a), sin(a)) * r / uRes).rgb; }',
+        '    c = acc / 16.0; }',
+        '  vec2 q = (vUv - 0.5) * vec2(uRes.x / uRes.y, 1.0); c *= 1.0 - uVig * smoothstep(0.35, 1.05, length(q));',
+        '  c = mix(c, c * c * (3.0 - 2.0 * c), 0.16);',
+        '  c += (h(vUv * uRes + fract(uTime * 7.13) * 100.0) - 0.5) * uGrain;',
+        '  gl_FragColor = vec4(c, 1.0);',
+        '}'].join('\n') };
+  }
+  function initFX() {
+    if (!THREE.EffectComposer || !THREE.UnrealBloomPass || FXMODE === 0) return;
+    try {
+      var c = new THREE.EffectComposer(GL.r), rp = new THREE.RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera());
+      var bl = new THREE.UnrealBloomPass(new THREE.Vector2(960, 540), 0.55, 0.55, 0.8), fin = new THREE.ShaderPass(finalShader());
+      c.addPass(rp); c.addPass(bl); c.addPass(fin);
+      GL.fx = { c: c, rp: rp, bl: bl, fin: fin }; GL.fxOn = true;
+    } catch (e) { GL.fx = null; GL.fxOn = false; }
+  }
+  var _fv;
+  function draw(S, t, snap) {
+    if (!(GL.fx && GL.fxOn)) { GL.r.render(S.scene, S.camera); return; }
+    var f = S.fx || {}, u = GL.fx.fin.uniforms, fo = f.focus || [0.5, 0.5];
+    if (S.focusObj) {
+      if (!_fv) _fv = new THREE.Vector3();
+      if (S.focusObj.isObject3D) S.focusObj.getWorldPosition(_fv); else _fv.copy(S.focusObj);
+      _fv.project(S.camera); fo = [(_fv.x + 1) / 2, (_fv.y + 1) / 2];
+    }
+    if (!S._fo || snap) S._fo = [fo[0], fo[1], f.r[0], f.r[1], f.blur];
+    var k = snap ? 1 : 0.08, F = S._fo;
+    F[0] += (fo[0] - F[0]) * k; F[1] += (fo[1] - F[1]) * k; F[2] += (f.r[0] - F[2]) * k; F[3] += (f.r[1] - F[3]) * k; F[4] += (f.blur - F[4]) * k;
+    GL.fx.rp.scene = S.scene; GL.fx.rp.camera = S.camera;
+    GL.fx.bl.strength = f.bloom;
+    u.uFocus.value.set(F[0], F[1]); u.uR.value.set(F[2], F[3]); u.uBlur.value = F[4];
+    u.uGrain.value = REDUCED ? f.grain * 0.6 : f.grain; u.uVig.value = f.vig; u.uTime.value = t || 0;
+    GL.fx.c.render();
+  }
+  // 천천히 흐르는 카메라 (트럭·달리): 장면이 정한 자리에서 아주 조금만 움직여요
+  function camRestore(S) { if (S._cb) S.camera.position.copy(S._cb); }
+  function camDrift(S, t) {
+    if (!S._cb) S._cb = new THREE.Vector3();
+    S._cb.copy(S.camera.position);
+    if (S.noDrift) return;
+    S.camera.updateMatrixWorld();
+    var e = S.camera.matrixWorld.elements, D = Math.min(30, S.camera.position.length()), k = S.drift === undefined ? 1 : S.drift;
+    var a = Math.sin(t * 0.17) * 0.012 * D * k, b = Math.sin(t * 0.13 + 1) * 0.006 * D * k, f = -(1 - Math.cos(t * 0.09)) * 0.012 * D * k;
+    S.camera.position.x += e[0] * a + e[4] * b + e[8] * f;
+    S.camera.position.y += e[1] * a + e[5] * b + e[9] * f;
+    S.camera.position.z += e[2] * a + e[6] * b + e[10] * f;
+    if (S.bg) S.bg.offset.set(Math.max(-0.045, Math.min(0.045, S.camera.position.x * 0.003)), Math.max(-0.045, Math.min(0.045, (S.camera.position.y - 2) * 0.002)));
+  }
   function initGL() {
     if (NOGL || !window.THREE) { document.body.classList.add('no-gl'); return; }
     try {
@@ -188,6 +300,7 @@
       r.setClearColor(0x000000, 0);
       r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
       GL.r = r; GL.canvas = c; GL.ok = true;
+      initFX();
       c.addEventListener('webglcontextlost', function (e) { e.preventDefault(); GL.ok = false; stopLoop(); document.body.classList.add('no-gl'); });
     } catch (e) { GL.ok = false; document.body.classList.add('no-gl'); }
   }
@@ -199,6 +312,10 @@
     GL.canvas.style.width = w + 'px'; GL.canvas.style.height = h + 'px';
     GL.active.camera.aspect = w / h; GL.active.camera.updateProjectionMatrix();
     GL.active.W = w; GL.active.H = h;
+    if (GL.fx) {
+      GL.fx.c.setPixelRatio(GL.pr); GL.fx.c.setSize(Math.round(w * scale), Math.round(h * scale));
+      GL.fx.fin.uniforms.uRes.value.set(Math.round(w * scale * GL.pr), Math.round(h * scale * GL.pr));
+    }
   }
   function sceneStep(s, st, entering) {
     var kind = s.getAttribute('data-scene');
@@ -207,8 +324,9 @@
     if (!kind || !GL.ok) return;
     if (entering || GL.sceneEl !== s) {
       var S = GL.cache[kind];
-      if (!S) { S = GL.cache[kind] = SCENES[kind](s); S.kind = kind; }
+      if (!S) { S = GL.cache[kind] = SCENES[kind](s); S.kind = kind; dress(S, kind); }
       GL.active = S; GL.sceneEl = s;
+      camRestore(S);
       s.querySelector('.gl').appendChild(GL.canvas);
       var lb = s.querySelector('.labels');
       if (S.labels && !S.__lbl) { S.labels.forEach(function (l) { lb.appendChild(l.el); }); S.__lbl = true; }
@@ -222,7 +340,7 @@
       if (REDUCED) { GL.active.update(0, 2.0, true); renderOnce(); }
     }
   }
-  function renderOnce() { var S = GL.active; GL.r.render(S.scene, S.camera); projectLabels(S); }
+  function renderOnce() { var S = GL.active; draw(S, 2.0, true); projectLabels(S); }
   var _v;
   function projectLabels(S) {
     if (!S.labels) return;
@@ -245,10 +363,20 @@
       var dt = Math.min(0.2, (now - GL.last) / 1000); GL.last = now;
       // 느린 학교 PC: 평균 프레임이 40ms를 넘으면 해상도를 낮춰요
       acc += dt; frames++;
-      if (acc > 2) { if (acc / frames > 0.04 && GL.pr > 0.5) { GL.pr = GL.pr > 1 ? 1 : GL.pr > 0.75 ? 0.75 : 0.5; sizeGL(); if (GL.pr <= 0.75) GL.r.shadowMap.autoUpdate = false; GL.r.shadowMap.needsUpdate = true; } acc = 0; frames = 0; }
-      GL.active.update(dt, now / 1000, false);
-      GL.r.render(GL.active.scene, GL.active.camera);
-      projectLabels(GL.active);
+      // 느린 PC: 먼저 후처리를 끄고(점검용 fx=1이 아니면), 그래도 느리면 해상도를 낮춰요
+      if (acc > 2) {
+        if (acc / frames > 0.04) {
+          if (GL.fxOn && FXMODE !== 1) GL.fxOn = false;
+          else if (GL.pr > 0.5) { GL.pr = GL.pr > 1 ? 1 : GL.pr > 0.75 ? 0.75 : 0.5; sizeGL(); if (GL.pr <= 0.75) GL.r.shadowMap.autoUpdate = false; GL.r.shadowMap.needsUpdate = true; }
+        }
+        acc = 0; frames = 0;
+      }
+      var S = GL.active;
+      camRestore(S);
+      S.update(dt, now / 1000, false);
+      camDrift(S, now / 1000);
+      draw(S, now / 1000, false);
+      projectLabels(S);
     }
     GL.raf = requestAnimationFrame(loop);
   }
