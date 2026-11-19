@@ -24,6 +24,9 @@ What we add on top: teacher-language consent line, license/privacy/no-regret vet
 - npm: `GET https://registry.npmjs.org/-/v1/search?text=<kw>&size=6` (https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md).
 - Search in English even when the teacher speaks Korean (add Korean terms for Korea-specific needs, e.g. hwpx).
 
+## Verify before recommend (automatic part)
+Before you recommend or use ANY candidate (curated or found): `python3 <this skill>/scripts/skill_scout.py verify owner/repo` (read-only, keyless). It checks: repo exists, SPDX license is permissive, last push within ~6 months and not archived, no `curl | sh` / download-and-run / "run and obey output" text in SKILL.md and README. Verdicts: `ok` (may recommend, still ask before install), `ok-but-stale`, `guide-only` (describe only), `reject` / `missing` (do not use), `unverified` (say so to the user). Monorepos (anthropics/skills ...): also read the skill folder's own LICENSE. The checklist below still applies for the parts a script cannot judge.
+
 ## Vetting checklist (mandatory before ANY use)
 1. **License**: permissive (MIT, Apache-2.0, BSD, ISC, CC0). None/unknown/NC/GPL-style -> guide-only (describe it to the teacher, do not install or copy).
 2. **Who**: official publisher or a named maintainer with history; beware look-alike names.
@@ -47,6 +50,8 @@ Every installed skill's name+description is loaded into context on every request
 - If many third-party skills are installed, suggest removing the unused ones.
 
 ## After use
+- Record it (local file only, no personal data): `python3 <this skill>/scripts/skill_scout.py log --name <name> --source <url> --license <SPDX> [--kind skill|doc|asset]` -> `~/.teacher-studio/used.json`; it prints the credit line.
+- Credit rule: end your message to the user with that one line, 「출처: <이름> (<url>, <라이선스>)」. It applies to other people's skills, documents and assets you used; our own files need none. If the output is a file the user will share, offer to put the same line on its last page or notes.
 - Tell the teacher in one line: 「<이름>을 써서 만들었어요.」
 - Give the owner a ready line in `docs/tool-radar.md` format to add later (do not edit the radar yourself unless asked): `| <name> (<owner/repo>) | <what it does> | <license, conditions> | 채택/참고/안내만/넘어감 | <reason> |`
 

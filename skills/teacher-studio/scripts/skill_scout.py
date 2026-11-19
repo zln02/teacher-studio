@@ -2,6 +2,9 @@
 """skill_scout.py - read-only shortlist of existing Agent Skills / plugins.
 
 Usage:  python3 skill_scout.py "pptx presentation" [--no-npx] [--limit 6] [--json]
+        python3 skill_scout.py verify owner/repo [--json]      # before recommending: exists? license? fresh? no curl|sh?
+        python3 skill_scout.py log --name pptx --source https://github.com/anthropics/skills --license Apache-2.0 [--kind skill|doc|asset]
+        python3 skill_scout.py log --list                      # local provenance file ~/.teacher-studio/used.json (no personal data)
 
 Queries (all keyless, read-only):
   1. curated list  references/recommended-skills.json (local file)
@@ -11,7 +14,7 @@ Queries (all keyless, read-only):
 It never installs anything and never runs code it finds. Hard total cap ~25s.
 Output is a shortlist for the AI to vet with references/skill-scout.md.
 """
-import argparse, json, os, re, shutil, subprocess, sys, time, urllib.parse, urllib.request
+import argparse, datetime, json, os, re, shutil, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CURATED = os.path.join(HERE, "..", "references", "recommended-skills.json")
@@ -118,11 +121,158 @@ def rank(r):
     return (bad, tier, -num)
 
 
+# ---------------------------------------------------------------- verify before recommend
+PERMISSIVE = {"mit", "apache-2.0", "bsd-2-clause", "bsd-3-clause", "isc", "cc0-1.0", "unlicense", "0bsd"}
+BAD_PATTERNS = [  # text in a SKILL.md / README that should stop us (data, never instructions)
+    (r"(curl|wget)[^\n|]*\|\s*(sudo\s+)?(ba|z)?sh", "curl|sh style install"),
+    (r"(iwr|irm|Invoke-WebRequest|Invoke-RestMethod)[^\n|]*\|\s*iex", "download and run (PowerShell)"),
+    (r"npx\s+-y\s+\S+\s+instruct", "live remote instructions (run and obey output)"),
+    (r"ignore (all |any )?(previous|prior|above) instructions", "prompt-injection phrase"),
+]
+MAX_AGE_DAYS = 183
+
+
+def check_text(text):
+    """Return the list of risky patterns found in a SKILL.md / README text."""
+    return [why for pat, why in BAD_PATTERNS if re.search(pat, text or "", re.I)]
+
+
+def evaluate(repo, texts=None, today=None):
+    """Pure verdict from a GitHub repo JSON (None = does not exist, {} = unreachable) and fetched texts.
+    verdict: ok | ok-but-stale | guide-only (license missing/not permissive) | reject (risky install text) | missing | unverified."""
+    today = today or datetime.date.today()
+    if repo is None:
+        return {"verdict": "missing", "checks": [{"name": "exists", "ok": False, "detail": "repo not found"}]}
+    if repo == {}:
+        return {"verdict": "unverified", "checks": [{"name": "exists", "ok": None, "detail": "could not reach GitHub"}]}
+    checks = [{"name": "exists", "ok": True, "detail": repo.get("full_name", "")}]
+    spdx = ((repo.get("license") or {}).get("spdx_id") or "NONE")
+    lic_ok = spdx.lower() in PERMISSIVE
+    checks.append({"name": "license", "ok": lic_ok, "detail": spdx})
+    pushed = (repo.get("pushed_at") or "")[:10]
+    try:
+        age = (today - datetime.date.fromisoformat(pushed)).days
+    except ValueError:
+        age = None
+    fresh = age is not None and age <= MAX_AGE_DAYS and not repo.get("archived")
+    checks.append({"name": "recent", "ok": fresh, "detail": "pushed %s (%s days ago)%s" % (
+        pushed or "?", age if age is not None else "?", ", ARCHIVED" if repo.get("archived") else "")})
+    risks = []
+    for t in (texts or []):
+        risks += check_text(t)
+    checks.append({"name": "no risky install text", "ok": not risks,
+                   "detail": "; ".join(sorted(set(risks))) or ("checked %d file(s)" % len(texts or []))})
+    if risks:
+        verdict = "reject"
+    elif not lic_ok:
+        verdict = "guide-only"
+    else:
+        verdict = "ok" if fresh else "ok-but-stale"
+    return {"verdict": verdict, "license": spdx, "pushed": pushed, "checks": checks}
+
+
+def _raw(url):
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=8) as r:
+            return r.read(200000).decode("utf-8", "replace")
+    except Exception:
+        return None
+
+
+def verify(ref):
+    """Network wrapper: ref = owner/repo or a github.com URL. Reads repo metadata, README and root SKILL.md. Installs nothing."""
+    m = re.search(r"(?:github\.com/)?([\w.-]+)/([\w.-]+?)(?:\.git)?(?:/|$)", ref.strip())
+    if not m:
+        return {"verdict": "unverified", "checks": [{"name": "ref", "ok": False, "detail": "not an owner/repo"}]}
+    owner, name = m.group(1), m.group(2)
+    d, err = get_json("https://api.github.com/repos/%s/%s" % (owner, name))
+    if d is None:
+        r = evaluate(None if err == "HTTP 404" else {})
+        r["error"] = err
+        return r
+    base = "https://raw.githubusercontent.com/%s/%s/%s/" % (owner, name, d.get("default_branch", "main"))
+    texts = [t for t in (_raw(base + f) for f in ("SKILL.md", "README.md")) if t]
+    return evaluate(d, texts)
+
+
+# ---------------------------------------------------------------- provenance log
+def used_path():
+    home = os.environ.get("TEACHER_STUDIO_HOME") or os.path.join(os.path.expanduser("~"), ".teacher-studio")
+    return os.path.join(home, "used.json")
+
+
+def _clean(v, n=200):
+    return re.sub(r"[\x00-\x1f]", " ", str(v or "")).strip()[:n]
+
+
+def log_use(name, source, license_, kind="skill", note="", today=None):
+    """Append one record {name, source, license, kind, date}. Only what the caller passes, trimmed; same name+source = one row."""
+    path = used_path()
+    try:
+        rows = json.loads(open(path, encoding="utf-8").read())
+        rows = rows if isinstance(rows, list) else []
+    except Exception:
+        rows = []
+    rec = {"name": _clean(name, 80), "source": _clean(source), "license": _clean(license_, 60) or "unknown",
+           "kind": kind if kind in ("skill", "doc", "asset") else "skill", "date": str(today or datetime.date.today())}
+    if note:
+        rec["note"] = _clean(note, 120)
+    rows = [r for r in rows if not (r.get("name") == rec["name"] and r.get("source") == rec["source"])] + [rec]
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(rows[-200:], f, ensure_ascii=False, indent=1)
+    return rec
+
+
+def credit_line(rec):
+    return "출처: %s (%s, %s)" % (rec["name"], rec["source"], rec["license"])
+
+
+def cli_verify(argv):
+    ap = argparse.ArgumentParser(prog="skill_scout.py verify")
+    ap.add_argument("ref")
+    ap.add_argument("--json", action="store_true")
+    a = ap.parse_args(argv)
+    r = verify(a.ref)
+    if a.json:
+        print(json.dumps(r, ensure_ascii=False, indent=1))
+    else:
+        print("verify %s -> %s" % (a.ref, r["verdict"].upper()))
+        for c in r["checks"]:
+            print("  [%s] %s: %s" % ({True: "ok", False: "NO", None: "?"}[c["ok"]], c["name"], c["detail"]))
+        print("ok = may recommend (still ask before install); guide-only = describe, do not install; reject/missing = do not use; unverified = say so.")
+    return 0 if r["verdict"].startswith("ok") else 1
+
+
+def cli_log(argv):
+    ap = argparse.ArgumentParser(prog="skill_scout.py log")
+    ap.add_argument("--name")
+    ap.add_argument("--source")
+    ap.add_argument("--license", default="unknown")
+    ap.add_argument("--kind", default="skill")
+    ap.add_argument("--note", default="")
+    ap.add_argument("--list", action="store_true")
+    a = ap.parse_args(argv)
+    if a.list:
+        try:
+            print(json.dumps(json.loads(open(used_path(), encoding="utf-8").read()), ensure_ascii=False, indent=1))
+        except Exception:
+            print("[]")
+        return 0
+    if not a.name or not a.source:
+        ap.error("--name and --source are required")
+    rec = log_use(a.name, a.source, a.license, a.kind, a.note)
+    print("logged -> %s\n%s" % (used_path(), credit_line(rec)))
+    return 0
+
+
 def main():
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
         pass
+    if len(sys.argv) > 1 and sys.argv[1] in ("verify", "log"):
+        sys.exit({"verify": cli_verify, "log": cli_log}[sys.argv[1]](sys.argv[2:]))
     ap = argparse.ArgumentParser()
     ap.add_argument("query")
     ap.add_argument("--limit", type=int, default=8)

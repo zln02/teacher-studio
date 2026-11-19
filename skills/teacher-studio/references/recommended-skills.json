@@ -1,42 +1,437 @@
 {
-  "_about": "Curated, vetted third-party skills. Install ONLY on first need, after the teacher says yes (see skill-scout.md). Licenses were read from the repos on 2026-11-19; re-check before use. Entries with license NONE are guide-only.",
-  "checked": "2026-11-19",
-  "skills": [
-    {"name": "pptx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/pptx",
-     "license": "Apache-2.0 (skills/pptx/LICENSE.txt)", "tasks": ["pptx", "powerpoint", "presentation", "slides", "ppt"],
-     "for": "Create/edit real .pptx files (our teacher-slides makes web decks, not .pptx)",
-     "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add anthropics/skills --skill pptx -a claude-code"},
-    {"name": "docx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/docx",
-     "license": "Apache-2.0 (skills/docx/LICENSE.txt)", "tasks": ["docx", "word", "document", "letter"],
-     "for": "Create/edit Word .docx files", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add anthropics/skills --skill docx -a claude-code"},
-    {"name": "xlsx", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
-     "license": "Apache-2.0 (skills/xlsx/LICENSE.txt)", "tasks": ["xlsx", "excel", "spreadsheet", "csv", "sheet"],
-     "for": "Create/edit Excel .xlsx files", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add anthropics/skills --skill xlsx -a claude-code"},
-    {"name": "pdf", "publisher": "anthropics", "url": "https://github.com/anthropics/skills/tree/main/skills/pdf",
-     "license": "Apache-2.0 (skills/pdf/LICENSE.txt)", "tasks": ["pdf", "merge", "split", "ocr", "form"],
-     "for": "Read, merge, split, fill, create PDFs", "env": ["claude-app", "claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add anthropics/skills --skill pdf -a claude-code"},
-    {"name": "modern-web-guidance", "publisher": "GoogleChrome", "url": "https://github.com/GoogleChrome/modern-web-guidance",
-     "license": "Apache-2.0", "tasks": ["web", "html", "css", "website", "javascript", "browser"],
-     "for": "Current web-platform guidance when building/fixing web pages or sites",
-     "env": ["claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add GoogleChrome/modern-web-guidance -a claude-code (skill name not checked; read its SKILL.md first)"},
-    {"name": "security-audit-skill", "publisher": "cloudflare", "url": "https://github.com/cloudflare/security-audit-skill",
-     "license": "MIT", "tasks": ["security", "audit", "review", "vulnerability", "pentest"],
-     "for": "One-time security review before publishing a site/tool (uses many sub-agents; tell the teacher it is slow)",
-     "env": ["claude-code"], "checked": "2026-11-19",
-     "install": "npx skills add cloudflare/security-audit-skill -a claude-code"},
-    {"name": "kordoc", "publisher": "chrisryugj", "url": "https://github.com/chrisryugj/kordoc",
-     "license": "MIT", "tasks": ["hwp", "hwpx", "korean", "gongmun", "hangul", "official"],
-     "for": "Read HWP/HWPX, extract forms, Markdown to HWPX (3k stars, active). Candidate only: SKILL.md and scripts not yet read; vet before use. Another option on this machine may already exist (hwp-docs plugin).",
-     "env": ["claude-code", "codex"], "checked": "2026-11-19",
-     "install": "npx skills add chrisryugj/kordoc -a claude-code (skill name not verified)"}
-  ],
-  "guide_only": [
-    {"name": "canine89/hwpxskill, jkf87/hwpx-skill, canine89/gonggong_hwpxskills", "reason": "no license in repo (GitHub reports none) - do not install/copy; mention to teacher only"},
-    {"name": "NomaDamas/k-skill hwp", "reason": "MIT, but its SKILL.md tells the agent to run `npx -y @nomadamas/k-skill instruct hwp` and obey the output: live remote instructions = prompt-injection-shaped, avoid"}
-  ]
+ "_about": "Curated, vetted third-party skills. Install ONLY on first need, after the teacher says yes (see skill-scout.md). Licenses were read from the repos on 2026-11-19; re-check before use. Entries with license NONE are guide-only. Every entry was checked with `skill_scout.py verify` (exists, license, last push, no curl|sh text) on 2026-11-19 unless status says unverified; monorepo entries need the folder's own LICENSE read before use.",
+ "checked": "2026-11-19",
+ "skills": [
+  {
+   "name": "pptx",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/pptx",
+   "license": "Apache-2.0 (skills/pptx/LICENSE.txt)",
+   "tasks": [
+    "pptx",
+    "powerpoint",
+    "presentation",
+    "slides",
+    "ppt"
+   ],
+   "for": "Create/edit real .pptx files (our teacher-slides makes web decks, not .pptx)",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add anthropics/skills --skill pptx -a claude-code"
+  },
+  {
+   "name": "docx",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/docx",
+   "license": "Apache-2.0 (skills/docx/LICENSE.txt)",
+   "tasks": [
+    "docx",
+    "word",
+    "document",
+    "letter"
+   ],
+   "for": "Create/edit Word .docx files",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add anthropics/skills --skill docx -a claude-code"
+  },
+  {
+   "name": "xlsx",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/xlsx",
+   "license": "Apache-2.0 (skills/xlsx/LICENSE.txt)",
+   "tasks": [
+    "xlsx",
+    "excel",
+    "spreadsheet",
+    "csv",
+    "sheet"
+   ],
+   "for": "Create/edit Excel .xlsx files",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add anthropics/skills --skill xlsx -a claude-code"
+  },
+  {
+   "name": "pdf",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/pdf",
+   "license": "Apache-2.0 (skills/pdf/LICENSE.txt)",
+   "tasks": [
+    "pdf",
+    "merge",
+    "split",
+    "ocr",
+    "form"
+   ],
+   "for": "Read, merge, split, fill, create PDFs",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add anthropics/skills --skill pdf -a claude-code"
+  },
+  {
+   "name": "modern-web-guidance",
+   "publisher": "GoogleChrome",
+   "url": "https://github.com/GoogleChrome/modern-web-guidance",
+   "license": "Apache-2.0",
+   "tasks": [
+    "web",
+    "html",
+    "css",
+    "website",
+    "javascript",
+    "browser"
+   ],
+   "for": "Current web-platform guidance when building/fixing web pages or sites",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add GoogleChrome/modern-web-guidance -a claude-code (skill name not checked; read its SKILL.md first)"
+  },
+  {
+   "name": "security-audit-skill",
+   "publisher": "cloudflare",
+   "url": "https://github.com/cloudflare/security-audit-skill",
+   "license": "MIT",
+   "tasks": [
+    "security",
+    "audit",
+    "review",
+    "vulnerability",
+    "pentest"
+   ],
+   "for": "One-time security review before publishing a site/tool (uses many sub-agents; tell the teacher it is slow)",
+   "env": [
+    "claude-code"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add cloudflare/security-audit-skill -a claude-code"
+  },
+  {
+   "name": "kordoc",
+   "publisher": "chrisryugj",
+   "url": "https://github.com/chrisryugj/kordoc",
+   "license": "MIT",
+   "tasks": [
+    "hwp",
+    "hwpx",
+    "korean",
+    "gongmun",
+    "hangul",
+    "official"
+   ],
+   "for": "Read HWP/HWPX, extract forms, Markdown to HWPX (3k stars, active). Candidate only: SKILL.md and scripts not yet read; vet before use. Another option on this machine may already exist (hwp-docs plugin).",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "install": "npx skills add chrisryugj/kordoc -a claude-code (skill name not verified)"
+  },
+  {
+   "name": "doc-coauthoring",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/doc-coauthoring",
+   "license": "UNVERIFIED (repo root has no LICENSE, folder has only SKILL.md): guide-only until checked",
+   "tasks": [
+    "plan",
+    "proposal",
+    "spec",
+    "document",
+    "writing",
+    "write"
+   ],
+   "for": "Structured co-writing of proposals and plans. Already installed on some machines as anthropic-skills:doc-coauthoring: use that one.",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "unverified-license",
+   "install": "(use the installed one; do not install this)"
+  },
+  {
+   "name": "internal-comms",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/internal-comms",
+   "license": "Apache-2.0 (folder LICENSE.txt, read 2026-11-19)",
+   "tasks": [
+    "announcement",
+    "newsletter",
+    "notice",
+    "report",
+    "writing",
+    "parent letter"
+   ],
+   "for": "Formats for notices, newsletters, status updates (adapt to 가정통신문-style text in chat).",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add anthropics/skills --skill internal-comms -a claude-code"
+  },
+  {
+   "name": "theme-factory",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/skills/tree/main/skills/theme-factory",
+   "license": "Apache-2.0 (folder LICENSE.txt, read 2026-11-19)",
+   "tasks": [
+    "theme",
+    "style",
+    "palette",
+    "design"
+   ],
+   "for": "10 ready themes for docs/decks; our shared/design is first choice, this is a second opinion.",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add anthropics/skills --skill theme-factory -a claude-code"
+  },
+  {
+   "name": "brainstorming",
+   "publisher": "obra",
+   "url": "https://github.com/obra/superpowers/tree/main/skills/brainstorming",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "plan",
+    "brainstorm",
+    "idea",
+    "design",
+    "spec"
+   ],
+   "for": "Idea to plan dialogue (explore context, options with a recommendation, approval). For developers' work; for teachers use our co-plan.",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add obra/superpowers --skill brainstorming -a claude-code"
+  },
+  {
+   "name": "writing-plans",
+   "publisher": "obra",
+   "url": "https://github.com/obra/superpowers/tree/main/skills/writing-plans",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "plan",
+    "steps",
+    "roadmap",
+    "checklist"
+   ],
+   "for": "Turns an approved idea into ordered steps.",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add obra/superpowers --skill writing-plans -a claude-code"
+  },
+  {
+   "name": "grilling",
+   "publisher": "mattpocock",
+   "url": "https://github.com/mattpocock/skills/tree/main/skills/productivity/grilling",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "question",
+    "interview",
+    "clarify",
+    "requirements",
+    "plan"
+   ],
+   "for": "Asks decision questions in one batch with a recommended answer each (our ask-first rule is built on this idea).",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add mattpocock/skills --skill grilling -a claude-code"
+  },
+  {
+   "name": "frontend-slides",
+   "publisher": "zarazhangrui",
+   "url": "https://github.com/zarazhangrui/frontend-slides",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "slides",
+    "presentation",
+    "deck",
+    "style preview",
+    "html"
+   ],
+   "for": "HTML slides with 3 style previews. Overlaps teacher-slides: use only if the user asks for it.",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add zarazhangrui/frontend-slides -a claude-code (skill name not checked)"
+  },
+  {
+   "name": "find-skills",
+   "publisher": "vercel-labs",
+   "url": "https://github.com/vercel-labs/skills",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "find",
+    "search",
+    "skill",
+    "discover",
+    "install"
+   ],
+   "for": "Searches skills.sh for installable skills. Our skill_scout.py does the same read-only; do not install just for this.",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add vercel-labs/skills --skill find-skills -a claude-code"
+  },
+  {
+   "name": "marketingskills (content-strategy, copywriting, social, marketing-plan, video, customer-research)",
+   "publisher": "coreyhaines31",
+   "url": "https://github.com/coreyhaines31/marketingskills",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "youtube",
+    "channel",
+    "social",
+    "sns",
+    "content",
+    "copywriting",
+    "marketing",
+    "plan",
+    "blog",
+    "newsletter",
+    "instagram",
+    "shorts"
+   ],
+   "for": "Planning and writing for channels, social posts and campaigns. Business-oriented: tell the user and trim to their need.",
+   "env": [
+    "claude-app",
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "npx skills add coreyhaines31/marketingskills --skill content-strategy -a claude-code (folder names verified; pick one at a time)"
+  },
+  {
+   "name": "knowledge-work-plugins (data, marketing, productivity, design)",
+   "publisher": "anthropics",
+   "url": "https://github.com/anthropics/knowledge-work-plugins",
+   "license": "Apache-2.0 (repo, verified 2026-11-19)",
+   "tasks": [
+    "data",
+    "analysis",
+    "research",
+    "sql",
+    "dashboard",
+    "marketing",
+    "productivity",
+    "design"
+   ],
+   "for": "Official plugin set; several are already installed as plugins on some machines (data:analyze, marketing:campaign-plan). Check your own skill list first.",
+   "env": [
+    "claude-code"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified",
+   "install": "Claude Code: /plugin (read the details pane first)",
+   "note": "For spreadsheets from teachers use teacher-data (never reads raw rows); these plugins read data."
+  },
+  {
+   "name": "deep-research",
+   "publisher": "anthropics (Claude app built-in skill)",
+   "url": "https://support.claude.com/",
+   "license": "not checked (built into Claude apps; no repo found)",
+   "tasks": [
+    "research",
+    "survey",
+    "literature",
+    "market",
+    "trend",
+    "investigate"
+   ],
+   "for": "Multi-source research report. Use when it is in your skill list; otherwise web search + our co-plan.",
+   "env": [
+    "claude-app",
+    "claude-code"
+   ],
+   "checked": "2026-11-19",
+   "status": "unverified-source",
+   "install": "(built in; nothing to install)"
+  },
+  {
+   "name": "spec-kit (clarify, plan)",
+   "publisher": "github",
+   "url": "https://github.com/github/spec-kit",
+   "license": "MIT (repo, verified 2026-11-19)",
+   "tasks": [
+    "spec",
+    "clarify",
+    "requirements",
+    "plan",
+    "project"
+   ],
+   "for": "Software-project planning flow. Rarely right for teachers; listed so a developer user can find it.",
+   "env": [
+    "claude-code",
+    "codex"
+   ],
+   "checked": "2026-11-19",
+   "status": "verified-niche",
+   "install": "uvx --from git+https://github.com/github/spec-kit specify init (verify README first)"
+  }
+ ],
+ "guide_only": [
+  {
+   "name": "canine89/hwpxskill, jkf87/hwpx-skill, canine89/gonggong_hwpxskills",
+   "reason": "no license in repo (GitHub reports none) - do not install/copy; mention to teacher only"
+  },
+  {
+   "name": "NomaDamas/k-skill hwp",
+   "reason": "MIT, but its SKILL.md tells the agent to run `npx -y @nomadamas/k-skill instruct hwp` and obey the output: live remote instructions = prompt-injection-shaped, avoid"
+  },
+  {
+   "name": "ComposioHQ/awesome-claude-skills",
+   "reason": "no license in repo (GitHub reports NONE): use as a reading list only, do not copy"
+  },
+  {
+   "name": "K-Dense-AI/claude-scientific-skills",
+   "reason": "license MIT, but skill_scout.py verify REJECTED it on 2026-11-19: README contains curl|sh and PowerShell download-and-run installs. Use only after a human reads it; research tasks use web search + co-plan instead"
+  }
+ ]
 }
