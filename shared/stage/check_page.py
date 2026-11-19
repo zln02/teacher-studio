@@ -43,6 +43,16 @@ FORBIDDEN_CSS = {
     r":has\(": ":has() (old Chrome)",
     r"\b\d+(\.\d+)?dvh\b": "dvh unit (old Chrome)",
 }
+_XW3 = "http://www.w3.org/"
+_EXT = r"(?:https?:)?//(?!www\.w3\.org/)"
+EXTERNAL_PATTERNS = (  # what makes a page ask the internet for something while it loads or plays
+    ("tag", re.compile(r"""<(?:link|script|img|source|iframe|video|audio|embed|object|track)\b[^>]*?\b(?:src|href|data|poster)\s*=\s*["']?(""" + _EXT + r"""[^"'\s>]+)""", re.I)),
+    ("css url()", re.compile(r"""url\(\s*["']?(""" + _EXT + r"""[^)"']+)""", re.I)),
+    ("@import", re.compile(r"""@import\s+(?:url\(\s*)?["']?([^"')\s;]+)""", re.I)),
+    ("script fetch", re.compile(r"""\b(?:fetch|importScripts)\s*\(\s*["'`](""" + _EXT + r"""[^"'`]+)""")),
+    ("script host", re.compile(r"""["'`](https?://[^"'`\s]*(?:fonts\.googleapis|fonts\.gstatic|cdnjs\.cloudflare|cdn\.jsdelivr|unpkg\.com|googletagmanager|google-analytics)[^"'`\s]*)""", re.I)),
+    ("script request", re.compile(r"""\b(new\s+(?:XMLHttpRequest|WebSocket|EventSource)\b|navigator\.sendBeacon\b)""")),
+)
 MODERN_LIBS = {"motion"}  # vendored libs that use ?. / ?? (reported as a warning, not a failure)
 STUDENT_DATA = re.compile(r"(학번|이름을?\s*입력|실명|student\s*name|전화번호)", re.I)
 
@@ -116,6 +126,14 @@ OVERFLOW_JS = r"""
       if (pTop !== null && rr.top > pTop + rr.height * 0.6 && /[가-힣]/.test(pCh) && /[가-힣]/.test(c1)){ out.push(['midword', 'text', tx.replace(/\s+/g, ' ').trim().slice(0, 14)]); break; }
       pTop = rr.top; pCh = c1;
     }
+    /* orphan: the last line holds a single syllable (「써」「줘」 alone) */
+    var rg2 = document.createRange(), tops = [], cnt = [];
+    for (var q2 = 0; q2 < tx.length; q2++){
+      if (/\s/.test(tx.charAt(q2))) continue;
+      rg2.setStart(nd, q2); rg2.setEnd(nd, q2 + 1); var r2 = rg2.getBoundingClientRect(); if (!r2.height) continue;
+      if (!tops.length || Math.abs(r2.top - tops[tops.length - 1]) > r2.height * 0.6){ tops.push(r2.top); cnt.push(1); } else cnt[cnt.length - 1]++;
+    }
+    if (tops.length >= 2 && cnt[cnt.length - 1] === 1 && tx.replace(/\s/g, '').length >= 5) out.push(['orphan', 'text', tx.replace(/\s+/g, ' ').trim().slice(0, 14)]);
   }
   return out;
 })(%d)
@@ -149,6 +167,7 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
     out.append(("WARN" if bias else "PASS", "answer positions balanced" + (f": {bias}" if bias else "")))
     fl = tokens["type"]["floor"]
     comp = "\n".join(re.findall(r"/\* TS:COMPONENTS BEGIN \*/(.*?)/\* TS:COMPONENTS END \*/", html, re.S) + re.findall(r"/\* TS:CSS BEGIN \*/(.*?)/\* TS:CSS END \*/", html, re.S))
+    comp = re.sub(r"/\* TS:PORTRAIT BEGIN \*/.*?/\* TS:PORTRAIT END \*/", "", comp, flags=re.S)  # the portrait stage is 600 units wide: phone_check measures real CSS px there
     small = sorted({float(x) for x in FONT_PX.findall(comp) if float(x) < fl["small"]})
     out.append(("FAIL" if small else "PASS", f"component text sizes >= {fl['small']}px" + (f": found {small} -> raise the type scale (design.large) or shorten the text" if small else "")))
     if re.search(r"<input|<textarea|contenteditable", comp):
@@ -156,6 +175,12 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
     if play:
         out += autoplay(path, tokens)
         out += wow_checks(path, tokens, html)
+        if spec.get("device") == "phone":  # 390x844 upright + 844x390 sideways: readable, nothing outside, buttons >= 44px
+            try:
+                import phone_check
+                out += phone_check.checks(path, spec)
+            except ImportError:
+                pass
     else:
         out.append(("WARN", "autoplay skipped (--no-play)"))
     return out
@@ -269,6 +294,8 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     out.append(("FAIL" if ov else "PASS", "no text overflow / off-stage elements" + (f": {ov[:3]} -> shorten the text or use fewer choices" if ov else "")))
     mw = [v for k, v in problems.items() if k.startswith("midword")]
     out.append(("WARN" if mw else "PASS", "no Korean word broken across lines" + (f": {mw[:3]} -> shorten the text so words are not split" if mw else "")))
+    orph = [v for k, v in problems.items() if k.startswith("orphan")]
+    out.append(("WARN" if orph else "PASS", "no one-syllable last line" + (f": {orph[:3]} -> shorten the text, or use fewer/shorter answers (design.layout split|stack)" if orph else "")))
     out.append(("FAIL" if sm else "PASS", f"all in-game text >= {floor}px" + (f": {sm[:3]}" if sm else "")))
     return out
 
@@ -335,15 +362,20 @@ def main(path: Path, play: bool = True) -> int:
         hits = len(re.findall(pat, css))
         add("FAIL" if hits else "PASS", f"no {label}" + (f" ({hits} found)" if hits else ""))
 
-    urls = re.findall(r"""(?:src|href)\s*=\s*["'](https?://[^"']+)""", html) + re.findall(r"url\(\s*['\"]?(https?://[^)'\"]+)", html)
-    bad = sorted({u for u in urls if not any(h in u for h in ALLOWED_HOSTS)})
-    add("FAIL" if bad else "PASS", "external resources only from cdnjs / jsdelivr npm / unpkg / Google Fonts" + (f": {bad[:3]}" if bad else ""))
+    online = bool(re.search(r'"online"\s*:\s*true', html))  # the spec opted in (spec "online": true / DOC online): only then may the page use the internet
+    refs = sorted({(kind, m.group(1)) for kind, pat in EXTERNAL_PATTERNS for m in pat.finditer(html)})
+    if online:
+        bad = sorted({u for _, u in refs if not any(h in u for h in ALLOWED_HOSTS)})
+        add("FAIL" if bad else "PASS", "online opt-in: outside resources only from cdnjs / jsdelivr npm / unpkg / Google Fonts" + (f": {bad[:3]}" if bad else ""))
+    else:
+        add("FAIL" if refs else "PASS", "offline: no outside request or address (link, script, img, css url/@import, fetch)" +
+            (f": {[f'{k} {u[:60]}' for k, u in refs[:3]]} -> rebuild with the current build.py (offline is the default); only a spec with online:true may use the internet" if refs else ""))
+    if re.search(r"""<a\b[^>]*\bhref\s*=\s*["']https?://""", html, re.I):
+        add("WARN", "a link to an outside page (<a href=http...>): fine for a link people tap, but the page then needs the internet for that tap")
     cdn = re.findall(r"cdnjs\.cloudflare\.com/ajax/libs/[^/]+/([^/]+)/", html)
     cdn += re.findall(r"cdn\.jsdelivr\.net/npm/(?:@[^/]+/)?[^@/]+@([^/]+)/", html)
     if any(not re.match(r"\d+\.\d+", v) for v in cdn):
         add("FAIL", "cdnjs URLs must pin an exact version")
-    if re.search(r"<img[^>]+src=[\"']https?:", html):
-        add("FAIL", "no external <img>")
     if re.search(r"\bdraggable\s*=\s*[\"']?true", html) or "dragstart" in js_nostr:
         add("WARN", "HTML5 drag API does not work on tablets; use NG.drag")
     if STUDENT_DATA.search(html):

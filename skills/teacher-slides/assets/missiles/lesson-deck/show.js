@@ -820,7 +820,7 @@ function onPointerUp(e){
 window.SHOW = {
   start: function(){
     var fl = WORLD.extraFonts;
-    if (fl && !document.getElementById("dk-font")){ var lk = S.h("link", {id:"dk-font", rel:"stylesheet", href:"https://fonts.googleapis.com/css2?family=" + fl + "&display=swap"}); document.head.appendChild(lk); }
+    if (fl && D.online === true && !document.getElementById("dk-font")){  /* outside fonts only when the doc opts in (online:true); offline is the default */ var lk = S.h("link", {id:"dk-font", rel:"stylesheet", href:"https://fonts.googleapis.com/css2?family=" + fl + "&display=swap"}); document.head.appendChild(lk); }
     if (SKIN_NAME === "chalkboard") document.documentElement.style.setProperty("--chalk-noise", "url(" + chalkNoise() + ")");
     mountChrome();
     texCache = null;

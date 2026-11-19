@@ -32,13 +32,16 @@ SKILL = Path(__file__).resolve().parent.parent
 ENGINE = SKILL / "assets" / "engine.html"
 VOICE = SKILL / "shared" / "voice" / "voice.js"
 sys.path.insert(0, str(SKILL / "shared" / "tools"))
+sys.path.insert(0, str(SKILL / "shared" / "fonts"))
+import embed as embed_mod  # noqa: E402  (shared/fonts/embed.py)
 from stamp import stamp  # noqa: E402  (shared/tools/stamp.py: invisible author mark)
 DATA_RE = re.compile(r"window\.GAME = \{.*?\n\};", re.S)
 LOGIC_RE = re.compile(r"(/\* ===================== GAME LOGIC.*?\*/\n).*?(\n</script>\n<script>NG\.boot)", re.S)
 
 
-def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | None = None) -> int:
-    """Inject data, logic, optional CSS and asset packs into the engine; return output size in bytes."""
+def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | None = None, online: bool = False) -> int:
+    """Inject data, logic, optional CSS and asset packs into the engine; return output size in bytes.
+    online=False (default): the engine's Google Fonts links are removed, so the page makes no outside request (opt in with spec "online": true)."""
     engine = ENGINE.read_text(encoding="utf-8")
     if not DATA_RE.search(engine) or not LOGIC_RE.search(engine):
         raise SystemExit("engine markers not found - engine.html was modified")
@@ -59,6 +62,8 @@ def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | No
     if "<!--TS:VOICE-->" in html and VOICE.exists():
         voice_js = "<script>/* TS:VOICE */\n" + VOICE.read_text(encoding="utf-8") + "</script>"
         html = html.replace("<!--TS:VOICE-->", voice_js, 1)
+    if not online:
+        html = embed_mod.go_offline(html)
     html = stamp(html)
     title = data.get("title")
     if title:

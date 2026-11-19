@@ -70,7 +70,7 @@ function chars(e){ return S.split(e); }
 function words(e){ return S.split(e, "word"); }
 function loadFonts(){
   var fams = D.fonts || [];
-  if (fams.length && !document.getElementById("si-fonts")){
+  if (fams.length && D.online === true && !document.getElementById("si-fonts")){  /* outside fonts only when the doc opts in (online:true) */
     var l = el("link", "", document.head);
     l.id = "si-fonts"; l.rel = "stylesheet";
     l.href = "https://fonts.googleapis.com/css2?" + fams.map(function(f){ return "family=" + String(f).replace(/ /g, "+"); }).join("&") + "&display=swap";

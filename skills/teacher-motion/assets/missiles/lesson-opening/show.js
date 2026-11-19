@@ -66,7 +66,7 @@ function fitOne(f){
 function refit(){ FITS.forEach(function(f){ if (f[0].parentNode) fitOne(f); }); }
 function loadFonts(){
   var fams = D.fonts || [];
-  if (fams.length && !document.getElementById("lo-fonts")){
+  if (fams.length && D.online === true && !document.getElementById("lo-fonts")){  /* outside fonts only when the doc opts in (online:true) */
     var l = el("link", "", document.head);
     l.id = "lo-fonts"; l.rel = "stylesheet";
     l.href = "https://fonts.googleapis.com/css2?" + fams.map(function(f){ return "family=" + String(f).replace(/ /g, "+"); }).join("&") + "&display=swap";
