@@ -37,6 +37,7 @@ def main() -> int:
     ap.add_argument("--nogl", action="store_true")
     ap.add_argument("--reduced", action="store_true")
     ap.add_argument("--only", default="")
+    ap.add_argument("--closeup", action="store_true")
     a = ap.parse_args()
     q = []
     if a.nogl:
@@ -112,7 +113,7 @@ def main() -> int:
             print("sheet:", out)
         if a.gif:
             frames = []
-            ctx2 = b.new_context(viewport={"width": 1920, "height": 1080}, device_scale_factor=1)
+            ctx2 = b.new_context(viewport={"width": 1280, "height": 720}, device_scale_factor=1)
             g = ctx2.new_page()
             g.goto(DECK.as_uri())
             g.wait_for_function("window.__deck && window.__deck.state().slide === 0", timeout=20000)
@@ -120,24 +121,47 @@ def main() -> int:
             def grab(ms, every=110):
                 t = 0
                 while t < ms:
-                    im = Image.open(io.BytesIO(g.screenshot(type="jpeg", quality=80))).convert("RGB").resize((800, 450), Image.LANCZOS)
+                    im = Image.open(io.BytesIO(g.screenshot(type="jpeg", quality=80, timeout=120000))).convert("RGB").resize((720, 405), Image.LANCZOS)
                     frames.append(im)
                     g.wait_for_timeout(every)
                     t += every + 60
-            # demo pipeline: card travels 기획 → 콘티 → 배포
-            g.evaluate("window.__deck.go(8, 0)"); g.wait_for_timeout(900)
-            grab(700)
-            for s in (1, 2, 3, 4, 5, 6):
-                g.evaluate(f"window.__deck.go(8, {s})")
-                grab(800)
-            # cheating pipeline: signals, focus one stage, then the wall
-            g.evaluate("window.__deck.go(17, 0)"); g.wait_for_timeout(700)
-            grab(1100)
-            g.evaluate("window.__deck.go(17, 2)"); grab(1100)
-            g.evaluate("window.__deck.go(17, 7)"); grab(1500)
-            pal = [f.quantize(colors=96, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in frames]
+            def step(i, st, ms):
+                g.evaluate(f"window.__deck.go({i}, {st})")
+                grab(ms)
+            # 내비 = 길 안내 + 쓸 도구들: 도구가 차에 붙고, 차가 맞는 길로
+            g.evaluate("window.__deck.go(4, 0)"); g.wait_for_timeout(900)
+            grab(500); step(4, 1, 1500); step(4, 2, 2300)
+            # 평소 vs 부정행위: 입구·출구만 바뀌어요
+            g.evaluate("window.__deck.go(18, 0)"); g.wait_for_timeout(900)
+            grab(700); step(18, 1, 700); step(18, 2, 1900)
+            # 문제 하나 따라가기
+            g.evaluate("window.__deck.go(19, 0)"); g.wait_for_timeout(900)
+            for st in range(1, 8):
+                step(19, st, 1000 if st in (2, 3, 5) else 700)
+            pal = [f.quantize(colors=80, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE) for f in frames]
             pal[0].save(GIF, save_all=True, append_images=pal[1:], duration=170, loop=0, optimize=True)
             print("gif:", GIF, f"{GIF.stat().st_size / 1e6:.2f} MB", len(frames), "frames")
+        if a.closeup:
+            import base64
+            from PIL import ImageDraw, ImageFont
+            names = pg.evaluate("window.__deck.closeup('list')")
+            cols, cw, ch, cap = 6, 480, 400, 54
+            rows = (len(names) + cols - 1) // cols
+            sheet = Image.new("RGB", (cols * cw, rows * (ch + cap)), (11, 16, 32))
+            dr = ImageDraw.Draw(sheet)
+            try:
+                font = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", 30)
+            except OSError:
+                font = ImageFont.load_default()
+            for k, nm in enumerate(names):
+                url = pg.evaluate("(n) => window.__deck.closeup(n, ['카메라 안경','화면 안경','초소형 이어폰','휴대폰','스마트워치','노트북','클라우드 AI','학생과 책상'].indexOf(n) >= 0)", nm)
+                im = Image.open(io.BytesIO(base64.b64decode(url.split(",", 1)[1]))).convert("RGBA")
+                x, y = (k % cols) * cw, (k // cols) * (ch + cap)
+                sheet.paste(im, (x, y), im)
+                dr.text((x + 24, y + ch + 6), nm, fill=(238, 242, 255), font=font)
+            out = HERE.parent / "deck-v2-3d-closeup.png"
+            sheet.save(out, optimize=True)
+            print("closeup:", out, len(names), "objects")
         b.close()
     print("console errors:", errors or "none")
     print("external requests:", external or "none")

@@ -67,14 +67,17 @@ def compare_slides() -> str:
     <div class="shot" data-b="1"><div class="hd">내비 없이<i>ChatGPT·Claude 그대로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
     <div class="shot h" data-b="2"><div class="hd"><svg class="ic"><use href="#navigation"/></svg>내비 켜고<i>하네스</i></div>{shot(case, "harness")}<p>{cap}</p></div>
   </div>
-  <aside class="note">[18~23분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
+  <aside class="note">[10~18분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
 </section>""")
     return "\n".join(out)
 
 
-def icons(html: str) -> str:
+def icons(html: str, js: str = "") -> str:
     sprite = (REPO / "shared/vendor/lucide/lucide-1.75.0-sprite.svg").read_text(encoding="utf-8")
-    want = sorted(set(re.findall(r'href="#([a-z0-9-]+)"', html)))
+    want = set(re.findall(r'href="#([a-z0-9-]+)"', html))
+    for m in re.finditer(r"icons:([a-z0-9 -]+)", js):  # 3D 카드에 그리는 아이콘 (deck.js 주석 목록)
+        want.update(m.group(1).split())
+    want = sorted(want)
     out = []
     for name in want:
         m = re.search(r'<symbol id="%s".*?</symbol>' % re.escape(name), sprite, re.S)
@@ -104,7 +107,7 @@ def main() -> int:
     slides = (HERE / "slides.html").read_text(encoding="utf-8")
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
-    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides())
+    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness"))
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
@@ -130,7 +133,7 @@ def main() -> int:
 </style>
 </head>
 <body>
-{icons(slides)}
+{icons(slides, js)}
 <div id="stage">
 {slides}
 </div>
