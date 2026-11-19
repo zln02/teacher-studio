@@ -42,6 +42,10 @@ MUTE = ["--mute-audio"]
 SKILL = HERE.parent
 sys.path.insert(0, str(SKILL / "shared" / "tools"))
 BASELINE = SKILL / "assets" / "design-baseline.json"
+sys.path.insert(0, str(HERE))
+from clipcheck import CLIP_JS  # noqa: E402
+
+DECO_TEXT_WARN, DECO_TEXT_FAIL = 0.035, 0.08   # share of strong-edge pixels under a big text that sits straight on the scene
 
 PROBE_JS = r"""
 (function(){
@@ -154,12 +158,29 @@ def measure(shot, backdrop, probe: dict) -> dict:
             a, b = rects[i], rects[j]
             if a[0] < b[0] + b[2] - 6 and b[0] < a[0] + a[2] - 6 and a[1] < b[1] + b[3] - 6 and b[1] < a[1] + a[3] - 6:
                 ov += 1
+    # decoration behind big text (title / question): strong edges of the backdrop (scene hidden) under a text that sits straight on the scene
+    deco_text, deco_where = 0.0, ""
+    bd = backdrop.convert("L")
+    for t in texts:
+        if t["fs"] < 34 or _effective_bg(t["bgs"]) is not None:
+            continue
+        x, y, w, h = [int(v) for v in t["r"]]
+        box = bd.crop((max(0, x), max(0, y), min(1920, x + max(w, 2)), min(1080, y + max(h, 2))))
+        if box.width < 8 or box.height < 8:
+            continue
+        box = box.resize((max(8, box.width // 2), max(8, box.height // 2)))
+        px, bw, bh = box.load(), box.width, box.height
+        strong = sum(1 for yy in range(bh - 1) for xx in range(bw - 1) if abs(px[xx, yy] - px[xx + 1, yy]) + abs(px[xx, yy] - px[xx, yy + 1]) > 80)
+        ratio = strong / max(1, (bw - 1) * (bh - 1))
+        if ratio > deco_text:
+            deco_text, deco_where = ratio, t["t"]
     host_ov = 0
     if probe.get("host"):
         h = probe["host"]
         host_ov = sum(1 for r in rects if r[0] < h[0] + h[2] * 0.55 and h[0] < r[0] + r[2] and r[1] < h[1] + h[3] and h[1] < r[1] + r[3] and r[0] < 120 and r[1] > h[1])
     return {"plain_cards": probe.get("plain", 0), "deco_density": round(bt / bn, 3), "empty_ratio": round(empty, 3), "colors": colors, "hierarchy": hier,
-            "min_contrast": round(mins if mins < 99 else 21, 2), "low_contrast": lows, "overlaps": ov + host_ov}
+            "min_contrast": round(mins if mins < 99 else 21, 2), "low_contrast": lows, "overlaps": ov + host_ov,
+            "deco_under_text": round(deco_text, 3), "deco_text": deco_where, "clipped": [list(c) for c in probe.get("clipped", [])]}
 
 
 def _launch(p):
@@ -181,6 +202,7 @@ def capture(path: Path) -> tuple[dict, dict, dict]:
         pg.wait_for_timeout(700)
         shots[name] = Image.open(io.BytesIO(pg.screenshot())).convert("RGB")
         probes[name] = pg.evaluate(PROBE_JS)
+        probes[name]["clipped"] = pg.evaluate("window.__tsClip()")
         pg.evaluate("(function(){['scene','hud','fx'].forEach(function(i){var e=document.getElementById(i);if(e)e.style.visibility='hidden';});})()")
         backs[name] = Image.open(io.BytesIO(pg.screenshot())).convert("RGB")
         pg.evaluate("(function(){['scene','hud','fx'].forEach(function(i){var e=document.getElementById(i);if(e)e.style.visibility='';});})()")
@@ -191,6 +213,7 @@ def capture(path: Path) -> tuple[dict, dict, dict]:
             raise RuntimeError("no headless browser (Chrome/Edge) found")
         pg = b.new_page(viewport={"width": 1920, "height": 1080})
         pg.add_init_script(SILENT_JS)
+        pg.add_init_script(CLIP_JS)
         pg.goto(path.resolve().as_uri())
         pg.wait_for_timeout(900)
         pg.evaluate("advanceTime(1500)")
@@ -268,6 +291,8 @@ def summarise(metrics: dict) -> dict:
     if "min_contrast" in out:
         out["min_contrast"] = round(min(m["min_contrast"] for m in metrics.values()), 2)  # worst screen, title and result included
         out["overlaps"] = max(m["overlaps"] for m in metrics.values())
+    out["deco_under_text"] = max(m["deco_under_text"] for m in metrics.values())
+    out["clipped"] = sum(len(m["clipped"]) for m in metrics.values())
     if "title" in metrics:
         out["title_empty_ratio"] = metrics["title"]["empty_ratio"]
         out["title_deco_density"] = metrics["title"]["deco_density"]
@@ -284,6 +309,14 @@ def judge(summary: dict, style: str = "") -> tuple[str, list[str]]:
         hints.append("글자와 바탕의 대비가 2보다 낮아 안 읽혀요 → 카드 색(cardText/card)을 바꾸거나 design.mood를 차분하게 바꿔 보세요")
     elif summary.get("min_contrast", 21) < 4.5:
         hints.append("글자 대비가 4.5보다 낮은 곳이 있어요 → 글자 색이나 카드 색을 더 진하게 해 보세요")
+    if summary.get("clipped", 0) > 0:
+        fail = True
+        hints.append(f"보기·버튼 안의 글자가 잘려요({summary['clipped']}곳) → 보기 글을 줄이거나 보기 수를 줄이거나, design.layout을 split·stack으로 바꿔 보세요")
+    if summary.get("deco_under_text", 0) >= DECO_TEXT_FAIL:
+        fail = True
+        hints.append("배경 장식이 제목·문제 글자 뒤를 지나가서 읽기 어려워요 → 장면이 덜 복잡한 style이나 design.mood(차분하게)로 바꿔 보세요")
+    elif summary.get("deco_under_text", 0) >= DECO_TEXT_WARN:
+        hints.append("배경 장식이 제목·문제 글자와 겹쳐요 → 장식이 가장자리에만 있는 style/layout을 써 보세요")
     if summary.get("overlaps", 0) > 0:
         hints.append("글자 상자가 서로(또는 도우미 캐릭터와) 겹쳐요 → 문제·보기 글을 줄이거나 보기 수를 줄여 보세요")
     if summary.get("hierarchy", 9) < 1.25:

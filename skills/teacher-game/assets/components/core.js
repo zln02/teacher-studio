@@ -66,6 +66,13 @@ H.ask = function(el, it, o){
   var top = o.top == null ? 150 : o.top;
   el.insertAdjacentHTML("beforeend", '<div class="ts-wrap ts-ask" style="top:' + top + 'px;height:' + (1020 - top) + 'px">' + chips + qhtml + body + '<div class="ts-expl"></div></div>');
   var wrap = el.lastElementChild, all = wrap.querySelectorAll(".choice");
+  /* answers that do not fit their (rounded) button: step the font down (never below the 34px floor) until the text clears the shape */
+  Array.prototype.forEach.call(wrap.querySelectorAll(".ts-choice"), function(b){
+    var fs = parseFloat(getComputedStyle(b).fontSize), cr = parseFloat(getComputedStyle(b).borderTopLeftRadius) || 0;
+    function tight(){ var r = b.getBoundingClientRect(), sc = b.offsetWidth ? r.width / b.offsetWidth : 1, inner = b.lastElementChild; if (!inner) return false;
+      var q = inner.getBoundingClientRect(), pad = 26 * sc + Math.min(cr * sc, r.height / 2) * 0.28; return q.height > r.height - 2 * pad || q.width > r.width - 2 * pad || b.scrollHeight > b.clientHeight + 2; }
+    var guard = 0; while (tight() && fs > 34 && guard++ < 12){ fs -= 2; b.style.fontSize = fs + "px"; }
+  });
   function rightText(){ return n.isOX ? (n.answer === 0 ? "O" : "X") : MARKS[n.answer] + ". " + n.choices[n.answer]; }
   function choose(i, btn, timeout){
     if (locked) return;

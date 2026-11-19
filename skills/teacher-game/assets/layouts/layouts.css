@@ -49,11 +49,11 @@ body[data-layout=poster] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:c
 body[data-layout=poster] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
 body[data-layout=poster] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
 body[data-layout=poster] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
-body[data-layout=poster] .ts-ask .ts-choice{border-radius:999px;justify-content:center;text-align:center;height:100%;min-height:0;padding:10px 20px}
+body[data-layout=poster] .ts-ask .ts-choice{border-radius:72px;justify-content:center;text-align:center;height:100%;min-height:0;padding:10px 20px}
 body[data-layout=poster] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);gap:40px}
 body[data-layout=poster] .ts-ask .ts-ox{width:48%;height:100%;font-size:140px}
 /* ---- answer button styles ---- */
-body[data-choice=pill] .choice{border-radius:999px}
+body[data-choice=pill] .choice{border-radius:72px;padding-left:34px;padding-right:34px}
 body[data-choice=tile] .choice{border-radius:10px;border-bottom-width:14px}
 body[data-choice=stamp] .choice{border-style:dashed;border-width:6px;border-radius:14px;transform:rotate(-.8deg)}
 body[data-choice=stamp] .choice:nth-child(even){transform:rotate(.9deg)}
