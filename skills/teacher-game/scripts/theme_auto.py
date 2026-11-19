@@ -246,7 +246,7 @@ def compose(spec: dict, tokens: dict | None = None) -> dict:
     rid, matched = pick_recipe(text, str(d.get("subject", "")), str(d.get("mood", "")))
     r = RECIPES.get(rid, DEFAULT)
     seed = int(d.get("seed", 0))
-    sid, why = style_auto.pick_style(text, rid or "generic", seed, str(d.get("style", "")))
+    sid, why = style_auto.pick_style(text, rid or "generic", seed, str(d.get("style", "")), priority=words + " " + str(d.get("mood", "")))
     st = style_auto.STYLES[sid]
     key = f"{rid}|{sid}|{text}|{seed}"
     dstyle = r["chars"][_h(key + "c") % len(r["chars"])]

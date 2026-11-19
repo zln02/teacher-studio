@@ -16,8 +16,9 @@ Choices (all deterministic from the spec + design.seed; build.py draws a fresh s
   title    title treatment: default | outline | stack3d | stamp | underline (+ scale sm|md|lg, position center|left|top)
   transition  iris | wipe | fade
 Mood steers the weights (긴장감 -> dark split/news + neon; 귀엽게/따뜻하게 -> rounded bento; 고급스럽게 -> poster/news + ticket ...).
-Spec overrides: design.layout, design.choice, design.card, design.score, design.title.
+Spec overrides: design.layout, design.choice, design.card, design.score, design.title_style (also accepted: design.title).
 Usage: python3 layout_auto.py --mechanic quiz --mood 긴장감 --seed 3
+       python3 layout_auto.py --spec spec.json        # exactly what build.py will choose for this spec (same chooser, same words/title/seed)
 """
 from __future__ import annotations
 
@@ -100,6 +101,10 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
     colors = (tokens or {}).get("colors") or {}
     dark = sum(int(colors.get("bg1", "#ffffff")[i:i + 2], 16) for i in (1, 3, 5)) < 330
     layout = d.get("layout") if d.get("layout") in LAYOUTS else _pick(fam["layout"], key + "L")
+    if d.get("layout") not in LAYOUTS and layout in ("bento", "news", "poster"):  # these put 3-4 answers side by side: long answers would wrap to one-syllable lines
+        longest = max([len(str(c)) for it in (spec.get("items") or []) if isinstance(it, dict) and len(it.get("choices") or []) >= 3 for c in it["choices"]] or [0])
+        if longest > 12:
+            layout = "split"
     choice_opts = dict(fam["choice"])
     if not dark:
         choice_opts.pop("neon", None)  # neon glow needs a dark scene
@@ -110,7 +115,7 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
         "choice": d.get("choice") if d.get("choice") in CHOICES else _pick(choice_opts, key + "C"),
         "card": d.get("card") if d.get("card") in CARDS else _pick(fam["card"], key + "K"),
         "score": d.get("score") if d.get("score") in SCORES else _pick(fam["score"], key + "S"),
-        "title": d.get("title_style") if d.get("title_style") in TITLES else _pick(fam["title"], key + "T"),
+        "title": (d.get("title_style") or d.get("title")) if (d.get("title_style") or d.get("title")) in TITLES else _pick(fam["title"], key + "T"),  # design.title_style (docs) = design.title (older help)
         "titleScale": ["sm", "md", "lg"][_h(key + "Z") % 3], "tpos": ["center", "left", "top", "center"][_h(key + "P") % 4],
         "transition": _pick(fam["transition"], key + "X"),
     }
@@ -125,7 +130,18 @@ def main() -> int:
     ap.add_argument("--mood", default="")
     ap.add_argument("--words", default="")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--spec", type=__import__("pathlib").Path, help="a spec.json: preview the look build.py will produce for it")
     a = ap.parse_args()
+    if a.spec:
+        import build  # lazy: build.py imports this module
+        spec = json.loads(a.spec.read_text(encoding="utf-8"))
+        spec.setdefault("design", {}).setdefault("seed", 0)
+        if spec["design"].get("palette_from"):
+            spec["design"]["palette_from"] = build.design.resolve_palette_from(spec["design"]["palette_from"], a.spec.resolve().parent)
+        lay, th, au = build.layout_for(spec, build.make_tokens(spec))
+        print(build.look_line(lay, au))
+        print(json.dumps({"theme": th, **lay}, ensure_ascii=False, indent=1))
+        return 0
     print(json.dumps(compose({"mechanic": a.mechanic, "design": {"mood": a.mood, "words": a.words.split(), "seed": a.seed}}), ensure_ascii=False, indent=1))
     return 0
 

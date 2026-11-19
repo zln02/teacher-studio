@@ -103,6 +103,16 @@ def validate(spec: dict) -> list[str]:
     design = spec.get("design", {})
     if design and not isinstance(design, dict):
         errs.append("design: {subject, grade, mood, seed, theme} 객체")
+    elif isinstance(design, dict) and design.get("font") not in (None, "sans", "serif", "rounded", "system"):
+        errs.append('design.font: "sans" | "serif" | "rounded" | "system" (글꼴은 이 넷 중에서만 골라요)')
+    if spec.get("online", False) not in (True, False):
+        errs.append('online: true 또는 false (기본 false = 인터넷 없이 열리는 파일. true일 때만 Google 글꼴·CDN 주소를 허용)')
+    bk = spec.get("back")
+    if bk is not None and not (isinstance(bk, dict) and isinstance(bk.get("href"), str) and re.fullmatch(r"(?!\s*(?:[a-z][a-z0-9+.-]*:|//))[^\s<>\"']+", bk["href"], re.I)):
+        errs.append('back: {"href":"../index.html","label":"돌아가기"} (사이트 안의 상대 주소만, http:·javascript: 는 안 돼요)')
+    hm = spec.get("head_meta")
+    if hm is not None and not (isinstance(hm, list) and all(isinstance(x, dict) and x.get("name") in ("robots", "description", "theme-color", "author") and isinstance(x.get("content", ""), str) for x in hm)):
+        errs.append('head_meta: [{"name":"robots","content":"noindex"}] (name은 robots · description · theme-color · author)')
     return errs
 
 

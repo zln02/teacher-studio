@@ -72,6 +72,9 @@ def sanitize_css(css: str) -> str:
 # Game Wow kit (shared/juice): inside the skill when installed (sync copies it), else the repo root
 JUICE = SKILL / "shared" / "juice" if (SKILL / "shared" / "juice" / "juice.js").exists() else SKILL.parent.parent / "shared" / "juice"
 USE_JUICE = True  # --no-juice builds the same spec without the kit (before/after comparison)
+PORTRAIT_MECHS = ("quiz",)  # mechanics that have a real portrait layout (assets/layouts/portrait.css); other mechanics on a phone ask to turn it
+FONT_CHOICES = ("sans", "serif", "rounded", "system")  # design.font: sans/serif/rounded use the embedded Noto KR; system = no embedded font at all
+HEAD_META_NAMES = ("robots", "description", "theme-color", "author")
 COMP = SKILL / "assets" / "components"
 THEMES = SKILL / "assets" / "themes"
 LAYOUTS = SKILL / "assets" / "layouts"
@@ -92,6 +95,20 @@ def theme_meta(theme: str) -> dict:
     """assets/themes/<id>.json: title, palette, fonts, host(bool), moods, subjects (Python-side facts about a theme)."""
     f = THEMES / f"{theme}.json"
     return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+
+
+def layout_for(spec: dict, tokens: dict) -> tuple[dict, str, dict | None]:
+    """(layout config, theme id, auto-theme composition or None). THE chooser: build.py and the preview tools (style_auto.py / layout_auto.py --spec) all call it."""
+    th = theme_for(tokens, spec)
+    au = theme_auto.compose(spec, tokens) if th == "auto" else None
+    return layout_auto.compose(spec, tokens, (au["recipe"] if au else th), (au["style"] if au else "")), th, au
+
+
+def look_line(lay: dict, au: dict | None) -> str:
+    """One line that says what was chosen (so nobody has to open the picture to know)."""
+    why = (au or {}).get("style_why", "")
+    return "look: style=%s%s layout=%s choice=%s card=%s score=%s title=%s" % (lay.get("style") or "-", f"({why})" if why else "", lay.get("layout"), lay.get("choice"),
+                                                                          lay.get("card"), lay.get("score"), lay.get("title"))
 
 
 def make_tokens(spec: dict) -> dict:
@@ -132,6 +149,11 @@ def make_tokens(spec: dict) -> dict:
         tk["motion"] = meta["motion"]
     if d.get("palette_from"):  # the user's own logo/template colours win over the theme's (design.palette_from: file | "saved")
         design.apply_palette_from(tk, d["palette_from"])
+    font = d.get("font") or spec.get("font")
+    if font in FONT_CHOICES:  # design.font beats the theme's font (the font files for the unused family are then not embedded either)
+        fam = "Noto Serif KR" if font == "serif" else "Noto Sans KR"
+        tk["fonts"] = {"display": fam, "body": fam, "embeddable": font != "system"}
+        tk["fontChoice"] = font
     return tk
 
 
@@ -148,12 +170,24 @@ def tokens_css(tk: dict) -> str:
     body_fb = '"Noto Serif KR","Noto Sans KR"' if f["body"] in serif else '"Noto Sans KR"'
     disp_fb = '"Noto Serif KR"' if f["display"] in serif else '"Noto Sans KR"'
     sys_fb = '"Apple SD Gothic Neo","Malgun Gothic",sans-serif'
+    colors = tk["colors"]
+    dark = sum(int(colors["bg1"][i:i + 2], 16) for i in (1, 3, 5)) < 330
+    vig = ":root{--vig:%s}\n" % (".35" if dark else "0")  # the dark edge only helps on dark scenes; on a light scene it only makes the corners look dirty
+    if tk.get("accentDeco"):  # the source's own accent for dots/stars (custom_css / custom_svg may use var(--accent-deco)); never used for text
+        vig += ":root{--accent-deco:%s}\n" % tk["accentDeco"]
+    choice = tk.get("fontChoice")
+    if choice == "system":
+        stack = 'system-ui,-apple-system,"Segoe UI","Malgun Gothic","Apple SD Gothic Neo",sans-serif'
+        return ("/* TS:CSS BEGIN */\n:root{--t-title:%dpx;--t-q:%dpx;--t-c:%dpx;--t-b:%dpx;--t-s:%dpx;--btn-h:%dpx;--font-body:%s;--font-display:%s!important}\n"
+                % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"], stack, stack) + vig
+                + ".title{font-size:var(--t-title)}\n" + ":root{--on-good:%s;--on-bad:%s}\n" % (_on(colors["good"]), _on(colors["bad"])))
+    extra = ".title,.h1,.h2{font-weight:800}\n" if choice == "rounded" else ""
     # the embedded Noto fonts come right after the chosen font and before system fonts, so it also looks right offline
     return ("/* TS:CSS BEGIN */\n:root{--t-title:%dpx;--t-q:%dpx;--t-c:%dpx;--t-b:%dpx;--t-s:%dpx;--btn-h:%dpx;"
             "--font-body:\"%s\",%s,%s;--font-display:\"%s\",%s,%s!important}\n"
             % (t["title"], t["question"], t["choice"], t["body"], t["small"], t["floor"]["button_h"],
                f["body"], body_fb, sys_fb, f["display"], disp_fb, sys_fb)
-            + ".title{font-size:var(--t-title)}\n"
+            + vig + extra + ".title{font-size:var(--t-title)}\n"
             + ":root{--on-good:%s;--on-bad:%s}\n" % (_on(tk["colors"]["good"]), _on(tk["colors"]["bad"])))
 
 
@@ -171,9 +205,9 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     teams = spec.get("teams", 0)
     spec_out = {k: v for k, v in spec.items() if k not in ("items", "title", "subtitle")}
     spec_out["tokens"] = tokens
-    _th = theme_for(tokens, spec)
-    _au = theme_auto.compose(spec, tokens) if _th == "auto" else None
-    lay = layout_auto.compose(spec, tokens, (_au["recipe"] if _au else _th), (_au["style"] if _au else ""))
+    lay, _th, _au = layout_for(spec, tokens)
+    info["look"] = look_line(lay, _au)
+    info["layout"] = lay
     spec_out["layoutCfg"] = lay
     if spec.get("custom_svg"):
         spec_out["customSvg"] = sanitize_svg(spec["custom_svg"])
@@ -194,7 +228,12 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         "transition": lay["transition"], "credit": spec.get("credit") is True, "teams": teams, "teamChoice": device == "board" or teams > 0, "timer": spec.get("timer", 0),
         "music": bool(tokens["sound"]["music"]) and spec.get("music", True), "calm": tokens["motion"] == "calm",
         "mascots": device != "phone" and use == "class" and theme not in ("auto",) and not theme_meta(theme).get("host"), "items": items, "spec": spec_out,
+        "portrait": device == "phone" and mech in PORTRAIT_MECHS,
     }
+    if spec.get("credit") is True:
+        data["creditUrl"] = "https://github.com/zln02/teacher-studio"  # only a game that asked for the credit carries an outside address
+    if isinstance(spec.get("back"), dict) and spec["back"].get("href"):
+        data["back"] = {"href": str(spec["back"]["href"]), "label": str(spec["back"].get("label") or "돌아가기")}
     parts = [(COMP / "core.js").read_text(encoding="utf-8"), (COMP / f"{mech}.js").read_text(encoding="utf-8"),
              (THEMES / "default.js").read_text(encoding="utf-8")]
     if theme == "auto":  # parts of ported themes (hosts, staging) used by the composed look
@@ -212,6 +251,8 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + pre + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
     css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8")
     css += "\n" + (LAYOUTS / "layouts.css").read_text(encoding="utf-8")
+    if data["portrait"]:
+        css += "\n" + (LAYOUTS / "portrait.css").read_text(encoding="utf-8")
     if juice_on:
         css += "\n" + (JUICE / "juice.css").read_text(encoding="utf-8")
     if (THEMES / f"{theme}.css").exists():
@@ -224,7 +265,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         (td / "d.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         (td / "l.js").write_text(logic, encoding="utf-8")
         (td / "s.css").write_text(css, encoding="utf-8")
-        size = build(td / "d.json", td / "l.js", out, td / "s.css")
+        size = build(td / "d.json", td / "l.js", out, td / "s.css", online=spec.get("online") is True)
     info["theme"] = theme
     return size, info
 
@@ -237,7 +278,7 @@ def main() -> int:
     ap.add_argument("--seed", type=int, default=None, help="reproduce a look (same as design.seed in the spec); default = a fresh random look")
     ap.add_argument("--no-check", action="store_true")
     ap.add_argument("--no-juice", action="store_true", help="build without the Game Wow kit (for before/after comparison only)")
-    ap.add_argument("--no-fonts", action="store_true", help="keep the Google Fonts link instead of embedding Noto KR")
+    ap.add_argument("--no-fonts", action="store_true", help="do not embed Noto KR (the page then uses system fonts; a Google Fonts link is added only when the spec has \"online\": true)")
     ap.add_argument("--yes", action="store_true", help="agree to install the small font tool (fonttools) if it is missing")
     a = ap.parse_args()
     global USE_JUICE
@@ -274,17 +315,29 @@ def main() -> int:
             print("SPEC FIX NEEDED:\n - " + str(exc))
             return 2
         note += f", libs={'+'.join(lrep['inlined'])}"
-    if not a.no_fonts:
-        html, frep = embed.embed(html, consent=a.yes)
+    online = spec.get("online") is True
+    fchoice = (d0.get("font") or spec.get("font") or "")
+    if not a.no_fonts and fchoice != "system":
+        fams = ["Noto Sans KR"] + (["Noto Serif KR"] if fchoice in ("", "serif") and "Noto Serif KR" in html else [])
+        html, frep = embed.embed(html, families=fams, consent=a.yes)
         if frep.get("embedded"):
             note += f", fonts embedded ({frep['before_bytes'] // 1024} KB -> {frep['after_bytes'] // 1024} KB)"
         else:
             note += ", fonts: " + frep.get("reason", "not embedded")
             if frep.get("prompt"):
                 print("ASK TEACHER: " + frep["prompt"] + "  (agree -> rerun with --yes)")
-    html = html.replace("<head>", f'<head>\n<meta name="ts-seed" content="{d0["seed"]}">', 1) if "<head>" in html else html
+    if not online:
+        html = embed.go_offline(html)
+    metas = f'<meta name="ts-seed" content="{d0["seed"]}">\n<meta name="ts-look" content="{info["look"][6:]}">'
+    for hm in spec.get("head_meta") or []:
+        if isinstance(hm, dict) and hm.get("name") in HEAD_META_NAMES:
+            metas += '\n<meta name="%s" content="%s">' % (hm["name"], str(hm.get("content", "")).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;"))
+    html = html.replace("<head>", "<head>\n" + metas, 1) if "<head>" in html else html
     a.out.write_text(html, encoding="utf-8")
     size = len(html.encode("utf-8"))
+    print(info["look"])
+    if spec.get("device") == "phone" and spec["mechanic"] not in PORTRAIT_MECHS:
+        print(f"NOTE: {spec['mechanic']} has no portrait layout yet: held upright, the phone asks to be turned sideways (quiz has a full portrait layout)")
     print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)}{note})")
     if a.no_check:
         return 0
