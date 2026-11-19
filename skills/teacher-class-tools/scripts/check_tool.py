@@ -274,6 +274,78 @@ def play_checks(path: Path, html: str) -> list[tuple[str, str]]:
     return out
 
 
+def _juice_lint():
+    """shared/juice/juice_lint.py: inside the skill when installed, else the repo root."""
+    for d in (SHARED / "juice", SKILL.parent.parent / "shared" / "juice"):
+        if (d / "juice_lint.py").exists():
+            sys.path.insert(0, str(d))
+            import juice_lint  # noqa: WPS433
+            return juice_lint
+    return None
+
+
+def _wow_drive(tool: str):
+    """Real-time interaction script for the wow runtime lint (REAL clicks, real waits, so frame time and click response are honest)."""
+    def drive(pg, audit) -> None:
+        def click(sel: str, wait: int = 600) -> bool:
+            try:
+                el = pg.query_selector(sel)
+                if not el or not el.is_visible():
+                    return False
+                el.click(timeout=2000)
+                pg.wait_for_timeout(wait)
+                return True
+            except Exception:
+                return False
+
+        if tool == "timer":
+            click(".btn.main.wide", 400)
+            audit()
+            pg.evaluate("TOOL_API.off += (TOOL.data.minutes * 60 - 7) * 1000")
+            pg.wait_for_timeout(9500)  # last 5 seconds (swell + ticks) and the end (fanfare + burst)
+            audit()
+        elif tool == "picker":
+            for _ in range(3):
+                click(".btn.main", 3600)
+                audit()
+        elif tool == "teams":
+            for _ in range(3):
+                click(".btn.main", 1600)
+                audit()
+        elif tool == "bracket":
+            for _ in range(20):
+                if not click("button.slot:not(.wait)", 450):
+                    break
+            audit()
+            pg.wait_for_timeout(2500)
+        else:  # scoreboard
+            for i in range(6):
+                click(".sbtns .btn.main", 350)
+            audit()
+            if click("text=시상식", 300):
+                pg.wait_for_timeout(8800)
+                audit()
+    return drive
+
+
+def wow_checks(path: Path, html: str, tool: str, use: str) -> list[tuple[str, str]]:
+    """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, 4x-throttled fps, response time)."""
+    jl = _juice_lint()
+    if jl is None:
+        return [("WARN", "wow lint skipped: shared/juice not found")]
+    out = list(jl.static_checks(html, use))
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return out + [("WARN", "Playwright not installed: wow runtime lint skipped")]
+    try:
+        with sync_playwright() as p:
+            out += jl.runtime(p, path.resolve().as_uri(), _wow_drive(tool), use)
+    except Exception as exc:
+        out.append(("WARN", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
+    return out
+
+
 def main(path: Path, play: bool = True) -> int:
     if not path.exists():
         print(f"FAIL file not found: {path}")
@@ -282,6 +354,10 @@ def main(path: Path, play: bool = True) -> int:
     res = static_checks(html, path)
     if play:
         res += play_checks(path, html)
+        mm = re.search(r"window\.TOOL = (\{.*?\});</script>", html, re.S)
+        if mm:
+            T0 = json.loads(mm.group(1).replace("<\\/", "</"))
+            res += wow_checks(path, html, T0["tool"], T0["use"])
     else:
         res.append(("WARN", "headless checks skipped (--no-play)"))
     for lv, msg in res:

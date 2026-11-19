@@ -31,6 +31,9 @@ for _sub in ("design", "fonts", "tools"):
     sys.path.insert(0, str(SHARED / _sub))
 import design  # noqa: E402
 
+JUICE = SHARED / "juice" if (SHARED / "juice" / "juice.js").exists() else SKILL.parent.parent / "shared" / "juice"  # Game Wow kit (shared/juice): sound presets, particles, flash governor, podium, motion effects
+USE_JUICE = True  # --no-juice builds without the kit (before/after comparison only)
+
 TOOLS = ("timer", "picker", "teams", "bracket", "scoreboard")
 ANIMALS = ["호랑이", "토끼", "거북이", "독수리", "돌고래", "여우", "판다", "사자"]
 LIMITS = {"picker": (2, 60), "teams": (2, 60), "bracket": (2, 16)}
@@ -125,10 +128,14 @@ def build(spec: dict, fonts: bool = True, yes: bool = False) -> tuple[str, dict]
     js = (SKILL / "assets" / "tools.js").read_text(encoding="utf-8")
     css = (SKILL / "assets" / "tools.css").read_text(encoding="utf-8")
     blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
+    kit_js = kit_css = ""
+    if USE_JUICE and (JUICE / "juice.js").exists():
+        kit_js = (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
+        kit_css = (JUICE / "juice.css").read_text(encoding="utf-8") + "\n"
     html = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
-            f'<title>{title}</title>\n<style>/* TS:CSS BEGIN */{css_vars(tk)}\n{css}/* TS:CSS END */</style></head>\n'
+            f'<title>{title}</title>\n<style>/* TS:CSS BEGIN */{css_vars(tk)}\n{css}{kit_css}/* TS:CSS END */</style></head>\n'
             f'<body><div id="stage" class="land"><header><h1>{title}</h1><div class="tools" id="tb"></div></header><main id="main"></main></div>\n'
-            f'<script>window.TOOL = {blob};</script>\n<script>{js}</script>\n</body></html>\n')
+            f'<script>window.TOOL = {blob};</script>\n<script>{kit_js}</script>\n<script>{js}</script>\n</body></html>\n')
     report: dict = {"embedded": False}
     if fonts:
         try:
@@ -145,8 +152,11 @@ def main() -> int:
     ap.add_argument("--out", required=True)
     ap.add_argument("--no-check", action="store_true")
     ap.add_argument("--no-fonts", action="store_true")
+    ap.add_argument("--no-juice", action="store_true", help="build without the Game Wow kit (before/after comparison only)")
     ap.add_argument("--yes", action="store_true", help="agree to install the small font tool when missing")
     a = ap.parse_args()
+    global USE_JUICE
+    USE_JUICE = not a.no_juice
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
     try:
         html, rep = build(spec, not a.no_fonts, a.yes)

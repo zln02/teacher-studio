@@ -556,7 +556,9 @@ BG._update = function(dt){
   BG.t += dt; var t = BG.t, i, it;
   if ((NG.reduceMotion || NG.lite) && BG._drawn && BG._liteFrame++ % 30) return;
   bg.clearRect(0, 0, W, H);
-  var cs = getComputedStyle(document.documentElement), acc = cs.getPropertyValue("--accent").trim() || "#3ee6ff", pri = cs.getPropertyValue("--primary").trim() || "#ffd23f";
+  var nowMs = performance.now(); /* read the CSS colours twice a second, not every frame (forced style recalc cost ~7% CPU) */
+  if (!BG._cc || nowMs - BG._ccT > 500){ var cs = getComputedStyle(document.documentElement); BG._cc = {acc:cs.getPropertyValue("--accent").trim() || "#3ee6ff", pri:cs.getPropertyValue("--primary").trim() || "#ffd23f"}; BG._ccT = nowMs; }
+  var acc = BG._cc.acc, pri = BG._cc.pri;
   switch (BG.type){
     case "stars":
       for (i = 0; i < BG.items.length; i++){ it = BG.items[i]; it.x -= it.v * 40 * dt; if (it.x < 0) it.x = W; bg.globalAlpha = 0.4 + 0.6 * Math.abs(Math.sin(t * it.v * 2 + it.p)); bg.fillStyle = "#fff"; bg.fillRect(it.x, it.y, it.s * 4, it.s * 4); }

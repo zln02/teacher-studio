@@ -44,3 +44,6 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 3. `python3 scripts/build.py --spec spec.json --out game.html` (spec 오류는 「고칠 곳」으로 알려 줌) →
 4. 점검 `python3 scripts/check_game.py game.html` (build가 자동 실행) → 5. 결과물로 보여 주기.
 - 직접 코드가 필요할 때: 엔진 API는 `engine-api.md`만 본다. 새 방식은 `assets/components/core.js`의 `H.ask`(문제 흐름)를 재사용해 `COMP.mech.<이름>`을 하나 추가하고 `scripts/specs.py`의 `LIMITS`와 검사 규칙 한 줄을 더한다.
+
+## `juice` (선택): 손맛 값 조절
+`"juice": {"correct": {"burst": {"count": 20}}, "reveal": {"tensionMs": 2600}}` 처럼 일부만 적으면 돼요(기본값표 `shared/juice/README.md`). `"juice": false`면 키트 없이 만들어요(전후 비교용). 안전 한도(번쩍임 초당 3회 이하 등)는 값을 바꿔도 점검기가 지켜요.

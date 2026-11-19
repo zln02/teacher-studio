@@ -43,6 +43,9 @@ import embed  # noqa: E402  (shared/fonts/embed.py)
 import inline  # noqa: E402  (shared/vendor/inline.py)
 from build_game import build  # noqa: E402
 
+# Game Wow kit (shared/juice): inside the skill when installed (sync copies it), else the repo root
+JUICE = SKILL / "shared" / "juice" if (SKILL / "shared" / "juice" / "juice.js").exists() else SKILL.parent.parent / "shared" / "juice"
+USE_JUICE = True  # --no-juice builds the same spec without the kit (before/after comparison)
 COMP = SKILL / "assets" / "components"
 THEMES = SKILL / "assets" / "themes"
 LAYOUTS = SKILL / "assets" / "layouts"
@@ -171,9 +174,18 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
             parts.append((THEMES / f"{pt}.js").read_text(encoding="utf-8"))
     if theme != "default":
         parts.append((THEMES / f"{theme}.js").read_text(encoding="utf-8"))
-    logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
+    juice_on = USE_JUICE and spec.get("juice") is not False and (JUICE / "juice.js").exists()
+    pre = ""
+    if juice_on:  # kit first (globals), tuned by spec.juice (optional JSON); the adapter goes last so it wraps the final engine hooks
+        pre = (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
+        if isinstance(spec.get("juice"), dict):
+            pre += "Juice.configure(" + json.dumps(spec["juice"], ensure_ascii=False) + ");\n"
+        parts.append((COMP / "juice-game.js").read_text(encoding="utf-8"))
+    logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + pre + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
     css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8")
     css += "\n" + (LAYOUTS / "layouts.css").read_text(encoding="utf-8")
+    if juice_on:
+        css += "\n" + (JUICE / "juice.css").read_text(encoding="utf-8")
     if (THEMES / f"{theme}.css").exists():
         css += "\n" + (THEMES / f"{theme}.css").read_text(encoding="utf-8")
     if spec.get("custom_css"):  # AI-written extra flair; validated by specs.validate, scanned by check_game like all other css
@@ -196,9 +208,12 @@ def main() -> int:
     ap.add_argument("--tokens", type=Path)
     ap.add_argument("--seed", type=int, default=None, help="reproduce a look (same as design.seed in the spec); default = a fresh random look")
     ap.add_argument("--no-check", action="store_true")
+    ap.add_argument("--no-juice", action="store_true", help="build without the Game Wow kit (for before/after comparison only)")
     ap.add_argument("--no-fonts", action="store_true", help="keep the Google Fonts link instead of embedding Noto KR")
     ap.add_argument("--yes", action="store_true", help="agree to install the small font tool (fonttools) if it is missing")
     a = ap.parse_args()
+    global USE_JUICE
+    USE_JUICE = not a.no_juice
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
     d0 = spec.setdefault("design", {})
     if a.seed is not None:

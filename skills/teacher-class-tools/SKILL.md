@@ -43,10 +43,11 @@ Design uses the shared design system (palette from subject/grade/mood), one embe
 ## Classroom defaults
 - Class: text >= 34px, buttons >= 80px, board-readable digits (timer 230px). Personal: normal sizes; `large:true` for far screens.
 - Landscape 16:9 and portrait phone layouts. Words never split mid-word (keep-all).
-- Motion polish: timer = orbit ring + end pulse, picker = slot spin + impact-frame slam, teams = pop-in cards, scoreboard = count-up. All stop with prefers-reduced-motion. End alert is text plus optional sound; sound is a visible on/off button (default on for timer only).
+- Game Wow kit (`shared/juice`, built in): timer = last-5 s ticks + gentle swell, end = fanfare + burst + confetti; picker = rack focus + drumroll + impact frame + burst; teams = cards fly in; bracket = champion fanfare; scoreboard = count-up + squash and a 「🏆 시상식」 podium (teams only, 3rd -> 2nd -> 1st, tap to skip). No random rewards, no fake urgency, no ranking of individuals.
+- Always visible: 「🌙 효과 줄이기」 and 「🔇 소리 끄기」 buttons; the OS "reduce motion" setting is honoured too. Everything stops with reduced motion. End alert is text plus optional sound (default on for timer only). Tune/disable: build with `--no-juice` (comparison only); values in `shared/juice/README.md`.
 
 ## Checker (`scripts/check_tool.py`)
-PASS required: no external request, no storage/network APIs, no `<form>`, inputs autocomplete off, keep-all, token contrast >= 4.5:1, text/button size floors, no overflow (landscape + portrait), tool logic (no duplicate draws, fair teams, bracket champion, timer end, count-up), reduced motion leaves nothing animating, no JS errors. Needs Playwright for the headless part (system Chrome is used; audio muted); without it only static checks run.
+PASS required: no external request, no storage/network APIs, no `<form>`, inputs autocomplete off, keep-all, token contrast >= 4.5:1, text/button size floors, no overflow (landscape + portrait), tool logic (no duplicate draws, fair teams, bracket champion, timer end, count-up), reduced motion leaves nothing animating, no JS errors. Wow lint (`shared/juice/juice_lint.py`): flashes <= 3/s and none above 341x256 px, tap targets >= 44 px, class text >= 28 px, right/wrong never colour alone, 「효과 줄이기」+「소리 끄기」 present, >= 30 fps with the CPU throttled 4x, click -> next frame <= 100 ms. Needs Playwright for the headless part (system Chrome is used; audio muted); without it only static checks run.
 
 ## Files
 `scripts/build_tool.py` build · `scripts/check_tool.py` check · `scripts/shots.py` contact sheet for review · `assets/tools.js|css` runtime (copied as is) · `assets/spec-examples/` 5 specs.

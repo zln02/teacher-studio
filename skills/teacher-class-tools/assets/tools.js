@@ -8,6 +8,15 @@
   window.TOOL_API = API;
   var soundOn = !!T.sound;
   var AC = null;
+  var J = window.Juice || null;                /* Game Wow kit (shared/juice); everything below still works without it */
+  var OSRM = RM, userRM = false;
+  if (J) {
+    J.install({ camera: main });
+    J.hooks.reduced = function () { return RM; };
+    J.hooks.muted = function () { return !soundOn; };
+  }
+  var ICONS = { '호랑이': '🐯', '토끼': '🐰', '거북이': '🐢', '독수리': '🦅', '돌고래': '🐬', '여우': '🦊', '판다': '🐼', '사자': '🦁' };
+  var TEAMC = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#56B4E9', '#8C8C8C', '#7A5195'];
   var HINT = '실제 이름보다 번호(1번, 2번…)를 쓰는 걸 추천해요. 입력한 내용은 이 화면에만 있고 저장하거나 어디로 보내지 않아요. 창을 닫으면 사라져요.';
 
   function h(tag, cls, text, attrs) {
@@ -41,8 +50,16 @@
       o.connect(g); g.connect(AC.destination); o.start(t0); o.stop(t0 + dur + 0.05);
     } catch (e) { /* sound is optional */ }
   }
+  /* sound by meaning: the kit's presets when present, the old beeps otherwise */
+  function snd(name, o) {
+    if (!soundOn) return;
+    if (J) { J.sound.play(name, o); return; }
+    var f = { click: [660, 0.1], pop: [700, 0.1], correct: [880, 0.15], wrong: [330, 0.1], fanfare: [1047, 0.4], tickLast: [900, 0.08], tick: [500, 0.05] }[name] || [660, 0.1];
+    beep(f[0], f[1]);
+  }
   function impact() {
     if (RM || API.instant) return;
+    if (J) { J.fx.impactFrame(); J.kick(); return; }
     var d = h('div', 'impact');
     stage.appendChild(d);
     main.classList.remove('shake'); void main.offsetWidth; main.classList.add('shake');
@@ -106,7 +123,7 @@
   /* ---------- timer ---------- */
   function timer() {
     var mode = D.mode, total = D.minutes * 60000, elapsed = 0, running = false, last = 0, ended = false, raf = 0;
-    var C = 2 * Math.PI * 350;
+    var C = 2 * Math.PI * 350, lastSec = -1;
     var root = h('div', 'timer');
     var box = h('div', 'ringbox');
     box.innerHTML = '<svg viewBox="0 0 800 800" aria-hidden="true"><circle class="outer" cx="400" cy="400" r="388"/><circle class="trk" cx="400" cy="400" r="350"/>' +
@@ -140,15 +157,18 @@
     function toggle() {
       if (ended) { reset(true); return; }
       running = !running;
-      if (running) { last = now(); beep(660, 0.12); raf = requestAnimationFrame(tick); } else cancelAnimationFrame(raf);
+      if (running) { last = now(); snd('click'); raf = requestAnimationFrame(tick); } else cancelAnimationFrame(raf);
       draw();
     }
     function tick() {
       if (running) { var n = now(); elapsed += n - last; last = n; }
       if (mode === 'countdown' && elapsed >= total && !ended) {
         elapsed = total; running = false; ended = true;
-        impact(); beep(880, 0.35, 0); beep(880, 0.35, 0.5); beep(1175, 0.6, 1.0);
+        impact(); snd('fanfare');
+        if (J && !RM && !API.instant) { var rc = J.center(box); J.burst(rc.x, rc.y, { count: 22, scale: 1.2 }); J.confetti({ count: 50 }); }
+        if (!J) { beep(880, 0.35, 0); beep(880, 0.35, 0.5); beep(1175, 0.6, 1.0); }
       }
+      if (mode === 'countdown' && running) { var sl = Math.ceil((total - elapsed) / 1000); if (sl !== lastSec) { lastSec = sl; if (sl <= 5 && sl > 0) snd('tickLast'); } }
       draw();
       if (running) raf = requestAnimationFrame(tick);
     }
@@ -160,6 +180,7 @@
       prog.style.strokeDashoffset = (C * (1 - frac)).toFixed(2);
       orb.setAttribute('transform', 'rotate(' + (frac * 360).toFixed(2) + ' 400 400)');
       var warn = cd && running && sec <= D.warn_at && sec > 0;
+      if (J) J.timerPulse(digits, cd && running ? ms / 1000 : 99, 'translateY(-58%)');
       root.classList.toggle('running', running); root.classList.toggle('warn', warn); root.classList.toggle('ended', ended);
       state.textContent = ended ? '시간 끝!' : warn ? '곧 끝나요!' : running ? '진행 중' : (elapsed > 0 ? '멈춤' : '준비');
       startB.textContent = ended ? '다시 하기' : running ? '멈춤' : (elapsed > 0 ? '이어서' : '시작');
@@ -208,13 +229,15 @@
       var res = items[idx];
       function done() {
         busy = false; cur = res; drawn.push(res); reveals++;
-        show(res, true); if (RM) big.className = 'picked fade'; impact(); beep(784, 0.15); beep(1046, 0.3, 0.14); update();
+        show(res, true); if (RM) big.className = 'picked fade'; impact(); update();
+        if (J) { snd('correct', { streak: 6 }); if (!RM && !API.instant) { var pc = J.center(big); J.burst(pc.x, pc.y, { count: 22, scale: 1.3 }); J.squash(big); J.hitStop(); J.fx.rackFocus(rev, [chips, info], { clear: true }); } } else { beep(784, 0.15); beep(1046, 0.3, 0.14); }
       }
       if (RM || API.instant || items.length < 2) { done(); return; }
       busy = true; var n = 0, total = 16;
+      if (J) { snd('drumroll', { ms: 2300 }); J.fx.rackFocus(rev, [chips, info]); }
       (function loop() {
         if (n >= total) { done(); return; }
-        show(items[rnd(items.length)], false); beep(300 + n * 18, 0.05);
+        show(items[rnd(items.length)], false); if (!J) beep(300 + n * 18, 0.05);
         n++; setTimeout(loop, 60 + n * n * 1.1);
       })();
     }
@@ -256,12 +279,15 @@
       var cols = k <= 3 ? k : (k <= 6 ? 3 : 4), rows = Math.ceil(k / cols);
       area.style.display = 'grid'; area.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)'; area.style.gridTemplateRows = 'repeat(' + rows + ',1fr)';
       groups.forEach(function (g, i) {
-        var c = h('div', 'tcard card' + (anim && !RM ? ' pop' : '')); c.style.setProperty('--i', i);
+        var c = h('div', 'tcard card' + (anim && !RM && !J ? ' pop' : '')); c.style.setProperty('--i', i);
         c.appendChild(h('h3', '', (tn[i] || ((i + 1) + '모둠')) + ' · ' + g.length + '명'));
         var ch = h('div', 'chips'); g.forEach(function (n) { ch.appendChild(h('span', 'chip', n)); }); c.appendChild(ch);
         area.appendChild(c);
       });
-      if (anim) { impact(); beep(660, 0.1); beep(880, 0.2, 0.12); }
+      if (anim) {
+        if (J) { snd('whoosh'); if (!RM && !API.instant) { J.fx.layerExplode(area, { mode: 'in', radius: 160, ms: 560 }); J.kick(); setTimeout(function () { snd('pop'); }, 420); } }
+        else { impact(); beep(660, 0.1); beep(880, 0.2, 0.12); }
+      }
     }
     function edit() {
       editor({ title: '모둠 명단 (한 줄에 한 명)', lines: names, fill: true, limit: 60, min: 2, onSave: function (ls) { names = ls; groups = null; k = Math.min(k, Math.max(2, ls.length)); draw(); } });
@@ -303,7 +329,7 @@
       hist.push(JSON.stringify(W));
       W[r][m] = who;
       var j = m; for (var rr = r + 1; rr < R; rr++) { j = j >> 1; W[rr][j] = null; }
-      beep(700, 0.1); draw(r === R - 1);
+      snd('pop'); draw(r === R - 1);
     }
     function label(r) { var n = size / Math.pow(2, r); return n === 2 ? '결승' : n + '강'; }
     function matchEl(r, m) {
@@ -338,7 +364,11 @@
       if (mirror) for (var r2 = R - 2; r2 >= 0; r2--) { var c2 = size / Math.pow(2, r2 + 1); cols.appendChild(colEl(r2, c2 / 2, c2, false)); }
       var w = W[R - 1][0];
       champ.className = 'champ' + (w ? ' on' : ''); champ.textContent = w ? '우승: ' + w : ('대진표 · ' + names.length + '명');
-      if (w && celebrate) { impact(); beep(784, 0.15); beep(1046, 0.15, 0.15); beep(1318, 0.4, 0.3); }
+      if (w && celebrate) {
+        impact(); snd('fanfare');
+        if (J && !RM && !API.instant) { var bc = J.center(champ); J.burst(bc.x, bc.y, { count: 22, scale: 1.2 }); J.confetti({ count: 50 }); J.squash(champ); }
+        if (!J) { beep(784, 0.15); beep(1046, 0.15, 0.15); beep(1318, 0.4, 0.3); }
+      }
       undoB.style.opacity = hist.length ? '1' : '.6';
     }
     function edit() {
@@ -367,6 +397,7 @@
       armed = 0; reset.textContent = '0점으로'; hist.push(score.slice()); score = names.map(function () { return D.start; }); update();
     });
     tb.insertBefore(reset, tb.firstChild);
+    if (J) tb.insertBefore(btn('🏆 시상식', 'sm', podium), tb.firstChild);
     tb.insertBefore(btn('되돌리기', 'sm', function () { if (hist.length) { score = hist.pop(); update(); } }), tb.firstChild);
     tb.insertBefore(btn('모둠 이름', 'sm', function () {
       editor({ title: '모둠 이름 (한 줄에 하나, 2~8개)', lines: names, fill: false, limit: 8, min: 2, hint: '모둠 이름은 이 화면에만 있고 저장하거나 어디로 보내지 않아요.', onSave: function (ls) {
@@ -393,7 +424,10 @@
       });
       update(true);
     }
-    function add(i, d) { hist.push(score.slice()); score[i] += d; beep(d > 0 ? 880 : 330, 0.1); update(); }
+    function add(i, d) {
+      hist.push(score.slice()); score[i] += d; update();
+      if (d > 0) { snd('correct', { streak: Math.min(8, 1 + d) }); if (J && !RM && !API.instant && vals[i]) { J.squash(vals[i]); var sc = J.center(vals[i]); J.burst(sc.x, sc.y, { count: 12 + Math.min(10, d) }); } } else snd('click');
+    }
     function update(skip) {
       var max = Math.max.apply(null, score), top = score.filter(function (s) { return s === max; }).length;
       badges.forEach(function (b, i) { b.style.display = max > D.start && score[i] === max ? '' : 'none'; b.textContent = top > 1 ? '공동 1위' : '1위'; });
@@ -410,6 +444,22 @@
         if (p < 1) requestAnimationFrame(f); else { shown[i] = target; vals[i].textContent = String(target); }
       })(t0);
     }
+    /* podium: teams only, 3rd -> 2nd -> 1st (never individuals); a drumroll first, tap anywhere to skip */
+    function podium() {
+      var max = Math.max.apply(null, score), ov = h('div', 'ov'), card = h('div', 'ovcard card'), host = h('div', 'pbox'), ctl = null, tm = 0;
+      function close() { clearTimeout(tm); if (ctl) ctl.skip(); if (ov.parentNode) ov.parentNode.removeChild(ov); API.podiumEl = null; }
+      card.appendChild(h('h2', '', '🏆 시상식'));
+      if (max <= D.start) { card.appendChild(h('p', 'hint', '아직 점수가 없어요. 점수를 올린 뒤 다시 눌러 주세요.')); }
+      else card.appendChild(host);
+      var row = h('div', 'row'); row.appendChild(btn('닫기', 'main', close)); card.appendChild(row); ov.appendChild(card); main.appendChild(ov); API.podiumEl = host;
+      if (max > D.start) {
+        var teamsArr = names.map(function (n, i) { return { name: n, icon: ICONS[n] || '⭐', color: TEAMC[i % TEAMC.length], score: score[i] }; });
+        var go = function () { ctl = J.podium(host, teamsArr, { onDone: function () { if (!RM && !API.instant) { J.fx.impactFrame(); } } }); };
+        if (RM || API.instant) go(); else { host.appendChild(h('div', 'hint', '🥁 결과를 발표해요!')); snd('drumroll', { ms: 1500 }); tm = setTimeout(go, 1500); }
+        card.addEventListener('pointerdown', function (e) { if (!/BUTTON/.test(e.target.tagName)) { if (ctl) ctl.skip(); else { clearTimeout(tm); host.textContent = ''; go(); if (ctl) ctl.skip(); } } });
+      }
+    }
+    API.podium = podium;
     API.step = function () { add(0, steps[0]); return true; };
     API.state = function () { return { tool: 'scoreboard', teams: names.slice(), scores: score.slice(), shown: vals.map(function (v) { return v.textContent; }) }; };
     API.relayout = build;
@@ -425,9 +475,11 @@
     if (was !== stage.className && API.relayout) API.relayout();
   }
   var tb = document.getElementById('tb');
-  var snd = btn('', 'sm', function () { soundOn = !soundOn; paintSnd(); beep(660, 0.1); });
-  function paintSnd() { snd.textContent = '소리 ' + (soundOn ? '켜짐' : '꺼짐'); }
-  paintSnd(); tb.appendChild(snd);
+  var sndB = btn('', 'sm', function () { soundOn = !soundOn; paintSnd(); snd('click'); });
+  function paintSnd() { sndB.textContent = soundOn ? '🔇 소리 끄기' : '🔊 소리 켜기'; sndB.setAttribute('aria-pressed', soundOn ? 'false' : 'true'); }
+  var fxB = btn('', 'sm', function () { if (OSRM) return; userRM = !userRM; RM = userRM; if (J) J.setReduce(userRM); paintFx(); });
+  function paintFx() { fxB.textContent = RM ? '✨ 효과 켜기' : '🌙 효과 줄이기'; fxB.setAttribute('aria-pressed', RM ? 'true' : 'false'); if (OSRM) { fxB.title = '기기 설정에서 이미 효과가 줄어 있어요'; } }
+  paintSnd(); paintFx(); tb.appendChild(fxB); tb.appendChild(sndB);
   tb.appendChild(btn('전체화면', 'sm', function () {
     var d = document, el = d.documentElement;
     try { if (d.fullscreenElement) d.exitFullscreen(); else if (el.requestFullscreen) el.requestFullscreen(); } catch (e) { /* not allowed */ }

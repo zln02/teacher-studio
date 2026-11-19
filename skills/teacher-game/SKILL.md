@@ -72,6 +72,13 @@ python3 scripts/design_review.py game.html --out review/
 제목·문제·정답·오답·결과 화면을 찍어 **접촉 시트 PNG**와 수치(장식 밀도·휑함·색 수·시선·글자 대비·겹침)를 만든다. **PNG를 직접 눈으로 보고** `references/design-rubric.md` 8가지(장면·시선·휑함·캐릭터/소품·축하 연출 …)를 확인 → 모자라면 spec의 `design.words`/`mood`/`seed`만 고쳐 다시 build (최대 2번). 수치가 옛 스킨 9개 기준보다 낮으면 WARN과 고칠 방법이 나온다.
 - 한 줄 명령: `python3 ../teacher-studio/scripts/studio.py build game --spec spec.json --open`
 
+### 4.3단계 · Game Wow kit (자동 포함, 따로 할 일 없음)
+모든 방식(퀴즈·서바이벌·방탈출·짝맞추기·빙고·말판·분류)에 `shared/juice` 키트가 자동으로 붙어요: 정답 = 눌림 찌그러짐+멈칫+파티클+화면 살짝 흔들림+3겹 효과음(연속 정답이면 음이 한 칸씩 올라감), 오답 = 부드러운 흔들림 한 번+✖+글자(색만으로 구분 금지, 놀리지 않음), 3·5·10연속 축하, 타이머 마지막 5초는 깜빡임 없이 부드럽게 커졌다 작아짐, 마지막 문제 전 음악 빨라짐, 결과 = 북소리→숫자 감속→폭죽 / 팀전은 시상대(3등→2등→1등).
+- 조절: spec의 `"juice": {"correct": {"burst": {"count": 20}}}` (값표는 `shared/juice/README.md`), 끄기 `"juice": false`.
+- 화이트햇만: 칭찬·성장·진행만. 랜덤 보상·가짜 긴박감·연속 끊김 압박·개인 망신 없음 (팀 시상대만).
+- 「효과 줄이기」·「소리 끄기」는 항상 있고, 컴퓨터의 '동작 줄이기' 설정도 따라요. `check_game.py`가 번쩍임(초당 3회·341×256px)·글자 28px·터치 44px·색만 구분·4배 느린 CPU에서 30fps·클릭 반응 100ms를 점검해요.
+- 전후 비교 증거: `python3 scripts/wow_proof.py --spec <spec> --out <폴더>` (GIF 3개 + 전/후 비교표).
+
 ### 4.5단계 · 직접 코드가 필요할 때만
 - 부품에 없는 방식(예: 끌어서 쏘기, 지도 찾기)일 때만. `assets/engine.html`은 읽지 않는다(76KB). 함수는 `references/engine-api.md`만.
 - 가장 가까운 `assets/components/<방식>.js`를 참고해 새 부품 하나만 짜고, `H.ask`(문제 흐름)·`H.finish`는 그대로 재사용한다. 세계관 그림이 필요하면 `assets/themes/`에 테마 하나를 더한다.
@@ -119,4 +126,6 @@ python3 scripts/design_review.py game.html --out review/
 | `scripts/design.py` · `build.py` · `check_game.py` | 디자인 값 / 조립 / 점검 |
 | `scripts/theme_auto.py` · `assets/themes/` | 분위기 낱말 → 부품 조합(배경·캐릭터·소품·연출). 이식 테마 9개는 완성품이 아니라 **부품 창고**(진행자 캐릭터·무대 장치·배경)예요 |
 | `scripts/design_review.py` · `references/design-rubric.md` | 디자인 점검(그림 보기 + 수치) |
+| `assets/components/juice-game.js` · `shared/juice/` | Game Wow kit 연결부 / 키트 본체(효과·소리·시상대·접근성 점검). 값표는 `shared/juice/README.md` |
+| `scripts/wow_proof.py` | 같은 spec의 키트 전/후 비교 GIF·시트 |
 | `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 목소리 `voice/voice.js`(자동 포함), 보이지 않는 만든이 표시 `tools/stamp.py`(자동), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |
