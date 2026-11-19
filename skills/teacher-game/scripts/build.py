@@ -277,13 +277,26 @@ def main() -> int:
     ap.add_argument("--tokens", type=Path)
     ap.add_argument("--seed", type=int, default=None, help="reproduce a look (same as design.seed in the spec); default = a fresh random look")
     ap.add_argument("--no-check", action="store_true")
+    ap.add_argument("--ok-content", action="store_true", help="build even when the question review has advice (the user supplied these exact questions, or you already revised once)")
+    ap.add_argument("--verbose", action="store_true", help="print every check line (default: only FAIL/WARN lines and the RESULT line)")
+    ap.add_argument("--review", nargs="?", const="", default=None, metavar="DIR", help="after the check, also write the design contact sheet PNG (design_review.py) into DIR (default: a review/ folder next to --out)")
     ap.add_argument("--no-juice", action="store_true", help="build without the Game Wow kit (for before/after comparison only)")
     ap.add_argument("--no-fonts", action="store_true", help="do not embed Noto KR (the page then uses system fonts; a Google Fonts link is added only when the spec has \"online\": true)")
     ap.add_argument("--yes", action="store_true", help="agree to install the small font tool (fonttools) if it is missing")
     a = ap.parse_args()
     global USE_JUICE
     USE_JUICE = not a.no_juice
-    spec = json.loads(a.spec.read_text(encoding="utf-8"))
+    try:
+        spec = json.loads(a.spec.read_text(encoding="utf-8-sig"))
+    except FileNotFoundError:
+        print(f"SPEC FIX NEEDED:\n - spec file not found: {a.spec} (write the spec first; examples: {HERE.parent / 'assets' / 'spec-examples'})")
+        return 2
+    except ValueError as exc:
+        print(f"SPEC FIX NEEDED:\n - the spec is not valid JSON: {exc} (check commas, quotes and brackets)")
+        return 2
+    if not isinstance(spec, dict):
+        print("SPEC FIX NEEDED:\n - the spec must be one JSON object {...}")
+        return 2
     d0 = spec.setdefault("design", {})
     if a.seed is not None:
         d0["seed"] = a.seed
@@ -294,6 +307,11 @@ def main() -> int:
     if errs:
         print("SPEC FIX NEEDED:\n - " + "\n - ".join(errs))
         return 2
+    advice = specs.content_review(spec)
+    if advice and not a.ok_content and not a.no_check:  # stop in a second, before the slow part: content is the one thing only the author can fix
+        print("CONTENT FIX (edit these questions in the spec and run the same command again; nothing was built):" + "".join(chr(10) + " - " + x for x in advice))
+        print("If the user supplied these exact questions, or you already revised once, add --ok-content to build as is.")
+        return 3
     if d0.get("palette_from"):
         d0["palette_from"] = design.resolve_palette_from(d0["palette_from"], a.spec.resolve().parent)
     try:
@@ -339,10 +357,27 @@ def main() -> int:
     if spec.get("device") == "phone" and spec["mechanic"] not in PORTRAIT_MECHS:
         print(f"NOTE: {spec['mechanic']} has no portrait layout yet: held upright, the phone asks to be turned sideways (quiz has a full portrait layout)")
     print(f"built {spec['mechanic']} -> {a.out} ({size // 1024} KB, palette={tokens['palette']}, theme={info['theme']}, balanced={info.get('balanced', 0)}{note})")
+    for line in advice:  # built anyway on --ok-content: keep the advice visible
+        print("CONTENT (kept as is) " + line)
     if a.no_check:
         return 0
     r = subprocess.run([sys.executable, str(HERE / "check_game.py"), str(a.out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
-    print(r.stdout.strip())
+    lines = r.stdout.strip().splitlines()
+    if a.verbose:
+        print("\n".join(lines))
+    else:  # short by default: the lines to act on + the verdict
+        shown = [ln for ln in lines if ln.startswith(("FAIL", "WARN", "RESULT"))]
+        passed = sum(1 for ln in lines if ln.startswith("PASS"))
+        print("\n".join(shown) if shown else "\n".join(lines[-3:]))
+        print(f"({passed} checks passed; --verbose lists them)")
+    if a.review is not None:
+        rdir = Path(a.review) if a.review else a.out.resolve().parent / "review"
+        rv = subprocess.run([sys.executable, str(HERE / "design_review.py"), str(a.out), "--out", str(rdir)], capture_output=True, text=True, encoding="utf-8", errors="replace")
+        print((rv.stdout or rv.stderr).strip())
+    if r.returncode == 0:
+        print(f"READY {a.out.resolve()}")
+    else:
+        print("NOT READY: change the spec for each FAIL line above and run the same command again (2 tries at most, then tell the user plainly).")
     return r.returncode
 
 

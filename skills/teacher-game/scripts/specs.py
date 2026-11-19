@@ -198,3 +198,54 @@ def balance_choices(items: list[dict], seed: int = 0) -> int:
             moved += 1
         it["choices"], it["answer"] = rest, want
     return moved
+
+
+NEGATIVE_Q = ("아닌", "않은", "않는", "틀린", "잘못", "없는 것")
+CATCH_ALL = ("모두 정답", "모두 맞", "위의 모두", "위 모두", "정답 없음", "답 없음", "둘 다", "all of the above", "none of the above")
+
+
+def content_review(spec: dict) -> list[str]:
+    """Advice on the QUESTIONS (not the code): what an experienced teacher would fix before class.
+    Never blocks a build; build.py prints each line as `CONTENT ...`. Fix the spec once, do not loop."""
+    items = [i for i in (spec.get("items") or []) if isinstance(i, dict)]
+    mc = [i for i in items if isinstance(i.get("choices"), list) and len(i["choices"]) >= 2 and i.get("type") != "ox"
+          and isinstance(i.get("answer"), int) and 0 <= i["answer"] < len(i["choices"])]
+    asked = [i for i in items if isinstance(i.get("q"), str)]
+    out: list[str] = []
+    board = spec.get("use", "class") == "class" and spec.get("device", "board") == "board"
+    if len(mc) >= 5:
+        longest = [k for k, i in enumerate(mc) if all(len(str(i["choices"][i["answer"]])) > len(str(c)) + 1
+                                                     for j, c in enumerate(i["choices"]) if j != i["answer"])]
+        if len(longest) / len(mc) > 0.5:
+            out.append(f"the correct choice is the longest one in {len(longest)}/{len(mc)} questions (students guess by length) -> make wrong choices about as long as the right one")
+    catch = [k + 1 for k, i in enumerate(mc) if any(w in str(c).lower() for c in i["choices"] for w in CATCH_ALL)]
+    if catch:
+        out.append(f"question {catch[:4]} uses a catch-all choice (모두 정답 / 정답 없음 / 둘 다) -> replace it with a real, plausible wrong answer")
+    if spec.get("mechanic") in QUIZ_LIKE and spec.get("use", "class") == "class":
+        noexp = [k + 1 for k, i in enumerate(asked) if not str(i.get("exp", "")).strip()]
+        if noexp:
+            out.append(f"{len(noexp)} question(s) have no `exp` (first: {noexp[:4]}) -> add one line that says WHY the answer is right; a wrong team learns from it")
+    echo = [k + 1 for k, i in enumerate(mc)
+            if re.match(re.escape(str(i["choices"][i["answer"]]).strip()) + r"\s*[:：=—–-]", str(i.get("exp", "")).strip())]
+    if echo:
+        out.append(f"`exp` of question {echo[:4]} starts with the answer as a label (「토큰: …」); the screen already prints 「정답: 토큰 — 」 before it -> start with the reason")
+    seen: dict[str, int] = {}
+    for k, i in enumerate(asked):
+        key = re.sub(r"\s+", "", i["q"])
+        if key in seen:
+            out.append(f"questions {seen[key] + 1} and {k + 1} are the same sentence -> change one")
+            break
+        seen[key] = k
+    if board:
+        longq = [k + 1 for k, i in enumerate(asked) if len(i["q"]) > 48]
+        if longq:
+            out.append(f"{len(longq)} question(s) are over 48 characters (first: {longq[:4]}): hard to read from the back row -> one sentence, about 25-40 characters")
+        longc = [k + 1 for k, i in enumerate(mc) if any(len(str(c)) > 16 for c in i["choices"])]
+        if longc:
+            out.append(f"{len(longc)} question(s) have a choice over 16 characters (first: {longc[:4]}): it will shrink or wrap -> shorten to a word or short phrase")
+    neg = [k + 1 for k, i in enumerate(asked) if any(w in i["q"] for w in NEGATIVE_Q)]
+    if len(asked) >= 5 and len(neg) / len(asked) > 0.3:
+        out.append(f"{len(neg)}/{len(asked)} questions ask for the WRONG one (아닌/않은/틀린) -> keep at most 2 in 10")
+    if board and spec.get("mechanic") == "quiz" and (spec.get("teams") or 0) >= 2 and not spec.get("timer"):
+        out.append('team game on the board without a timer -> add "timer": 20 (20-30 s keeps turns moving)')
+    return out
