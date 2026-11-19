@@ -12,6 +12,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -30,7 +31,7 @@ PLAN = {
     "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "juice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
     "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti", "qrcodegen"]},
     "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
-    "teacher-studio": {"design": False, "fonts": False, "tools": True, "video_eyes": True, "vendor": []},
+    "teacher-studio": {"design": True, "fonts": False, "tools": True, "video_eyes": True, "vendor": []},
     "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
     "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
 }
@@ -105,6 +106,36 @@ def _stage_source_in_sync() -> None:
         target.write_bytes(game.read_bytes())
 
 
+DOC_FILES = ("README.md", "README.en.md", "INSTALL.md", "MAP.md")
+WORD_NUM = {"다섯": 5, "여섯": 6, "일곱": 7, "여덟": 8}
+COUNT_PATTERNS = (  # a number next to a skills / zip / folders noun
+    re.compile(r"(?:스킬|zip|ZIP|폴더)\s*(\d+)\s*개"), re.compile(r"(\d+)\s*개\s*(?:스킬|zip|ZIP)"),
+    re.compile(r"(?:all|the)\s+(\d+)\s+(?:teacher-\S+\s+)?skills", re.I), re.compile(r"(\d+) (?:skills|zips)", re.I),
+)
+
+
+def skill_count() -> int:
+    return sum(1 for s in (ROOT / "skills").iterdir() if (s / "SKILL.md").exists())
+
+
+def doc_count_problems() -> list[str]:
+    """Docs must say as many skills/zips as skills/ has folders (INSTALL.md once said 5 while 7 existed)."""
+    want = skill_count()
+    files = [ROOT / f for f in DOC_FILES] + sorted((ROOT / "docs" / "training").glob("*.md"))
+    out = []
+    for f in files:
+        if not f.exists() or f.name == "ai-cheating-research.md":
+            continue
+        for n, line in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            found = [int(m.group(1)) for pat in COUNT_PATTERNS for m in pat.finditer(line)]
+            if re.search(r"스킬|zip|묶음|teacher-", line):
+                found += [WORD_NUM[m.group(1)] for m in re.finditer(r"(다섯|여섯|일곱|여덟)\s*개(?:가 한 묶음|의 스킬| 스킬)", line)]
+            for v in found:
+                if v >= 5 and v != want:  # small numbers (3 skills, 1 skill) are other things
+                    out.append(f"{f.relative_to(ROOT).as_posix()}:{n} says {v} skills/zips, skills/ has {want}")
+    return out
+
+
 def check() -> int:
     """Report every drifted copy; return 1 if any."""
     problems: list[str] = []
@@ -117,6 +148,7 @@ def check() -> int:
             problems.append(f"missing copy: {rel}")
         elif dst.read_bytes() != data:
             problems.append(f"drifted copy: {rel} (edit shared/ and run tools/sync_shared.py)")
+    problems += doc_count_problems()
     claude = (ROOT / "CLAUDE.md").read_text(encoding="utf-8").splitlines()[1:]
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").splitlines()[1:]
     if claude != agents:

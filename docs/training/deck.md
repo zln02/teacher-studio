@@ -97,9 +97,9 @@
 
 ## 14. [steps] 다섯 단계면 끝나요
 - kicker: 설치 · Claude 앱 (zip 올리기)
-  - 1) school 1. 파일 받기: github.com/zln02/teacher-studio 의 dist 폴더에서 zip 5개
+  - 1) school 1. 파일 받기: github.com/zln02/teacher-studio 의 dist 폴더에서 zip 7개
   - 2) home 2. 설정 열기: Claude 앱 → Customize(맞춤 설정) → Skills
-  - 3) check 3. 하나씩 올리기: zip 5개를 차례로 올리기
+  - 3) check 3. 하나씩 올리기: zip 7개를 차례로 올리기
   - 4) robot 4. 코드 실행 확인: 설정 → Capabilities에서 코드 실행·파일 만들기 켜져 있는지
   - 5) chat 5. 첫 말 걸기: 새 대화에서 「교사 스튜디오 시작」
 - 발표자 메모: [25~35분] 화면 캡처 자리: 단계마다 [스크린샷 삽입 예정 — 슬라이드 도구가 이미지를 넣을 수 없어 종이 안내문·별도 창으로]. 메뉴 이름은 앱 버전마다 조금 달라요. 10분 안에 못 끝나는 모둠은 발표자 PC 화면을 따라가며 보기만 해도 된다. 설치가 어려운 모둠은 일반 채팅(깡통)으로 먼저 만들어 보게 한다.
