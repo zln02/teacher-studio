@@ -133,5 +133,22 @@
    "bytes": 39337,
    "sha256": "b089855caf16185c61421ea4927c1b213cf9468940d71fa8ab11ef83662dcc84"
   }
+ },
+ "install_on_need": {
+  "_note": "NOT vendored, NOT redistributed: installed with pip on the teacher's own PC after consent (shared/tools/ensure.py). LICENSE files were read from the installed packages.",
+  "python-pptx": {
+   "version": "1.0.2",
+   "license": "MIT",
+   "copyright": "2013 Steve Canny",
+   "use": "editable .pptx export (skills/teacher-slides/scripts/deck_pptx.py)",
+   "license_file": "python_pptx-1.0.2.dist-info/LICENSE"
+  },
+  "openpyxl": {
+   "version": "3.1.5",
+   "license": "MIT",
+   "copyright": "2010 openpyxl",
+   "use": "optional .xlsx summary export with native charts (skills/teacher-data/scripts/export_xlsx.py)",
+   "license_file": "openpyxl-3.1.5.dist-info/LICENCE.rst"
+  }
  }
 }

@@ -32,7 +32,7 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 | 타이머·뽑기·모둠 나누기·대진표·점수판 | `teacher-class-tools` (spec -> `build_tool.py`) |
 | 퀴즈·종 울리기·OX · 방탈출·미션·협동 · 단어·분류·짝·끌어서·태블릿 · 빙고·보드게임·그 밖의 게임 (**모든 새 게임 요청**) | `teacher-game` 「직접 제작」: `studio.py build game --spec` (spec -> build -> check). Never `fire` for a new request |
 | **옛 완제품 스킨을 이름으로 지목** (「tv-studio 퀴즈쇼」「종 울리기 그대로」「같은 스킨 다시」) | only then `studio.py fire game/<quiz-show·escape-room·drag-deliver>/<skin>` (`teacher-game/assets/missiles/*/README.md`) |
-| 발표·슬라이드·PPT(웹)·연수·회사·모임·학부모 설명회·학부모 상담 자료·총회 | `studio.py build slides --spec deck.json` (`teacher-slides`; purpose 「학부모 설명회」 for parents) |
+| 발표·슬라이드·PPT(웹)·연수·회사·모임·학부모 설명회·학부모 상담 자료·총회 | `studio.py build slides --spec deck.json` (`teacher-slides`; purpose 「학부모 설명회」 for parents). 「PPT·파워포인트·피피티·.pptx」나 「나중에 고칠 거예요」면 **편집되는 .pptx도 같이** 드린다: `deck.py --pptx` (선생님 .pptx 양식이 있으면 `--template`) |
 | 과목 소개·첫 시간·홍보·개인 영상 | `studio.py fire motion/subject-intro/<science-neon·korean-brush·english-news>` |
 | 수업 시작 화면·카운트다운·오늘의 주제 | `studio.py fire motion/lesson-opening/<bold-pop·calm-paper>` |
 | 가정통신문·안내문·공문·워드·한글·PDF·PPT·엑셀 **파일** | `doctor`의 `official_doc_skills`(docx·pptx·xlsx·pdf·hwp-docs)가 있으면 파일은 그쪽에, 구성·디자인은 우리가; 없으면 채팅에 글로 써 주고 필요하면 R5 |

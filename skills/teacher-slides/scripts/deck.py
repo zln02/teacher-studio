@@ -4,7 +4,7 @@
 """Spec -> designed slide deck (one offline HTML). `studio.py build slides --spec deck.json` calls this.
 
 Usage:
-    python3 deck.py --spec deck.json [--out deck.html] [--seed N] [--purpose 연수] [--mood 깔끔하게] [--style minimal-premium] [--review DIR]
+    python3 deck.py --spec deck.json [--out deck.html] [--seed N] [--purpose 연수] [--mood 깔끔하게] [--style minimal-premium] [--review DIR] [--pptx [OUT.pptx]] [--template my.pptx]
 Flow: normalise + validate spec -> pick style/palette from words (fresh seed unless --seed / spec.seed; the seed is printed) ->
       per-slide layout variants (no repeat in a row) -> HTML + CSS + runtime -> check_page (static) -> optional slides_review (screenshots, metrics).
 Legacy lesson-deck content (items[].layout) is accepted too. `studio.py fire slides/...` (old missiles) is untouched.
@@ -233,6 +233,9 @@ def main() -> int:
     ap.add_argument("--mood", default="")
     ap.add_argument("--style", default="")
     ap.add_argument("--no-check", action="store_true")
+    ap.add_argument("--pptx", nargs="?", const="auto", metavar="OUT.pptx", help="ALSO write an editable PowerPoint (.pptx) from the same spec (python-pptx, installed on first need)")
+    ap.add_argument("--template", type=Path, help="with --pptx: the teacher's own .pptx/.potx - its masters and layouts are used (template-first)")
+    ap.add_argument("--yes", action="store_true", help="the teacher agreed to install python-pptx")
     ap.add_argument("--review", type=Path, help="also write the contact sheet + metrics into this folder")
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
@@ -255,6 +258,19 @@ def main() -> int:
         code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode
     if a.review:
         code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review)]).returncode or code
+    if a.pptx:
+        px = out.with_suffix(".pptx") if a.pptx == "auto" else Path(a.pptx)
+        import deck_pptx
+        deck_pptx._need_pptx(a.yes)
+        pr_ = deck_pptx.build_pptx(spec, a.spec.resolve().parent, px, rep["seed"], ov, a.template)  # same seed = same style and colours as the HTML
+        if pr_["ok"]:
+            print(f"built {px} (편집할 수 있는 PPT) slides={pr_['slides']}")
+            print("NOTE", pr_["font_note"])
+            print("NOTE PPT에서는 단계별 나타나기·타이머·수식·아이콘 그림이 단순해져요.")
+            print(f"READY {px}")
+        else:
+            code = code or 1
+            print("FIX pptx:", "; ".join(pr_["errors"]))
     print(f"READY {out}")
     return code
 

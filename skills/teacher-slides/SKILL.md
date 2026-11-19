@@ -14,7 +14,7 @@ The user's own template or reference comes first. (The user-template weapon - bu
 
 ## Words
 - Never show code or file names to the teacher. 「PPT 만들어 줘」「칠판에 띄울 거」「글씨 더 크게」 -> `references/teacher-language.md`.
-- Real `.pptx` file wanted -> 「웹 슬라이드로 만들고 PDF(Ctrl+P → PDF로 저장)로 줄 수 있어요」 and build the web deck.
+- **Editable PowerPoint** (「PPT」「파워포인트」「피피티」「.pptx」, or 「나중에 내가 고칠 거예요」) -> ALWAYS deliver an editable `.pptx` next to the web deck: add `--pptx` (same spec, same look; real text boxes, native charts and tables, speaker notes, QR as shapes). Say honestly what changes in PPT: 「단계별 나타나기·타이머·수식·아이콘 그림은 단순해져요」 and 「글꼴은 PC에 없으면 비슷한 글꼴로 바뀌어요」. python-pptx is installed on first need only after the teacher says yes (`shared/tools/ensure.py`, `--yes`). The teacher's own `.pptx/.potx` -> `--pptx --template mine.pptx` (their masters and layouts are used: template first). If the official `pptx` skill is listed by `doctor` (`official_doc_skills`) you may hand the file work to it for extras (animations, SmartArt, tracked edits); we still bring the structure, design and checks. PDF: 「Ctrl+P → PDF로 저장」.
 - Intro video / countdown -> teacher-motion. Quiz game -> teacher-game.
 
 ## Flow
@@ -22,7 +22,7 @@ The user's own template or reference comes first. (The user-template weapon - bu
 2. **Outline table** (번호 | 종류 | 화면 글 | 메모) -> teacher says OK. Skip if they said 「바로 만들어」 (show the table with the result).
 3. **Write the spec** (`deck.json`, below) and build:
 ```
-python3 scripts/deck.py --spec deck.json --out deck.html --review review/      # or: studio.py build slides --spec deck.json
+python3 scripts/deck.py --spec deck.json --out deck.html --review review/ [--pptx]      # or: studio.py build slides --spec deck.json
 ```
    The seed is printed and stored in the file; `--seed N` rebuilds the same look, no seed = a fresh look every time (say so: 「마음에 안 들면 다시 뽑아 드려요」).
 4. **Look.** Open `review/<name>-sheet.png` and judge every slide: *would a professional designer ship this?* Fix the spec (shorter text, other type, `--style`), rebuild, max 2 loops. `check_page.py` + `slides_review.py` must PASS (the build prints both).

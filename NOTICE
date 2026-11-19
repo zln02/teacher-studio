@@ -79,6 +79,9 @@ This product includes third-party components:
 18. QR Code generator library (Python) 1.8.0 — Copyright (c) Project Nayuki — MIT License
    Location: shared/vendor/qrcodegen/ (copied into teacher-slides). Unmodified; runs at build time only (QR slides become inline SVG). License text: LICENSE in that folder.
 
+19. python-pptx 1.0.2 (Steve Canny, MIT) and openpyxl 3.1.5 (MIT) — install-on-need, NOT vendored: pip installs them on the teacher's own PC after
+   consent (shared/tools/ensure.py). Used for the editable .pptx export and the optional .xlsx summary. Listed under "install_on_need" in shared/vendor/manifest.json.
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 
