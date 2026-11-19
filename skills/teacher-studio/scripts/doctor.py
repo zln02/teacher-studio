@@ -29,7 +29,7 @@ except ImportError:
     ensure = None
 DOC_SKILLS = {"pptx": "PPT", "docx": "워드", "xlsx": "엑셀", "pdf": "PDF"}
 CACHE = Path.home() / ".teacher-studio" / "env.json"
-NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면", "teacher-law": "⚖️ 법률 안내"}
+NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면", "teacher-law": "⚖️ 법률 안내", "teacher-class-tools": "🧰 타이머·뽑기·모둠·대진표·점수판", "teacher-data": "📊 엑셀·CSV 분석"}
 
 
 def guess_agent() -> str:
@@ -160,7 +160,7 @@ def report(agent: str = "") -> dict:
         f"· 문서 파일: {doc_line}",
         f"· 내 설정: {_prefs_line()}  (바꾸려면 「설정 바꿔 줘」)",
         f"· 처음 필요할 때 설치되는 도구: {', '.join(caps['tools']['on_first_need']) or '없음 (모두 준비됨)'}",
-        "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집, 🧰 수업 도구",
+        "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집",
     ]
     if not caps["python"].startswith("3"):
         lines.append("⚠️ 파이썬이 없어 조립 도구 대신 Claude가 직접 파일을 써요 (느려질 수 있어요)")
