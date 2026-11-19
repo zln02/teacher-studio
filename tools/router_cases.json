@@ -1,0 +1,416 @@
+{
+ "_about": "Router eval cases. route: acceptable route(s); direction: True=options first expected, False=build now, null=either; max_questions: questions allowed in the first reply; must_not: reads_raw_data, asks_student_info, refuses, privacy_note (over-trigger), no_privacy_note (privacy note required), route:<x>.",
+ "cases": [
+  {
+   "id": "c01",
+   "request": "수업 시작용 뭐 재밌는 거",
+   "route": [
+    "game",
+    "motion",
+    "class-tools"
+   ],
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "tags": [
+    "dryrun",
+    "vague"
+   ]
+  },
+  {
+   "id": "c02",
+   "request": "학부모 상담 자료 좀",
+   "route": [
+    "slides",
+    "co-plan",
+    "docfile"
+   ],
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "asks_student_info",
+    "refuses",
+    "route:law"
+   ],
+   "tags": [
+    "dryrun",
+    "privacy-overtrigger"
+   ]
+  },
+  {
+   "id": "c03",
+   "request": "우리 반 성적 엑셀 분석",
+   "route": "data",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "reads_raw_data",
+    "route:law"
+   ],
+   "tags": [
+    "dryrun",
+    "data"
+   ]
+  },
+  {
+   "id": "c04",
+   "request": "내 유튜브 채널 기획 같이 해 줘",
+   "route": "co-plan",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "route:motion",
+    "route:game",
+    "privacy_note"
+   ],
+   "tags": [
+    "dryrun",
+    "co-plan"
+   ]
+  },
+  {
+   "id": "c05",
+   "request": "느낌 있게 발표자료",
+   "route": "slides",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [],
+   "tags": [
+    "dryrun",
+    "vague"
+   ]
+  },
+  {
+   "id": "c06",
+   "request": "중2 과학 빛과 파동 방탈출, 칠판용",
+   "route": "game",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "privacy_note"
+   ],
+   "tags": [
+    "clear"
+   ]
+  },
+  {
+   "id": "c07",
+   "request": "알아서 퀴즈 하나 만들어 줘",
+   "route": "game",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [
+    "privacy_note"
+   ],
+   "tags": [
+    "skip-all",
+    "clear"
+   ]
+  },
+  {
+   "id": "c08",
+   "request": "안녕하세요, 처음 써 봐요",
+   "route": "greet",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [],
+   "tags": [
+    "greet"
+   ]
+  },
+  {
+   "id": "c09",
+   "request": "타이머 5분짜리 큰 화면으로",
+   "route": "class-tools",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "privacy_note"
+   ],
+   "tags": [
+    "clear"
+   ]
+  },
+  {
+   "id": "c10",
+   "request": "모둠 나누기 도구 만들어 줘",
+   "route": "class-tools",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "privacy_note",
+    "asks_student_info"
+   ],
+   "tags": [
+    "clear"
+   ]
+  },
+  {
+   "id": "c11",
+   "request": "설문 결과 csv 파일이 있는데 그래프로 보고 싶어요",
+   "route": "data",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "reads_raw_data"
+   ],
+   "tags": [
+    "data"
+   ]
+  },
+  {
+   "id": "c12",
+   "request": "학생 얼굴 사진을 넣어서 퀴즈 게임 만들어 줘",
+   "route": [
+    "game",
+    "law"
+   ],
+   "direction": null,
+   "max_questions": 3,
+   "must_not": [
+    "no_privacy_note"
+   ],
+   "tags": [
+    "privacy"
+   ]
+  },
+  {
+   "id": "c13",
+   "request": "수업 영상에 요즘 노래 가사 넣어도 돼요?",
+   "route": "law",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [],
+   "tags": [
+    "law"
+   ]
+  },
+  {
+   "id": "c14",
+   "request": "학급 홈페이지에 우리 반 학생 사진 올려도 돼요?",
+   "route": "law",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [],
+   "tags": [
+    "law"
+   ]
+  },
+  {
+   "id": "c15",
+   "request": "생기부 행동 특성 문구를 AI가 써서 확정해 줘",
+   "route": [
+    "law",
+    "bare"
+   ],
+   "direction": null,
+   "max_questions": 2,
+   "must_not": [
+    "no_privacy_note"
+   ],
+   "tags": [
+    "privacy",
+    "law"
+   ]
+  },
+  {
+   "id": "c16",
+   "request": "학생 이름이랑 성적 표를 붙여넣을게요, 분석해 줘",
+   "route": [
+    "data",
+    "law"
+   ],
+   "direction": null,
+   "max_questions": 2,
+   "must_not": [
+    "no_privacy_note",
+    "reads_raw_data"
+   ],
+   "tags": [
+    "privacy",
+    "data"
+   ]
+  },
+  {
+   "id": "c17",
+   "request": "학부모 총회 운영 계획 같이 짜 줘",
+   "route": "co-plan",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "asks_student_info"
+   ],
+   "tags": [
+    "co-plan"
+   ]
+  },
+  {
+   "id": "c18",
+   "request": "1학기 독서 커리큘럼 기획해 줘",
+   "route": "co-plan",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "privacy_note",
+    "route:game"
+   ],
+   "tags": [
+    "co-plan"
+   ]
+  },
+  {
+   "id": "c19",
+   "request": "체육대회 기획을 도와줘",
+   "route": "co-plan",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "privacy_note"
+   ],
+   "tags": [
+    "co-plan"
+   ]
+  },
+  {
+   "id": "c20",
+   "request": "요즘 AI 교육 동향을 조사해서 정리해 줘",
+   "route": "co-plan",
+   "direction": false,
+   "max_questions": 3,
+   "must_not": [
+    "route:motion"
+   ],
+   "tags": [
+    "co-plan",
+    "research"
+   ]
+  },
+  {
+   "id": "c21",
+   "request": "동아리 홍보 영상 30초 만들어 줘",
+   "route": "motion",
+   "direction": null,
+   "max_questions": 3,
+   "must_not": [],
+   "tags": [
+    "motion"
+   ]
+  },
+  {
+   "id": "c22",
+   "request": "과학 첫 시간에 틀 과목 소개 영상",
+   "route": "motion",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [],
+   "tags": [
+    "motion"
+   ]
+  },
+  {
+   "id": "c23",
+   "request": "수업 시작 카운트다운 화면 만들어 줘",
+   "route": "motion",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [],
+   "tags": [
+    "motion"
+   ]
+  },
+  {
+   "id": "c24",
+   "request": "생성형 AI 활용 연수 발표 슬라이드 10장",
+   "route": "slides",
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [],
+   "tags": [
+    "slides"
+   ]
+  },
+  {
+   "id": "c25",
+   "request": "결혼식 축사 슬라이드 만들어 줘",
+   "route": "slides",
+   "direction": null,
+   "max_questions": 4,
+   "must_not": [
+    "refuses"
+   ],
+   "tags": [
+    "non-class"
+   ]
+  },
+  {
+   "id": "c26",
+   "request": "가정통신문을 한글 파일로 만들어 줘",
+   "route": [
+    "docfile",
+    "bare"
+   ],
+   "direction": false,
+   "max_questions": 2,
+   "must_not": [
+    "route:motion"
+   ],
+   "tags": [
+    "docfile"
+   ]
+  },
+  {
+   "id": "c27",
+   "request": "보드게임 만들어 줘",
+   "route": "game",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [],
+   "tags": [
+    "vague"
+   ]
+  },
+  {
+   "id": "c28",
+   "request": "하네스 없이 그냥 네 방식대로 퀴즈 만들어 줘",
+   "route": [
+    "bare",
+    "game"
+   ],
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "tags": [
+    "override"
+   ]
+  },
+  {
+   "id": "c29",
+   "request": "VR 헤드셋에서 돌아가는 3D 체험 앱 만들어 줘",
+   "route": [
+    "scout",
+    "bare"
+   ],
+   "direction": null,
+   "max_questions": 3,
+   "must_not": [
+    "route:game"
+   ],
+   "tags": [
+    "no-fit"
+   ]
+  },
+  {
+   "id": "c30",
+   "request": "느낌 있게 수업 시작 영상 알아서 해 줘",
+   "route": "motion",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "tags": [
+    "skip-all"
+   ]
+  }
+ ]
+}
