@@ -50,7 +50,7 @@ class Overview(unittest.TestCase):
         blob = json.dumps(self.agg, ensure_ascii=False)
         for nm in {str(v) for v in tdata.load(CSV).data["이름"]}:
             self.assertNotIn(nm, blob)
-        self.assertIn("학생", self.agg["results"][2]["labels"][0])
+        self.assertIn("상위", self.agg["results"][2]["labels"][0])  # anonymous ranks by default
 
     def test_check_report_static_all_audiences(self):
         for aud in ("초등", "학부모", "선생님", "전문가"):

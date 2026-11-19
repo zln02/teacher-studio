@@ -203,9 +203,13 @@ def texts(r: dict, aud: str) -> dict:
         b.append(f"한 칸마다 최대 {f['n']}명의 점수를 나눴어요.")
     elif t == "rank":
         w = f["kind"]
-        head = f"과목 평균은 {josa(f['top_label'], '이/가')} 가장 높고 {josa(f['bottom_label'], '이/가')} 가장 낮" + ("아요" if kid else "습니다")
+        if f.get("hidden"):
+            head = f"과목 평균은 가장 높은 쪽이 {_u(f['top_value'], unit, 1)}, 가장 낮은 쪽이 {_u(f['bottom_value'], unit, 1)}" + ("이에요" if kid else "입니다")
+        else:
+            head = f"과목 평균은 {josa(f['top_label'], '이/가')} 가장 높고 {josa(f['bottom_label'], '이/가')} 가장 낮" + ("아요" if kid else "습니다")
         emoji = "🏅"
-        b.append(f"{josa(f['top_label'], '은/는')} {_u(f['top_value'], unit, 1)}, {josa(f['bottom_label'], '은/는')} {_u(f['bottom_value'], unit, 1)}이에요.")
+        if not f.get("hidden"):
+            b.append(f"{josa(f['top_label'], '은/는')} {_u(f['top_value'], unit, 1)}, {josa(f['bottom_label'], '은/는')} {_u(f['bottom_value'], unit, 1)}이에요.")
         b.append(f"가장 높은 쪽과 낮은 쪽의 차이는 {_u(f['gap'], unit, 1)}이에요.")
         b.append(f"전체 {f['n_units']}명 중 위쪽 {f['show_n']}명과 아래쪽 {f['show_n']}명만 보여 줘요." if w == "학생" else f"전체 {f['n_units']}개 중 위쪽 {f['show_n']}개와 아래쪽 {f['show_n']}개만 보여 줘요.")
     elif t == "matrix":
@@ -418,7 +422,7 @@ def build(agg: dict, aud: str | None = None, palette: str | None = None, embed_f
     summary = "".join(f"<li>{H.escape(s)}</li>" for s in story["summary"])
     nxt = agg.get("next_steps") or []
     next_html = ("<section class='card nextsteps' id='next'><h2>다음에 해 볼 일</h2><ul class='facts'>" + "".join(f"<li>{H.escape(x)}</li>" for x in nxt) + "</ul></section>") if nxt else ""
-    privacy = ("학생 이름은 가명으로 바꿔서 분석했어요. " if "이름" in meta.get("pii_columns", []) else ("개인정보 칸은 가려서 분석했어요. " if meta.get("pseudonymized") else "")) + "이 보고서는 선생님 컴퓨터 안에서만 만들었고, 자료는 어디로도 보내지 않았어요."
+    privacy = ("이름 칸이 이미 가명(학생01 …)이라 그대로 썼어요. " if "가명(이미 익명)" in meta.get("pii_columns", []) and not meta.get("pseudonymized") else "") + ("학생 이름은 가명으로 바꿔서 분석했어요. " if "이름" in meta.get("pii_columns", []) else ("개인정보 칸은 가려서 분석했어요. " if meta.get("pseudonymized") else "")) + "이 보고서는 선생님 컴퓨터 안에서만 만들었고, 자료는 어디로도 보내지 않았어요."
     n_total = meta["rows"]
     sub = f"자료 {n_total:,}줄을 살펴봤어요"
     page = f"""<!doctype html>

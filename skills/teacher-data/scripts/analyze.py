@@ -40,6 +40,9 @@ MIN_N_TEST = 5
 AGG_NAME = {"mean": "평균", "sum": "합계", "median": "가운데 값", "count": "개수", "min": "가장 작은 값", "max": "가장 큰 값"}
 
 
+_PII_KINDS: dict[str, str] = {}  # column -> kind of the table being analysed (set by run)
+
+
 class PlanError(ValueError):
     pass
 
@@ -506,11 +509,11 @@ def _overview(t, p, idx, pii):
     gcol = p.get("group")
     if gcol:
         _col(t, gcol, pii, True)
-    names = tdata.detect_pii(t)
-    name_col = None if gcol else next((c for c in t.cols if c in pii and names.get(c) == "name"), None)
-    # (pii columns are already pseudonymised in `t`, so detect_pii on the safe table finds nothing: fall back to the column list passed in `pii`)
-    if not gcol and not name_col:
-        name_col = next((c for c in t.cols if c in pii), None)
+    # Individual students are shown as anonymous ranks (상위 1위 ...) by default: no name, no pseudonym number, never an ID-like column (번호, 학번, id).
+    # plan "show_labels": true shows the pseudonym (학생01) of a name / already-pseudonymous column; ID-like values are never shown.
+    name_col = None
+    if not gcol and p.get("show_labels"):
+        name_col = next((c for c in t.cols if c in pii and _PII_KINDS.get(c) in ("name", "pseudonym")), None)
     keycol = gcol or name_col
     units: dict[str, list[float]] = OrderedDict()
     rows_of: dict[str, list[int]] = {}
@@ -527,12 +530,19 @@ def _overview(t, p, idx, pii):
     pick = ranked[:show_n] + [k for k in ranked[-show_n:] if k not in ranked[:show_n]]
     weakest = {k: min(cols, key=lambda c: tdata.mean([vals[c][i] for i in rows_of[k] if i in vals[c]] or [1e9])) for k in pick}
     what = "모둠" if gcol else "학생"
-    rf = {"kind": what, "n_units": len(ranked), "show_n": show_n, "top": [[k, _r(um[k])] for k in ranked[:show_n]], "bottom": [[k, _r(um[k])] for k in ranked[-show_n:]],
-          "top_label": ranked[0], "top_value": _r(um[ranked[0]]), "bottom_label": ranked[-1], "bottom_value": _r(um[ranked[-1]]), "gap": _r(um[ranked[0]] - um[ranked[-1]]), "n": len(ranked)}
-    rnotes = ["이름은 가명으로 바꿨어요. 학생 번호는 파일 위에서부터 센 순서예요. 학생01은 맨 위 학생이에요."] if (name_col and not gcol) else []
-    results.append(("rank", {"chart": "hbar", "labels": pick, "series": [{"name": "과목 평균", "values": [_r(um[k]) for k in pick]}], "unit": unit or "평균",
-                             "table": {"columns": [what + ("(가명)" if name_col and not gcol else ""), f"과목 평균({unit})" if unit else "과목 평균", "가장 낮은 과목"],
-                                       "rows": [[k, _r(um[k]), weakest.get(k, "")] for k in pick]},
+    if gcol or name_col:
+        disp = {k: k for k in ranked}
+    else:  # anonymous: rank only
+        disp = {}
+        for pos, k in enumerate(ranked):
+            disp[k] = f"상위 {pos + 1}위" if pos < show_n else (f"하위 {len(ranked) - pos}위" if pos >= len(ranked) - show_n else k)
+    hidden = not (gcol or name_col)
+    rf = {"kind": what, "n_units": len(ranked), "show_n": show_n, "top": [[disp[k], _r(um[k])] for k in ranked[:show_n]], "bottom": [[disp[k], _r(um[k])] for k in ranked[-show_n:]], "hidden": hidden,
+          "top_label": disp[ranked[0]], "top_value": _r(um[ranked[0]]), "bottom_label": disp[ranked[-1]], "bottom_value": _r(um[ranked[-1]]), "gap": _r(um[ranked[0]] - um[ranked[-1]]), "n": len(ranked)}
+    rnotes = ["이름과 번호는 보이지 않게 하고 순위로만 보여 드려요. (가명으로 보고 싶으면 말씀해 주세요)"] if hidden else []
+    results.append(("rank", {"chart": "hbar", "labels": [disp[k] for k in pick], "series": [{"name": "과목 평균", "values": [_r(um[k]) for k in pick]}], "unit": unit or "평균",
+                             "table": {"columns": [("순위" if hidden else what + ("(가명)" if name_col else "")), f"과목 평균({unit})" if unit else "과목 평균", "가장 낮은 과목"],
+                                       "rows": [[disp[k], _r(um[k]), weakest.get(k, "")] for k in pick]},
                              "facts": rf, "notes": rnotes, "n": len(ranked), "default_title": f"과목 평균이 높은 {what}·낮은 {what} (" + (unit or "평균") + ")",
                              "how": f"전체 {what} 중 가장 높은 쪽과 낮은 쪽만 골라 보여 줘요."}))
     # correlation between every pair of columns
@@ -581,6 +591,8 @@ HANDLERS = {"groupby": a_groupby, "distribution": a_distribution, "likert": a_li
 def run(table: tdata.Table, plan: dict, pii_report: dict | None = None) -> dict:
     safe, rep = (table, pii_report) if pii_report is not None else tdata.prepare(table)
     pii = {c["column"] for c in rep["pii_columns"]}
+    _PII_KINDS.clear()
+    _PII_KINDS.update({c["column"]: c["kind"] for c in rep["pii_columns"]})
     base = _rows(safe, plan.get("filters", []))
     results, next_steps = [], []
     for k, a in enumerate(plan.get("analyses", []), 1):

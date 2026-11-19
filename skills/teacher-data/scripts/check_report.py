@@ -182,11 +182,20 @@ def static_checks(src: str, agg: dict | None, source_path: str | None, yes: bool
         pii = tdata.detect_pii(t)
         leaks = []
         blob = own + (json.dumps(agg, ensure_ascii=False) if agg else "")
-        for c in pii:
+        already = [c for c, k in pii.items() if k == "pseudonym"]  # source names are already pseudonyms (학생01): nothing to leak
+        for c, kind in pii.items():
+            if kind == "pseudonym":
+                continue
             for val in {str(x).strip() for x in t.data[c] if not tdata.is_missing(x)}:
-                if len(val) >= 2 and val in blob:
+                if tdata.is_pseudonym(val):
+                    continue
+                if kind == "student_id":  # short numbers (1..40) match everywhere: compare whole numbers of 4+ characters only
+                    if len(val) >= 4 and re.search(r"(?<![0-9A-Za-z])" + re.escape(val) + r"(?![0-9A-Za-z])", blob):
+                        leaks.append(f"{c}:{val[:2]}…")
+                elif len(val) >= 2 and val in blob:
                     leaks.append(f"{c}:{val[:2]}…")
-        say("FAIL" if leaks else "PASS", f"원본의 개인정보 칸 {len(pii)}개({', '.join(pii) or '없음'}) 값이 결과에 없음" + (f" 새어 나옴 {leaks[:3]}" if leaks else ""))
+        real = [c for c in pii if c not in already]
+        say("FAIL" if leaks else "PASS", f"원본의 개인정보 칸 {len(real)}개({', '.join(real) or '없음'}) 값이 결과에 없음" + (f"; 이미 가명인 칸 {len(already)}개({', '.join(already)})는 건너뜀" if already else "") + (f" 새어 나옴 {leaks[:3]}" if leaks else ""))
     else:
         say("WARN", "--source 없이는 원본 이름 대조를 건너뜁니다")
     if agg:

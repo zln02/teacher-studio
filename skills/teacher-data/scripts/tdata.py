@@ -228,9 +228,15 @@ HEADER_PII = [("name", r"(이름|성명|학생명|보호자명|작성자|응답�
               ("phone", r"(전화|연락처|휴대|핸드폰|폰번호|phone|mobile|^tel)"),
               ("email", r"(이메일|e-?mail|메일)"),
               ("rrn", r"(주민|rrn|생년월일|birth)"),
-              ("student_id", r"(학번|student.?id|사번|학생번호)"),
+              ("student_id", r"(학번|student.?id|사번|학생번호|출석번호|^번호$|^no\.?$|^id$|^아이디$|^순번$|_id$|^id_)"),
               ("address", r"(주소|address)")]
-PII_LABEL = {"name": "이름", "phone": "전화번호", "email": "이메일", "rrn": "주민번호·생년월일", "student_id": "학번", "address": "주소"}
+PII_LABEL = {"name": "이름", "phone": "전화번호", "email": "이메일", "rrn": "주민번호·생년월일", "student_id": "학번·번호", "address": "주소", "pseudonym": "가명(이미 익명)"}
+# values that are ALREADY pseudonyms (학생01, ID003, 익명7 ...): nothing to hide, and our own pseudonyms must not count as a leak
+RE_PSEUDONYM = re.compile(r"^(?:학생|익명|가명|참가자|응답자|ID|id|Student|student|S)\s*[-_]?\s*\d{1,4}$")
+
+
+def is_pseudonym(v) -> bool:
+    return bool(RE_PSEUDONYM.match(str(v).strip()))
 
 
 def detect_pii(t: Table) -> dict[str, str]:
@@ -249,6 +255,8 @@ def detect_pii(t: Table) -> dict[str, str]:
             nm = sum(bool(re.fullmatch(r"[가-힣]{2,4}", v)) for v in vals)
             if nm >= 0.85 * len(vals) and len(set(vals)) / len(vals) >= 0.6:
                 kind = "name"
+        if vals and len(vals) >= 3 and all(is_pseudonym(v) for v in vals):
+            kind = "pseudonym"  # already anonymous (학생01 ...): recognised, kept as is, never reported as a leak
         if kind:
             found[c] = kind
     return found
@@ -260,6 +268,8 @@ def pseudonymize(t: Table, pii: dict[str, str]) -> tuple[Table, dict[str, dict[s
     out = t.copy()
     maps: dict[str, dict[str, str]] = {}
     for c, kind in pii.items():
+        if kind == "pseudonym":
+            continue  # nothing to hide
         m: dict[str, str] = {}
         width = max(2, len(str(max(1, len({str(v) for v in t.data[c]})))))
         for i, v in enumerate(t.data[c]):
@@ -291,9 +301,10 @@ def prepare(t: Table) -> tuple[Table, dict]:
     """Detect + pseudonymize. Returns (safe table, report)."""
     pii = detect_pii(t)
     safe, _ = pseudonymize(t, pii) if pii else (t, {})
-    rep = {"pii_columns": [{"column": c, "kind": k, "label": PII_LABEL[k]} for c, k in pii.items()], "pseudonymized": bool(pii)}
-    rep["warning"] = PII_WARNING if any(k == "name" for k in pii.values()) else (
-        "개인정보(전화번호·이메일 등)가 보여요. 가려서 분석할게요" if pii else "")
+    real = {c: k for c, k in pii.items() if k != "pseudonym"}
+    rep = {"pii_columns": [{"column": c, "kind": k, "label": PII_LABEL[k]} for c, k in pii.items()], "pseudonymized": bool(real)}
+    rep["warning"] = PII_WARNING if any(k == "name" for k in real.values()) else (
+        "개인정보(전화번호·이메일·학번 등)가 보여요. 가려서 분석할게요" if real else "")
     return safe, rep
 
 
