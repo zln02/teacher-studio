@@ -122,9 +122,12 @@ def main() -> int:
     ap.add_argument("--yes", action="store_true", help="with --render: the teacher agreed to install LibreOffice")
     a = ap.parse_args()
     fills = [x.strip() for x in a.fillins.split(",") if x.strip()]
+    tb = False
     if a.spec:
-        fills += [str(x) for x in (json.loads(a.spec.read_text(encoding="utf-8")).get("fillins") or [])]
-    if a.allow_blanks:
+        sp = json.loads(a.spec.read_text(encoding="utf-8"))
+        fills += [str(x) for x in (sp.get("fillins") or [])]
+        tb = sp.get("template_blanks") is True  # the user asked for a 양식: same as --allow-blanks
+    if a.allow_blanks or tb:
         fills = ph.with_blanks(fills, True)
         print("NOTE 양식 모드: 빈칸을 일부러 남긴 파일이에요. 사용하기 전에 채워 주세요.")
     r = check_pptx(a.pptx, fills)

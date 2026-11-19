@@ -217,7 +217,7 @@ class EvalTests(unittest.TestCase):
 
     def test_cases_file(self):
         cases = reval.load_cases()
-        self.assertEqual(len(cases), 47)
+        self.assertEqual(len(cases), 59)  # 47 + docs route cases d01-d12
         self.assertEqual(reval.static_check(), 0)
         self.assertEqual(len(reval.load_cases(subset=10)), 10)
 

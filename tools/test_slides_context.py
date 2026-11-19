@@ -196,5 +196,24 @@ class NewTypes(unittest.TestCase):
         self.assertTrue(any(sh.has_table for sl in prs.slides for sh in sl.shapes))
 
 
+@unittest.skipUnless(HAVE_PPTX, "python-pptx not installed")
+class PptxBlankGate(unittest.TestCase):
+    def test_blanks_fail_without_spec_and_pass_in_template_mode(self):
+        import subprocess
+        import deck_pptx
+        d = Path(tempfile.mkdtemp())
+        spec = {"title": "t", "slides": [{"type": "title", "title": "[학교명] 학부모 설명회"}, {"type": "closing", "title": "끝"}]}
+        (d / "s.json").write_text(json.dumps(spec, ensure_ascii=False), encoding="utf-8")
+        self.assertTrue(deck_pptx.build_pptx(spec, d, d / "b.pptx", 1)["ok"])
+        chk = str(SLIDES / "scripts" / "pptx_check.py")
+        run = lambda *x: subprocess.run([sys.executable, chk, str(d / "b.pptx"), *x], capture_output=True, text=True, encoding="utf-8").returncode  # noqa: E731
+        self.assertEqual(run(), 1)                       # no --spec: leftover blank FAILs
+        self.assertEqual(run("--spec", str(d / "s.json")), 1)
+        self.assertEqual(run("--allow-blanks"), 0)
+        (d / "t.json").write_text(json.dumps({**spec, "template_blanks": True}, ensure_ascii=False), encoding="utf-8")
+        self.assertEqual(run("--spec", str(d / "t.json")), 0)
+        self.assertEqual(run("--fillins", "학교명"), 0)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=1)
