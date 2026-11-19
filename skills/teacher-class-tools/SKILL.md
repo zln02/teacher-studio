@@ -54,3 +54,6 @@ PASS required: no external request, no storage/network APIs, no `<form>`, inputs
 ## Files
 `scripts/build_tool.py` build · `scripts/check_tool.py` check · `scripts/shots.py` contact sheet for review · `assets/tools.js|css` runtime (copied as is) · `assets/spec-examples/` 5 specs.
 `shared/` (design, fonts, tools) is used from the skill folder when installed, else from the repo root.
+
+## Pipeline (`../teacher-studio/references/pipeline.md`)
+Small, clear tools skip 콘티 and checkpoints: the spec list is the 대본; build, show, offer 2 tweaks. Deliver: `deliver.py tool.html` (pin on the TV, works offline).

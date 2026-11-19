@@ -85,3 +85,6 @@ External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflo
 | `assets/spec-examples/*.json` | four finished specs (parents / training / photosynthesis / club) |
 | `references/teacher-language.md`, `legal-advisory.md` | wording, advice lines |
 | `assets/missiles/lesson-deck/` + `scripts/build_stage.py` | legacy skins, hand-made stage pages (`--data/--show`), MP4 (`render_mp4.py`) |
+
+## Pipeline (`../teacher-studio/references/pipeline.md`)
+대본 = per-slide message + `note`; 콘티 = the Outline table in Flow step 2, or the thumbnail sheet: `py ../teacher-studio/scripts/storyboard.py deck.json --html sheet.html --open` (reads deck.json as is). Checkpoint: outline/콘티 before building, then the first deck; deliver with `deliver.py deck.html` (PDF, QR, privacy check for parent decks). Skip for 「바로/알아서」.

@@ -1,5 +1,5 @@
 {
- "_about": "Router eval cases. route: acceptable route(s); direction: True=options first expected, False=build now, null=either; max_questions: questions allowed in the first reply; must_not: reads_raw_data, asks_student_info, refuses, privacy_note (over-trigger), no_privacy_note (privacy note required), route:<x>.",
+ "_about": "Router eval cases. route: acceptable route(s); direction: True=options first expected, False=build now, null=either; max_questions: questions allowed in the first reply; must_not: reads_raw_data, asks_student_info, refuses, privacy_note (over-trigger), no_privacy_note (privacy note required), route:<x>. pipeline: {checkpoint: plan|storyboard|build|deliver|none, skips: stages that must be listed in skipped_stages, artifact: allowed artifact values}; scored as 40% of the case.",
  "cases": [
   {
    "id": "c01",
@@ -409,6 +409,161 @@
    "max_questions": 0,
    "must_not": [],
    "tags": [
+    "skip-all"
+   ]
+  },
+  {
+   "id": "p01",
+   "request": "발표자료 만들어 줘",
+   "route": "slides",
+   "direction": true,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "pipeline": {
+    "checkpoint": "plan",
+    "artifact": "options"
+   },
+   "tags": [
+    "pipeline",
+    "vague"
+   ]
+  },
+  {
+   "id": "p02",
+   "request": "발표자료 알아서 바로 만들어 줘",
+   "route": "slides",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "pipeline": {
+    "checkpoint": "none"
+   },
+   "tags": [
+    "pipeline",
+    "skip-all"
+   ]
+  },
+  {
+   "id": "p03",
+   "request": "30초짜리 우리 반 소개 영상 만들어 줘",
+   "route": "motion",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [],
+   "pipeline": {
+    "checkpoint": "storyboard",
+    "skips": [
+     "plan"
+    ],
+    "artifact": [
+     "shot_list",
+     "storyboard"
+    ]
+   },
+   "tags": [
+    "pipeline",
+    "clear"
+   ]
+  },
+  {
+   "id": "p04",
+   "request": "수업 시작할 때 쓸 5분 타이머 만들어 줘",
+   "route": "class-tools",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "pipeline": {
+    "checkpoint": "none",
+    "skips": [
+     "storyboard"
+    ]
+   },
+   "tags": [
+    "pipeline",
+    "clear",
+    "merge"
+   ]
+  },
+  {
+   "id": "p05",
+   "request": "방금 만든 학급 소개 슬라이드를 학부모님들께 단체방으로 보내 줘",
+   "route": [
+    "slides",
+    "bare"
+   ],
+   "direction": null,
+   "max_questions": 2,
+   "must_not": [
+    "refuses",
+    "no_privacy_note"
+   ],
+   "pipeline": {
+    "checkpoint": "deliver",
+    "artifact": "privacy_check"
+   },
+   "tags": [
+    "pipeline",
+    "deliver"
+   ]
+  },
+  {
+   "id": "p06",
+   "request": "중2 과학 빛과 파동 복습 게임 만들어 줘",
+   "route": "game",
+   "direction": false,
+   "max_questions": 1,
+   "must_not": [
+    "asks_student_info"
+   ],
+   "pipeline": {
+    "checkpoint": "storyboard",
+    "skips": [
+     "plan"
+    ],
+    "artifact": [
+     "storyboard",
+     "spec"
+    ]
+   },
+   "tags": [
+    "pipeline",
+    "clear"
+   ]
+  },
+  {
+   "id": "p07",
+   "request": "방금 만든 퀴즈 게임 글씨만 더 크게 해 줘",
+   "route": "game",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "pipeline": {
+    "checkpoint": "build",
+    "skips": [
+     "plan",
+     "script",
+     "storyboard"
+    ]
+   },
+   "tags": [
+    "pipeline",
+    "fix"
+   ]
+  },
+  {
+   "id": "p08",
+   "request": "그냥 해 줘 중3 영어 빙고 게임",
+   "route": "game",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [],
+   "pipeline": {
+    "checkpoint": "none"
+   },
+   "tags": [
+    "pipeline",
     "skip-all"
    ]
   }

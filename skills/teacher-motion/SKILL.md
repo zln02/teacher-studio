@@ -119,3 +119,6 @@ python3 scripts/check_page.py page.html
 | `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 차분`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·CSS. Motion은 2020년 이전 크롬에서 안 돌아가서 `--allow-modern`을 줄 때만 들어가요) |
 | 「만든 표시」 | 파일 속 보이지 않는 정보로 `교사 스튜디오 · 박진영`이 자동으로 들어가요(화면에는 안 보임). **선생님이 원할 때만** `build_stage.py --credit`으로 마지막 화면에 작게 「교사 스튜디오로 만듦」을 넣어요 (기본은 끔, 먼저 권하지 않아요) |
 | `assets/stage.html` | 읽지 않는다(조립 스크립트가 그대로 복사) |
+
+## Pipeline (`../teacher-studio/references/pipeline.md`)
+대본 = narration/captions; 콘티 = shot list with seconds (sum = target length): write `{"shots":[{"title","seconds","narration","motion"}]}` and run `py ../teacher-studio/scripts/storyboard.py shots.json --html sheet.html --open`. Checkpoint: the shot list before `fire`, then the first render; deliver (mp4/webm, TV) with `deliver.py`. One-screen countdowns/openings: skip the sheet.

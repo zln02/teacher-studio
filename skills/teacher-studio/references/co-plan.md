@@ -26,3 +26,4 @@ Use for: YouTube channel, event, curriculum, parent meeting plan, club/shop plan
 - Student data, parent contact details, counseling content never go into the plan; use placeholders (「학생 A」). Law/privacy questions -> `teacher-law`.
 - Planning a counseling/parent material is allowed; only real student information is not (router rule 1).
 - Use other skills and documents when they help (record with `skill_scout.py log`, credit with one 「출처」 line).
+- Pipeline: co-plan collapses stages 1-3 into outline -> draft with one checkpoint (`pipeline.md`); a making piece that follows goes through the full line.

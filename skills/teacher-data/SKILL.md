@@ -35,3 +35,6 @@ Zero external requests (static + real browser), no storage/network APIs, no raw 
 ## Files
 `scripts/`: `profile_data.py` · `analyze.py` · `report.py` (+`export.py` xlsx with formulas/csv) · `check_report.py` · `shots.py` · `make_samples.py` (synthetic practice files in `assets/sample-data/`) · `tdata.py` (shared helpers). `shared/` (design, fonts, vendor Chart.js, tools) is used from the skill folder when installed, else from the repo root.
 Audience: 초등 = short friendly sentences, no stats words; 학부모 = polite plain; 선생님 = adds n and caveats; 전문가 = adds p-values, effect sizes.
+
+## Pipeline (`../teacher-studio/references/pipeline.md`)
+대본 = the analysis questions (what do you want to know?); 콘티 = chart plan, one chart per question (ask before running; never read raw rows). Checkpoint: the question list/chart plan, then the first report; deliver: print/PDF, names hidden (`deliver.py`).

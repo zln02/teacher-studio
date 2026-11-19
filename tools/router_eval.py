@@ -53,7 +53,11 @@ SCHEMA = (
     '"shows_options_first": <true if your first reply offers 2-3 directions/options before building, false if you build or answer now>, '
     '"question_count": <number of questions in your first reply>, "reads_raw_data": <true if you would open or print raw spreadsheet rows>, '
     '"asks_student_info": <true if you would ask for real student names/scores/data>, "refuses": <true if you decline the whole request>, '
-    '"privacy_note": <true if your reply mentions a privacy/law/student-info caution>, "first_reply": "<your first reply to the user, max 4 short lines>"}\n'
+    '"privacy_note": <true if your reply mentions a privacy/law/student-info caution>, '
+    '"checkpoint": "<where your first reply stops for the user to react in the production pipeline: plan = after the plan/options; storyboard = after the storyboard sheet, before building; build = you built and now ask ok-or-tweak after the first build; deliver = before sharing/sending; none = no stop at all, you run straight through>", '
+    '"skipped_stages": [<production stages you skip or merge, from: plan, script, storyboard>], '
+    '"artifact": "<what your first reply shows: options | outline | storyboard | shot_list | slide_list | spec | privacy_check | file | none>", '
+    '"first_reply": "<your first reply to the user, max 4 short lines>"}\n'
     "Route meanings: " + "; ".join(f"{k} = {v}" for k, v in ROUTES.items()) + ". Do not run anything; decide what you would do for this first message."
 )
 
@@ -135,7 +139,27 @@ def score(case: dict, out: dict | None) -> dict:
     parts["must_not"] = 0.2 if not bad else 0.0
     if bad:
         notes.append("violated: " + ",".join(bad))
-    return {"score": round(sum(parts.values()), 3), "parts": parts, "notes": notes}
+    total = sum(parts.values())
+    pl = case.get("pipeline")
+    if pl:  # pipeline cases: 60% routing as before, 40% did it stop at the right checkpoint / skip the right stages / show the right artifact
+        checks = []
+        if "checkpoint" in pl:
+            checks.append(str(out.get("checkpoint", "none")) == pl["checkpoint"])
+            if not checks[-1]:
+                notes.append(f"checkpoint {out.get('checkpoint')} expected {pl['checkpoint']}")
+        if pl.get("skips"):
+            got = {str(s) for s in (out.get("skipped_stages") or [])}
+            checks.append(set(pl["skips"]) <= got)
+            if not checks[-1]:
+                notes.append(f"should skip {pl['skips']}, skipped {sorted(got)}")
+        if pl.get("artifact"):
+            want_a = pl["artifact"] if isinstance(pl["artifact"], list) else [pl["artifact"]]
+            checks.append(str(out.get("artifact", "none")) in want_a)
+            if not checks[-1]:
+                notes.append(f"artifact {out.get('artifact')} not in {want_a}")
+        parts["pipeline"] = round(sum(checks) / len(checks), 3) if checks else 1.0
+        total = total * 0.6 + parts["pipeline"] * 0.4
+    return {"score": round(total, 3), "parts": parts, "notes": notes}
 
 
 def ask_claude(model: str, system: str, request: str, timeout: int = 180) -> tuple[str, float]:

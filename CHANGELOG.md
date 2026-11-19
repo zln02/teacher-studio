@@ -9,6 +9,8 @@
 - `docs/training/deck.json`을 새 슬라이드 spec으로 다시 만듦(21장, 점검 통과)
 
 ### Added
+- **제작 공정표(production pipeline)**: 모든 결과물이 같은 줄을 따른다: 기획 → 대본·내용 → 연출·콘티 → 제작 → 수정 → 배포. 단계마다 눈에 보이는 작은 결과물 하나, 확인 지점은 최대 3번(기획 뒤·콘티 뒤·첫 제작 뒤, 「네」로 계속), 「알아서」는 건너뜀, 작고 분명한 일은 단계를 합치거나 생략, 되돌릴 수 없는·밖으로 나가는 일·법/개인정보·내 자료 필요·점검 두 번 실패는 언제나 묻기. `references/pipeline.md` + 종류별 표 `pipeline-types.md`(슬라이드·게임·영상·수업 도구·데이터·문서·웹/앱·같이 기획). 각 스킬 SKILL.md에 「Pipeline」 두세 줄.
+- `scripts/storyboard.py`: spec(슬라이드·게임·컷 목록·`{"frames":[…]}`)을 번호 붙은 콘티 한 장(오프라인 HTML + 글자본)으로, 기존 spec 형식은 그대로 읽음, 저장한 내 색 반영. `scripts/deliver.py`: 완성 파일의 「배포 꾸러미」(크기·인터넷 없이 열림·폰/TV·인쇄/PDF·개인정보 확인표·출처 한 줄, 내 링크만 오프라인 QR, 아무것도 올리지 않음). 시험 `py tools/test_pipeline.py`(17개), 입구 평가에 공정표 사례 8개 추가(`docs/research/pipeline-eval-2026-11.md`).
 - **방향 잡기(direction harness)**: `skills/teacher-studio/references/direction-step.md`(아는 것 먼저 → 방향 3가지·추천 → 분위기 카드 → 질문 한 번(최대 5) → 한 줄 계획 → 고치기 2개, 「알아서」는 바로 만들기), `scripts/direction.py`(요청에서 추정한 값·비어 있는 결정 5칸·피치 칸 3개·서로 다른 스타일 3개의 오프라인 미리보기 HTML + 글자 대체본, 저장된 내 색이 있으면 한 장은 내 색), `references/ask-first.md`를 「먼저 보여 주고 마지막에 묻는다」로 다시 씀(첫 설정 질문도 같은 한 번 안에).
 - **같이 기획**: 기획·조사·분석(유튜브 채널, 행사, 커리큘럼, 학부모 모임)용 `references/co-plan.md` + `scripts/coplan.py`(한 장 초안: 목표·대상·방향 3가지·추천·할 일·위험·출처).
 - **라우터를 번호 규칙으로**: `skills/teacher-studio/SKILL.md`를 R0~R5 순서 규칙 78줄로 줄임(상세는 `references/studio-details.md`). 「유튜브 채널 기획」은 영상이 아니라 같이 기획, 「학부모 상담 자료」는 슬라이드 + 한 줄 안내(과민 반응 없음), 자료 분석은 원본 줄을 읽지 않음. 내 로고·양식 색 먼저 규칙 유지.
@@ -17,6 +19,7 @@
 - `tools/sync_shared.py --check`가 문서의 스킬·zip 개수와 `skills/` 폴더 수가 다르면 실패(INSTALL.md·docs/training의 5개 → 7개 수정). `teacher-studio`도 `shared/design`을 받음.
 - 연구 기록: `docs/research/self-audit-2026-11.md`, `docs/research/benchmark-2026-11.md`.
 ### Fixed
+- 첫 관문 스크립트의 HTML 저장형 XSS 막기: `direction.py` 미리보기 카드·`ref_analyze.py` 분석 시트(페이지에서 읽은 값 전부)·`storyboard.py`는 모든 글자를 `html.escape`, 색은 `#rrggbb`만 받음. 시험 5개 추가(`tools/test_security_xss.py`). `examples/baseline/game-baseline.json`의 sha256은 원래 만들 때마다 달라서(글꼴 부분집합·seed) 이스케이프 때문이 아니며, 실제 본문 차이는 JSON 안의 `<` → `<` 한 곳뿐(같은 뜻). 두 스킨 화면을 전후로 비교해 같은 모습임을 확인하고 기준 파일을 갱신.
 - Windows(cp949)에서 `studio.py fire`·`check`가 한글 출력 때문에 죽던 문제: 하위 프로세스 읽기를 UTF-8로 고정하고, 출력이 파이프일 때 UTF-8로 내보냄(`prefs.py show` 글자 깨짐도 해결).
 - 슬라이드의 정답·오답 색을 색약에게도 구분되는 파랑·주황으로(색약 경고 WARN 해소, 네 가지 예시 spec 다시 확인).
 - **색 도구 3종**(`shared/design/`): `color_from.py`(내 로고·사진 PNG/JPG·PPTX/POTX·DOCX·한글 HWPX·사이트 CSS/HTML에서 주색·포인트 색을 뽑아 디자인 값으로: 중앙값 분할(median-cut)·배경(흰/검정) 제외·테마 XML 읽기, 글자 대비 4.5는 **밝기만** 조정해 색상 유지, `--save-default`는 요청할 때만 `~/.teacher-studio/prefs.json`), `color_check.py`(Machado 2009 적·녹·청황색약 시뮬레이션, 선형 RGB, 뜻 있는 색 쌍의 OKLab 거리 < 0.10이면 **WARN**: 「빨강·초록만으로 구분하고 있어요. 모양이나 글자도 같이 써 주세요.」), `oklch.py`(sRGB↔OKLab↔OKLCH·색 영역 맞춤·조화색·같은 간격 명암). `design.py --palette-from`과 spec `design.palette_from`(게임·슬라이드·수업 도구, 데이터 `report.py --palette-from`, 값 `saved`=저장한 기본)으로 내 색을 받고, 기본 출력은 그대로. 점검기(게임·슬라이드 review·수업 도구·데이터 보고서)에 색약 WARN. `prefs.py palette-show|palette-reset`. 가이드 `skills/teacher-studio/references/user-colors.md`(내 로고·양식 색 먼저, 수단일 뿐 우리 디자인 아님). 시험 `py -m unittest shared/tools/test_color.py`(32개). JPG 읽기는 Pillow(필요할 때 동의 후 설치), PNG는 설치 없이

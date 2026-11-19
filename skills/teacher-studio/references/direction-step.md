@@ -30,3 +30,6 @@ A. <아이디어 한 줄>   B. <분위기 한 줄>   C. <구성 한 줄>
 - Choices, not open questions. Never write 「어떤 걸 원하세요?」 alone.
 - The user's own template, logo or reference always comes first (`user-colors.md`, `learn-from-reference.md`).
 - If the user ignores the options and states a direction, take it and build.
+
+## Where this sits
+This is stage 1 (기획) of the production pipeline (`pipeline.md`) and its checkpoint CP1. After the one-line plan the line continues: 대본 -> 콘티 sheet (CP2) -> build (CP3). Clear requests skip this step but still reach the 콘티 for multi-part jobs.

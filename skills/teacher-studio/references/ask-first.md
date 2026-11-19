@@ -20,3 +20,6 @@ Inspired by "grill-me" (mattpocock/skills, MIT), rewritten and shrunk for non-co
 - Plan line: 「이렇게 만들게요: <한 줄 계획>. 바꾸고 싶은 데가 있으면 말씀해 주세요.」 and build in the same turn.
 - No follow-up questions unless the user invites them (「더 물어봐 줘」/「꼼꼼히 해 줘」). After building, offer 2 tweaks instead.
 - Privacy and legal rules still apply; asking never replaces them.
+
+## Mid-way asks
+Beyond the first round, ask again only at pipeline checkpoints or for the always-ask list in `pipeline.md` (irreversible/outward steps, legal/privacy, own material needed, checker failed twice).

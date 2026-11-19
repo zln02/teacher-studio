@@ -42,6 +42,7 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 - Template first: if the user gives a logo, template, brand or reference file (or has a saved palette), use their colours before ours (`references/user-colors.md`: `color_from.py` -> spec `design.palette_from`). It is only the means to take their colours, not our design; save as default only if they ask.
 - Never stretch a row to a request it does not cover (VR/3D apps, mobile apps, websites, video editing, anything not in the table): that is R5, not the nearest skill.
 - Then: that skill's SKILL.md (short) -> one missile README -> `content.json` with only the changing parts -> `fire ... [--open] [--mp4]` -> show on `READY <path>`. Details: `references/studio-details.md` D.
+**Pipeline (every making job, R4 and co-plan; `references/pipeline.md`, per-type table `pipeline-types.md`)**: 기획 -> 대본·내용 -> 연출·콘티 -> 제작 -> 수정 -> 배포, each ends in one small artifact (pitches, script, `scripts/storyboard.py` sheet, file, tweaks, `scripts/deliver.py FILE` pack). At most 3 checkpoints: after 기획 (vague only), after 콘티, after the first build; each shows the artifact with a recommended next step so 「네」 continues. 「알아서/바로」 and tiny clear jobs = no checkpoint at all (checkpoint none: build, show, offer 2 tweaks; assumptions in one line); a change to an existing file = checkpoint build only. Clear small jobs merge or skip stages (timer, picker: no 콘티; clear multi-part jobs: skip pitches, show the 콘티; a change to an existing file: jump to 수정). Still ask mid-way, even on 「알아서」, before anything irreversible or outward (publish, share a link, send to parents: show the privacy check), on legal/privacy issues, when the user's own material is needed, and after the checker failed twice.
 **R5. No row fits** -> in this order: (a) an installed skill or document that fits (your skill list, `doctor`); (b) `references/skill-scout.md` + `scripts/skill_scout.py "<english keywords>"` (read-only, verify, ask before install); (c) the bare path: use your own ability and the environment's tools, still applying R1 and readable output. Say in one line which one you took.
 
 ## No-regret rules (the harness must never make you worse than the bare model)
@@ -71,10 +72,12 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 | `scripts/studio.py` | list / fire / build / check / render / doctor |
 | `scripts/direction.py` | direction step: inferred facts, open decisions, 3 pitch slots, mood preview cards (HTML + text) |
 | `scripts/coplan.py` | empty one-page plan skeleton |
+| `scripts/storyboard.py` · `deliver.py` | 콘티 sheet from a spec / 배포 꾸러미 for a finished file |
 | `scripts/prefs.py` | first-run prefs (level, subject, device) |
 | `scripts/skill_scout.py` | find, verify, log other skills (`"<kw>"` / `verify` / `log`) |
 | `scripts/diagnose.py` · `doctor.py` · `ref_analyze.py` | self-diagnosis · environment check · learn from a reference |
-| `references/direction-step.md` · `ask-first.md` · `co-plan.md` | vague requests, the ask rule, plan route |
+| `references/pipeline.md` · `pipeline-types.md` | the 6-stage production line, checkpoints, per-type content |
+| `references/direction-step.md` · `ask-first.md` · `co-plan.md` | vague requests (= pipeline stage 1), the ask rule, plan route |
 | `references/skill-scout.md` · `recommended-skills.json` | other skills, verifying, curated list |
 | `references/vague-fix.md` · `learn-from-reference.md` · `user-colors.md` | complaints, references, user colours |
 | `references/studio-details.md` | ready card, per-environment table, cannot-do table, fast path |

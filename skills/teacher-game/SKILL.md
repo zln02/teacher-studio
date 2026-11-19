@@ -131,3 +131,6 @@ python3 scripts/design_review.py game.html --out review/
 | `assets/components/juice-game.js` · `shared/juice/` | Game Wow kit 연결부 / 키트 본체(효과·소리·시상대·접근성 점검). 값표는 `shared/juice/README.md` |
 | `scripts/wow_proof.py` | 같은 spec의 키트 전/후 비교 GIF·시트 |
 | `shared/` (자동 복사본) | 공용 디자인 `design/`, 필요한 부품만 넣기 `vendor/inline.py`(spec의 `libs`), 목소리 `voice/voice.js`(자동 포함), 보이지 않는 만든이 표시 `tools/stamp.py`(자동), 글꼴 넣기 `fonts/embed.py`(build가 자동), 설치 `tools/ensure.py` |
+
+## Pipeline (`../teacher-studio/references/pipeline.md`)
+대본 = questions, answers, rules (the `items` of the spec); 콘티 = screen flow + win/lose + juice moments: `py ../teacher-studio/scripts/storyboard.py spec.json --html sheet.html --open` (reads this spec as is). Checkpoint: show the 콘티 sheet before `build`/`fire` (「이 흐름으로 만들까요? (추천: 네)」), then show the first build; deliver with `deliver.py game.html`. Skip the sheet for 「바로/알아서」.

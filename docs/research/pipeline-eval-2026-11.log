@@ -1,0 +1,9 @@
+haiku: floor 0.808 mean 0.808 worst-case 0.6 perfect 3/8 cost $0.008
+  p02 0.6: checkpoint build expected none
+  p03 0.733: checkpoint build expected storyboard; artifact file not in ['shot_list', 'storyboard']
+  p04 0.8: checkpoint build expected none
+  p06 0.733: checkpoint build expected storyboard; artifact file not in ['storyboard', 'spec']
+  p08 0.6: checkpoint build expected none
+sonnet: floor 0.952 mean 0.952 worst-case 0.733 perfect 6/8 cost $0.158
+  p06 0.733: checkpoint build expected storyboard; artifact file not in ['storyboard', 'spec']
+  p07 0.88: 1 questions > 0
