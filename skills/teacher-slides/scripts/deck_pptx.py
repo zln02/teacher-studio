@@ -34,6 +34,7 @@ for _p in (SKILL / "shared" / "tools", SKILL.parent.parent / "shared" / "tools")
 sys.path.insert(0, str(HERE))
 import deck_spec as dspec  # noqa: E402
 import deck_style as dstyle  # noqa: E402
+import pptx_fit as pfit  # noqa: E402
 from deck_kit import plain  # noqa: E402
 
 SUB = str.maketrans("0123456789+-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎")
@@ -131,6 +132,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             return ls[0]
         return ls[5] if len(ls) > 5 else ls[0]
 
+    fit_log: list[dict] = []
+    cur = [0]
+
     def set_font(run, size, color=None, bold=False, name=None, italic=False):
         f = run.font
         f.size = Pt(size)
@@ -154,6 +158,19 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         tb = shape or s.shapes.add_textbox(I(x), I(y), I(w), I(h))
         tf = tb.text_frame
         tf.word_wrap = True
+        # text fit: shrink (never below 60% / 12pt) so the text stays inside its box; what still does not fit is reported (split / shorten it)
+        if shape is None or not template:
+            bw, bh = (w * k - 0.16) * 72, (h * k - 0.08) * 72
+        else:
+            bw, bh = (tb.width / 914400 - 0.16) * 72, (tb.height / 914400 - 0.08) * 72
+        plain_lines = [re.sub(r"\*\*", "", ln) for ln in str(text).replace("\\n", "\n").split("\n")]
+        new_size, fits = pfit.fit_size(plain_lines, size, bw, bh, spacing)
+        if new_size < size or not fits:
+            fit_log.append({"slide": cur[0], "text": plain_lines[0][:24], "from": size, "to": new_size, "fits": fits})
+            size = new_size
+            if not fits:
+                from pptx.enum.text import MSO_AUTO_SIZE
+                tf.auto_size = MSO_AUTO_SIZE.TEXT_TO_FIT_SHAPE
         tf.vertical_anchor = {"t": MSO_ANCHOR.TOP, "m": MSO_ANCHOR.MIDDLE, "b": MSO_ANCHOR.BOTTOM}[anchor]
         tf.margin_left = tf.margin_right = I(0.08)
         tf.margin_top = tf.margin_bottom = I(0.04)
@@ -238,6 +255,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     n_sec = 0
     for idx, it in enumerate(slides):
         t = it["type"]
+        cur[0] = idx + 1
         s = prs.slides.add_slide(layout_for("cover" if t in ("title", "closing") else "other"))
         bg(s, t)
         kicker(s, it.get("kicker"))
@@ -463,7 +481,13 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     prs.core_properties.title = str(spec.get("title") or slides[0].get("title", ""))
     prs.core_properties.author = ""
     prs.save(str(out))
-    rep.update(ok=True, slides=len(slides), style=dz["style"], seed=seed, template=str(template) if template else "",
+    for f in fit_log:
+        if f["fits"]:
+            rep["warnings"].append(f"slide {f['slide']}: 글이 길어서 {f['from']:g}pt -> {f['to']:g}pt로 줄였어요 ('{f['text']}...')")
+    rep["overflow"] = [f for f in fit_log if not f["fits"]]
+    for f in rep["overflow"]:
+        rep["warnings"].append(f"slide {f['slide']}: 줄여도 글이 상자를 넘쳐요 ('{f['text']}...') -> 글을 줄이거나 두 장으로 나누세요")
+    rep.update(ok=True, slides=len(slides), fit=fit_log, style=dz["style"], seed=seed, template=str(template) if template else "",
                font_note=f"글꼴 {fdisp}/{fbody}이(가) PC에 없으면 PowerPoint가 비슷한 글꼴로 바꿔 보여요. 글꼴 파일은 shared/fonts에 있어요.")
     return rep
 

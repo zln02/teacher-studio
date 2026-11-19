@@ -209,6 +209,8 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
             for k in ("small", "overflow", "offstage", "midword", "keepall"):
                 m[k] = info[k][:3]
             slides.append(m)
+        page_texts = pg.evaluate("[].map.call(document.querySelectorAll('.sl'),function(s){return (s.textContent||'')+' '+(s.getAttribute('data-note')||'')})")
+        fillins = pg.evaluate("(window.DOC.deck||{}).fillins || []")
         b.close()
     # ---- results
     results.append(("FAIL" if external else "PASS", "external requests = 0" + (f": {external[:3]}" if external else "")))
@@ -216,6 +218,16 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
     try:  # colour-blind check: WARN only (shared/design/color_check.py via the page checker)
         from check_page import color_blind_results
         results += color_blind_results(Path(path).read_text(encoding="utf-8", errors="replace"))
+    except ImportError:
+        pass
+
+    try:  # placeholders: [대괄호], 20XX, OO, 000, 학교명 ... FAIL unless the spec listed them as fill-ins
+        import placeholders as _ph
+        left = [(i + 1, m) for i, tx in enumerate(page_texts) for m in _ph.leftovers(tx, fillins)]
+        results.append(("FAIL" if left else "PASS", "no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...)" + (f": {left[:8]}" if left else "")))
+        listed = _ph.fillin_list(page_texts, fillins)
+        if listed:
+            results.append(("WARN", "바꿔 넣을 곳 (spec fillins): " + ", ".join(listed)))
     except ImportError:
         pass
 

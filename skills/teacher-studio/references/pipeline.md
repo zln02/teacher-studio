@@ -41,6 +41,12 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 4. The checker fails twice: stop, say so in plain words (「도구가 말을 안 들어서 직접 만드는 방식으로 바꿨어요」), offer the plain path.
 5. Cost or install: size/time first (`ask-first.md`).
 
+## Final checkpoint (the LAST message of every job, even 「알아서」 and even when a helper agent did the building)
+1. **End with an answer, never a status.** The last message must contain: (a) the finished file's full path, (b) how to open it (「더블클릭하면 브라우저에서 열려요」 / PowerPoint), (c) the check result in one line (PASS, or what is still open and why). Never end on 「서브 에이전트가 만드는 중이에요」, 「백그라운드에서 진행 중」 or a plan. If a helper is still running, wait for it, then answer; if you cannot wait, say plainly that it is NOT finished and where the partial file is.
+2. **No blanks in the deliverable.** `[대괄호]`, `20XX`, `OO`/`○○`, `000`, 「학교명」 must never ship. Fill them with a plausible stated assumption (today's date and school year, generic 「우리 학교」, 「3학년」) and say the assumption in one line, OR collect the true unknowns in the spec as `"fillins": [...]` and show them as a short **「바꿔 넣을 곳」** list in the final message (name, which slide). The slides review and `pptx_check.py` FAIL on any other leftover.
+3. **A PowerPoint was looked at.** With `.pptx`: report the `pptx_check` result (placeholders, text fit). Show the rendered PNG sheet (`deck.py ... --review DIR` writes it). Real drawing needs LibreOffice (~350MB; ask first, `ensure.py libreoffice`); without it the picture is an APPROXIMATE preview drawn from the shapes: say so in plain words (「대략의 미리보기예요, PowerPoint에서 한 번 열어 보세요」).
+4. A report/data job: say which columns were treated as identifiers and hidden (`teacher-data`).
+
 ## Rules
 - Plain Korean, no dev terms. Artifacts are shown, not described; Claude app: artifact; Claude Code/Codex: open the file.
 - Never invent facts for 대본 (mark 「확인 필요」); sources recorded for deliver stage.

@@ -207,7 +207,8 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     scene = ('<div id="deck">' + "".join(parts) + '</div><div id="chrome"><div class="prog"></div><div class="pn"></div></div><div id="notes"></div><div id="black"></div>')
     doc = {"title": spec.get("title") or spec["slides"][0].get("title", "슬라이드"), "skin": "deck",
            "deck": {"style": dz["style"], "palette": dz["palette"], "seed": seed, "purpose": dz["purpose"], "why": dz["why"], "layouts": fp,
-                    "colors": {k: dz["colors"][k] for k in ("bg1", "tx", "pr")}, "floor": dz["floor"]}}
+                    "colors": {k: dz["colors"][k] for k in ("bg1", "tx", "pr")}, "floor": dz["floor"],
+                    "fillins": [str(x) for x in (spec.get("fillins") or [])]}}
     libs = ["lucide"] + (["chartjs"] if "chart" in types else []) + (["katex"] if "math" in types else [])
     size = build_stage.build(doc, js, out, css, libs, True, False, False, scene, True)
     html = out.read_text(encoding="utf-8")
@@ -224,6 +225,28 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     return rep
 
 
+def placeholder_gate(spec: dict):
+    """(leftover placeholders, listed fill-ins found) over every string in the spec (titles, items, notes ...)."""
+    import placeholders as ph
+    texts: list[str] = []
+
+    def walk(v):
+        if isinstance(v, str):
+            texts.append(v)
+        elif isinstance(v, dict):
+            for k, x in v.items():
+                if k not in ("fillins", "file", "url", "palette_from", "seed", "tex"):
+                    walk(x)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x)
+    walk(spec.get("slides") or spec.get("items") or [])
+    walk(spec.get("title") or "")
+    fills = spec.get("fillins") or []
+    left = [m for tx in texts for m in ph.leftovers(tx, fills)]
+    return list(dict.fromkeys(left)), ph.fillin_list(texts, fills)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--spec", required=True, type=Path)
@@ -236,6 +259,7 @@ def main() -> int:
     ap.add_argument("--pptx", nargs="?", const="auto", metavar="OUT.pptx", help="ALSO write an editable PowerPoint (.pptx) from the same spec (python-pptx, installed on first need)")
     ap.add_argument("--template", type=Path, help="with --pptx: the teacher's own .pptx/.potx - its masters and layouts are used (template-first)")
     ap.add_argument("--yes", action="store_true", help="the teacher agreed to install python-pptx")
+    ap.add_argument("--yes-libreoffice", action="store_true", help="the teacher agreed to install LibreOffice (~350MB) so the .pptx can be drawn for real")
     ap.add_argument("--review", type=Path, help="also write the contact sheet + metrics into this folder")
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
@@ -254,8 +278,14 @@ def main() -> int:
         return 1
     print(f"built {out} ({rep['size'] // 1024} KB) slides={rep['slides']} style={rep['style']} palette={rep['palette']} seed={rep['seed']} (같은 모양을 다시 만들려면 --seed {rep['seed']})")
     code = 0
+    left, listed = placeholder_gate(spec)  # blanks must never ship: FAIL unless the spec lists them as "fillins"
+    if left:
+        code = 1
+        print(f"FAIL placeholders left in the deck: {left[:10]}  -> 실제 값이나 그럴듯한 가정(오늘 날짜, 2026학년도, '우리 학교')으로 채우거나, spec의 \"fillins\"에 적어 마지막에 「바꿔 넣을 곳」으로 알리세요")
+    if listed:
+        print("바꿔 넣을 곳 (선생님께 마지막에 알려 주세요): " + ", ".join(listed))
     if not a.no_check:
-        code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode
+        code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode or code
     if a.review:
         code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review)]).returncode or code
     if a.pptx:
@@ -267,6 +297,20 @@ def main() -> int:
             print(f"built {px} (편집할 수 있는 PPT) slides={pr_['slides']}")
             print("NOTE", pr_["font_note"])
             print("NOTE PPT에서는 단계별 나타나기·타이머·수식·아이콘 그림이 단순해져요.")
+            for w_ in pr_["warnings"]:
+                if "줄여" in w_ or "넘쳐" in w_:
+                    print("NOTE", w_)
+            import pptx_check
+            ck = pptx_check.check_pptx(px, spec.get("fillins") or [])
+            for lv, msg in ck["results"]:
+                print(f"{lv:4} pptx: {msg}")
+                if lv == "FAIL":
+                    code = code or 1
+            if a.review:  # look at it: real LibreOffice drawing when installed, else an APPROXIMATE preview (labelled)
+                import pptx_render
+                rr = pptx_render.render(px, a.review, consent=a.yes_libreoffice, overflow=ck["overflow"])
+                print(("PASS " if rr["mode"] == "libreoffice" else "NOTE ") + "pptx 그림: " + rr["note"])
+                print("sheet:", (rr["files"] or ["-"])[0])
             print(f"READY {px}")
         else:
             code = code or 1

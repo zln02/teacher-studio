@@ -59,6 +59,7 @@ Words in `**stars**` are emphasised; `\n` breaks a line. Every slide may have `n
 | video | file (<= 8MB embedded, bigger -> 「영상 열기」 button), title |
 | closing | title, sub, next[<=4], url (adds a QR) |
 
+**No blanks, ever.** Never write `[학교명]`, `[날짜]`, `20XX`, `OO초`, `○○`, `000-0000` in a spec. Fill with a plausible stated assumption (today's date, 2026학년도 / the current school year, generic 「우리 학교」·「3학년」) and say it in one line. Facts only the teacher knows (the real school name, phone, meeting date) go in `"fillins": ["학교 전화번호", ...]` (top-level list, words as they appear): the deck may then still contain them, and you show a short 「바꿔 넣을 곳」 list in the last message. Any other leftover is a FAIL (HTML review and `pptx_check.py`).
 Rules: one message per slide, <= 330 characters of text on a slide, no emoji (stripped). Text is projection-sized (>= 28px) — never ask for smaller. Do not invent statistics; unsure facts -> note 「확인 필요」. No student names/photos.
 Build errors are lists of 「고칠 곳」: fix exactly those and rerun.
 Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest priority**: use it only if the teacher names a legacy look.
@@ -67,7 +68,12 @@ Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest p
 `scripts/deck_style.py` maps purpose + mood + subject to one of the 12 shared styles (`shared/design/styles.py`) and a palette; each style has its own composition (title treatment, card, emphasis, background motif, transition, preferred layout families). Every slide type has 2-4 layout variants (asymmetric splits, full-bleed type, bento cards, editorial rows, numbered steps, comparison panels); the picker never repeats a layout twice in a row. Use the user's logo/template colours first (`design.palette_from`; means, not our design). `slides_review.py` and `check` WARN when correct/wrong or chart colours look alike to colour-blind eyes (add shapes or text). Custom flair is allowed per slide and sandboxed: `"flair":{"css":"...","svg":"<svg>..</svg>"}` (no external urls, scripts, fixed positioning; css is scoped to that slide). Keep it rare.
 
 ## Review gate (`scripts/slides_review.py`)
-External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflow / safe margin / keep-all · not empty · **clutter caps** (elements <= 36, icons <= 3, big colours <= 5) · no 3 identical layouts in a row. Compare decks: `slides_review.py --compare a.html b.html` (distance >= 0.35).
+**no placeholders left** (`placeholders.py`: `[대괄호]`, `20XX`, `OO`, `○○`, `000`, 학교명 ... FAIL unless listed in `fillins`) · External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflow / safe margin / keep-all · not empty · **clutter caps** (elements <= 36, icons <= 3, big colours <= 5) · no 3 identical layouts in a row. Compare decks: `slides_review.py --compare a.html b.html` (distance >= 0.35).
+
+## PowerPoint (.pptx) review - `scripts/pptx_check.py deck.pptx --spec deck.json --render review/`
+`deck.py --pptx` builds the file, **shrinks text that would overflow its box** (never below 60% / 12pt; same metrics as the check, `pptx_fit.py`), then runs `pptx_check`: placeholders FAIL · text fit (estimate) FAIL · shapes inside the slide · no empty placeholder. A FAIL on text fit means: shorten or split that slide in the spec and rebuild.
+**Look at it.** `--review DIR` also draws PNGs: with **LibreOffice** installed it is a real rendering; otherwise it is an **approximate** preview drawn from the shapes (red outline = estimated overflow). Always tell the teacher which one it was. LibreOffice is large (about 350MB download, 5-10 minutes): offer it once with the size (`py shared/tools/ensure.py libreoffice`, install only after a yes, `--yes-libreoffice`); declining is fine.
+**Last message** (pipeline.md, Final checkpoint): file path, how to open it, check result, the 「바꿔 넣을 곳」 list.
 
 ## Absolute rules
 1. **No student info** on slides. Example names are fictional.
@@ -81,6 +87,7 @@ External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflo
 |---|---|
 | `scripts/deck.py` | build a deck (spec -> html, runs the checker) |
 | `scripts/slides_review.py` | screenshots, contact sheet, metrics, `--compare` |
+| `scripts/pptx_check.py`, `pptx_render.py`, `pptx_fit.py`, `placeholders.py` | .pptx gate (blanks, text fit), PNG drawing, placeholder detector |
 | `scripts/deck_layouts.py` | layout variants (read only to add one) |
 | `assets/spec-examples/*.json` | four finished specs (parents / training / photosynthesis / club) |
 | `references/teacher-language.md`, `legal-advisory.md` | wording, advice lines |
