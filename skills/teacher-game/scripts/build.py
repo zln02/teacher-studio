@@ -20,6 +20,7 @@ import argparse
 import copy
 import json
 import random
+import re
 import subprocess
 import sys
 import tempfile
@@ -42,6 +43,31 @@ for _sub in ("fonts", "vendor", "tools"):
 import embed  # noqa: E402  (shared/fonts/embed.py)
 import inline  # noqa: E402  (shared/vendor/inline.py)
 from build_game import build  # noqa: E402
+
+
+_SVG_DROP_BLOCK = re.compile(r"<\s*(script|foreignObject|iframe|object|embed|style|animate|set)\b.*?<\s*/\s*\1\s*>", re.I | re.S)
+_SVG_DROP_TAG = re.compile(r"<\s*/?\s*(script|foreignObject|iframe|object|embed|style|animate|set)\b[^>]*>", re.I)
+_SVG_ON_ATTR = re.compile(r"""\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)""", re.I)
+_SVG_HREF_BAD = re.compile(r"""\s+(?:xlink:)?href\s*=\s*(?:"\s*(?:javascript|data|vbscript):[^"]*"|'\s*(?:javascript|data|vbscript):[^']*')""", re.I)
+
+
+def sanitize_svg(svg: str) -> str:
+    """custom_svg is AI-written and later set via innerHTML: drop script/foreignObject/iframe, on* handlers and javascript: links."""
+    s = str(svg)
+    prev = None
+    while prev != s:  # repeat so nested payloads like <scr<script>ipt> cannot re-form
+        prev = s
+        s = _SVG_DROP_BLOCK.sub("", s)
+        s = _SVG_DROP_TAG.sub("", s)
+        s = _SVG_ON_ATTR.sub("", s)
+        s = _SVG_HREF_BAD.sub("", s)
+    return s
+
+
+def sanitize_css(css: str) -> str:
+    """custom_css goes into the page's <style>: no '<' (so '</style>' cannot close it), no @import, no javascript:/expression()."""
+    s = str(css).replace("<", "")
+    return re.sub(r"@import[^;]*;?|expression\s*\([^)]*\)|javascript:", "", s, flags=re.I)
 
 # Game Wow kit (shared/juice): inside the skill when installed (sync copies it), else the repo root
 JUICE = SKILL / "shared" / "juice" if (SKILL / "shared" / "juice" / "juice.js").exists() else SKILL.parent.parent / "shared" / "juice"
@@ -150,7 +176,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     lay = layout_auto.compose(spec, tokens, (_au["recipe"] if _au else _th), (_au["style"] if _au else ""))
     spec_out["layoutCfg"] = lay
     if spec.get("custom_svg"):
-        spec_out["customSvg"] = spec["custom_svg"]
+        spec_out["customSvg"] = sanitize_svg(spec["custom_svg"])
     spec_out.pop("custom_css", None)
     spec_out.pop("custom_svg", None)
     music = theme_meta(theme_for(tokens, spec)).get("music")
@@ -191,7 +217,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     if (THEMES / f"{theme}.css").exists():
         css += "\n" + (THEMES / f"{theme}.css").read_text(encoding="utf-8")
     if spec.get("custom_css"):  # AI-written extra flair; validated by specs.validate, scanned by check_game like all other css
-        css += "\n/* custom_css */\n" + spec["custom_css"]
+        css += "\n/* custom_css */\n" + sanitize_css(spec["custom_css"])
     css += "\n/* TS:CSS END */\n"
     with tempfile.TemporaryDirectory() as td:
         td = Path(td)

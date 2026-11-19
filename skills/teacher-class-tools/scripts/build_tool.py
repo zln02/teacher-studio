@@ -18,6 +18,15 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+import html as _html
+
+
+def _js_json(obj, **kw) -> str:
+    """JSON for an inline <script>: < > & and U+2028/2029 become unicode escapes, so </script> or <!-- in text can never end the tag."""
+    s = json.dumps(obj, ensure_ascii=False, **kw)
+    for ch, esc in (("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"), (chr(0x2028), "\\u2028"), (chr(0x2029), "\\u2029")):
+        s = s.replace(ch, esc)
+    return s
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -129,14 +138,14 @@ def build(spec: dict, fonts: bool = True, yes: bool = False) -> tuple[str, dict]
     payload = {"tool": spec["tool"], "title": title, "use": tk["use"], "sound": sound, "tokens": tk, "data": data}
     js = (SKILL / "assets" / "tools.js").read_text(encoding="utf-8")
     css = (SKILL / "assets" / "tools.css").read_text(encoding="utf-8")
-    blob = json.dumps(payload, ensure_ascii=False).replace("</", "<\\/")
+    blob = _js_json(payload)
     kit_js = kit_css = ""
     if USE_JUICE and (JUICE / "juice.js").exists():
         kit_js = (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
         kit_css = (JUICE / "juice.css").read_text(encoding="utf-8") + "\n"
     html = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
-            f'<title>{title}</title>\n<style>/* TS:CSS BEGIN */{css_vars(tk)}\n{css}{kit_css}/* TS:CSS END */</style></head>\n'
-            f'<body><div id="stage" class="land"><header><h1>{title}</h1><div class="tools" id="tb"></div></header><main id="main"></main></div>\n'
+            f'<title>{_html.escape(title)}</title>\n<style>/* TS:CSS BEGIN */{css_vars(tk)}\n{css}{kit_css}/* TS:CSS END */</style></head>\n'
+            f'<body><div id="stage" class="land"><header><h1>{_html.escape(title)}</h1><div class="tools" id="tb"></div></header><main id="main"></main></div>\n'
             f'<script>window.TOOL = {blob};</script>\n<script>{kit_js}</script>\n<script>{js}</script>\n</body></html>\n')
     report: dict = {"embedded": False}
     if fonts:

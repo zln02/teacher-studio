@@ -19,6 +19,15 @@ import json
 import re
 import sys
 from pathlib import Path
+import html as _html
+
+
+def _js_json(obj, **kw) -> str:
+    """JSON for an inline <script>: < > & and U+2028/2029 become unicode escapes, so </script> or <!-- in text can never end the tag."""
+    s = json.dumps(obj, ensure_ascii=False, **kw)
+    for ch, esc in (("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"), (chr(0x2028), "\\u2028"), (chr(0x2029), "\\u2029")):
+        s = s.replace(ch, esc)
+    return s
 
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
@@ -62,13 +71,13 @@ def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None =
         html = html.replace('<div id="scene"></div>', '<div id="scene">' + scene_html + "</div>", 1)
     if credit:
         doc = {**doc, "credit": True}
-    html = DOC_RE.sub(lambda _: "window.DOC = " + json.dumps(doc, ensure_ascii=False, indent=2) + ";", html, count=1)
+    html = DOC_RE.sub(lambda _: "window.DOC = " + _js_json(doc, indent=2) + ";", html, count=1)
     html = SHOW_RE.sub(lambda m: m.group(1) + show_js.rstrip() + m.group(2), html, count=1)
     if css:
         html = html.replace("</style>", css.rstrip() + "\n</style>", 1)
     title = doc.get("title")
     if title:
-        html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{title}</title>", html, count=1)
+        html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{_html.escape(str(title))}</title>", html, count=1)
     if libs and inline:
         try:
             html, _ = inline.apply(html, [x for x in libs if x != "anime"], auto=True, allow_modern=allow_modern)

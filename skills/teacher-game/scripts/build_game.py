@@ -18,6 +18,15 @@ import json
 import re
 import sys
 from pathlib import Path
+import html as _html
+
+
+def _js_json(obj, **kw) -> str:
+    """JSON for an inline <script>: < > & and U+2028/2029 become unicode escapes, so </script> or <!-- in text can never end the tag."""
+    s = json.dumps(obj, ensure_ascii=False, **kw)
+    for ch, esc in (("<", "\\u003c"), (">", "\\u003e"), ("&", "\\u0026"), (chr(0x2028), "\\u2028"), (chr(0x2029), "\\u2029")):
+        s = s.replace(ch, esc)
+    return s
 
 SKILL = Path(__file__).resolve().parent.parent
 ENGINE = SKILL / "assets" / "engine.html"
@@ -35,7 +44,7 @@ def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | No
         raise SystemExit("engine markers not found - engine.html was modified")
     data = json.loads(data_path.read_text(encoding="utf-8"))
     packs = data.pop("packs", [])
-    game_js = "window.GAME = " + json.dumps(data, ensure_ascii=False, indent=2) + ";"
+    game_js = "window.GAME = " + _js_json(data, indent=2) + ";"
     logic = logic_path.read_text(encoding="utf-8").rstrip()
     html = DATA_RE.sub(lambda _: game_js, engine, count=1)
     html = LOGIC_RE.sub(lambda m: m.group(1) + logic + m.group(2), html, count=1)
@@ -53,7 +62,7 @@ def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | No
     html = stamp(html)
     title = data.get("title")
     if title:
-        html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{title}</title>", html, count=1)
+        html = re.sub(r"<title>.*?</title>", lambda _: f"<title>{_html.escape(str(title))}</title>", html, count=1)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(html, encoding="utf-8")
     return len(html.encode("utf-8"))
