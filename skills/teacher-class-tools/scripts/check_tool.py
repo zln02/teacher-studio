@@ -329,7 +329,7 @@ def _wow_drive(tool: str):
 
 
 def wow_checks(path: Path, html: str, tool: str, use: str) -> list[tuple[str, str]]:
-    """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, 4x-throttled fps, response time)."""
+    """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, own work per frame at 4x throttle, response time)."""
     jl = _juice_lint()
     if jl is None:
         return [("WARN", "wow lint skipped: shared/juice not found")]

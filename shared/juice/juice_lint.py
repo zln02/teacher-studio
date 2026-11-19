@@ -11,7 +11,11 @@ Rules (WCAG 2.2 / XAG 117 / classroom):
   motion   prefers-reduced-motion honoured + an in-page "효과 줄이기" switch (XAG 117)
   colour   right/wrong is never colour alone (a symbol or words are always present)
   size     class use: body text >= 28px at 1080p; tap targets >= 44px
-  speed    >= 30 fps with the CPU throttled 4x; first response <= 100 ms after a click
+  speed    the page's OWN main-thread work (script + style + layout, CDP Performance metrics) fits a 30 fps frame
+           (<= 33 ms) with the CPU throttled 4x; first response <= 100 ms after a click.
+           Raw fps is reported but never fails alone: headless Chrome draws in software, so fps there measures
+           the test PC, not the page. A calibration probe (blank animated page + fixed JS loop, same browser,
+           same throttle, same run) says whether this PC can judge at all; if not, speed results are WARN.
 """
 from __future__ import annotations
 
@@ -32,6 +36,75 @@ INIT_JS = r"""
   }, true);
 })();
 """
+
+# calibration probe: what THIS machine does with an almost-empty animated page under the same throttle
+PROBE_HTML = ("data:text/html,<html><body style='margin:0;background:%23123'><div id='a' style='position:absolute;width:80px;height:80px;background:%23e33'></div>"
+              "<script>var F=[];(function l(t){F.push(t);document.getElementById('a').style.transform='translateX('+(t/10%25800)+'px)';requestAnimationFrame(l)})(0)</script></body></html>")
+CAL_JS = "(function(){var t=performance.now(),s=0;for(var i=0;i<3000000;i++){s+=Math.sqrt(i)%7;}return performance.now()-t;})()"
+FRAME_BUDGET_MS = 33.0      # one frame at 30 fps
+PROBE_MIN_FPS = 45.0        # an empty animated page below this = the PC (not the game) is the limit
+OWN_KEYS = ("ScriptDuration", "RecalcStyleDuration", "LayoutDuration")
+
+
+def _metrics(cdp) -> dict:
+    try:
+        return {x["name"]: x["value"] for x in cdp.send("Performance.getMetrics")["metrics"]}
+    except Exception:
+        return {}
+
+
+def probe(b, throttle: int, viewport) -> dict:
+    """Blank-page fps and the real slowdown of a fixed JS loop under `throttle`, measured in this browser right now."""
+    out = {"fps": None, "ratio": None, "ok": False}
+    pg = None
+    try:
+        pg = b.new_page(viewport={"width": viewport[0], "height": viewport[1]})
+        pg.goto(PROBE_HTML)
+        pg.wait_for_timeout(200)
+        cal1 = min(pg.evaluate(CAL_JS) for _ in range(3))
+        cdp = pg.context.new_cdp_session(pg)
+        cdp.send("Emulation.setCPUThrottlingRate", {"rate": throttle})
+        pg.wait_for_timeout(200)
+        calt = min(pg.evaluate(CAL_JS) for _ in range(3))
+        f0 = pg.evaluate("[F.length, performance.now()]")
+        pg.wait_for_timeout(1500)
+        f1 = pg.evaluate("[F.length, performance.now()]")
+        cdp.send("Emulation.setCPUThrottlingRate", {"rate": 1})
+        out["fps"] = round((f1[0] - f0[0]) * 1000.0 / max(1.0, f1[1] - f0[1]), 1)
+        out["ratio"] = round(calt / cal1, 1) if cal1 > 0 else None
+        # judgeable = the empty page animates smoothly AND the throttle really is about `throttle`x (a busy PC shows more)
+        out["ok"] = bool(out["fps"] >= PROBE_MIN_FPS and out["ratio"] is not None and out["ratio"] <= throttle * 1.6)
+    except Exception:
+        pass
+    finally:
+        if pg is not None:
+            try:
+                pg.close()
+            except Exception:
+                pass
+    return out
+
+
+def speed_verdict(avg: float, med_w: float, own_ms, env: dict, throttle: int) -> list[tuple[str, str]]:
+    """Pure decision (unit-tested). FAIL only when the page's own work is over budget AND this PC can judge."""
+    res: list[tuple[str, str]] = []
+    envtxt = f"blank page here: {env.get('fps')} fps, real slowdown {env.get('ratio')}x"
+    if own_ms is None:
+        res.append(("WARN", "page's own work per frame could not be measured (no CDP metrics)"))
+    elif own_ms <= FRAME_BUDGET_MS:
+        res.append(("PASS", f"page's own work per frame (script + style + layout) with CPU throttled {throttle}x: {own_ms:.1f} ms (<= {FRAME_BUDGET_MS:.0f} ms = fits 30 fps)"))
+    elif env.get("ok"):
+        res.append(("FAIL", f"page's own work per frame with CPU throttled {throttle}x: {own_ms:.1f} ms (> {FRAME_BUDGET_MS:.0f} ms) -> lighten it: fewer animated elements, no per-frame layout reads, drop custom_js loops / heavy custom_css"))
+    else:
+        res.append(("WARN", f"page's own work per frame {own_ms:.1f} ms (> {FRAME_BUDGET_MS:.0f} ms) but this PC is too slow or busy to judge ({envtxt}); re-run when it is quiet"))
+    if avg >= 30 and med_w >= 30:
+        res.append(("PASS", f"frame rate with CPU throttled {throttle}x: {avg} fps average, median 1s window {med_w:.0f} fps"))
+    else:
+        why = ("this PC is too slow or busy to judge speed" if not env.get("ok")
+               else "headless Chrome draws without a graphics card, so this number is the test PC's drawing speed, not the page's code")
+        res.append(("WARN", f"frame rate with CPU throttled {throttle}x: {avg} fps average, median 1s window {med_w:.0f} fps ({envtxt}); {why}. Not a build failure; glance at it once on the real screen"))
+    return res
+
 
 # per-screen audit: tap targets, text size, right/wrong cues
 AUDIT_JS = r"""
@@ -132,6 +205,7 @@ def runtime(p, url: str, drive, use: str = "class", throttle: int = 4, viewport=
     agg = {"tap": set(), "text": set(), "cue": set()}
     m: dict = {}
     try:
+        env = probe(b, throttle, viewport)
         pg = b.new_page(viewport={"width": viewport[0], "height": viewport[1]})
         errs: list[str] = []
         pg.on("pageerror", lambda e: errs.append(str(e)[:120]))
@@ -146,24 +220,36 @@ def runtime(p, url: str, drive, use: str = "class", throttle: int = 4, viewport=
                 agg[k].update(r.get(k, []))
 
         cdp = pg.context.new_cdp_session(pg)
+        try:
+            cdp.send("Performance.enable")
+        except Exception:
+            pass
         cdp.send("Emulation.setCPUThrottlingRate", {"rate": throttle})
         t_start = pg.evaluate("performance.now()")
         audit()
+        m0 = _metrics(cdp)
+        n0 = pg.evaluate("window.__wow.frames.length")
         drive(pg, audit)
+        m1 = _metrics(cdp)
+        n1 = pg.evaluate("window.__wow.frames.length")
         audit()
+        own_ms = None
+        if m0 and m1 and n1 - n0 >= 10 and all(k in m0 and k in m1 for k in OWN_KEYS):
+            own_ms = 1000.0 * sum(m1[k] - m0[k] for k in OWN_KEYS) / (n1 - n0)
         w = pg.evaluate("({f: window.__wow.frames, r: window.__wow.resp, j: window.Juice ? window.Juice.stats : null, lite: window.Juice ? window.Juice.env.lite : null})")
         cdp.send("Emulation.setCPUThrottlingRate", {"rate": 1})
         avg, med_w, worst = _fps(w["f"], t_start)
         resp = sorted(w["r"])
         med = resp[len(resp) // 2] if resp else None
         mx = resp[-1] if resp else None
-        m.update(fps_avg=avg, fps_median=med_w, fps_worst=worst, resp_median=med, resp_max=mx, clicks=len(resp), errors=errs)
+        m.update(fps_avg=avg, fps_median=med_w, fps_worst=worst, resp_median=med, resp_max=mx, clicks=len(resp), errors=errs,
+                 own_ms_per_frame=own_ms, probe=env)
         fl = (w["j"] or {})
-        res.append(("PASS" if avg >= 30 and med_w >= 30 else "FAIL", f"frame rate with CPU throttled {throttle}x: {avg} fps average, median 1s window {med_w:.0f} fps (>= 30 required)"))
-        if worst < 30:
-            res.append(("WARN", f"worst 1s window {worst:.0f} fps while throttled {throttle}x (scene changes redraw the whole stage; fine on real classroom PCs, check on a very old one)"))
+        res += speed_verdict(avg, med_w, own_ms, env, throttle)
+        smooth = avg >= 30 and med_w >= 30
         if resp:
-            lvl = "PASS" if med <= 100 and mx <= 100 else ("WARN" if med <= 100 else "FAIL")
+            # click -> next frame includes one frame of drawing: only a smooth run on a judgeable PC can FAIL it
+            lvl = "PASS" if med <= 100 and mx <= 100 else ("FAIL" if med > 100 and env.get("ok") and (smooth or med > 2000.0 / max(avg, 1.0)) else "WARN")
             res.append((lvl, f"first response after a click: median {med:.0f} ms, max {mx:.0f} ms over {len(resp)} clicks (<= 100 ms; measured while throttled {throttle}x)"))
         else:
             res.append(("WARN", "no clicks measured for response time"))

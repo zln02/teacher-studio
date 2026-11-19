@@ -75,7 +75,7 @@ Praise, mastery and progress only. No random rewards or loot boxes, no fake urge
 
 ## Accessibility lint (`juice_lint.py`)
 Static: no CSS loop faster than 3/s, `prefers-reduced-motion`, 「효과 줄이기」 and 「소리 끄기」 present, kit present.
-Runtime (Chrome headless, CPU throttled 4x via CDP, audio stubbed + muted): fps >= 30, click -> next frame <= 100 ms, flashes <= 3/s and none above
+Runtime (Chrome headless, CPU throttled 4x via CDP, audio stubbed + muted): the page's own work per frame (script + style + layout) <= 33 ms, click -> next frame <= 100 ms (raw fps is reported; below 30 it is a WARN because headless Chrome draws in software, and every speed result turns into a WARN when the calibration probe says the test PC is too slow or busy), flashes <= 3/s and none above
 341x256 px at strong alpha, tap targets >= 44 px, class text >= 28 px, right/wrong never colour alone, no JS errors.
 Honest limits: flashes are counted from the governor's log plus a CSS scan (no pixel-level luminance probe); response time is "click to next frame"
 in software-rendered headless Chrome.
