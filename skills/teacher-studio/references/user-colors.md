@@ -15,6 +15,12 @@ The user brings a logo, a photo of their brand, a PPT/POTX/DOCX/HWPX template, o
 ## Colour-blind check
 `color_check.py` runs inside the game, slides, class-tools and data checkers as a WARN (never FAIL): meaning colours (correct/wrong, team colours, chart series) that look alike for protan/deutan/tritan vision (Machado 2009, OKLab distance < 0.10). Fix = add shapes/text (○ ✕, 정답/오답, labels), or change lightness/hue. Do not block delivery on it.
 
+## Not an AI-company house look
+`ai_look.py` (shared/design) rides along with `color_check.py` in every checker as a WARN: cream/beige page (OKLCH L >= 0.88, C 0.004-0.07, h 55-110) + terracotta/clay accent (L 0.42-0.78, C 0.07-0.19, h 32-62) + serif headline, or a white page with a blue-purple gradient and an emoji-heavy hero. Our own picks (design.py, direction.py, storyboard.py) never default to it. When the colours are the user's own (`palette_from`, `userPalette`) it stays quiet: their design always wins.
+
+## Shell kit (껍데기 키트)
+`shared/shell/shell.py` dresses previews in the chosen look: `frame(phone|tablet|tv|board|laptop|a4, inner, t)`, `pattern(t)`, `icon(name)` / `icon_for(words)` (Tabler, MIT), `spot(icon, t)` illustrations, `character(seed)` (DiceBear CC0), `badge`, `ornament`. `tokens(style_id | design tokens | palette, user=own_colours)` keeps it in the chosen style; the storyboard (`storyboard.py`) and direction cards (`direction.py`) use it.
+
 ## Helpers
 `oklch.py`: `hex_to_oklch`, `oklch_to_hex` (gamut clamp), `harmony(seed, "analogous|complementary|triad|split|tetrad")`, `ramp(seed, n)` (equal perceived steps), `fit_contrast(fg, bg, 4.5)` (lightness only). Use them for tints of the user's colour instead of ad-hoc mixing.
 

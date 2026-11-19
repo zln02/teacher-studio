@@ -169,6 +169,9 @@ def pick_styles(request: str, kind: str | None, seed: int = 0) -> list[dict]:
     ok = _load_module("oklch")
     styles = dict(st.STYLES) if st and hasattr(st, "STYLES") else dict(BUILTIN)
     avoid = AVOID.get(kind or "", set())
+    al = _load_module("ai_look")
+    if al:  # never offer an AI-company house look (cream + clay + serif) as one of our own three looks
+        avoid = avoid | {i for i, v in styles.items() if al.is_house(v["pal"].get("bg1", ""), [v["pal"].get("primary", ""), v["pal"].get("accent", "")], v.get("font", ""))}
     ids = [i for i in sorted(styles) if i not in avoid] or sorted(styles)
     h = int(hashlib.sha256((request + str(seed)).encode("utf-8")).hexdigest()[:8], 16)
 
@@ -197,9 +200,24 @@ def pick_styles(request: str, kind: str | None, seed: int = 0) -> list[dict]:
     return [{"id": sid, **styles[sid]} for sid in chosen]
 
 
+GENERIC_KIND_WORDS = {"발표자료", "발표 자료", "발표", "슬라이드", "ppt", "PPT", "피피티", "게임", "퀴즈", "영상", "애니메이션", "그래프", "엑셀", "csv", "CSV", "xlsx"}
+
+
+def sample_title(request: str, facts: dict) -> str:
+    """A short title for the preview screens: the request minus filler, generic kind words (게임, 발표자료), subject, grade, device and length.
+    「반 성적 분석 보고서」 stays whole, 「학부모 총회 발표자료 8장」 -> 「학부모 총회」, 「중2 과학 빛 복습 게임」 -> 「빛 복습」."""
+    t = request or ""
+    for ws in sorted(GENERIC_KIND_WORDS | set(FILLER) | set(SUBJECTS) | {w for v in DEVICE_WORDS.values() for w in v}, key=len, reverse=True):
+        t = re.sub(r"(?<![가-힣])" + re.escape(ws) + r"(?![가-힣])" if len(ws) == 1 else re.escape(ws), " ", t, flags=re.I)
+    t = re.sub(r"(초|중|고)\s*[1-6]|[1-6]\s*학년|\d+\s*(분|장|문제|개|쪽|초|시간)|[^\w가-힣]+", " ", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    if len(t.replace(" ", "")) >= 2:
+        return t[:14]
+    return (facts.get("subject") or "오늘의 주제")[:14]
+
+
 def cards(request: str, facts: dict, seed: int = 0, palette: dict | None = None) -> list[dict]:
-    topic = topic_left(request) or (facts.get("subject") or "우리 수업")
-    title = (topic[:14] or "오늘의 주제")
+    title = sample_title(request, facts)
     out = []
     styles3 = pick_styles(request, facts["kind"], seed)
     if palette:  # the user's own colours come first; the two other cards are looks of ours
@@ -257,14 +275,84 @@ def text_fallback(cs: list[dict]) -> str:
     return "\n".join("%s. %s: %s (글꼴 %s, 배경 %s, 강조 %s)" % (c["id"], c["name"], c["feel"], c["font"], c["colors"]["bg1"], c["colors"]["primary"]) for c in cs)
 
 
-SKETCH = {  # layout -> list of (x, y, w, h) boxes on a 120x68 canvas
+KIND_DEVICE = {"game": "board", "slides": "tv", "data": "laptop", "tools": "board", "motion": "tv", "plan": "laptop"}
+KIND_SAMPLE = {"game": "게임 시작 화면", "slides": "표지 슬라이드", "data": "보고서 첫 화면", "tools": "교실 도구 화면", "motion": "영상 첫 장면", "plan": "기획 한 장"}
+
+
+def _first_frame(c: dict, kind: str | None, request: str = "", n: int = 1) -> dict:
+    """What the result's first screen would show, as a storyboard frame (drawn by storyboard.mock)."""
+    title = c["sample_title"]
+    aud = _has(request, AUDIENCE)
+    who = {"학부모": "학부모님께", "학생": "우리 반 친구들", "동료": "선생님들께", "선생님": "선생님들께", "가족": "우리 가족", "친구": "친구들과"}.get(aud[0] if aud else "", "")
+    base = {"title": title, "note": "", "items": [], "value": "", "kicker": "", "tag": "", "secs": None, "char": "abcd"[n % 4]}
+    if kind == "data":
+        return {**base, "layout": "report", "items": ["78|평균", "96|최고", "+6|지난번보다"], "kicker": "한눈에 보기"}
+    if kind == "tools":
+        return {**base, "layout": "timer", "value": "05:00", "kicker": "모둠 활동"}
+    if kind == "game":
+        return {**base, "layout": "title", "kicker": who or "준비되면 시작!", "tag": "시작"}
+    if kind == "motion":
+        return {**base, "layout": "title", "kicker": "COMING UP", "note": who}
+    return {**base, "layout": "title", "kicker": who or "오늘의 주제", "note": "%d학년도" % __import__("datetime").date.today().year}
+
+
+def _shell_tokens(sh, c: dict):
+    if c.get("style") == "own-palette":
+        return sh.tokens(None, user=c["colors"], name=c.get("name", ""))
+    st = _load_module("styles")
+    if st and c.get("style") in getattr(st, "STYLES", {}):
+        return sh.tokens(c["style"], name=c.get("name", ""))
+    return sh.tokens({"id": c.get("style"), "pal": c["colors"], "font": c.get("font", ""), "dark": c.get("dark")}, name=c.get("name", ""))
+
+
+def render_html(cs: list[dict], request: str, plan_line: str = "", pitches: dict | None = None, kind: str | None = None, device: str | None = None,
+                embed: bool = False) -> str:
+    """Three cards, each a mini first screen of the result in that look (device frame + pattern + real font + icon), the pitch line under it."""
+    e = html.escape
+    try:
+        if str(HERE) not in sys.path:
+            sys.path.insert(0, str(HERE))
+        import storyboard as sb
+        sh = sb._load("shell", "shell")
+    except Exception:
+        sb, sh = None, None
+    if sh is None:
+        return _render_swatches(cs, request, plan_line)
+    pitches = pitches or {}
+    dev = device if device in ("phone", "tablet", "tv", "board", "laptop", "a4") else KIND_DEVICE.get(kind or "", "tv")
+    parts = []
+    for c in cs:
+        t = _shell_tokens(sh, c)
+        k = c["colors"]
+        screen = sh.frame(dev, sb.mock(_first_frame(c, kind, request, len(parts)), t, sh, kind or "slides", 1, 8), t)
+        pitch = str(pitches.get(c["id"]) or c.get("pitch") or c["feel"])
+        sw = "".join('<i style="background:%s"></i>' % e(v) for v in (k["bg1"], k["primary"], k["accent"], k["card"]))
+        parts.append(
+            '<section class="card" style="--c-bg:%s;--c-pr:%s;--c-ink:%s"><header><b class="id">%s</b><div><h2>%s</h2><span class="meta">%s · %s · %s</span></div></header>'
+            '<div class="stage">%s</div><p class="pitch">%s</p><div class="sw">%s</div></section>' % (
+                e(t["bg"]), e(t["primary"]), e(t["ink"]), e(c["id"]), e(c["name"]), e(("명조" if t["serif"] else "고딕") + " 제목"), e("어둡게" if t["dark"] else "밝게"),
+                e(KIND_SAMPLE.get(kind or "", "첫 화면")), screen, e(pitch), sw))
+    css = ("*{box-sizing:border-box}body{margin:0;padding:28px 24px 36px;background:radial-gradient(#d3d9e4 1px,transparent 1.4px) 0 0/18px 18px,#eef1f6;color:#151b28;"
+           "font:16px/1.5 'Noto Sans KR','Malgun Gothic',sans-serif}h1{font-size:26px;margin:0 0 4px;font-weight:900;letter-spacing:-.02em}.sub{margin:0 0 22px;color:#4a5365}"
+           ".row{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}"
+           ".card{background:#fff;border-radius:18px;padding:16px 16px 18px;box-shadow:0 1px 0 rgba(20,30,50,.04),0 14px 30px -16px rgba(20,30,50,.4);border-top:6px solid var(--c-pr)}"
+           ".card header{display:flex;gap:12px;align-items:center;margin-bottom:14px}.id{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;"
+           "background:var(--c-bg);color:var(--c-ink);box-shadow:inset 0 0 0 2px var(--c-pr)}h2{font-size:19px;margin:0;line-height:1.25}.meta{font-size:13px;color:#566079}"
+           ".stage{padding:14px 6px 6px;border-radius:14px;background:linear-gradient(180deg,#f4f6fa,#e9edf3)}.pitch{margin:14px 2px 10px;font-size:16px;font-weight:700;line-height:1.45}"
+           ".sw{display:flex;gap:6px}.sw i{width:22px;height:22px;border-radius:50%%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}")
+    body = ('<h1>어떤 느낌이 마음에 드세요?</h1><p class="sub">%s완성되면 첫 화면이 이렇게 보여요. 번호(A/B/C)만 말씀해 주세요. 섞어도 돼요.</p><div class="row">%s</div>'
+            % (e(plan_line + " ") if plan_line else "", "".join(parts)))
+    return sh.page("분위기 미리보기", body, css.replace("%%", "%") + sb.MOCK_CSS, embed=embed)
+
+
+SKETCH = {  # layout -> list of (x, y, w, h) boxes on a 120x68 canvas (fallback without the shell kit)
     "split": [(6, 6, 52, 56), (64, 6, 50, 26), (64, 36, 50, 26)], "news": [(6, 6, 108, 40), (6, 50, 52, 12), (62, 50, 52, 12)],
     "poster": [(30, 8, 60, 30), (40, 44, 40, 8), (48, 56, 24, 6)], "bento": [(6, 6, 52, 30), (62, 6, 52, 14), (62, 24, 52, 12), (6, 40, 108, 22)],
     "stack": [(20, 6, 80, 16), (20, 26, 80, 16), (20, 46, 80, 16)],
 }
 
 
-def render_html(cs: list[dict], request: str, plan_line: str = "") -> str:
+def _render_swatches(cs: list[dict], request: str, plan_line: str = "") -> str:
     e = html.escape
     parts = []
     for c in cs:
@@ -342,6 +430,7 @@ def main() -> int:
     ap.add_argument("--open", action="store_true")
     ap.add_argument("--text", action="store_true", help="print only the plain-Korean card lines")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--pitches", help='JSON {"A": "one line", "B": ..., "C": ...}: the pitch shown under each preview')
     ap.add_argument("--palette-from", help="'saved' (prefs.json) or a colours JSON; default: the saved palette if any. One card then shows the user's own colours")
     a = ap.parse_args()
     pal = user_palette(a.palette_from or "saved", _prefs_module())
@@ -349,7 +438,12 @@ def main() -> int:
     if a.html or a.open:
         path = Path(a.html) if a.html else Path(tempfile.gettempdir()) / "teacher-studio-moods.html"
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(render_html(d["cards"], a.request), encoding="utf-8")
+        try:
+            pitches = json.loads(a.pitches) if a.pitches else {}
+        except ValueError:
+            pitches = {}
+        path.write_text(render_html(d["cards"], a.request, pitches=pitches if isinstance(pitches, dict) else {}, kind=d["inferred"]["kind"],
+                                    device=d["inferred"]["device"], embed=True), encoding="utf-8")
         d["preview_html"] = str(path)
         if a.open:
             webbrowser.open(path.as_uri())

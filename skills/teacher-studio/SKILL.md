@@ -38,6 +38,7 @@ North star: do not build from zero. Use a finished missile, then a weapon, then 
 | 가정통신문·안내문·공문·워드·한글·PDF·PPT·엑셀 **파일** | `doctor`의 `official_doc_skills`(docx·pptx·xlsx·pdf·hwp-docs)가 있으면 파일은 그쪽에, 구성·디자인은 우리가; 없으면 채팅에 글로 써 주고 필요하면 R5 |
 | 기획·리서치·글쓰기·SNS 글·이름 짓기 | `references/co-plan.md` (R3) |
 - Template first: if the user gives a logo, template, brand or reference file (or has a saved palette), use their colours before ours (`references/user-colors.md`: `color_from.py` -> spec `design.palette_from`). It is only the means to take their colours, not our design; save as default only if they ask.
+- Never default to an AI-company house look (cream/beige + terracotta/clay accent + serif headline; white + blue-purple gradient + emoji hero). Pick a look from the request; checkers WARN on it (`shared/design/ai_look.py`). The user's own palette or template always wins.
 - Never stretch a row to a request it does not cover (VR/3D apps, mobile apps, websites, video editing, anything not in the table): that is R5, not the nearest skill.
 - Then: that skill's SKILL.md (short) -> one missile README -> `content.json` with only the changing parts -> `fire ... [--open] [--mp4]` -> show on `READY <path>`. Details: `references/studio-details.md` D.
 **Pipeline (every making job; `references/pipeline.md`)**: 기획 -> 대본 -> 콘티 -> 제작 -> 수정 -> 배포, each ends in one small artifact. Your first reply stops at ONE checkpoint: take the FIRST rule that matches.
