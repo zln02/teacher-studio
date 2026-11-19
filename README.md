@@ -194,9 +194,9 @@
 > 아래 문장을 **복사해서 붙여 넣기만** 하면 AI가 알아서 설치하고, 끝나면 「준비 완료」 안내와 메뉴를 보여 드려요.
 
 ### 설치 방법 4단계 — 위에서부터 해 보세요
-1. **링크 한 줄**: Claude Code·Codex에 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」 (Claude 앱·웹은 되는지 *확인 필요*)
+1. **링크 한 줄**: Claude Code · Claude 데스크톱 앱의 Cowork·Code 탭 · Codex 앱에 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」 (일반 Chat 탭은 링크로 설치가 안 돼요 → 3번)
 2. **명령 한 줄**: `npx skills add zln02/teacher-studio` (스킬 7개 모두 선택) · Claude Code는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`
-3. **파일 올리기**: Claude 앱 → [`dist/`](dist/)의 ZIP 7개를 Customize → Skills에 올리기
+3. **파일 올리기**: Claude 앱 Chat → [`dist/`](dist/)의 ZIP 7개를 Customize → Skills에 올리기
 4. **폴더 복사**: ZIP으로 내려받아 `skills` 안 `teacher-` 폴더 7개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex)에 복사
 
 자세한 설명은 [INSTALL.md](INSTALL.md). 아래는 1번의 자세한 형태입니다.
@@ -212,7 +212,20 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 </details>
 
 <details>
-<summary><b>💬 Claude 앱·웹(claude.ai)을 쓰는 경우</b></summary>
+<summary><b>🧭 앱별 설치 길 한눈에</b> (2026-11-19 검색 요약 기준 · <i>연수 전 실제 화면 확인 필요</i>)</summary>
+
+| 쓰는 곳 | 방법 | 알아 둘 점 |
+|---|---|---|
+| Claude 데스크톱 · Cowork / Code 탭 | 「내가 준 링크에 하네스 세팅해 줘」, 또는 Customize → Plugins → Add marketplace → `zln02/teacher-studio` | Cowork·플러그인은 유료(Pro 이상). Team·Enterprise는 관리자가 켜야 해요 |
+| Claude Chat 탭 | 링크로는 안 돼요. ZIP 7개를 Customize → Skills에 올리고, Settings → Capabilities에서 코드 실행 켜기 | 제일 제한이 많아요 |
+| ChatGPT 개인 계정 | **Codex 앱**: 스킬 폴더 `~/.agents/skills`, skill-installer에 GitHub 폴더 주소, 또는 플러그인 | 일반 ChatGPT 화면에는 개인용 설치가 없어요 |
+| ChatGPT Business·Enterprise·Edu | Skills 파일 업로드 | 관리자가 허용해야 해요 |
+| Gemini 앱 | SKILL.md 형식 Skills 업로드 (2026-10부터) | 도구(스크립트)를 못 돌리면 결과가 제한적이에요 |
+| Gemini CLI | `gemini skills install https://github.com/zln02/teacher-studio` | 개발자용 |
+</details>
+
+<details>
+<summary><b>💬 Claude 앱 Chat(claude.ai)을 쓰는 경우</b></summary>
 
 1. 이 페이지의 [`dist/`](dist/) 폴더에서 ZIP 파일(묶음 파일) 7개를 받습니다: `teacher-studio` · `teacher-game` · `teacher-slides` · `teacher-motion` · `teacher-law` · `teacher-class-tools` · `teacher-data`
 2. Claude 앱 → **Customize(맞춤 설정) → Skills** 에서 ZIP을 하나씩 올립니다. (메뉴 이름은 앱 버전에 따라 조금 다를 수 있어요)
@@ -283,13 +296,13 @@ https://github.com/zln02/teacher-studio 의 INSTALL.md를 읽고 그대로 설�
 
 | | Claude 앱·웹 | Claude Code | Codex |
 |---|---|---|---|
-| 설치 | 설정에서 ZIP 7개 올리기 | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
+| 설치 | Chat은 설정에서 ZIP 7개 올리기 (Cowork·Code 탭은 링크 한 줄) | 설치 한 줄 → `~/.claude/skills` | 설치 한 줄 → `~/.agents/skills` |
 | 만들기 + 자동 점검 | ✅ 코드 실행(AI가 도구를 직접 돌리는 기능) 켜기 | ✅ | ✅ |
 | 결과 받는 법 | 오른쪽 미리보기·다운로드 (클라우드에서 만들어 내 컴퓨터 폴더에는 직접 못 써요) | 내 컴퓨터에 파일로 저장, 크롬 자동 열기 | 내 컴퓨터에 파일로 저장, 크롬 열기 |
 | 공유 링크·QR | ✅ 「게시」 | ➖ 파일로 전달 | ➖ 파일로 전달 |
 | 영상 파일 | 🎥 크롬 녹화(.webm) — 인터넷이 제한돼 MP4 변환 도구(ffmpeg)는 안 될 가능성이 커요 | ✅ MP4 (처음 요청할 때 영상 도구(ffmpeg) 설치, 약 150MB) | ✅ MP4 (처음 요청할 때 설치, 인터넷 허용 필요) |
 | 법률 안내 최신 확인 | ✅ 웹 검색 켜기 | ✅ 기본 내장 | ⚠️ 「live」 웹 검색 필요 |
-| 무료 요금제 | ✅ 스킬·코드 실행 포함 | 구독 또는 API 키(프로그램 연결용 열쇠) 필요 | ✅ 무료·Go 포함 (한도 비공개) |
+| 무료 요금제 | 스킬·코드 실행은 무료에서도 된다고 안내돼 있어요 (Cowork·플러그인은 유료 Pro+, *연수 전 확인 필요*) | 구독 또는 API 키(프로그램 연결용 열쇠) 필요 | ✅ 무료·Go 포함 (한도 비공개) |
 
 > 🧭 **Codex 팁** — 파일을 쓸 때 **승인 창**이 뜨면 허용해 주세요. 인터넷은 기본으로 꺼져 있어서, 최신 법 확인·도구 설치를 하려면 설정 파일(`~/.codex/config.toml`)에서 인터넷을 켜 주어야 해요. 어렵다면 AI에게 「인터넷 켜는 법 알려줘」라고 하면 돼요. (개발자용: `[sandbox_workspace_write]` 아래 `network_access = true`, 웹 검색은 `--search`(live)로 켭니다.)
 
@@ -357,8 +370,8 @@ flowchart LR
 <details><summary><b>무료 계정으로도 되나요?</b></summary>
 
 네. 결과물(HTML 파일)은 계정 없이 누구나 열 수 있어요. 만드는 쪽은 (2026-11-18 확인)
-- **Claude**: 무료 요금제에서도 스킬과 코드 실행을 쓸 수 있어요 ([스킬 안내](https://support.claude.com/en/articles/12512180) · [파일 만들기](https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude)).
-- **Codex**: 무료·Go 요금제에 포함돼요. 사용 한도는 공개돼 있지 않아요 ([요금 안내](https://learn.chatgpt.com/docs/pricing)).
+- **Claude**: Chat에서 ZIP으로 올리는 스킬과 코드 실행은 무료 요금제에서도 쓸 수 있다고 안내돼 있어요(연수 전 실제 화면 확인 필요). Cowork·플러그인(링크 한 줄 설치)은 유료(Pro 이상)이고 Team·Enterprise는 관리자가 켜야 해요 ([스킬 안내](https://support.claude.com/en/articles/12512180) · [파일 만들기](https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude)).
+- **ChatGPT(Codex 앱)**: 개인 계정은 Codex 앱에서 써요. 무료·Go 요금제에 포함돼요(연수 전 확인 필요). 일반 ChatGPT의 Skills는 Business·Enterprise·Edu만, 관리자가 허용해야 해요. 사용 한도는 공개돼 있지 않아요 ([요금 안내](https://learn.chatgpt.com/docs/pricing)).
 
 사용량이 한정된 걸 생각해서, 이 스튜디오는 **미리 시험해 둔 도구에 내용만 넣는 방식**으로 사용량을 크게 줄였어요.
 </details>

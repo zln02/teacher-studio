@@ -43,10 +43,12 @@ The goal is **your design**. If you have a school or company template, brand col
 
 ## Install (try from the top)
 
-1. **One line:** tell Claude Code or Codex "Install this skill: https://github.com/zln02/teacher-studio" (Claude app/web: to be confirmed).
+1. **One line:** tell Claude Code, the Claude desktop app's Cowork or Code tab, or the Codex app "Install this skill: https://github.com/zln02/teacher-studio" (plain Chat tab cannot install from a link, use step 3). Cowork and plugins need a paid plan (Pro+); Team/Enterprise admins must enable them.
 2. **One command:** `npx skills add zln02/teacher-studio` (choose all 7 skills). In Claude Code: `/plugin install teacher-studio --marketplace zln02/teacher-studio`.
-3. **Upload files:** Claude app, upload the 5 ZIPs in [`dist/`](dist/) under Customize, Skills.
+3. **Upload files:** Claude app Chat, upload the 7 ZIPs in [`dist/`](dist/) under Customize, Skills (turn on code execution in Settings, Capabilities).
 4. **Copy folders:** copy the seven `teacher-*` folders from `skills` into `.claude/skills` (Claude Code) or `.agents/skills` (Codex).
+
+Other apps (verified 2026-11-19 from search summaries, **confirm on screen before a training**): ChatGPT personal accounts use the Codex app (skills folder `~/.agents/skills`, skill-installer with a GitHub folder URL, or plugins); plain ChatGPT Skills exist only on Business/Enterprise/Edu with admin approval. The Gemini app accepts SKILL.md-format Skills (since 2026-10) but our scripts need tools, so expect limited results; Gemini CLI: `gemini skills install https://github.com/zln02/teacher-studio` (developers).
 
 Details: [INSTALL.md](INSTALL.md) (Korean). Then say "start Teacher Studio" or just ask for what you want.
 
