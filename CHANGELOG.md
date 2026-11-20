@@ -8,6 +8,17 @@
 - `teacher-data` 문구 정리: 점수대 그래프 설명이 설문 문구를 쓰던 것 수정, 「가장 높은 A와 가장 낮은 B의 차이」처럼 두 곳을 밝힘, 소수 자릿수 통일(-0.4점, 6.0점)
 - `docs/training/deck.json`을 새 슬라이드 spec으로 다시 만듦(21장, 점검 통과)
 
+### 일반 AI에 진 곳 고치기: PPT·PDF (2026-11-20, `docs/research/ceiling-eval-2026-11/rerun-ppt-pdf.md`)
+- **원인**: sonnet 스튜디오의 PPT 두 건은 우리 슬라이드 도구를 쓰지 않았다(`teacher-slides` 설명에 PPT·파워포인트가 없어 계정 기본 pptx 스킬로 감). 설명을 「PPT / PowerPoint (.pptx)…before any generic pptx skill」로 고침.
+- **빈칸**: `placeholders.py`가 `(학교명 입력)`·`(…을 입력하세요)`·`○○학교`·`△△부`·`OOO`·`(예시)`·`(미정)`·`<학교명>`·`00월 00일`도 잡음 (손으로 쓰는 밑줄 칸 `교사: ______`는 빈칸으로 보지 않음). 모르는 값은 빼거나 「우리 학교」·오늘 날짜로 채우고 한 줄로 알림.
+- **끝까지 고치기(hard gate)**: `deck.py --pptx`·`pptx_check.py`·`docs.py make`가 FAIL이면 `READY` 대신 `NOT DONE`을 찍고, 스킬 문서의 마지막 단계가 PASS까지 다시 돌리기. PPT만 필요하면 `--pptx-only`(웹 덱 점검 생략).
+- **비어 보이는 장**: `pptx_fill.py`(내용이 화면의 6% 미만이거나 위 60%에서 끝나면 FAIL), `deck_pptx.py` 글머리·표·요약·단계·연표·비교 칸이 본문을 채우도록 손봄.
+- **미리보기**: `pptx_draw.py`·`pptx_chart.py`가 pptx XML에서 선·화살표·그림·표·차트·묶음·마스터 도형·글자 모양을 그림(LibreOffice 없이). 어떤 pptx든 같은 눈으로 비교 가능.
+- **내용**: 새 장 종류 `diagram`(선·화살표·도형·각 표시·이름표: 웹은 SVG, PPT는 진짜 선), 마무리 앞에 「확인 문제 정답」 장 자동 추가, 수업용·기관 보고용 구성 안내와 점검 문구(확인 문제 2개·활동·그림, 표·그래프·일정). 화살표 글자(→)가 지워지던 버그 수정. 예시 `class-light-reflection.json`.
+- **문서/PDF**: `design.font_size`(pt 인쇄 배율), `{"pagebreak"}`·`{"image"}`·`{"qr"}`·`{"form"}` 블록, `kind:"form"`(신청서), 안내문 `reply`(+`"page": true`), `max_pages`(조금 줄여 맞춤)·`min_font`, 쪽수·쪽별 채움·가장 작은 글자 점검(`doc_look.py`), 모든 쪽을 한 장에 모은 `*.preview.png`, 한 줄 명령 `docs.py append 원본.pdf --spec 신청서.json --out 새.pdf`. 안내문·신청서 PDF 제목 띠.
+- 다시 잰 결과(sonnet, 같은 미리보기): PDF 3.00 → 4.62(일반 AI 4.25), 수업 PPT 3.25 → 4.62(4.88), 공공 보고 PPT 3.25 → 3.50(3.88). 한 곳만 뒤집혔고 PPT 두 곳은 아직 근소하게 아래. `target_slides`(요청 장수의 1.25배를 넘으면 멈춤), 「확인 문제 정답」 한 장, 공공용 머리 띠.
+- 시험 `py tools/test_ppt_pdf_rerun.py`(19개).
+
 ### Testbed fixes (2026-11-19, `docs/research/testbed-fix-2026-11.md`)
 - 폰 세로 화면(quiz): 600칸 세로 무대 + 폰 점검(390×844·844×390, 글자·넘침·버튼 44px). 기본 오프라인(바깥 주소 FAIL, `online:true`만 허용). 스타일은 words가 제목보다 우선 + `--spec` 미리 보기. `color_from.py` 여러 파일·이름 있는 색. `design.font`, 비네트 밝기별. `direction.py` 폰 인식. 라우터 새 게임은 spec→build. 제작 공정표 번호 규칙(haiku 0.81→1.0). `teacher-data` 설명 YAML 복원 + `sync_shared --check` 설명 검사.
 
