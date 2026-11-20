@@ -40,9 +40,12 @@ for _s in (sys.stdout, sys.stderr):
 LAYOUTS = ["stack", "split", "bento", "news", "poster", "column", "left", "right", "rail", "stair"]
 # the five newer footprints take their taste from the two older layouts they are closest to (styles only name the older five)
 KIN = {"column": ("stack", "poster"), "left": ("split", "stack"), "right": ("split", "news"), "rail": ("news", "split"), "stair": ("bento", "poster")}
+# when the content fits layouts with open space, the ones that cover most of the stage (and so overlap every other layout) are held back
+# and the ones that leave a clear side or band free are preferred: measured footprint overlap with the other layouts, low -> high
+SPREAD = {"news": 1.4, "left": 1.25, "right": 1.25, "rail": 1.2, "stair": 1.0, "column": 0.8, "poster": 0.8, "bento": 0.5, "stack": 0.25, "split": 0.25}
 ROW_LAYOUTS = ("bento", "news", "poster", "rail", "stair")   # answers sit side by side or in a narrow rail: short answers only
-SIDE_LAYOUTS = ("left", "right", "column")                   # answer bars about 60 % wide: fine up to a medium-long answer (18 characters)
-ESCAPE_OUT = ("news", "column", "left", "right")              # the lock strip takes 150px of height: these would squeeze four answer bars
+SIDE_LAYOUTS = ("left", "right", "column")                   # one block of 58 % (2 x 2) or 70 % (slim bars): fine up to 22 characters
+ESCAPE_OUT = ("news", "column", "left", "right")              # the lock strip takes 150px of height: news never, the side blocks only for short answers
 MECH_VARIANTS = {"match": ["grid", "scatter", "shelf", "brick"], "bingo": ["grid", "tilt", "shelf"], "sort": ["bins", "shelves", "conveyor"],
                  "board": ["snake", "wave", "stair"], "survival": ["row", "bridge", "stagger", "arena"], "escape": ["top", "side"], "quiz": [""]}
 CHOICES = ["default", "pill", "tile", "stamp", "neon", "note"]
@@ -106,17 +109,26 @@ def content_features(spec: dict) -> dict:
             "longest": max([len(str(c)) for it in items if len(it.get("choices") or []) >= 3 for c in it["choices"]] or [0]),
             "qlen": max([len(str(it.get("q") or it.get("question") or "")) for it in items] or [0]),
             "choices": round(sum(multi) / len(multi)) if multi else 0,
-            "media": any(it.get("image") or it.get("svg") or it.get("img") for it in items)}
+            "media": any(it.get("image") or it.get("svg") or it.get("img") for it in items),
+            "phone": spec.get("device") == "phone"}
+
+
+def side_answers(feat: dict) -> str:
+    """How the answers sit in the side layouts (left / right / column): 'two' = 2 x 2 in a 58 % block (four answers of up to 10 characters),
+    'list' = slim bars in a 70 % block (longer answers, or two / three of them)."""
+    return "two" if feat["longest"] <= 10 and feat["choices"] == 4 else "list"
 
 
 def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     """Layout weights = the style's preference (flattened, so one favourite does not win every time) x what the content can carry.
 
-    - row / rail layouts (bento / news / poster / rail / stair) are dropped when an answer is long (it would wrap to one-syllable lines);
-      the 60 %-wide columns (left / right / column) are dropped when it is very long; news (6), poster and rail (8), stair (10) need shorter ones still
-    - mostly-OX sets want the big two-button layouts (poster / split / stair); long questions want a wide question card (stack / split / column)
-    - the two full-stage layouts (stack, split) are held back a little whenever the content fits a layout with open space,
+    - answers over 12 characters: no row / rail / stair (they would wrap to one-syllable lines); the side layouts switch to slim bars in a
+      wider block and stay possible up to 22 characters
+    - the question must fit its box: three lines (about 40 characters) in the side layouts and the stair, two (36) above four slim bars
+    - mostly-OX sets want the big two-button layouts (poster / split / stair); long questions want a wide question card (stack / split)
+    - the two full-stage layouts (stack, split) are held back whenever the content fits a layout with open space,
       so different requests do not all fill the same rectangle
+    - escape games have 150px less height: fewer layouts, shorter limits
     - every layout the content allows stays possible, so the same request with another seed gets another skeleton."""
     w = {k: 0.7 for k in LAYOUTS}
     for k, v in style_w.items():
@@ -126,22 +138,40 @@ def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     if feat["longest"] > 12:
         for k in ROW_LAYOUTS:
             w[k] = 0
-    else:  # one row of four tiles is narrow: the lower third holds one line under the mark, the pill row and the rail two short lines
-        if feat["longest"] > 6:
-            w["news"] = 0
-        if feat["longest"] > 8:
-            w["rail"] = w["poster"] = 0
-        if feat["longest"] > 10:
-            w["stair"] = 0
-    if feat["longest"] > 18:
+    if feat["longest"] > 10:  # the stair's 2 x 2 tiles are the narrowest two-line tiles (large type clips at 12)
+        w["stair"] = 0
+    if feat["longest"] > 22:
         for k in SIDE_LAYOUTS:
             w[k] = 0
-    else:
-        w["stack"] *= 0.6
-        w["split"] *= 0.6
-    if mech == "escape":
-        for k in ESCAPE_OUT:
+    if feat.get("phone") and side_answers(feat) == "list":  # slim bars are under 44 CSS px on a phone held sideways
+        for k in SIDE_LAYOUTS:
             w[k] = 0
+    if feat["qlen"] > (36 if side_answers(feat) == "list" else 40):
+        for k in SIDE_LAYOUTS:
+            w[k] = 0
+    if feat["qlen"] > 40:
+        w["stair"] = 0
+    if feat["qlen"] > 44:
+        w["bento"] = 0
+    if feat["qlen"] > 50:
+        w["news"] = 0
+    if mech == "escape":
+        side_ok = feat["longest"] <= 9 and feat["qlen"] <= 40 and feat["choices"] == 4   # a 76 % block: two question lines, one-line answers
+        for k in ESCAPE_OUT:
+            if k == "news" or not side_ok:
+                w[k] = 0
+        if feat["qlen"] > 26:
+            w["stair"] = 0
+        if feat["longest"] > 7:
+            w["rail"] = 0
+        if feat["longest"] > 10:
+            w["poster"] = 0
+    if feat["choices"] >= 5:
+        for k in ("column", "left", "right", "rail", "stair"):
+            w[k] = 0
+    if sum(1 for k, v in w.items() if v > 0 and k not in ("stack", "split")) >= 2:
+        for k, f in SPREAD.items():
+            w[k] *= f
     if feat["ox"] >= 0.5:
         w["poster"] *= 1.8
         w["split"] *= 1.5
@@ -150,15 +180,11 @@ def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     if feat["qlen"] > 44:
         w["stack"] *= 1.7
         w["split"] *= 1.4
-        w["column"] *= 1.2
         w["poster"] *= 0.5
         w["rail"] *= 0.5
     if feat["choices"] == 3:
         w["stack"] *= 1.4
         w["column"] *= 1.3
-    if feat["choices"] >= 5:
-        for k in ("column", "left", "right", "rail", "stair"):
-            w[k] = 0
     if feat["media"]:
         w["split"] *= 1.6
         w["news"] *= 1.3
@@ -203,8 +229,8 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
         "transition": _pick(fam["transition"], key + "X"),
     }
     feat = content_features(spec)
-    # column / left / right: four short answers sit 2 x 2, anything longer (or three answers) becomes a column of bars
-    cfg["ans"] = ("two" if feat["longest"] <= 10 and feat["choices"] == 4 else "list") if layout in SIDE_LAYOUTS else ""
+    # column / left / right: four short answers sit 2 x 2, anything longer (or two / three answers) becomes slim bars in a wider block
+    cfg["ans"] = side_answers(feat) if layout in SIDE_LAYOUTS else ""
     if mech == "escape" and cfg["mech"] == "side":
         cfg["mech"] = "side"
     return cfg

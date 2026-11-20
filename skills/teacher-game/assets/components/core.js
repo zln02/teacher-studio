@@ -66,6 +66,12 @@ H.ask = function(el, it, o){
   var top = o.top == null ? 150 : o.top;
   el.insertAdjacentHTML("beforeend", '<div class="ts-wrap ts-ask" style="top:' + top + 'px;height:' + (1020 - top) + 'px">' + chips + qhtml + body + '<div class="ts-expl"></div></div>');
   var wrap = el.lastElementChild, all = wrap.querySelectorAll(".choice");
+  /* a question that does not fit its box in a composed layout: step the font down to the type floor (the box never grows over the answers) */
+  var qel = wrap.querySelector(".ts-q");
+  if (qel && document.body.getAttribute("data-layout")){
+    var qf = parseFloat(getComputedStyle(qel).fontSize), qmin = (TK.type.floor && TK.type.floor.question) || 40, qg = 0;
+    while (qel.scrollHeight > qel.clientHeight + 2 && qf > qmin && qg++ < 14){ qf -= 2; qel.style.fontSize = qf + "px"; }
+  }
   /* answers that do not fit their (rounded) button: step the font down (never below the 34px floor) until the text clears the shape */
   Array.prototype.forEach.call(wrap.querySelectorAll(".ts-choice"), function(b){
     var fs = parseFloat(getComputedStyle(b).fontSize), cr = parseFloat(getComputedStyle(b).borderTopLeftRadius) || 0;

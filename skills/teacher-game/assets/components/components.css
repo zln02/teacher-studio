@@ -104,6 +104,7 @@ body[data-device=phone][data-orient=landscape] .icon-btn{width:126px;height:126p
 body[data-device=phone][data-orient=landscape] .hud-top{height:140px}
 body[data-device=phone][data-orient=landscape] #ng-ctrl{top:6px!important}
 body[data-device=phone][data-orient=landscape] .btn.small,body[data-device=phone][data-orient=landscape] .ts-next{min-height:126px;font-size:48px}
+body[data-device=phone][data-orient=landscape] .ts-choice{min-height:126px}
 body[data-device=phone][data-orient=landscape] .review li{font-size:38px}
 body[data-device=phone][data-orient=landscape] .ts-expltext{font-size:max(var(--t-b),44px)}
 body[data-device=phone][data-orient=landscape] .ts-chip{font-size:max(var(--t-s),40px)}

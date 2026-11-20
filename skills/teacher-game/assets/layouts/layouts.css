@@ -25,13 +25,18 @@ body[data-layout] .ts-ask .ts-ox{width:48%;height:100%;font-size:150px}
 body[data-layout] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*var(--qx));top:calc(var(--ty) + var(--lh)*var(--qy) - 62px);justify-content:flex-start}
 body[data-layout=split]{--qx:0;--qy:0;--qw:.46;--qh:1;--ax:.49;--ay:0;--aw:.51;--ah:1}
 body[data-layout=bento]{--qx:0;--qy:0;--qw:.64;--qh:.46;--ax:0;--ay:.5;--aw:1;--ah:.5}
-body[data-layout=news]{--qx:0;--qy:.72;--qw:1;--qh:.28;--ax:0;--ay:.4;--aw:1;--ah:.28}
+body[data-layout=news]{--qx:0;--qy:.74;--qw:1;--qh:.26;--ax:0;--ay:.34;--aw:1;--ah:.36}
 body[data-layout=poster]{--qx:0;--qy:0;--qw:1;--qh:.38;--ax:0;--ay:.44;--aw:1;--ah:.32}
-body[data-layout=column]{--qx:.19;--qy:0;--qw:.62;--qh:.3;--ax:.19;--ay:.33;--aw:.62;--ah:.67}
-body[data-layout=left]{--qx:0;--qy:0;--qw:.58;--qh:.32;--ax:0;--ay:.35;--aw:.58;--ah:.65}
-body[data-layout=right]{--qx:.42;--qy:0;--qw:.58;--qh:.32;--ax:.42;--ay:.35;--aw:.58;--ah:.65}
+body[data-layout=column]{--qx:.19;--qy:0;--qw:.62;--qh:.44;--ax:.19;--ay:.47;--aw:.62;--ah:.53}
+body[data-layout=left]{--qx:0;--qy:0;--qw:.58;--qh:.44;--ax:0;--ay:.47;--aw:.58;--ah:.53}
+body[data-layout=right]{--qx:.42;--qy:0;--qw:.58;--qh:.44;--ax:.42;--ay:.47;--aw:.58;--ah:.53}
 body[data-layout=rail]{--qx:0;--qy:0;--qw:.62;--qh:.56;--ax:.68;--ay:0;--aw:.32;--ah:1}
 body[data-layout=stair]{--qx:0;--qy:0;--qw:.58;--qh:.44;--ax:.42;--ay:.52;--aw:.58;--ah:.48}
+/* escape games (150px less height): the side layouts become one 76 % block, a two-line question over 2 x 2 one-line answers */
+body[data-mech=escape][data-layout=left]{--qw:.76;--aw:.76;--qh:.4;--ay:.44;--ah:.56}
+body[data-mech=escape][data-layout=right]{--qx:.24;--ax:.24;--qw:.76;--aw:.76;--qh:.4;--ay:.44;--ah:.56}
+body[data-mech=escape][data-layout=column]{--qx:.12;--ax:.12;--qw:.76;--aw:.76;--qh:.4;--ay:.44;--ah:.56}
+body[data-mech=escape][data-layout=column] .ts-ask .ts-chips{width:calc(var(--lw)*.76)}
 /* list: one column of answer bars (split, column, left, right, rail) */
 body[data-layout=split] .ts-ask .ts-grid,body[data-layout=column] .ts-ask .ts-grid,body[data-layout=left] .ts-ask .ts-grid,body[data-layout=right] .ts-ask .ts-grid,body[data-layout=rail] .ts-ask .ts-grid{grid-template-columns:1fr!important;grid-auto-rows:1fr}
 body[data-layout=split] .ts-ask .ts-q,body[data-layout=left] .ts-ask .ts-q,body[data-layout=right] .ts-ask .ts-q,body[data-layout=rail] .ts-ask .ts-q,body[data-layout=stair] .ts-ask .ts-q{text-align:left;justify-content:flex-start}
@@ -49,15 +54,20 @@ body[data-layout=bento] .ts-ask .ts-sym,body[data-layout=news] .ts-ask .ts-sym{p
 body[data-layout=news] .ts-ask .ts-choice .mark{width:64px;height:64px;font-size:42px}
 /* two: 2 x 2 (stair always; column / left / right when the four answers are short: body[data-ans=two], decided from the content by layout_auto) */
 body[data-layout=stair] .ts-ask .ts-grid,body[data-ans=two] .ts-ask .ts-grid.c4{grid-template-columns:1fr 1fr!important;grid-auto-rows:1fr}
-/* four answer bars in one column need the height: the question card gives up a little */
-body[data-ans=list][data-layout=column],body[data-ans=list][data-layout=left],body[data-ans=list][data-layout=right]{--qh:.26;--ay:.29;--ah:.71}
+/* longer answers: four slim bars in one column, in a wider block (70 %); the question card gives up some height (layout_auto allows it for a two-line question) */
+body[data-ans=list][data-layout=left]{--qw:.7;--aw:.7;--qh:.3;--ay:.33;--ah:.67}
+body[data-ans=list][data-layout=right]{--qx:.3;--ax:.3;--qw:.7;--aw:.7;--qh:.3;--ay:.33;--ah:.67}
+body[data-ans=list][data-layout=column]{--qx:.15;--ax:.15;--qw:.7;--aw:.7;--qh:.3;--ay:.33;--ah:.67}
+body[data-ans=list][data-layout=column] .ts-ask .ts-chips{width:calc(var(--lw)*.7)}
 body[data-ans=list] .ts-ask .ts-grid{grid-gap:12px}
+body[data-ans=list] .ts-ask .ts-choice{padding:8px 24px}
+body[data-ans=list] .ts-ask .ts-choice .mark{width:56px;height:56px;font-size:38px;margin-right:20px}
 /* bento: the info chips become a tile beside the question */
 body[data-layout=bento] .ts-ask .ts-chips{left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:16px}
 body[data-layout=bento] .ts-ask .ts-chip{text-align:center}
 body[data-mech=escape][data-layout=bento] .ts-ask .ts-q{width:var(--lw)}
 /* news: a lower third. The upper part of the stage stays open; the question is the banner under the answers */
-body[data-layout=news] .ts-ask .ts-chips{top:calc(var(--ty) + var(--lh)*.4 - 62px)}
+body[data-layout=news] .ts-ask .ts-chips{top:calc(var(--ty) + var(--lh)*.34 - 62px)}
 body[data-layout=news] .ts-ask .ts-q{text-align:left;justify-content:flex-start;border-radius:8px;border-left:30px solid var(--primary)}
 /* poster: the question is type on the paper across the top, answers a pill row under it, the foot stays open */
 body[data-layout=poster] .ts-ask .ts-q{text-align:left;justify-content:flex-start;background:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;color:var(--text)!important;border-bottom:14px solid var(--primary)!important;border-radius:0!important;padding-left:8px}
