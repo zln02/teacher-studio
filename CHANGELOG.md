@@ -8,6 +8,15 @@
 - `teacher-data` 문구 정리: 점수대 그래프 설명이 설문 문구를 쓰던 것 수정, 「가장 높은 A와 가장 낮은 B의 차이」처럼 두 곳을 밝힘, 소수 자릿수 통일(-0.4점, 6.0점)
 - `docs/training/deck.json`을 새 슬라이드 spec으로 다시 만듦(21장, 점검 통과)
 
+### 틀 걷어 내기: 예시는 시험용 파일로, 뼈대는 내용에서 (2026-11-20, `docs/research/template-removal-2026-11.md`)
+- **내용 레시피 연결**: SKILL.md 6개에 「Content quality first」 줄, `shared/content/`가 스킬 안으로 복사됨(`tools/sync_shared.py`).
+- **예시 = 시험용 파일**: 예시 42개에 `"_fixture"` 표시, 게임 예시의 `design.seed` 삭제, 스킬 문서의 「가장 가까운 예시를 복사」 지시 삭제, 수업·기관 보고 레시피의 고정 순서와 단원 예시를 「할 일 + 내용 모양 → 장 종류」로 교체. 제목의 낱말(「퀴즈쇼」「세포」)만으로 옛 장면 테마가 통째로 불리던 것을 모양 낱말로 지목했을 때만 불리게 함.
+- **「예시를 그대로 따라간 것 같아요」 WARN**(`shared/tools/example_likeness.py`): 예시 문장 60% 이상, 같은 차례 + 같은 제목, 장마다 같은 뼈대. 게임·발표·프로그램 점검기와 발표·문서 조립기에서 돎.
+- **발표 장 종류를 내용 모양에서**: `"type": "auto"` → `scripts/deck_shape.py`가 quiz·table·timeline·bignumbers·compare·statement 등으로 정하고, 글머리표 장이 사실은 순서·날짜·수치면 NOTE.
+- **게임 문제 화면 배치 5종 → 덮는 자리가 다른 10종**(`column` · `left` · `right` · `rail` · `stair` 추가, `news`는 아래쪽, `poster`는 위쪽 띠). 고르는 열쇠에 요청 지문을 섞음. 닮음 점수(`tools/game_sameness.py`, 18판): 서로 다른 요청 0.671 → **0.502**, 같은 요청 다른 시드 0.701 → **0.554**.
+- **끌지 않는 길**: 엔진의 `NG.drag` · `NG.button`에 키보드(Tab · Enter)를 넣음. 분류 게임은 숫자 키 1~4와 통 번호 표시.
+- **Chart.js가 ES2017로 읽힘**: 클래스 필드 81곳 · 객체 펼침 6곳을 같은 뜻의 옛 문법으로 바꿈(`tools/es2017_static_fields.js`, `NOTICE` 5번). 차트가 든 발표 3개의 「JavaScript syntax」 FAIL이 사라짐.
+
 ### 디자인 시스템 개편: 「밤티」 걷어 내기 (2026-11-20, `docs/research/design-overhaul-2026-11.md`)
 - **글꼴**: 모든 무기의 기본 글꼴이 **TS Sans**(Pretendard 1.3.9를 잘라 이름을 바꾼 것, OFL)로. 파일 안에 들어가서 인터넷 없는 교실에서도 같은 글꼴. 예전 제목 글꼴(Black Han Sans·Jua·Do Hyeon)은 파일에 안 들어 있어 오프라인에서 바뀌던 문제도 같이 없어짐
 - **시스템 한 곳**: `shared/design/system.py`(글자 크기 단계·크기별 자간/줄 간격/굵기·8pt 여백·이름 있는 격자 6개·OKLCH 색 사다리·장식 7가지·움직임 값) + 규칙 문서 `shared/design/DESIGN-RULES.md`(규칙 27개, 스킬 문서마다 한 줄 링크)
