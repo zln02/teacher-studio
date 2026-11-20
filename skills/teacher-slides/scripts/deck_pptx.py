@@ -482,7 +482,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             answers_slide()
         s = prs.slides.add_slide(layout_for("cover" if t in ("title", "closing") else "other"))
         bg(s, t)
-        kicker(s, it.get("kicker"))
+        if t != "hero":  # the hero draws its own kicker above the headline (drawing both printed the same words twice)
+            kicker(s, it.get("kicker"))
         notes = [it.get("note", "")] if it.get("note") else []
         pub = ctx_name == "public"
         if pub and t not in ("title", "section", "closing"):  # public header: section name left, 기관 right, thin rule

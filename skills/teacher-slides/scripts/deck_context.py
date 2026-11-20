@@ -227,6 +227,48 @@ def post(spec: dict) -> dict:
     return spec
 
 
+# ---- dates: the weekday is computed, never recalled ----------------------------------------------------------------------
+_DATE_WD = re.compile(r"(?:(20\d{2})\s*[.년/-]\s*)?(\d{1,2})\s*[.월/]\s*(\d{1,2})\s*[.일]?\s*\(\s*([월화수목금토일])(?:요일)?\s*\)")
+_YEAR = re.compile(r"(20\d{2})\s*(?:[.년]|학년도)")
+
+
+def _strings(o, skip=("note", "file", "url", "tex", "fillins")):
+    if isinstance(o, str):
+        yield o
+    elif isinstance(o, dict):
+        for k, v in o.items():
+            if k not in skip and not str(k).startswith("_"):
+                yield from _strings(v, skip)
+    elif isinstance(o, list):
+        for v in o:
+            yield from _strings(v, skip)
+
+
+def weekday_errors(spec: dict) -> list[str]:
+    """Dates written with a weekday - 2026. 12. 5.(금), 12월 5일(토) - whose weekday is wrong. A date without a year takes the deck's year
+    (the one year written in the deck; with none or several, such dates are left alone)."""
+    import datetime
+    texts = list(_strings({k: v for k, v in spec.items() if k in ("slides", "title", "date", "summary", "objectives", "recap")}))
+    years = {int(y) for t in texts for y in _YEAR.findall(t)}
+    year0 = next(iter(years)) if len(years) == 1 else None
+    out = []
+    for t in texts:
+        for y, m, d, wd in _DATE_WD.findall(t):
+            yy = int(y) if y else year0
+            if not yy:
+                continue
+            try:
+                real = "월화수목금토일"[datetime.date(yy, int(m), int(d)).weekday()]
+            except ValueError:
+                out.append(f"없는 날짜예요: {yy}. {m}. {d}. -> 날짜를 다시 확인하세요")
+                continue
+            if real != wd:
+                msg = f"요일이 달라요: {yy}. {int(m)}. {int(d)}.은 ({wd})이 아니라 ({real})요일 -> 요일을 고치거나 날짜를 다시 정하세요 (요일은 계산해서 적기)"
+                if msg not in out:
+                    out.append(msg)
+    return out
+
+
 # ---- lints -------------------------------------------------------------------------------------------------------------
 _POLITE = re.compile(r"(?:습니다|니다|어요|아요|해요|예요|이에요|세요|죠)[.!?]?\s*$")
 
@@ -238,6 +280,7 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
     warns: list[str] = []
     import deck_shape
     warns += deck_shape.notes(spec.get("slides") or [])  # every deck, with or without a context: the slide type follows the content's shape
+    errs += weekday_errors(spec)  # a wrong weekday on a notice sends people on the wrong day: the build stops
     if not ctx:
         return errs, warns
     slides = spec.get("slides") or []

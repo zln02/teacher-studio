@@ -91,7 +91,7 @@ Words in `**stars**` are emphasised; `\n` breaks a line. Every slide may have `n
 
 **No blanks, ever.** Never write `[학교명]`, `(학교명 입력)`, `(…을 입력하세요)`, `[날짜]`, `20XX`, `OO초`, `OOO`, `○○학교`, `(예시)`, `(미정)`, `000-0000` in a spec. Fill with a plausible stated assumption (today's date, 2026학년도 / the current school year, generic 「우리 학교」·「3학년」) and say it in one line. Facts only the teacher knows (the real school name, phone, meeting date) go in `"fillins": ["학교 전화번호", ...]` (top-level list, words as they appear): the deck may then still contain them, and you show a short 「바꿔 넣을 곳」 list in the last message. Any other leftover is a FAIL (HTML review and `pptx_check.py`). **The user wins:** 「양식으로 해 줘」「빈칸 있는 틀로」「서식만」 -> spec `"template_blanks": true` (top level): all blanks stay, are reported as 「바꿔 넣을 곳」, and the build prints one caution line (`pptx_check.py --allow-blanks` for a lone file).
 Rules: one message per slide, <= 330 characters of text on a slide (a `panel` may hold about 560), no emoji (stripped). Text is projection-sized (>= 28px) — never ask for smaller. Do not invent statistics; unsure facts -> note 「확인 필요」. No student names/photos.
-Build errors are lists of 「고칠 곳」: fix exactly those and rerun.
+Build errors are lists of 「고칠 곳」: fix exactly those and rerun. A date written with its weekday (`2026. 12. 5.(토)`, `12월 5일(토)`) is checked against the calendar; a wrong weekday stops the build.
 Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest priority**: use it only if the teacher names a legacy look.
 
 ## Design language (automatic)

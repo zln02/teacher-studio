@@ -228,6 +228,15 @@ class PanelPptx(unittest.TestCase):
             self.assertEqual(looks[0], looks[1])          # a fix round: same seed, same style, same colours in the .pptx
             self.assertNotEqual(looks[0][2], looks[2][2])  # --fresh: a new seed
 
+    def test_hero_kicker_is_printed_once(self):
+        from pptx import Presentation
+        with tempfile.TemporaryDirectory() as td:
+            sp = {"title": "모집", "context": "promo", "slides": [{"type": "hero", "headline": "함께 노래해요", "kicker": "신입 단원 모집", "cta": "지금 신청"},
+                                                              {"type": "closing", "title": "기다릴게요"}]}
+            out, _ = self._build(sp, td)
+            texts = [sh.text_frame.text for sh in Presentation(str(out)).slides[0].shapes if sh.has_text_frame]
+            self.assertEqual(sum(1 for t in texts if "신입 단원 모집" in t or "신입 단원 모집".upper() in t), 1, texts)
+
     def test_small_text_and_text_only_checks_work_on_any_pptx(self):
         import pptx_check
         from pptx import Presentation
@@ -268,6 +277,18 @@ class Variety(unittest.TestCase):
         self.assertTrue(any("panel" in n for n in deck_shape.variety([{"type": "bignumbers"}, {"type": "chart"}])))
         self.assertTrue(any("takeaway" in n for n in deck_shape.variety([{"type": "chart"}, {"type": "table"}])))
         self.assertEqual(deck_shape.variety([{"type": "chart", "takeaway": "x"}, {"type": "compare"}, {"type": "steps"}, {"type": "diagram"}, b(), {"type": "panel", "blocks": []}]), [])
+
+    def test_wrong_weekday_stops_the_build(self):
+        import deck_context as dctx
+        ok = spec([{"type": "bullets", "title": "접수 2026. 12. 1.(화) ~ 12. 23.(수)", "items": ["첫 수업 2027. 1. 12.(화)", "마감 12월 18일(금)"]}])
+        self.assertEqual(dctx.weekday_errors(ok), [])
+        bad = spec([{"type": "table", "title": "일정", "columns": ["항목", "내용"], "rows": [["마감", "2026. 12. 5.(금)"], ["시작", "12월 9일(수)"]]}])
+        e = dctx.weekday_errors(bad)
+        self.assertEqual(len(e), 1)
+        self.assertIn("(토)", e[0])
+        self.assertTrue(any("요일" in x for x in dctx.lint(bad)[0]))
+        self.assertEqual(dctx.weekday_errors(spec([{"type": "statement", "text": "3월 2일(월)에 만나요"}])), [])  # no year anywhere: left alone
+        self.assertTrue(dctx.weekday_errors(spec([{"type": "statement", "text": "2026. 2. 30.(월)"}])))
 
     def test_skill_text_names_the_tools(self):
         t = (SLIDES / "SKILL.md").read_text(encoding="utf-8")
