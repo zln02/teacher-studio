@@ -233,7 +233,7 @@ _OLDER = ("중학", "고등", "중1", "중2", "중3", "고1", "고2", "고3", "�
 _SENIOR = ("어르신", "노인", "시니어", "경로", "실버", "할머니", "할아버지", "60세", "65세", "70세", "60대", "70대", "80대")
 ZOOM = {"young": 1.3, "kid": 1.2, "senior": 1.3, "": 1.0}
 AUD_STYLES = {  # light, friendly structures for small children and for older eyes (a dark board or a tech look is not for them)
-    "young": {"pastel-cute": 4, "pop-colorful": 3, "festival-party": 2, "nature-calm": 2},
+    "young": {"pop-colorful": 4, "festival-party": 3, "pastel-cute": 3, "nature-calm": 1},
     "kid": {"pop-colorful": 4, "pastel-cute": 2, "nature-calm": 3, "festival-party": 2, "anime-cartoon": 1},
     "senior": {"nature-calm": 4, "pop-colorful": 2, "minimal-premium": 2, "pastel-cute": 1},
 }
@@ -319,13 +319,62 @@ def topic_palette(hues, dark: bool, seed: int, aud: str = "") -> dict:
                                bg_l=(0.985, 0.972, 0.962)[v], bg_c=(0.006, 0.014, 0.02)[v] * (1.4 if soft else 1.0))
 
 
-def third_tone(pr: str, ac: str, bg1: str, dark: bool, hue=None, calm: bool = False) -> str:
+# A young room (유치원 ~ 초3) reads colour before words: crayon-box primaries, each clearly its own hue, on warm white paper.
+# Bright and saturated but never fluorescent (system.is_neon stays False: L <= 0.70 with C < 0.165, or L <= 0.60 with C < 0.215).
+YOUNG_HUES = (28, 150, 245, 300, 5, 75, 200)   # tomato, leaf, sky, grape, strawberry, sunflower, sea: where a deck without a topic colour starts
+
+
+def _crayon(h: float) -> tuple:
+    """(L, C, h) of a crayon-bright colour in this hue. Yellows carry their colour only when light, blues only when deeper."""
+    h %= 360
+    if 55 <= h <= 115:
+        return (0.70, 0.150, h)
+    if 115 < h <= 200:
+        return (0.62, 0.160, h)
+    if 200 < h <= 290:
+        return (0.58, 0.180, h)
+    return (0.60, 0.200, h)
+
+
+def young_palette(hues, seed: int) -> tuple[dict, tuple]:
+    """Palette for small children: the topic's hue when it has one (else a seeded crayon), two more crayons a third of the wheel away.
+    Returns (palette, (primary, support, third) hues). Every colour passes system.is_neon; the text pairs are contrast-fitted by system.palette."""
+    import oklch
+    import system as system_core
+    if hues:
+        hp = hues[0]
+    else:
+        hp = YOUNG_HUES[_h(f"yh|{seed}") % len(YOUNG_HUES)]
+    if 50 <= hp % 360 <= 115:
+        hp = 40  # a yellow that carries white words is mustard: the main colour becomes tangerine, yellow stays a marker
+    turn = (120, -120)[_h(f"yt|{seed}") % 2]
+    hs, h3 = (hp + turn) % 360, (hp - turn) % 360
+    v = _h(f"tp|{seed}") % 3
+    prim = oklch.hex_to_oklch(oklch.fit_contrast(oklch.oklch_to_hex(*_crayon(hp)), "#ffffff", 4.6))  # white words on the main colour, as on a crayon label
+    pal = system_core.palette("light", 80, prim, _crayon(hs), bg_l=(0.99, 0.982, 0.975)[v], bg_c=(0.008, 0.014, 0.02)[v])
+    for k in ("primary", "accent"):  # belt and braces: a colour the fitter pushed into the fluorescent corner comes back down
+        L, C, h = oklch.hex_to_oklch(pal[k])
+        while system_core.is_neon(pal[k]) and C > 0.08:
+            C -= 0.01
+            pal[k] = oklch.oklch_to_hex(L, C, h)
+    return pal, (hp, hs, h3)
+
+
+def third_tone(pr: str, ac: str, bg1: str, dark: bool, hue=None, calm: bool = False, vivid: bool = False) -> str:
     """A third marker colour, far in hue from both the primary and the support (rule 13: at most three accent hues on a screen)."""
     import oklch
     hp, ha = oklch.hex_to_oklch(pr)[2], oklch.hex_to_oklch(ac)[2]
     if hue is None:
         cands = [(hp + 180) % 360, (ha + 180) % 360, (hp + 100) % 360, (hp - 100) % 360, ((hp + ha) / 2 + 180) % 360]
         hue = max(cands, key=lambda h: min(oklch.hue_distance(h, hp), oklch.hue_distance(h, ha)))
+    if vivid:  # a young room's third crayon
+        import system as system_core
+        L, C, h = _crayon(hue)
+        c = oklch.fit_contrast(oklch.oklch_to_hex(L, C, h), bg1, 2.2)
+        while system_core.is_neon(c) and C > 0.08:
+            C -= 0.01
+            c = oklch.fit_contrast(oklch.oklch_to_hex(L, C, h), bg1, 2.2)
+        return c
     c = oklch.oklch_to_hex(0.80 if dark else 0.55, 0.095 if calm else (0.10 if dark else 0.12), hue % 360)
     return oklch.fit_contrast(c, bg1, 3.0)
 
@@ -364,6 +413,11 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     hues = topic_hues(spec) if context != "public" and not d.get("style") else None
     if hues:  # the topic has a colour of its own: the deck takes it (the structure still comes from the style)
         pal, pal_name = topic_palette(hues, bool(STYLES[style]["dark"]), seed, aud), "topic"
+    yh = None
+    if aud == "young" and context != "public" and not d.get("style") and not STYLES[style]["dark"]:
+        # 유치원 ~ 초3: crayon-box colours whatever the style's own palette is (the structure still comes from the style, the hue from the topic or the seed)
+        pal, yh = young_palette(hues, seed)
+        pal_name = "young-topic" if hues else "young"
     if aud in ("young", "kid"):
         lang["rad"] = max(lang["rad"], 28)
     if rc.get("palettes") and not d.get("style"):  # public: restrained navy/slate/teal, seeded
@@ -402,7 +456,9 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     if rc:
         purpose_floor = rc["floor"]
     user_pal = bool(d.get("palette_from"))
-    t3 = third_tone(pr, ac, bg1, dark, hues[2] if hues else None, calm=context == "public")
+    if user_pal:
+        yh = None
+    t3 = third_tone(pr, ac, bg1, dark, yh[2] if yh else (hues[2] if hues else None), calm=context == "public", vivid=bool(yh))
     tones = tones_of(pr, ac, t3, bg1, card)
     if context == "public" and len(tones) == 3:  # a report keeps one navy and marks with one other hue; the navy's own lighter step comes last
         tones = [tones[0], tones[2], tones[1]]
@@ -416,7 +472,7 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
         "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "TS Sans", "body": "TS Sans"},
         "floor": purpose_floor, "motion": STYLES[style]["motion"],
         "context": context, "tscale": dict(rc.get("tscale") or {}), "allowed": dict(rc.get("allowed") or {}),
-        "audience": aud, "zoom": ZOOM[aud], "tones": tones, "topic": bool(hues),
+        "audience": aud, "zoom": ZOOM[aud], "tones": tones, "topic": bool(hues), "crayon": bool(yh),
     }
 
 

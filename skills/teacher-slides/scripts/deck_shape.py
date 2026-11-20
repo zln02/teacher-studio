@@ -150,7 +150,7 @@ def notes(slides: list) -> list[str]:
     """NOTE lines: a bullets slide whose list has another shape (the fit is the author's call; the build never changes a typed slide)."""
     out = []
     for i, it in enumerate(slides, 1):
-        if isinstance(it, dict) and it.get("type") in ("bullets", "list", "cards") and not it.get("_role"):
+        if isinstance(it, dict) and it.get("type") in ("bullets", "list", "cards") and not it.get("_role") and not it.get("pics"):  # a picture list is drawn as picture tiles
             k = list_shape(it.get("items"))
             if k:
                 out.append(f"slide {i} bullets: {NOTE_TEXT[k]} (내용 모양에 맞는 장으로 바꾸면 한눈에 읽혀요)")
@@ -171,7 +171,7 @@ def variety(slides: list) -> list[str]:
     types = [it.get("type") for it in body]
     n = len(types)
     if n >= 6:
-        nl = sum(1 for t in types if t in LISTS)
+        nl = sum(1 for it in body if it.get("type") in LISTS and not it.get("pics"))
         if nl / n > 1 / 3:
             out.append(f"본문 {n}장 가운데 {nl}장이 글머리표예요 → 순서는 steps, 비교는 compare/table, 수치는 bignumbers/chart, 구조는 diagram, 근거가 둘이면 panel로 내용 모양을 따라가세요")
         top = max(set(types), key=types.count)
@@ -179,7 +179,7 @@ def variety(slides: list) -> list[str]:
             out.append(f"본문의 절반 넘게가 같은 종류({top})예요 → 장마다 내용 모양에 맞는 종류로 (모든 장이 같은 모양이면 단조로워요)")
     seq = [it.get("type") for it in its]
     for i in range(len(seq) - 2):
-        if all(t in LISTS for t in seq[i:i + 3]) and not any(its[j].get("_role") for j in range(i, i + 3)):
+        if all(t in LISTS for t in seq[i:i + 3]) and not any(its[j].get("_role") or its[j].get("pics") for j in range(i, i + 3)):
             out.append(f"slide {i + 1}-{i + 3}: 글머리표 장이 세 장 이어져요 → 가운데 장을 표·그림·비교·panel로")
             break
     for i in range(len(its) - 1):

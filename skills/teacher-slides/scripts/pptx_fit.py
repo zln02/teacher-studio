@@ -17,6 +17,8 @@ def char_em(c: str) -> float:
     o = ord(c)
     if c == " ":
         return 0.28
+    if o in (0xFE0F, 0x200D) or 0x1F3FB <= o <= 0x1F3FF:  # emoji joiners and modifiers take no room of their own
+        return 0.0
     if o >= 0x1100:
         return 1.0 if not (0xFF61 <= o <= 0xFF9F) else 0.5
     if c.isdigit():

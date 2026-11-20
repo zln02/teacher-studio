@@ -324,7 +324,7 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
             cols, rows = _grid(n, w, h, 2.3)
             cw, ch = (w - g * (cols - 1)) / cols, (h - g * (rows - 1)) / rows
             numbered = b.get("numbered", True) is not False
-            ics = K.picks([plain(m["title"]) for m in its], [m.get("icon") for m in its] if any(m.get("icon") for m in its) else None) if hasattr(K, "picks") else []
+            ics = K.picks([plain(m["title"]) for m in its], [m.get("pic") or m.get("icon") for m in its] if any(m.get("pic") or m.get("icon") for m in its) else None) if hasattr(K, "picks") else []
             THIN = 1.8  # below this a card is one text box (heading line + detail), not a heading over a body
             tw_ = cw - (0.95 if numbered else 0.4)
             import pptx_fit as _pf

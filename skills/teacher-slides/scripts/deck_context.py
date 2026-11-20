@@ -269,6 +269,82 @@ def weekday_errors(spec: dict) -> list[str]:
     return out
 
 
+# ---- what a report must not leave out ------------------------------------------------------------------------------------------
+# A part of a report and the words a slide uses when it covers that part. The names are what the WARN line shows the author.
+PARTS = {
+    "실적": ("실적", "현황", "참여", "운영 결과", "추진 결과", "개설", "이용", "수강", "건수", "횟수"),
+    "예산": ("예산", "집행", "결산", "재원", "지출", "편성", "사업비", "비용", "지원금", "교부"),
+    "성과": ("성과", "만족도", "효과", "달성", "향상", "설문", "우수 사례", "변화"),
+    "계획": ("계획", "일정", "향후", "내년", "차기", "개선", "과제", "추진 방향", "로드맵"),
+    "문제점": ("문제점", "한계", "미흡", "어려움", "애로", "보완", "개선"),
+    "건의": ("건의", "요청", "지원 요청", "협조", "제안"),
+    "추진 체계": ("추진 체계", "조직", "담당", "역할", "협력", "운영 체계"),
+    "안전": ("안전", "사고", "예방", "점검"),
+    "홍보": ("홍보", "안내", "가정통신문", "누리집"),
+}
+_PART_ASK = {"실적": ("실적", "현황"), "예산": ("예산", "집행", "결산", "사업비"), "성과": ("성과", "만족도", "효과"), "계획": ("계획", "일정", "향후", "내년", "로드맵"),
+             "문제점": ("문제점", "한계", "애로"), "건의": ("건의",), "추진 체계": ("추진 체계", "조직"), "안전": ("안전",), "홍보": ("홍보",)}
+_RESULT = re.compile(r"(?:운영|추진|사업|교육|활동|집행)?\s*(?:결과|성과|실적)(?:\s*(?:보고|발표|공유|및|와|과|,))?|결산|평가\s*보고|성과\s*보고")
+_PART_HINT = {"실적": "무엇을 얼마나 했는지 수치 표·그래프", "예산": "편성액·집행액·집행률 표 (모르면 예시 수치로 쓰고 표시)", "성과": "만족도·달성률 같은 결과 수치",
+              "계획": "다음 일정·개선 계획 (timeline)", "문제점": "잘 안 된 점과 까닭", "건의": "받는 기관에 바라는 점"}
+
+
+def _slide_text(it: dict) -> str:
+    """Every word a slide shows (titles, lists, tables, panel blocks), for asking whether a part is covered."""
+    out = []
+
+    def walk(v, key=""):
+        if key in ("note", "source", "footnote", "file", "layout", "type", "kind"):
+            return
+        if isinstance(v, dict):
+            for k_, x in v.items():
+                walk(x, k_)
+        elif isinstance(v, list):
+            for x in v:
+                walk(x, key)
+        elif isinstance(v, str):
+            out.append(v)
+    walk(it)
+    return " ".join(out)
+
+
+def required_parts(spec: dict) -> list:
+    """The parts this deck has to carry: what the author listed (`must`), what the request / title names, and - for a results report -
+    the four things any reader of one looks for (실적, 예산, 성과, 계획). `omit` takes a part off the list when it truly does not apply."""
+    asked = " ".join(str(spec.get(k) or "") for k in ("request", "title", "subtitle"))
+    need = []
+    for m in spec.get("must") or spec.get("required") or []:
+        if str(m).strip() and str(m).strip() not in need:
+            need.append(str(m).strip())
+    for part, words in _PART_ASK.items():
+        if any(w in asked for w in words) and part not in need and not any(part in n_ or n_ in part for n_ in need):
+            need.append(part)
+    if context_of(spec) == "public" and _RESULT.search(asked):
+        for part in ("실적", "예산", "성과", "계획"):
+            if part not in need:
+                need.append(part)
+    omit = [str(x) for x in spec.get("omit") or []]
+    return [n_ for n_ in need if not any(o and (o in n_ or n_ in o) for o in omit)]
+
+
+def missing_parts(spec: dict) -> list:
+    """Required parts no body slide covers. A part named only on the cover / 목차 / 요약 line does not count: it needs its own content."""
+    slides = [it for it in spec.get("slides") or [] if isinstance(it, dict)]
+    body = [it for it in slides if it.get("type") not in ("title", "hero", "toc", "closing", "section")]
+    texts = [_slide_text(it) for it in body if it.get("type") != "summary"]
+    heads = [str(it.get("title") or "") + " " + str(it.get("_section") or "") + " " + str(it.get("kicker") or "") for it in body if it.get("type") != "summary"]
+    out = []
+    for part in required_parts(spec):
+        words = PARTS.get(part) or (part,)
+        if part == "예산":  # a budget is covered by figures, not by the word in passing
+            ok = any(any(w in h for w in words) for h in heads) or any(sum(t.count(w) for w in words) >= 2 and re.search(r"\d", t) for t in texts)
+        else:
+            ok = any(any(w in h for w in words) for h in heads) or sum(1 for t in texts if any(w in t for w in words)) >= 1
+        if not ok:
+            out.append(part)
+    return out
+
+
 # ---- lints -------------------------------------------------------------------------------------------------------------
 _POLITE = re.compile(r"(?:습니다|니다|어요|아요|해요|예요|이에요|세요|죠)[.!?]?\s*$")
 
@@ -284,6 +360,9 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
     if not ctx:
         return errs, warns
     slides = spec.get("slides") or []
+    for part in missing_parts(spec):  # every context: what the request names (and, for a results report, what its reader looks for) must not vanish
+        warns.append(f"꼭 담을 내용이 빠졌어요: 「{part}」 -> {_PART_HINT.get(part, '이 내용을 다루는 장')}을(를) 한 장 넣기. "
+                     f"정말 해당 없으면 spec \"omit\": [\"{part}\"] 로 알리고 마지막 답에 한 줄로 말하기")
     types = [x.get("type") for x in slides]
     pk = {b.get("kind") for x in slides if x.get("type") == "panel" for b in x.get("blocks") or [] if isinstance(b, dict)}  # block kinds inside panels
     try:  # the user named a length (「10장 정도」): the deck may run a quarter over, not more
@@ -321,6 +400,11 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
             warns.append("공공 보고: 표지에 기관명이 없어요 -> spec \"org\": 실제 기관명, 모르면 \"우리 학교\" (빈칸·○○ 금지)")
         if not ({"table", "chart"} & (set(types) | pk)):
             warns.append("공공 보고: 표나 그래프가 없어요 -> 실적은 {\"type\":\"table\"} / {\"type\":\"chart\"} + \"source\" (서로 맞는 숫자로)")
+        n_data = sum(1 for x in slides if x.get("type") in ("table", "chart", "bignumbers", "bignumber") or (x.get("type") == "compare" and x.get("rows"))
+                     or (x.get("type") == "panel" and any(isinstance(b, dict) and b.get("kind") in ("chart", "table", "kpis") for b in x.get("blocks") or [])))
+        n_body = sum(1 for x in slides if x.get("type") not in ("title", "toc", "section", "closing", "summary"))
+        if n_body >= 6 and n_data < max(3, round(n_body * 0.4)):
+            warns.append(f"공공 보고: 수치가 든 장이 {n_data}장뿐이에요 (본문 {n_body}장) -> 실적·예산·성과마다 표나 그래프 하나씩, 본문의 절반쯤은 숫자로 말하기")
         if len(slides) >= 8 and not ({"timeline", "steps", "flow"} & (set(types) | pk)):
             warns.append("공공 보고: 일정 장이 없어요 -> 향후 계획은 {\"type\":\"timeline\"} (분기·월별)")
         d = str(spec.get("date") or "")
@@ -334,8 +418,19 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
             long_ = [i for i, it in enumerate(slides, 1) if it.get("type") == "bullets" and (len(it.get("items") or []) > 4 or any(len(str(x)) > 34 for x in it.get("items") or []))]
             if long_:
                 warns.append(f"slide {', '.join(map(str, long_[:4]))}: 어린 학년에게는 글이 많아요 -> 한 장에 3~4줄, 한 줄 30자 안쪽, 아이 말투(~해요)로")
-            if deck_style.audience_band(spec) == "young" and not any(x.get("type") in ("diagram", "image", "illustration") or (x.get("type") == "title" and x.get("shapes")) or any(isinstance(b, dict) and b.get("kind") == "diagram" for b in x.get("blocks") or []) for x in slides):
-                warns.append("어린 학년 수업: 그림이 하나도 없어요 -> 표지의 \"shapes\"나 {\"type\":\"diagram\"}으로 주제를 직접 그리기 (산, 물방울, 해, 집 ...)")
+            if deck_style.audience_band(spec) == "young":
+                def pictured(x):
+                    return bool(x.get("pics") or x.get("pic") or x.get("shapes") or x.get("type") in ("diagram", "image", "illustration")
+                                or any(isinstance(x.get(k), dict) and x[k].get("pics") for k in ("a", "b"))
+                                or any(isinstance(m, dict) and m.get("pic") for m in x.get("steps") or [])
+                                or any(isinstance(b, dict) and (b.get("kind") == "diagram" or any(isinstance(m, dict) and m.get("pic") for m in b.get("items") or [])) for b in x.get("blocks") or []))
+                idea = [x for x in slides if x.get("type") in ("bullets", "compare", "steps", "quiz", "panel", "table") and x.get("_role") not in ("objectives",)]
+                n_pic = sum(1 for x in idea if pictured(x))
+                if idea and n_pic * 2 < len(idea):
+                    warns.append(f"저학년 수업: 낱말에 그림이 붙은 장이 {n_pic}장뿐이에요 (내용 {len(idea)}장) -> 낱말·예시·보기마다 앞에 이모지 하나 "
+                                 "(\"🐶 멍멍: 강아지가 짖어요\", 보기 \"⭐ 반짝반짝\", 단계 제목 \"✂️ 오리기\"): 빌드가 글에서 떼어 낱말 옆에 크게 그려요. 제목에는 쓰지 않기")
+                if not any(x.get("type") == "title" and (x.get("pic") or x.get("shapes")) for x in slides):
+                    warns.append("저학년 수업: 표지에 그림이 없어요 -> 표지에 \"pic\": \"🌧️\" (주제를 보여 주는 이모지 하나) 또는 \"shapes\"로 직접 그리기")
         if not any(x.get("_role") == "objectives" for x in slides) and not spec.get("objectives"):
             warns.append("수업용: 학습 목표 장이 없어요 -> spec \"objectives\": [...] (표지 다음에 자동으로 들어가요)")
         if not ({"quiz", "timer"} & set(types)) and not any(x.get("_role") == "activity" for x in slides):

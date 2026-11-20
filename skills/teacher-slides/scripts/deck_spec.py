@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import base64
 import mimetypes
+import json
 import re
 import sys
 from pathlib import Path
@@ -50,7 +51,99 @@ def clean(s):
     return re.sub(r"\s{2,}", " ", EMOJI.sub("", s)).strip()
 
 
-def _walk_clean(o, skip=("note", "file", "flair")):
+# ---- pictures for a young room ------------------------------------------------------------------------------------------------
+# One emoji in front of a word (「🐶 멍멍」) is not decoration there: for children who are still learning to read it IS the word's picture.
+# It is lifted out of the text into "pics" / "pic" (so headings and sentences stay emoji-free) and drawn large beside the word.
+_PB = "(?:[\U0001F1E6-\U0001F1FF]{2}|[\U0001F300-\U0001FAFF☀-⛿⭐⭕✨❄❤✂✈✋✏][️\U0001F3FB-\U0001F3FF]?)"
+_PC = "(?:%s(?:‍%s)*)" % (_PB, _PB)
+PIC_LEAD = re.compile(r"^\s*(%s)\s*(?=\S)" % _PC)
+PIC_TAIL = re.compile(r"(?<=\S)\s*(%s)\s*$" % _PC)
+PIC_ONLY = re.compile(r"^\s*%s\s*$" % _PC)
+
+
+def is_pic(x) -> bool:
+    """True for one emoji (a picture), not for a word or an icon name."""
+    return isinstance(x, str) and bool(PIC_ONLY.match(x))
+
+
+def _lift(text):
+    """「🐶 멍멍: 강아지 소리」 -> ("🐶", "멍멍: 강아지 소리"); (None, text) when the line carries no picture of its own."""
+    if not isinstance(text, str):
+        return None, text
+    t = re.sub(r"^(\s*\*\*)\s*(%s)\s*" % _PC, r"\2 \1", text)  # a bold word with its picture inside the stars: the picture moves in front
+    m = PIC_LEAD.match(t) or PIC_TAIL.search(t)
+    if not m:
+        return None, text
+    return m.group(1), (t[:m.start()] + " " + t[m.end():]).strip()
+
+
+def lift_pics(spec: dict) -> dict:
+    """Pictures the author put in front of words become "pics" (lists) / "pic" (one thing); an emoji given as an icon moves there too."""
+    def lst(d, key, out="pics"):
+        v = d.get(key)
+        if not isinstance(v, list) or not v or not all(isinstance(x, str) for x in v):
+            return
+        got = [_lift(x) for x in v]
+        have = [x if is_pic(x) else None for x in (d.get(out) or [])] if isinstance(d.get(out), list) else []
+        ic = d.get("icons") if isinstance(d.get("icons"), list) else []
+        pics = [(have[i] if i < len(have) else None) or (ic[i] if i < len(ic) and is_pic(ic[i]) else None) or got[i][0] for i in range(len(v))]
+        if any(pics):
+            d[key] = [g[1] if g[0] else x for g, x in zip(got, v)]
+            d[out] = pics
+
+    def one(d, key="title"):
+        if is_pic(d.get("icon")):
+            d["pic"] = d.pop("icon")
+        if is_pic(d.get("pic")):
+            return
+        pc, rest = _lift(d.get(key))
+        if pc:
+            d["pic"], d[key] = pc, rest
+
+    s = dict(spec)
+    slides = []
+    for it in s.get("slides") or []:
+        if not isinstance(it, dict):
+            slides.append(it)
+            continue
+        it = json.loads(json.dumps(it))
+        lst(it, "items")
+        lst(it, "choices")
+        for side in ("a", "b"):
+            if isinstance(it.get(side), dict):
+                lst(it[side], "items")
+        for k in ("steps", "events"):
+            for st in it.get(k) or []:
+                if isinstance(st, dict):
+                    one(st)
+        for b in it.get("blocks") or []:
+            if isinstance(b, dict):
+                for m in b.get("items") or []:
+                    if isinstance(m, dict):
+                        one(m)
+        if str(it.get("type")) in ("title", "cover", "intro", "closing", "end", "illustration"):
+            if is_pic(it.get("icon")):
+                it["pic"] = it.pop("icon")
+        slides.append(it)
+    s["slides"] = slides
+    return s
+
+
+def pics_inline(spec: dict) -> dict:
+    """The web deck shows a lifted picture in front of its word again (the .pptx draws it as its own large shape)."""
+    for it in spec.get("slides") or []:
+        for d in (it, it.get("a") or {}, it.get("b") or {}):
+            for key in ("items", "choices"):
+                pics = d.get("pics") if key == "items" or d is it and not it.get("items") else None
+                if isinstance(d.get(key), list) and isinstance(pics, list):
+                    d[key] = [(f"{pics[i]} {x}" if i < len(pics) and is_pic(pics[i]) and isinstance(x, str) else x) for i, x in enumerate(d[key])]
+        for st in it.get("steps") or []:
+            if isinstance(st, dict) and is_pic(st.get("pic")):
+                st["title"] = f"{st['pic']} {st.get('title', '')}".strip()
+    return spec
+
+
+def _walk_clean(o, skip=("note", "file", "flair", "pics", "pic")):
     if isinstance(o, dict):
         return {k: (v if k in skip else _walk_clean(v)) for k, v in o.items()}
     if isinstance(o, list):
@@ -88,7 +181,13 @@ def normalize(spec: dict, base: Path | None = None) -> tuple[dict, list[str], li
     """Return (spec, warnings, errors). errors = fix hints (the build stops); warnings = advisory."""
     warns: list[str] = []
     errs: list[str] = []
-    s = _walk_clean(dict(spec))
+    s = dict(spec)
+    import deck_style
+    if deck_style.audience_band(s) == "young":  # only a young room reads pictures as words; elsewhere emoji are stripped as before
+        s = lift_pics(s)
+    else:  # other rooms: no emoji anywhere, a picture key included
+        s["slides"] = [({k: v for k, v in it.items() if not (k in ("pic", "pics") and (is_pic(v) or isinstance(v, list)))} if isinstance(it, dict) else it) for it in s.get("slides") or []]
+    s = _walk_clean(s)
     raw = s.get("slides") or s.get("items") or []
     if not raw:
         return s, warns, ["spec.slides is empty: write 8-15 slides, e.g. {\"type\":\"title\",...} ... {\"type\":\"closing\",...}"]

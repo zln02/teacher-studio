@@ -12,6 +12,8 @@ What becomes what (everything stays editable in PowerPoint):
   Not possible natively: animations/builds, countdown timer, math typesetting (shown as plain text).
 Variety: each slide type has several layouts; one is picked from the content and the seed, never the same twice running (choose()).
 Colours: the primary plus up to two marker tones from deck_style (dz['tones']); type starts larger for young and older audiences (dz['audience']).
+Young room (유치원 ~ 초3): crayon-bright tones, every list card tinted in its own tone, and a word's picture (one emoji lifted from the text by
+  deck_spec.lift_pics, or the icon a word names) drawn large beside the word: picture tiles, picture rows, pictures in choices and on the cover.
 Template-first: with --template the file's own slide master/layouts are used (title + body placeholders filled, nothing left empty);
   colours of cards/charts still come from our palette unless the spec has design.palette_from.
 python-pptx is installed on first need through shared/tools/ensure.py (asks consent; --yes = the teacher agreed).
@@ -135,6 +137,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     pub = ctx_name == "public"
     aud = dz.get("audience", "")                      # young | kid | senior | "": who reads the screen
     soft = aud in ("young", "kid")                    # friendlier shapes for children
+    young = aud == "young" and not tpl and not pub    # 유치원 ~ 초3: tinted tiles, pictures beside words
+    KS = 18 if aud else 15                            # kicker / label size
+    UP = 4 if aud else 0                              # cover sub-lines grow with the room
     MINPT = 16.0 if aud else 14.0                     # nothing on a slide shrinks below this; what still does not fit is reported
     zb = (1.18 if ctx_name in ("class", "promo") else 1.0) * (1.1 if aud else 1.0)  # rooms and posters are read from far away
     T1 = 40 if aud else (38 if ctx_name in ("class", "promo", "personal") else 36)  # body-slide title
@@ -317,8 +322,64 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         sh.name = "icon"
         return sh
 
+    def emoji(s, ch, x, y, d):
+        """One emoji as a picture: a text box in the system's colour-emoji font, sized to its square (still text: it can be retyped in PowerPoint)."""
+        tb = s.shapes.add_textbox(I(x), I(y), I(d), I(d))
+        tf = tb.text_frame
+        tf.word_wrap = False
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        tf.margin_left = tf.margin_right = tf.margin_top = tf.margin_bottom = 0
+        p_ = tf.paragraphs[0]
+        p_.alignment = PP_ALIGN.CENTER
+        r_ = p_.add_run()
+        r_.text = ch
+        r_.font.size = Pt(max(14, round(d * k * 72 * 0.6)))
+        rpr = r_._r.get_or_add_rPr()
+        for tag in ("a:latin", "a:ea", "a:sym"):  # schema order; a PC without this font falls back to its own emoji font
+            rpr.append(rpr.makeelement(qn(tag), {"typeface": "Segoe UI Emoji"}))
+        tb.name = "picture"
+        return tb
+
+    def glyph(s, g, x, y, d, color):
+        """A picture in a square: the emoji as it is, or the icon a word / Lucide name points at. False when g names nothing."""
+        if dspec.is_pic(g):
+            emoji(s, g, x, y, d)
+            return True
+        nm_ = g if (g and dicons.exists(str(g))) else dicons.name(g)
+        if nm_:
+            icon(s, nm_, x + d * 0.1, y + d * 0.1, d * 0.8, color)
+        return bool(nm_)
+
+    def picks(texts, explicit=None, pics=None):
+        """One picture per line: the author's emoji first (pics / an emoji given as an icon), else the icon the line names. [] unless every line has one."""
+        ex, pc = list(explicit or []), list(pics or [])
+        em = [(pc[i] if i < len(pc) and dspec.is_pic(pc[i]) else None) or (ex[i] if i < len(ex) and dspec.is_pic(ex[i]) else None) for i in range(len(texts))]
+        if texts and all(em):
+            return em
+        words = [(pc[i] if i < len(pc) and pc[i] and not dspec.is_pic(pc[i]) else None) or (ex[i] if i < len(ex) and not dspec.is_pic(ex[i]) else None) for i in range(len(texts))]
+        base = dicons.pick_all(texts, words if any(words) else None)
+        if any(em):
+            if not base:
+                base = [dicons.name(words[i]) or dicons.pick(texts[i]) for i in range(len(texts))]
+            out_ = [em[i] or base[i] for i in range(len(texts))]
+            return out_ if all(out_) else []
+        return base
+
+    def tcard(s, x, y, w, h, i):
+        """A list card. In a young room each one is tinted in its own tone (a crayon box, not a form)."""
+        if not young:
+            return card(s, x, y, w, h)
+        c_ = rect(s, x, y, w, h, tint(tone(i), 0.15))
+        c_.name = "card"
+        return c_
+
     def badge(s, x, y, d, c, label=None, ic=None, sq=False):
-        """A filled disc (or tile) in a tone: the icon the line names, else its number / letter."""
+        """A filled disc (or tile) in a tone: the icon the line names, else its number / letter. An emoji sits on a white plate ringed in the tone."""
+        if ic and dspec.is_pic(ic):
+            b_ = rect(s, x, y, d, d, "#ffffff", line=c, lw=3, shape=None if sq else MSO_SHAPE.OVAL)
+            b_.name = "badge"
+            emoji(s, ic, x + d * 0.12, y + d * 0.12, d * 0.76)
+            return b_
         b_ = rect(s, x, y, d, d, c) if sq else rect(s, x, y, d, d, c, shape=MSO_SHAPE.OVAL)
         b_.name = "badge"
         if ic and dicons.exists(ic):
@@ -333,7 +394,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         rect(s, cx - d / 2, cy - d / 2, d, d, outer, shape=MSO_SHAPE.OVAL).name = "decor"
         di = d * 0.74
         rect(s, cx - di / 2, cy - di / 2, di, di, C["bg1"] if on else C["card"], line=None if on else C["pr"], shape=MSO_SHAPE.OVAL, lw=2.5).name = "decor"
-        icon(s, nm, cx - d * 0.21, cy - d * 0.21, d * 0.42, C["pr"])
+        if dspec.is_pic(nm):
+            emoji(s, nm, cx - d * 0.29, cy - d * 0.29, d * 0.58)
+        else:
+            icon(s, nm, cx - d * 0.21, cy - d * 0.21, d * 0.42, C["pr"])
         for j, (ang, rr) in enumerate(((-42, 0.11), (150, 0.075))):
             if len(TONES) > j + 1:
                 px, py = cx + d / 2 * math.cos(math.radians(ang)), cy - d / 2 * math.sin(math.radians(ang))
@@ -352,7 +416,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
 
     def kicker(s, text, y=0.38, x=0.8, color=None):
         if text:
-            tbox(s, x, y, 11.7 - (x - 0.8), 0.4, str(text).upper(), 15, color or C["emc"], True, emc=color or C["emc"])
+            tbox(s, x, y - (0.06 if aud else 0), 11.7 - (x - 0.8), 0.4 + (0.08 if aud else 0), str(text).upper(), KS, color or C["emc"], True, emc=color or C["emc"])
 
     def head(s, it, title, h=1.15, w=11.7):
         """A body slide's kicker + title, dressed the deck's one way (a tab, a short rule, or a filled label)."""
@@ -373,9 +437,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             rect(s, 0.88, 1.66, 1.3, 0.08, TONES[1 % len(TONES)], round_=False).name = "accent"
             return ph
         if k_:  # chip
-            cw_ = min(5.0, pfit.width_em(str(k_).upper()) * 15 / 72 + 0.55)
-            c_ = rect(s, 0.8, 0.36, cw_, 0.42, C["pr"], pill=True)
-            tbox(s, 0.8, 0.36, cw_, 0.42, str(k_).upper(), 15, C["bt"], True, "c", "m", emc=C["bt"], shape=c_)
+            cw_ = min(5.0, pfit.width_em(str(k_).upper()) * KS / 72 + 0.55)
+            c_ = rect(s, 0.8, 0.36 - (0.06 if aud else 0), cw_, 0.42 + (0.06 if aud else 0), C["pr"], pill=True)
+            tbox(s, 0.8, 0.36 - (0.06 if aud else 0), cw_, 0.42 + (0.06 if aud else 0), str(k_).upper(), KS, C["bt"], True, "c", "m", emc=C["bt"], shape=c_)
         return put_title(s, title, 0.8, 0.68 if k_ else 0.58, w, h - (0.1 if k_ else 0), T1)
 
     extra_slides = [0]
@@ -393,17 +457,41 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             bg(sl, "bullets")
             head(sl, {"kicker": "정답"}, "확인 문제 정답" + (f" ({k0 // 4 + 1})" if len(pend) > 4 else ""))
             gap = 0.2
-            few = len(part) <= 2  # one or two answers: bigger cards and type, not a strip lost on the page
-            rh = min(2.1 if few else 1.6, (4.9 - gap * (len(part) - 1)) / len(part))
-            y0 = 1.95 + max(0.0, (4.9 - (rh * len(part) + gap * (len(part) - 1))) / 2)
+            np_ = len(part)
+            up_ = 2 if aud else 0
+            if np_ == 1:  # one question: the answer stands as large as the question did, its reason under it
+                no, q = part[0]
+                a_ = int(q.get("answer", 0))
+                y, rh = 1.95, 4.75
+                tcard(sl, 0.8, y, 11.7, rh, 0)
+                badge(sl, 1.1, y + 0.36, 0.9, tone(0), no)
+                tbox(sl, 2.25, y + 0.2, 9.95, 1.22, plain(q["q"]), 28 + up_, C["ct"], anchor="m", emc=C["emcc"])
+                at_ = f"정답 {'ABCDE'[a_]}. {plain(q['choices'][a_])}"
+                pc_ = (q.get("pics") or [])[a_] if a_ < len(q.get("pics") or []) else None
+                px_ = 1.3 if dspec.is_pic(pc_) else 0.0
+                cw_ = min(11.1 - px_, pfit.width_em(at_) * 38 / 72 + 1.1)
+                if px_:
+                    badge(sl, 1.1, y + 1.6, 1.15, tone(0), None, pc_)
+                ch_ = rect(sl, 1.1 + px_, y + 1.6, cw_, 1.15, C["pr"], pill=True)
+                ch_.name = "answer"
+                tbox(sl, 1.1 + px_, y + 1.6, cw_, 1.15, at_, 38, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=ch_)
+                if q.get("explain"):
+                    tbox(sl, 1.2, y + 2.95, 10.9, rh - 3.1, plain(q["explain"]), 26 + up_, C["ct"], emc=C["emcc"], spacing=1.2)
+                drop_empty(sl)
+                extra_slides[0] += 1
+                continue
+            few = np_ <= 2  # two answers: bigger cards and type, not a strip lost on the page
+            rh = min(2.35 if few else 1.6, (4.9 - gap * (np_ - 1)) / np_)
+            y0 = 1.95 + max(0.0, (4.9 - (rh * np_ + gap * (np_ - 1))) / 2)
+            qs_, as_ = ((24, 28) if few else ((21, 24) if np_ == 3 else (18, 21)))
             for i, (no, q) in enumerate(part):
                 y = y0 + i * (rh + gap)
                 a_ = int(q.get("answer", 0))
-                card(sl, 0.8, y, 11.7, rh)
+                tcard(sl, 0.8, y, 11.7, rh, i)
                 badge(sl, 1.05, y + rh / 2 - 0.36, 0.72, tone(i), no)
-                tbox(sl, 2.05, y + 0.05, 10.3, rh * 0.42, plain(q["q"]), 22 if few else 18, C["ct"], anchor="m", emc=C["emcc"])
-                line2 = f"**정답 {'ABCDE'[a_]}. {plain(q['choices'][a_])}**" + (f"   {plain(q['explain'])}" if q.get("explain") else "")
-                tbox(sl, 2.05, y + rh * 0.45, 10.3, rh * 0.5, line2, 26 if few else 21, C["ct"], anchor="m", emc=C["emcc"])
+                tbox(sl, 2.05, y + 0.05, 10.3, rh * 0.4, plain(q["q"]), qs_ + up_, C["ct"], anchor="m", emc=C["emcc"])
+                line2 = f"**정답 {'ABCDE'[a_]}. {plain(q['choices'][a_])}**" + ((("\n" if few else "   ") + plain(q['explain'])) if q.get("explain") else "")
+                tbox(sl, 2.05, y + rh * 0.42, 10.3, rh * 0.55, line2, as_ + up_, C["ct"], anchor="m", emc=C["emcc"])
             drop_empty(sl)
             extra_slides[0] += 1
 
@@ -657,7 +745,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     import types as _types
     import deck_panel as dpanel
     KIT = _types.SimpleNamespace(tbox=tbox, rect=rect, card=card, line=line, chart=draw_chart, table=draw_table, diagram=draw_diagram, C=C, OVAL=MSO_SHAPE.OVAL,
-                                 ink=ink, tone=tone, tones=TONES, badge=badge, icon=icon, edge=edge, picks=dicons.pick_all, pick=dicons.pick,
+                                 ink=ink, tone=tone, tones=TONES, badge=badge, icon=icon, edge=edge, picks=picks, pick=dicons.pick,
                                  z=(1.25 if ctx_name == "promo" else (1.18 if ctx_name == "class" else 1.0)) * (1.08 if aud else 1.0),
                                  lo=16.0 if (aud or ctx_name in ("class", "promo")) else 14.0, soft=soft)
     TAKE = ("bullets", "compare", "steps", "timeline", "bignumbers", "table", "panel")  # types whose "takeaway" becomes a band under the body
@@ -676,10 +764,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         ch = min(1.6, (bh - gap * (n - 1)) / n)  # cards grow to fill the body; a short list is centred, not stuck to the top
         y0 = by + max(0.0, (bh - (ch * n + gap * (n - 1))) / 2)
         fs = (30 if n <= 3 else (27 if n == 4 else (24 if n == 5 else 22))) * (1.12 if aud else 1.0)
-        d = max(0.5, min(0.8, ch - 0.28))
+        d = max(0.5, min(1.15 if (ics and any(dspec.is_pic(g_) for g_ in ics)) else 0.8, ch - 0.28))  # a picture is worth a larger disc than a number
         for i, x in enumerate(items):
             y = y0 + i * (ch + gap)
-            card(s, bx, y, bw, ch)
+            tcard(s, bx, y, bw, ch, i)
             edge(s, bx, y, bw, ch, tone(i))
             badge(s, bx + 0.34, y + ch / 2 - d / 2, d, tone(i), (labels[i] if labels else i + 1), ics[i] if ics else None)
             tx0 = bx + 0.34 + d + 0.28
@@ -870,7 +958,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     tbox(s, tx_, 5.8, bwid, 0.86, it["cta"], 22, ci, True, "c", "m", emc=ci, shape=b_)
         elif t == "title":
             has_draw = bool(it.get("shapes"))
-            nm = dicons.name(it.get("icon")) or dicons.pick(plain(it["title"])) or dicons.pick(str(spec.get("subject") or "")) or DEF_ICON
+            nm = (it.get("pic") if dspec.is_pic(it.get("pic")) else None) or dicons.name(it.get("icon")) or dicons.pick(plain(it["title"])) or dicons.pick(str(spec.get("subject") or "")) or DEF_ICON
             v = "plain" if tpl else choose("cover", ["block", "band", "plain"], it)
             if v == "block":
                 bw_ = 5.6
@@ -879,9 +967,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 put_title(s, plain(it["title"]), 0.7, 1.7, bw_ - 1.2, 2.8, 46, C["bt"], "l", "m", emc=C["bt"])
                 rect(s, 0.78, 4.62, 1.1, 0.09, TONES[1] if len(TONES) > 1 else C["bt"], round_=False).name = "accent"
                 if it.get("subtitle"):
-                    tbox(s, 0.7, 4.85, bw_ - 1.2, 1.3, it["subtitle"], 22, C["bt"], emc=C["bt"])
+                    tbox(s, 0.7, 4.85, bw_ - 1.2, 1.3, it["subtitle"], 22 + UP, C["bt"], emc=C["bt"])
                 if it.get("meta"):
-                    tbox(s, 0.7, 6.2, bw_ - 1.2, 1.05, it["meta"], 16, C["bt"], anchor="b", emc=C["bt"])
+                    tbox(s, 0.7, 6.2, bw_ - 1.2, 1.05, it["meta"], 16 + UP, C["bt"], anchor="b", emc=C["bt"])
                 if has_draw:
                     draw_diagram(s, it, 6.35, 1.75, 6.3)
                 else:
@@ -892,9 +980,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 kicker(s, it.get("kicker"), 0.7, 0.9, C["bt"])
                 put_title(s, plain(it["title"]), 0.9, 1.2, tw_, 3.0, 50, C["bt"], "l", "m", emc=C["bt"])
                 if it.get("subtitle"):
-                    tbox(s, 0.9, 4.9, tw_, 0.95, it["subtitle"], 24, C["tx"])
+                    tbox(s, 0.9, 4.9, tw_, 0.95, it["subtitle"], 24 + UP, C["tx"])
                 if it.get("meta"):
-                    tbox(s, 0.9, 5.9, tw_, 0.8, it["meta"], 16, C["mu"])
+                    tbox(s, 0.9, 5.9, tw_, 0.8, it["meta"], 16 + UP, C["mu"])
                 for j in range(min(3, len(TONES))):
                     rect(s, 0.98 + j * 0.9, 6.78, 0.75, 0.12, TONES[j], round_=False).name = "decor"
                 if has_draw:
@@ -907,9 +995,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 rect(s, 0.8, 2.0, 0.18, 2.3, C["pr"], round_=False).name = "accent"
                 put_title(s, plain(it["title"]), 1.25, 1.8, tw_, 2.6, 54, align="l", anchor="m")
                 if it.get("subtitle"):
-                    tbox(s, 1.25, 4.6, tw_, 1.35, it["subtitle"], 24, C["mu"], name="body")
+                    tbox(s, 1.25, 4.6, tw_, 1.35, it["subtitle"], 24 + UP, C["mu"], name="body")
                 if it.get("meta"):
-                    tbox(s, 1.25, 6.0, tw_, 0.95, it["meta"], 16, C["mu"])
+                    tbox(s, 1.25, 6.0, tw_, 0.95, it["meta"], 16 + UP, C["mu"])
                 if has_draw:
                     draw_diagram(s, it, 7.55, 1.75, 5.0)
                 elif not tpl:
@@ -973,7 +1061,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             n = len(items)
             pl = [plain(x) for x in items]
             mx = max(len(p_) for p_ in pl)
-            ics = dicons.pick_all(pl, it.get("icons"))
+            ics = picks(pl, it.get("icons"), it.get("pics"))
+            pics_on = bool(ics) and any(dspec.is_pic(g_) for g_ in ics)
             mins = it.get("minutes") if it.get("_role") == "activity" else None
             opts = ["rows"]
             if not tpl:
@@ -985,6 +1074,13 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     opts.append("grid")
                 if n <= 5 and len(plain(it["title"])) <= 22 and not mins and roomy(5.9, min(1.6, ((5.15 if cut else 5.9) - 0.2 * (n - 1)) / n) - 0.08):
                     opts.append("side")
+                if pics_on and 2 <= n <= 6:  # every line has its picture: picture tiles lead, the list forms follow
+                    tc_ = n if n <= 4 else 3
+                    tw0 = (11.7 - 0.26 * (tc_ - 1)) / tc_
+                    if (roomy(tw0 - 0.3, 1.5, 22) if n <= 4 else roomy(tw0 - 1.9, (BH - cut - 0.26) / 2 - 0.2, 21)):
+                        opts = ["tiles"] + [o for o in opts if o != "grid"]
+                        if not it.get("layout") and last_v[0] != "bullets.tiles":
+                            it = {**it, "layout": "bullets.tiles"}  # pictures lead: tiles unless the slide before was tiles too
             v = choose("bullets", opts, it)
             if v == "side":  # the title stands on a colour field at the left, the list has the rest of the page
                 clear_deco()
@@ -1004,7 +1100,38 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     c_.name = "time"
                     icon(s, "clock", 10.78, 0.93, 0.4, C["tx"])
                     tbox(s, 11.2, 0.78, 1.25, 0.7, f"{int(mins)}분", 22, C["tx"], True, "l", "m")
-                if v == "grid":  # short items stand side by side as tiles
+                if v == "tiles":  # a picture and its word: the picture large on a white plate, the word under it (two rows: beside it)
+                    cols = n if n <= 4 else 3
+                    rws = (n + cols - 1) // cols
+                    g = 0.26
+                    bh_ = BH - cut
+                    cw = (11.7 - g * (cols - 1)) / cols
+                    ch = (bh_ - g * (rws - 1)) / rws
+                    y0 = BT + (bh_ - (ch * rws + g * (rws - 1))) / 2
+                    for i, x in enumerate(items):
+                        cx, cy = 0.8 + (i % cols) * (cw + g), y0 + (i // cols) * (ch + g)
+                        tl_ = rect(s, cx, cy, cw, ch, tint(tone(i), 0.17 if young else 0.12))
+                        tl_.name = "card"
+                        hd = split_head(x) if "**" not in str(x) else None
+                        if rws == 1:
+                            d = min(cw - 0.7, ch * 0.44, 2.15)
+                            py = cy + 0.3
+                            badge(s, cx + cw / 2 - d / 2, py, d, tone(i), i + 1, ics[i])
+                            ty = py + d + 0.14
+                            th_ = cy + ch - ty - 0.18
+                            if hd:
+                                tbox(s, cx + 0.15, ty, cw - 0.3, min(0.8, th_ * 0.45), hd[0], 34 if n <= 3 else 30, C["ct"], True, "c", "m", "disp", emc=C["emcc"])
+                                tbox(s, cx + 0.2, ty + min(0.8, th_ * 0.45), cw - 0.4, th_ - min(0.8, th_ * 0.45), hd[1], 24 if n <= 3 else 22, C["ct"], align="c", emc=C["emcc"])
+                            else:
+                                short = max(len(p_) for p_ in pl) <= 8
+                                tbox(s, cx + 0.15, ty, cw - 0.3, th_, x, (36 if n <= 3 else 32) if short else (28 if n <= 3 else 25), C["ct"], short, "c", "m" if short else "t",
+                                     "disp" if short else "body", emc=C["emcc"])
+                        else:
+                            d = min(1.5, ch - 0.44)
+                            badge(s, cx + 0.28, cy + ch / 2 - d / 2, d, tone(i), i + 1, ics[i])
+                            tx0 = cx + 0.28 + d + 0.22
+                            tbox(s, tx0, cy + 0.08, cx + cw - tx0 - 0.16, ch - 0.16, two_text(x, br=True), 26, C["ct"], anchor="m", emc=C["emcc"])
+                elif v == "grid":  # short items stand side by side as tiles
                     cols = n if n <= 3 else (2 if n == 4 else 3)
                     rws = (n + cols - 1) // cols
                     g = 0.26
@@ -1018,7 +1145,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     fs = (29 if rws == 1 else 24) * (1.14 if aud else 1.0)
                     for i, x in enumerate(items):
                         cx, cy = 0.8 + (i % cols) * (cw + g), y0 + (i // cols) * (ch + g)
-                        card(s, cx, cy, cw, ch)
+                        tcard(s, cx, cy, cw, ch, i)
                         edge(s, cx, cy, cw, ch, tone(i), top=True)
                         if rws == 1:
                             badge(s, cx + cw / 2 - d / 2, cy + 0.42, d, tone(i), i + 1, ics[i] if ics else None)
@@ -1057,6 +1184,20 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             else:
                 v = "cards" if tpl else choose("compare", ["cards", "versus"], it)
                 bh_ = BH - cut
+
+                def side_lines(x0, y0_, w_, h_, its_, pcs, fs_, col_, tcol):
+                    """A side's items: with pictures, one line each with its picture in front; else a bullet list."""
+                    if not (pcs and any(pcs)):
+                        tbox(s, x0, y0_, w_, h_, "\n".join("• " + plain(x_) for x_ in its_), fs_, tcol, anchor="m", emc=C["emcc"], spacing=1.5 if len(its_) <= 3 else 1.28)
+                        return
+                    rh_ = min(1.2, h_ / len(its_))
+                    yy0 = y0_ + (h_ - rh_ * len(its_)) / 2
+                    for q_, x_ in enumerate(its_):
+                        yy = yy0 + q_ * rh_
+                        d_ = min(0.95, rh_ - 0.14)
+                        if not (q_ < len(pcs) and pcs[q_] and glyph(s, pcs[q_], x0, yy + (rh_ - d_) / 2, d_, col_)):
+                            rect(s, x0 + d_ / 2 - 0.09, yy + rh_ / 2 - 0.09, 0.18, 0.18, col_, shape=MSO_SHAPE.OVAL).name = "dot"
+                        tbox(s, x0 + d_ + 0.16, yy, w_ - d_ - 0.16, rh_, plain(x_), fs_, tcol, anchor="m", emc=C["emcc"])
                 for j, side in enumerate(("a", "b")):
                     cj = ca if j == 0 else cb_
                     its_ = it[side].get("items", [])[:5]
@@ -1068,15 +1209,13 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                         cw_ = min(4.6, max(2.2, pfit.width_em(plain(lab_)) * 26 / 72 + 0.9))
                         hd = rect(s, x + (5.6 - cw_) / 2, BT + 0.3, cw_, 0.8, cj, pill=True)
                         tbox(s, x + (5.6 - cw_) / 2, BT + 0.3, cw_, 0.8, lab_, 26, ink(cj), True, "c", "m", "disp", emc=ink(cj), shape=hd)
-                        tbox(s, x + 0.4, BT + 1.25, 4.8, bh_ - 1.4, "\n".join("• " + plain(x_) for x_ in its_), fs, C["tx"], anchor="m",
-                             spacing=1.5 if len(its_) <= 3 else 1.28)
+                        side_lines(x + 0.4, BT + 1.25, 4.8, bh_ - 1.4, its_, (it[side].get("pics") or [])[:5], fs, cj, C["tx"])
                     else:
                         x = 0.8 + j * 6.0
                         card(s, x, BT, 5.7, bh_)
                         hd = rect(s, x, BT, 5.7, 0.95, cj)
                         tbox(s, x, BT, 5.7, 0.95, lab_, 26, ink(cj), True, "c", "m", "disp", emc=ink(cj), shape=hd)
-                        tbox(s, x + 0.3, BT + 1.05, 5.1, bh_ - 1.15, "\n".join("• " + plain(x_) for x_ in its_), fs, C["ct"], anchor="m", emc=C["emcc"],
-                             spacing=1.5 if len(its_) <= 3 else 1.28)
+                        side_lines(x + 0.3, BT + 1.05, 5.1, bh_ - 1.15, its_, (it[side].get("pics") or [])[:5], fs, cj, C["ct"])
                 if v == "versus":
                     vs_ = rect(s, 6.666 - 0.5, BT + bh_ / 2 - 0.5, 1.0, 1.0, C["tx"], shape=MSO_SHAPE.OVAL)
                     vs_.name = "vs"
@@ -1091,7 +1230,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 c_.name = "time"
                 icon(s, "clock", 10.78, 0.93, 0.4, C["tx"])
                 tbox(s, 11.2, 0.78, 1.25, 0.7, f"{int(mins)}분", 22, C["tx"], True, "l", "m")
-            ics = dicons.pick_all([plain(x_.get("title", "")) + " " + plain(x_.get("text", "")) for x_ in st], [x_.get("icon") for x_ in st] if any(x_.get("icon") for x_ in st) else it.get("icons"))
+            ics = picks([plain(x_.get("title", "")) + " " + plain(x_.get("text", "")) for x_ in st],
+                        [x_.get("pic") or x_.get("icon") for x_ in st] if any(x_.get("pic") or x_.get("icon") for x_ in st) else it.get("icons"))
             longest = max(len(plain(x_.get("text", ""))) for x_ in st)
             opts = ["track"] + ([] if tpl else (["arrows"] if n <= 5 else []) + (["ladder"] if (n >= 4 or longest > 22) else []))
             if not tpl and longest > (34 if n <= 3 else 26):
@@ -1107,7 +1247,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 for i, x_ in enumerate(st):
                     y = y0 + i * (rh + gap)
                     badge(s, 0.8, y, rh, tone(i), i + 1, ics[i] if ics else None, sq=True)
-                    card(s, 0.8 + rh + 0.14, y, 11.7 - rh - 0.14, rh)
+                    tcard(s, 0.8 + rh + 0.14, y, 11.7 - rh - 0.14, rh, i)
                     tbox(s, 0.8 + rh + 0.34, y, tw_, rh, x_.get("title", ""), 26 * min(zb, 1.1), C["ct"], True, anchor="m", name="disp", emc=C["emcc"])
                     tbox(s, 0.8 + rh + 0.44 + tw_, y, 11.7 - rh - 0.74 - tw_, rh, x_.get("text", ""), 24 * min(zb, 1.15), C["ct"], anchor="m", emc=C["emcc"])
             elif v == "arrows":  # block arrows in the deck's tones carry the names, the detail sits under each
@@ -1117,8 +1257,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     ar.name = "step"
                     tbox(s, cx + 0.1, BT, cw - 0.55, 1.15, f"{i + 1}. {plain(x_.get('title', ''))}", 22 * min(zb, 1.1), ink(tone(i)), True, "c", "m", "disp", emc=ink(tone(i)))
                     ch_ = min(bh_ - 1.35, 2.7 if longest <= 18 else 9.9)
-                    card(s, cx + 0.04, BT + 1.35, cw - 0.2, ch_)
-                    if ics:
+                    tcard(s, cx + 0.04, BT + 1.35, cw - 0.2, ch_, i)
+                    if ics and dspec.is_pic(ics[i]):
+                        emoji(s, ics[i], cx + cw / 2 - 0.5, BT + 1.5, 0.9)
+                    elif ics:
                         icon(s, ics[i], cx + cw / 2 - 0.42, BT + 1.6, 0.7, dstyle.legible(tone(i), C["card"], 3.0))
                     oy = 1.05 if ics else 0.12
                     tbox(s, cx + 0.16, BT + 1.35 + oy, cw - 0.44, ch_ - oy - 0.1, x_.get("text", ""), 23 * zb, C["ct"], align="c", anchor="t" if ics else "m", emc=C["emcc"])
@@ -1127,7 +1269,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 for i, x_ in enumerate(st):
                     cx = 0.8 + i * cw
                     badge(s, cx + cw / 2 - 0.5, 2.45, 1.0, tone(i), i + 1, ics[i] if ics else None)
-                    card(s, cx + 0.1, 3.7, cw - 0.2, 3.15 - cut)
+                    tcard(s, cx + 0.1, 3.7, cw - 0.2, 3.15 - cut, i)
                     tbox(s, cx + 0.2, 3.78, cw - 0.4, 0.85, x_.get("title", ""), 23 * zb, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
                     tbox(s, cx + 0.2, 4.65, cw - 0.4, 2.1 - cut, x_.get("text", ""), 20 * zb, C["ct"], align="c", emc=C["emcc"])
         elif t == "bignumber":
@@ -1170,7 +1312,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             put_title(s, plain(it["title"]), 0.8, 0.55, 7.2, 1.6, T1)
             if it.get("text"):
                 tbox(s, 0.8, 2.5, 7.0, 3.2, it["text"], 26, C["mu"])
-            nm = dicons.name(it.get("motif")) or dicons.name(it.get("_icon_word")) or dicons.pick(plain(it["title"])) or DEF_ICON
+            nm = (it.get("pic") if dspec.is_pic(it.get("pic")) else None) or dicons.name(it.get("motif")) or dicons.name(it.get("_icon_word")) or dicons.pick(plain(it["title"])) or DEF_ICON
             ring(s, 10.4, 3.9, 4.0, nm)
         elif t == "quiz":
             ch = it["choices"]
@@ -1192,9 +1334,15 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             for i, x_ in enumerate(ch):
                 x = 0.8 + (i % cols) * (bw + 0.3)
                 y = top + (i // cols) * (bh + 0.22)
-                card(s, x, y, bw, bh)
+                tcard(s, x, y, bw, bh, i)
                 badge(s, x + 0.28, y + bh / 2 - d / 2, d, tone(i), "ABCDE"[i])
-                tbox(s, x + 0.28 + d + 0.25, y, bw - (0.28 + d + 0.25) - 0.2, bh, plain(x_), 27 * (1.07 if aud else 1.0), C["ct"], anchor="m", emc=C["emcc"])
+                px_ = 0.0
+                qp_ = it.get("pics") or []
+                if i < len(qp_) and dspec.is_pic(qp_[i]):
+                    px_ = min(1.0, bh - 0.2)
+                    emoji(s, qp_[i], x + 0.28 + d + 0.16, y + bh / 2 - px_ / 2, px_)
+                    px_ += 0.06
+                tbox(s, x + 0.28 + d + 0.25 + px_, y, bw - (0.28 + d + 0.25 + px_) - 0.2, bh, plain(x_), 27 * (1.07 if aud else 1.0), C["ct"], anchor="m", emc=C["emcc"])
             quizzes.append((len(quizzes) + 1, it))
             notes.append(f"정답: {'ABCDE'[ans]}. {plain(ch[ans])}" + (f" - {plain(it['explain'])}" if it.get("explain") else "") + " (뒤쪽 「확인 문제 정답」 장에 모아 두었어요)")
         elif t == "timeline":
@@ -1304,7 +1452,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             dpanel.draw_pptx(KIT, s, it, 0.8, top_, 11.7, ((6.0 if (src or pub) else 6.1) - 0.16 if cut else (6.72 if (src or pub) else 6.9)) - top_)
         elif t == "closing":
             nxt = [plain(x_) for x_ in it.get("next", [])[:4]]
-            nm = dicons.name(it.get("icon")) or dicons.pick(plain(it["title"])) or {"class": "circle-check", "promo": "megaphone"}.get(ctx_name, "smile")
+            nm = (it.get("pic") if dspec.is_pic(it.get("pic")) else None) or dicons.name(it.get("icon")) or dicons.pick(plain(it["title"])) or {"class": "circle-check", "promo": "megaphone"}.get(ctx_name, "smile")
             v = "plain" if (tpl or pub) else choose("closing", ["plain", "block"], it)
             if v == "block":
                 block(s, 0, 0, 13.333, 7.5)

@@ -188,6 +188,7 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     if cerrs:
         rep["errors"] = cerrs
         return rep
+    spec = dspec.pics_inline(spec)  # a young room's word pictures stand in front of their words
     notes, merrs = dspec.resolve_media(spec, base)
     rep["warnings"] += notes
     if merrs:
