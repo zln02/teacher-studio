@@ -10,10 +10,11 @@
    "global": "Chart",
    "es": "es2017",
    "use": "막대·꺾은선·원 그래프",
+   "notes": "Class fields (ES2022) and object spread (ES2018) rewritten for ES2017 with tools/es2017_static_fields.js (see NOTICE); upstream sha256 87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2",
    "source": "npm:chart.js@4.6.1",
    "license_file": "chartjs/LICENSE",
-   "bytes": 210082,
-   "sha256": "87364cc2b2a76a6684929e7d6b80b18a897794db38400caff1fcf1791c6925d2"
+   "bytes": 217194,
+   "sha256": "5e0d1eb6ede60016bfd94bc5eb00370d4cafd724d9e6866c0375c9d5d125ff33"
   }
  },
  "install_on_need": {

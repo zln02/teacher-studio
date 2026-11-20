@@ -21,7 +21,8 @@ This product includes third-party components:
    Location: shared/vendor/canvas-confetti/. Unmodified.
 
 5. Chart.js 4.6.1 — Copyright (c) 2014-2024 Chart.js Contributors — MIT License
-   Location: shared/vendor/chartjs/. Unmodified.
+   Location: shared/vendor/chartjs/ (copied into skills that use it).
+   Modification: class fields and object spread replaced for ES2017 compatibility (tools/es2017_static_fields.js); behaviour unchanged.
 
 6. KaTeX 0.19.1 — Copyright (c) 2013-2020 Khan Academy and other contributors — MIT License
    Location: shared/vendor/katex/. Unmodified. Its fonts (KaTeX_*.woff2) are under the SIL Open Font License 1.1
