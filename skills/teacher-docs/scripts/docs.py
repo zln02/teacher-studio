@@ -198,6 +198,8 @@ def main() -> int:
     ad.add_argument("--out", type=Path, required=True)
     ad.add_argument("--max-pages", type=int)
     ad.add_argument("--min-font", type=float)
+    ad.add_argument("--replace-from", type=int, default=0, help="drop the original from this page on (1-based) before adding: replaces a page that is already there")
+    ad.add_argument("--again", action="store_true", help="add the page even though the original already has one with the same title")
     ad.add_argument("--yes", action="store_true")
     f = sub.add_parser("fill")
     f.add_argument("file", type=Path)
@@ -267,14 +269,26 @@ def main() -> int:
             return 1
         pdf_tools.need("pypdf", a.yes)
         spec = json.loads(a.spec.read_text(encoding="utf-8"))
+        title = "".join(str(spec.get("title") or "").split())
+        if title and not a.replace_from and not a.again:  # the same page twice is the usual mistake: say where it already is
+            from pypdf import PdfReader
+            for n, pg in enumerate(PdfReader(str(a.file)).pages, 1):
+                if title in "".join((pg.extract_text() or "").split()):
+                    print(f"FIX 원본 {n}쪽에 이미 「{spec.get('title')}」가 있어요. 한 번 더 붙이면 같은 쪽이 두 장이 돼요 -> 그 쪽을 새것으로 바꾸려면 --replace-from {n}, "
+                          f"그대로 두고 선생님께 「이미 {n}쪽에 있어요」라고 알리려면 아무것도 붙이지 않기, 정말 한 장 더면 --again")
+                    return 1
         with tempfile.TemporaryDirectory() as td:
             extra = Path(td) / "extra.pdf"
             r = make(spec, extra, None, a.yes, a.spec.resolve().parent)
             if not r["ok"]:
                 print("FIX", r["error"])
                 return 1
-            base_pages, add_pages = _pdf_pages(a.file), _pdf_pages(extra)
-            pdf_tools.merge([a.file, extra], a.out)
+            src = a.file
+            if a.replace_from and a.replace_from > 1:
+                kept = pdf_tools.split(a.file, Path(td) / "keep", f"1-{a.replace_from - 1}")
+                src = kept[0]
+            base_pages, add_pages = _pdf_pages(src), _pdf_pages(extra)
+            pdf_tools.merge([src, extra], a.out)
         print(f"built {a.out} (원본 {base_pages}쪽 + 붙인 {add_pages}쪽 = {base_pages + add_pages}쪽, 원본 파일은 그대로)")
         return finish(a.out, "", spec, a.max_pages, a.min_font)
     if a.cmd == "fill":

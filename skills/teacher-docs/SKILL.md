@@ -16,7 +16,7 @@ Respond in the user's language, in plain words (`../teacher-slides/references/te
 | 가정통신문 / 동의서 / 회신서 | `"kind":"notice"` (+ `reply` = 회신서 with cut line) |
 | 안내문 / 행사 안내 | `"kind":"guide"` (`sections`, `lead` box; + `reply` = 신청서, `"page": true` puts it on its own page) |
 | 신청서 / 동의서 한 장 | `"kind":"form"` (`fields`, `statement`, `sign`, `to`) |
-| 「이 PDF 끝에 신청서(한 쪽) 붙여 줘」 | ONE command: `docs.py append 원본.pdf --spec 신청서.json --out 새이름.pdf` (builds the page, merges, checks, draws the preview; the original stays) |
+| 「이 PDF 끝에 신청서(한 쪽) 붙여 줘」 | ONE command: `docs.py append 원본.pdf --spec 신청서.json --out 새이름.pdf` (builds the page, merges, checks, draws the preview; the original stays). If the PDF already has that page (our 안내문 puts the 신청서 on the back), the command says so: replace it with `--replace-from N` and tell the teacher it was already there, never ship two |
 | 계획서 / 결과 보고서 | `"kind":"report"` (title box, 요약 box, Ⅰ. headings, □ ○ - marks, tables + 자료) |
 | 「이 양식 채워 줘」 (.hwpx / .docx / .pdf form) | `docs.py fill FILE --set 성명=… --out new` : `{{키}}`, `[키]`, label cells (성명 → next cell), PDF form fields |
 | 「이 한글 파일 고쳐 줘」 | `docs.py patch FILE.hwpx --edits edits.json --out new.hwpx` : `[{"find","replace"}, {"para":n,"text"}, {"after","insert"}]`; exit 2 = some edit not applied -> say which, never claim success |

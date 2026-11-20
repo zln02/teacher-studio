@@ -33,6 +33,8 @@ def _tokens(mood: str = "단정") -> dict:
 def _rich(s: str) -> str:
     t = html.escape(s)
     t = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", t)
+    t = re.sub(r"(\d)\. (?=\d)", "\\1.\u00a0", t)  # 12. 11.(금) never breaks inside the date
+    t = re.sub(r"([□☐■]) (?=\S)", "\\1\u00a0", t)  # a check box stays with its word
     return t.replace("\n", "<br>")
 
 
