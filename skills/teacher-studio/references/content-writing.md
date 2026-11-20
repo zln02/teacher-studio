@@ -1,0 +1,75 @@
+# Writing quality — 쉬운 말, but not childish (applies to every output)
+
+Bar: 「초등학생도 이해하지만, 애기 대하듯 하지 않는다.」 Easy comes from short sentences, known words and concrete nouns. It does not come from 귀여운 말투, exclamation marks or over-explaining.
+
+## Steps
+1. **Fix the reader and register** before the first sentence.
+   - students on screen → 해요체 or 합쇼체 as the teacher's material does; one register per file
+   - parents → 합쇼체, respectful, no 행정 용어
+   - officials (공문 · 보고) → 개조식 (`~함` `~임` `~예정`), no polite endings in the body
+   - teacher-facing notes → plain 해요체, no dev terms (`teacher-language.md`)
+2. **Write the point first**, then the reason, then the detail. A reader who stops after the first sentence still has the message.
+3. **One sentence, one job.** Split at 「~하고, ~하며, ~하여」 chains. If a sentence has two verbs that each need an object, it is two sentences.
+4. **Choose the plain word, keep the correct term.**
+   - If a subject term is the learning target (교과서 용어), keep it exactly and explain it once at first use in everyday words. Do not replace it with a cute synonym.
+   - If a word is only administrative or foreign habit (「실시」「제고」「니즈」「피드백」), use the everyday word (「합니다」「높입니다」「필요」「의견」).
+   - 한자어 chains of three or more nouns (「학습 참여 동기 향상 방안」) are opened into a clause.
+5. **Make it concrete.** Replace an abstract claim with a number, a named thing, a step or a case. If no concrete version exists, the sentence had no content; cut it.
+6. **Cut to the budget** (below), then read aloud once. Where the tongue trips, rewrite.
+7. **Run the tell check** (below) on the final text.
+
+## Plain without childish — decisions
+| if | then |
+|---|---|
+| a word may be unknown at this level | explain once in a clause (「〈용어〉, 곧 〈쉬운 풀이〉」), then use the term normally |
+| tempted to add 「~해 볼까요?」「우와!」「참 쉽죠?」 | remove; ask a real question or state the task |
+| tempted to use diminutives, 의성어, emoji for friendliness | remove; friendliness comes from clarity and respect for the reader's time |
+| explaining something the reader already knows | cut; over-explaining is the adult form of baby talk |
+| the idea is hard | keep the idea, shorten the sentence, add one example; do not water down the idea |
+| praise or feedback line | say what was right or what to try next, not 「대단해요!」 alone |
+| instructing | one action per line, verb at the end, in order of doing |
+
+## Length budgets (house heuristics, not official rules; the user's limit wins)
+| place | budget |
+|---|---|
+| screen for a class (TV) | title ≤ 20자, body ≤ 4 lines, a line ≤ 25자, one idea |
+| question stem on screen | one sentence, ≈ 25자; conditions in a second line |
+| sentence for 초 1-2 | ≈ 15-25자, one clause |
+| sentence for 초 3-6 | ≈ 25-40자 |
+| sentence for 중·고 · adults | ≈ 40-60자; over 60자 → split |
+| 가정통신문 | one A4; the action (무엇을 · 언제까지 · 어떻게) visible without reading the greeting |
+| 공문 본문 | what is asked + by when in the first item |
+| poster / SNS card | headline ≤ 15자 (≤ 24자 hard limit), ≤ 3 supporting facts |
+| report summary | ≤ 5 lines with the key numbers |
+| chat reply to the teacher | result first, ≤ 6 lines, 2 tweak offers |
+
+## AI tells — remove or rewrite (WARN on sight)
+Common marks of machine-written Korean. One may be fine; a pattern is not.
+- **Hedged ability**: 「~할 수 있습니다」「~수 있어요」 repeated. State what is, or what to do: 「~합니다」「~하세요」. Exception: 학습 목표 and 성취기준 officially end in 「~할 수 있다」; keep it there.
+- **Empty modifiers**: 다양한 · 효과적인 · 효율적인 · 체계적인 · 적극적인 · 원활한 · 풍부한 · 유의미한 · 혁신적인 · 창의적인 (when no specific follows). Name the variety or the effect, or delete.
+- **Empty verbs**: 「~을 통해」「~를 바탕으로」「~에 대해」「~함으로써」 chains; 「진행하다 · 실시하다 · 수행하다 · 도모하다 · 제고하다 · 활용하다」 where 「하다 · 쓰다 · 높이다」 says it.
+- **Signposting**: 「중요한 것은」「핵심은」「결론적으로」「요약하자면」「먼저 ~에 대해 알아보겠습니다」「이제 ~를 살펴볼까요?」. Say the thing.
+- **Sales tone**: 「한눈에」「손쉽게」「쉽고 재미있게」「완벽한」「놀라운」「~의 모든 것」「꿀팁」 in non-promo text.
+- **Translation style**: 「~에 있어서」「~로 인해」「~을 가지다」「~되어지다」 (double passive), 「~들」 on every plural, 「그것은」 subjects, 「~하는 것이 가능하다」.
+- **Reflex triples and pairs**: three adjectives or three bullets by habit; 「A뿐만 아니라 B도」「단순히 A가 아니라 B」 framings that set up a claim nobody made.
+- **Closers**: 「도움이 되셨길 바랍니다」「궁금한 점이 있으면 언제든지」「함께 만들어 가요」「~의 여정」「화이팅!」.
+- **Symmetric padding**: every item the same length, every section ending with a one-line moral, a title of the form 「〈주제〉: 〈부제〉」 on every slide.
+- **Mark habits**: emoji bullets, bold in every line, 「→」 chains instead of sentences, quotation marks for emphasis, 「!」 more than once per screen.
+- **Vague quantity**: 「많은」「여러」「일부」「대부분」 where a count exists. Give the count.
+- **Unowned claims**: 「연구에 따르면」「전문가들은」 with no named source. Name it or drop it.
+
+## 전문가 점검표
+- [ ] One register in the whole file; it matches the reader (students / 학부모 / 기관).
+- [ ] First sentence of every block carries its point.
+- [ ] No sentence over the budget for the level; no screen over its line budget.
+- [ ] Every subject term is the textbook's term, explained once at first use.
+- [ ] No banned filler remains without a specific next to it; 「~할 수 있습니다」 appears at most once per screen or paragraph (학습 목표 excepted).
+- [ ] No baby talk: no 의성어 · emoji · 「~볼까요?」 used only for mood.
+- [ ] Every instruction is one action, in doing order, verb last.
+- [ ] 띄어쓰기 · 맞춤법 checked for the frequent slips (할 수, 하는 것, 그동안, 방과 후, 50% 이상); dates as `2026. 11. 20.(금)` in official text, weekday computed.
+- [ ] Read aloud once; nothing trips.
+
+## Sources (checked 2026-11-20)
+- Plain public language is a legal duty for 공공기관 documents: 국어기본법 제14조 (current text: law.go.kr, 법률 제21586호, 시행 2026. 10. 29. shown on the page; article wording not re-read today → confirm through `teacher-law` before quoting).
+- 국립국어원 「쉬운 공문서 쓰기 길잡이」 exists as the official plain-writing guide (publication listing seen; contents not read today → its specific sentence-length advice is **unverified**; the budgets above are house heuristics).
+- 띄어쓰기 list: `teacher-docs/references/gongmun-format.md` (한글 맞춤법 제41-45항, 경기도교육청 2023).

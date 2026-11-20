@@ -1,0 +1,55 @@
+# CONTENT-RULES — what goes inside, before how it looks
+
+Read this before writing any content (deck, game, document, poster, report, plan, app). The format gates (`check`, `doc_check.py`, lints) only prove the file is well-formed. This page and the per-kind recipes decide whether the **material** is right.
+
+Owner's bar: 「재료가 전문가 이상 급이 만든 느낌」. A practitioner in that field should be able to use the output as it is, without rewriting.
+
+These are principles and decisions, not templates. Never copy wording or structure from a recipe or from `spec-examples/` into an output; two outputs on different topics must not read as the same skeleton with nouns swapped.
+
+## Which recipe
+| making | read |
+|---|---|
+| lesson material (slides, game, worksheet, activity) | `skills/teacher-studio/references/content-lesson.md` (+ `teacher-slides/references/content-slides.md`, `teacher-game/references/content-items.md`) |
+| 공문 · 가정통신문 · 보고서 · 기관 보고 PPT | `skills/teacher-docs/references/content-docs.md` |
+| poster · 홍보 PPT · SNS · 홍보 영상 | `skills/teacher-studio/references/content-promo.md` (+ `teacher-motion/references/content-motion.md`) |
+| chart report from data | `skills/teacher-data/references/content-data.md` |
+| plan · research · comparison (co-plan) | `skills/teacher-studio/references/content-plan.md` |
+| web app · helper · calculator · simulation | `skills/teacher-studio/references/content-webapp.md` |
+| every sentence in all of the above | `skills/teacher-studio/references/content-writing.md` |
+
+## Top rules (all kinds)
+1. **Reader and use first.** Name who reads it, where (TV at 8 m, phone, printed A4, 결재 화면) and what they do next. If either is unknown and it changes the content, ask once; otherwise state the assumption in one line.
+2. **One purpose, said in one sentence, before writing.** If you cannot write 「이것을 본 사람은 ___를 한다/안다」 the content is not ready. Everything that does not serve that sentence is cut, not shrunk.
+3. **Content before container.** Decide the claims, their order and the evidence first; then pick slide types, layouts and length. Do not fill a layout because it exists.
+4. **Facts are verified or marked.**
+   - Every number, date, name, definition, quotation and formula is one of: (a) from the user's own material, (b) checked against a source in this session, (c) marked 「확인 필요」.
+   - Not common knowledge → source on the page: who, what, year (and 기준일 for statistics).
+   - Dates: compute the weekday, never recall it. Sums and percentages: recompute; the parts must add up to the total shown.
+   - Never invent statistics, quotes, laws, 성취기준 codes, links or "research says". An honest gap beats a confident error.
+   - Illustrative numbers are labelled 「예시(가상 수치)」 on the same screen.
+5. **Specific over generic.** Each sentence must be falsifiable or actionable. If a sentence fits any topic unchanged (「다양한 활동으로 효과적으로…」), delete or replace it with the particular fact, number, step or example.
+6. **Shape follows the content.** Sequence → steps; comparison → table; one number → big number; cause → diagram. Three bullets are not the default shape of a thought.
+7. **Level is chosen, not defaulted.** Vocabulary, sentence length and amount per screen match the stated grade or audience (`content-writing.md`). Plain is not childish.
+8. **Legal and privacy lines.** No real student data, faces or contact details in content; third-party text, images, music and characters need a stated basis. When the request touches these, go to `skills/teacher-law` (it reads the current law; do not answer from memory, and do not store law text in recipes).
+9. **Honest about limits.** Say what the material does not cover, what was assumed, what was not checked. Never claim a capability (AI, 자동 채점, 저장) the output does not have.
+10. **Length is a budget.** Decide it from the use (minutes of class, one A4, one phone screen) and cut to fit. Do not pad to look thorough.
+
+## Expert self-review gate — 「이 분야 전문가가 그대로 쓸 수준인가?」
+Run after the draft, before building the file. Any 「아니오」 → fix, then re-check. Report unresolved items to the user in plain words; do not hide them.
+
+| # | criterion | pass when |
+|---|---|---|
+| G1 | 목적 | one sentence states what the reader does or knows afterward, and every part serves it |
+| G2 | 정확성 | every fact is traced to user material / a checked source / a visible 「확인 필요」; numbers recomputed; dates and weekdays computed |
+| G3 | 전문가의 눈 | the checks in the per-kind 「전문가 점검표」 all pass (the things a 수석교사 · 교감 · 장학사 · 홍보 담당 · 통계 담당 would flag first) |
+| G4 | 구체성 | no sentence survives that would fit another topic unchanged; no filler words from the banned list |
+| G5 | 수준 | a reader at the stated level understands it on first reading, and an adult does not feel talked down to |
+| G6 | 분량 | fits the time / page / screen budget with nothing essential missing |
+| G7 | 고유함 | structure was derived from this content; it is not a copy of an example or of the previous output |
+| G8 | 선 | no personal data; third-party material has a basis and a credit; limits and assumptions are stated |
+| G9 | 쓸모 | the user can use it tomorrow without rework: answers included, times stated, 다음 할 일 clear |
+
+Reading test for G3 and G5: reread as (1) the strictest reviewer in that field looking for an error, then (2) the least prepared reader looking for a word they do not know. Fix what each finds.
+
+## When checks disagree
+Accuracy > clarity > completeness > polish. A wrong fact in a beautiful deck fails. If the content cannot be made right inside the budget, deliver less and say what is missing.
