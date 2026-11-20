@@ -102,7 +102,7 @@ def build_html() -> str:
           f'<h2>이렇게 써 보세요</h2><div class="cards">{cards}</div>'
           f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">연수 내용과 쓰는 법은<br>사이트에 있어요</div>'
           f'<div class="st-url">{e(SITE)}</div><div class="st-s">휴대폰 카메라로 QR을 비추면 열려요</div></div></div>'
-          f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 선생님께</b><span>무료 공개 · 재능기부</span></footer></section>')
+          f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 선생님께</b></footer></section>')
 
     css = f"""
 @page{{size:A4;margin:0}}
@@ -157,7 +157,7 @@ h2.first{{margin-top:5mm}}
 .st-big{{font-size:20pt;font-weight:900;line-height:1.3}}
 .st-url{{font-size:13.5pt;font-weight:700;margin-top:2mm;word-break:break-all}}
 .st-s{{font-size:11pt;color:#333;margin-top:1mm}}
-footer{{margin-top:4mm;border-top:1.2pt solid {INK};padding-top:2.5mm;display:flex;justify-content:space-between;align-items:baseline;font-size:12.5pt}}
+footer{{margin-top:4mm;border-top:1.2pt solid {INK};padding-top:2.5mm;display:flex;justify-content:center;align-items:baseline;font-size:13pt}}
 footer span{{font-size:11pt;color:#333}}
 @media screen{{body{{background:#d9dde3}} .page{{background:#fff;margin:8mm auto;box-shadow:0 2px 10px rgba(0,0,0,.18)}}}}
 """
