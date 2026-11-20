@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Anti "AI-default look" check (stdlib only): does a page look like a well-known AI company's house style instead of a design of its own?
+"""Anti "AI-default look" check + 「밤티 검사」 (stdlib only): does a page look like a well-known AI company's house style instead of a design of its own?
 
 Rule: never default to an AI-company house look. The user's own palette / template always wins (then this check stays quiet).
 
@@ -16,7 +16,16 @@ Measured, not guessed. Colours are read in OKLCH (oklch.py): L = lightness 0..1,
 2. Generic AI tell: a blue -> purple gradient (two or more gradient colours with C >= 0.10 and 250 <= h <= 315, at least 25 degrees apart) on a white or
    near-white page (L >= 0.93, C <= 0.03) TOGETHER WITH an emoji-heavy hero (>= 3 emoji in the headings or the first 600 characters of text).
 
-Either is a WARN (never FAIL): taste is the teacher's call, but the default must not drift there.
+3. 「밤티 검사」 (bamti / pro_gate): the generated-not-designed tells, measured on the page's CSS text.
+   glow     coloured blur without offset (box/text-shadow `0 0 Npx colour`, drop-shadow(0 0 ..)) more than 2 times
+   hollow   outlined unfilled type (-webkit-text-stroke > 0)             gradient  2+ gradients through clearly different hues
+   accents  more than 3 accent hues among the theme colours               neon      a fluorescent theme colour (system.is_neon)
+   emoji    more than 3 emoji in the headings                             weight    font-weight 900 more than twice
+   grid     > 40% of the spacing values off the 4px step                  density   one element with more than 5 stacked decoration layers
+   fonts    more than 3 named font families                               italic    slanted Korean text       leading  body line-height < 1.3
+   pro_gate() groups them into the five criteria of 「전문 디자이너가 그대로 쓸 수준인가?」: type / colour / surface / rhythm / restraint.
+
+All are WARN (never FAIL): taste is the teacher's call, but the default must not drift there. All are silent for the user's own design.
 
     from ai_look import is_house, check_tokens, check_html, html_results
     is_house("#faf9f5", ["#d97757"], "Noto Serif KR")    # -> True
@@ -205,8 +214,228 @@ def html_results(html: str) -> list[tuple[str, str]]:
             return [("PASS", "not an AI-company house look (user's own design wins)")]
         warns = check_html(html)
         if warns:
-            return [("WARN", w) for w in warns]
-        return [("PASS", "not an AI-company house look (cream+clay+serif / blue-purple+emoji)")] if page_tokens(html)["bg"] else []
+            return [("WARN", w) for w in warns] + bamti_results(html)
+        return ([("PASS", "not an AI-company house look (cream+clay+serif / blue-purple+emoji)")] if page_tokens(html)["bg"] else []) + bamti_results(html)
+    except Exception:  # a taste hint must never break a check
+        return []
+
+
+# =====================================================================================================================
+# 「밤티 검사」 (2026-11): does the page look generated instead of designed?  WARN only, quiet for the user's own design.
+# Rules in words: DESIGN-RULES.md. Everything is measured on the page's CSS text (static, no browser), after the shared
+# polish layer when the page carries one (rules before the "ds:polish" marker are overridden by it and are not counted).
+# =====================================================================================================================
+POLISH_MARK = "design system polish"
+BAMTI = {"glow_max": 2, "hollow_max": 0, "soup_max": 1, "accent_hues_max": 3, "emoji_hero_max": 3, "w900_max": 2, "offgrid_share": 0.4, "offgrid_min_n": 14,
+         "layers_max": 5, "families_max": 3, "body_leading_min": 1.3}
+_DATA = re.compile(r"data:[a-z/+.-]+;base64,[A-Za-z0-9+/=]+")
+_STATE_NAMES = ("good", "bad", "ok", "err", "warn", "danger", "success", "team", "tc", "series", "chart", "gd", "bd", "on-")
+_SHADOW = re.compile(r"(?:box-shadow|text-shadow)\s*:\s*([^;}]+)", re.I)
+_GLOW_LAYER = re.compile(r"^(?:inset\s+)?0(?:px)?\s+0(?:px)?\s+(\d*\.?\d+)(?:px|em|rem|cqw)(?:\s+0(?:px)?)?\s+(.+)$", re.I)
+_GENERIC = {"serif", "sans-serif", "monospace", "system-ui", "ui-sans-serif", "ui-monospace", "cursive", "fantasy", "inherit", "-apple-system", "blinkmacsystemfont"}
+_FALLBACKS = ("malgun", "맑은", "apple sd", "segoe", "arial", "helvetica", "noto sans cjk", "batang", "함초롬", "gulim", "dotum", "consolas", "courier", "menlo", "d2coding",
+              "sfmono", "georgia", "times", "pretendard", "nanum")
+
+
+def _styles_of(html: str) -> str:
+    """The page's CSS text: <style> blocks (font data removed) + inline style attributes. With the polish layer present, only what comes after it."""
+    h = _DATA.sub("", html or "")
+    css = "\n".join(re.findall(r"<style\b[^>]*>(.*?)</style>", h, flags=re.S | re.I))
+    if POLISH_MARK in css:
+        css = css[css.index(POLISH_MARK):]
+    inline = " ".join("x{%s}" % m for m in re.findall(r'\sstyle="([^"]*)"', re.sub(r"<(script|style)\b.*?</\1>", " ", h, flags=re.S | re.I)))
+    return css + "\n" + inline
+
+
+def _chromatic(val: str, vars_: dict) -> bool:
+    """True when a shadow colour is a real colour (not black / white / grey): a glow, not a shade."""
+    v = _resolve(val, vars_) if "var(" in val else val
+    m = HEX.search(v)
+    if m:
+        return oklch.hex_to_oklch(m.group(0))[1] >= 0.06
+    m = re.search(r"rgba?\(\s*(\d+)[,\s]+(\d+)[,\s]+(\d+)", v)
+    if m:
+        r, g, b = (int(x) for x in m.groups())
+        return oklch.hex_to_oklch("#%02x%02x%02x" % (min(r, 255), min(g, 255), min(b, 255)))[1] >= 0.06
+    if "var(" in val:   # an unresolved theme colour (--primary, --accent ...) used as a blur = a glow
+        return not re.search(r"var\(\s*--(?:shadow|ds-shadow|ds-press|line|ln|ink|bg)", val)
+    return "currentcolor" in v.lower()
+
+
+def _split_layers(v: str) -> list[str]:
+    return [x.strip() for x in re.split(r",(?![^(]*\))", v) if x.strip()]
+
+
+def count_glow(css: str, vars_: dict | None = None) -> int:
+    """Coloured blur with no offset (the neon-sign effect): box-shadow / text-shadow `0 0 Npx <colour>`, drop-shadow(0 0 ...)."""
+    vars_ = vars_ if vars_ is not None else {}
+    n = 0
+    for m in _SHADOW.finditer(css):
+        for layer in _split_layers(m.group(1)):
+            g = _GLOW_LAYER.match(layer)
+            if g and float(g.group(1)) >= 6 and _chromatic(g.group(2), vars_):
+                n += 1
+    n += len(re.findall(r"drop-shadow\(\s*0(?:px)?\s+0(?:px)?\s+[1-9]", css))
+    return n
+
+
+def count_hollow(css: str) -> int:
+    """Outlined, unfilled display type."""
+    return len(re.findall(r"-webkit-text-stroke(?:-width)?\s*:\s*(?!0(?:px)?\b)[\d.]+", css))
+
+
+def count_gradient_soup(css: str) -> int:
+    """Gradients that run through two or more clearly different colours (hues >= 40 degrees apart, both colourful)."""
+    n = 0
+    for g in re.findall(r"(?:linear|radial|conic)-gradient\(((?:[^()]|\([^()]*\))*)\)", css):
+        hues = [oklch.hex_to_oklch(c)[2] for c in HEX.findall(g) if oklch.hex_to_oklch(c)[1] >= 0.09]
+        if len(hues) >= 2 and max(oklch.hue_distance(a, b) for a in hues for b in hues) >= 40:
+            n += 1
+    return n
+
+
+def accent_hues(html: str) -> list[float]:
+    """Distinct accent hues among the page's theme colours (CSS custom properties; state / team / chart colours do not count)."""
+    hues: list[float] = []
+    for k, v in _css_vars(_DATA.sub("", html or "")).items():
+        if any(s in k for s in _STATE_NAMES):
+            continue
+        m = HEX.fullmatch(v.strip())
+        if not m:
+            continue
+        L, C, h = oklch.hex_to_oklch(m.group(0))
+        if C < 0.09 or L < 0.25:
+            continue
+        if all(oklch.hue_distance(h, x) > 35 for x in hues):
+            hues.append(h)
+    return hues
+
+
+def neon_colours(html: str) -> list[str]:
+    """Fluorescent theme colours (shared/design/system.py is_neon): high chroma AND light."""
+    try:
+        import system as _ds
+    except Exception:
+        return []
+    out = []
+    for k, v in _css_vars(_DATA.sub("", html or "")).items():
+        if any(s in k for s in _STATE_NAMES):
+            continue
+        m = HEX.fullmatch(v.strip())
+        if m and _ds.is_neon(m.group(0)) and m.group(0).lower() not in out:
+            out.append(m.group(0).lower())
+    return out
+
+
+def emoji_in_hero(html: str) -> int:
+    body = re.sub(r"<(script|style)\b.*?</\1>", " ", html or "", flags=re.S | re.I)
+    heads = " ".join(re.findall(r"<h[12][^>]*>(.*?)</h[12]>", body, flags=re.S | re.I))
+    return len(_EMOJI.findall(re.sub(r"<[^>]+>", " ", heads)))
+
+
+def offgrid_share(css: str) -> tuple[float, int]:
+    """Share of spacing values (padding / margin / gap, px, >= 4) that are not on the 4px half-step of the 8pt rhythm."""
+    vals = []
+    for m in re.finditer(r"(?:padding|margin|gap)(?:-[a-z]+)?\s*:\s*([^;}]+)", css):
+        vals += [float(x) for x in re.findall(r"(?<![\w.#-])(\d+(?:\.\d+)?)px", m.group(1))]
+    vals = [v for v in vals if v >= 4]
+    if not vals:
+        return 0.0, 0
+    return sum(1 for v in vals if v % 4) / len(vals), len(vals)
+
+
+def max_layers(css: str) -> int:
+    """The busiest single declaration: stacked background gradients or shadow layers."""
+    worst = 0
+    for m in re.finditer(r"(?:background(?:-image)?|box-shadow)\s*:\s*([^;}]+)", css):
+        worst = max(worst, len(_split_layers(m.group(1))) if ("gradient(" in m.group(1) or "shadow" in m.group(0)) else 0)
+    return worst
+
+
+def font_families(css: str) -> list[str]:
+    """Named (non-fallback) font families the page asks for."""
+    out: list[str] = []
+    for m in re.finditer(r"font(?:-family)?\s*:\s*([^;}]+)", css):
+        for f in re.findall(r"""["']([^"']+)["']""", m.group(1)):
+            fl = f.strip().lower()
+            if fl and fl not in _GENERIC and not any(x in fl for x in _FALLBACKS) and fl not in out and not fl.startswith("var("):
+                out.append(fl)
+    return out
+
+
+def bamti(html: str) -> list[tuple[str, str]]:
+    """[(code, plain-Korean WARN line)] for a built page. [] = clean, nothing measurable, or the user's own design."""
+    if not html or USER_MARKERS.search(html):
+        return []
+    css = _styles_of(html)
+    if len(css.strip()) < 40:
+        return []
+    v = _css_vars(_DATA.sub("", html))
+    out: list[tuple[str, str]] = []
+    g = count_glow(css, v)
+    if g > BAMTI["glow_max"]:
+        out.append(("glow", f"빛 번짐(네온) 효과가 {g}군데 있어요. 색이 번지는 그림자(0 0 Npx 색)는 빼고, 아래로 떨어지는 어두운 그림자 하나만 써 주세요."))
+    hw = count_hollow(css)
+    if hw > BAMTI["hollow_max"]:
+        out.append(("hollow", f"속이 빈 테두리 글자가 {hw}군데 있어요. 글자는 속을 채우고, 강조는 색이나 굵기로 해 주세요."))
+    gs = count_gradient_soup(css)
+    if gs > BAMTI["soup_max"]:
+        out.append(("gradient", f"여러 색이 섞인 그라데이션이 {gs}개예요. 바탕은 한 가지 색(또는 같은 색의 밝기 차이)으로 두고 강조색은 한 곳에만 써 주세요."))
+    ah = accent_hues(html)
+    if len(ah) > BAMTI["accent_hues_max"]:
+        out.append(("accents", f"강조색이 {len(ah)}가지예요. 주 색 하나 + 보조 색 하나 + 회색 계열로 줄여 주세요 (정답·오답 색은 따로 세지 않아요)."))
+    nc = neon_colours(html)
+    if nc:
+        out.append(("neon", f"형광색이 있어요({', '.join(nc[:3])}). 채도를 낮춘 색으로 바꿔 주세요 (design.py 팔레트는 모두 형광이 아니에요)."))
+    em = emoji_in_hero(html)
+    if em > BAMTI["emoji_hero_max"]:
+        out.append(("emoji", f"제목에 이모지가 {em}개예요. 제목은 글자로만 두고, 그림은 아이콘 하나로 충분해요."))
+    w9 = len(re.findall(r"font-weight\s*:\s*900", css))
+    if w9 > BAMTI["w900_max"]:
+        out.append(("weight", f"가장 굵은 글씨(900)를 {w9}군데 썼어요. 굵기는 800까지만, 큰 글자일수록 한 단계 가늘게 해 주세요."))
+    share, n = offgrid_share(css)
+    if n >= BAMTI["offgrid_min_n"] and share > BAMTI["offgrid_share"]:
+        out.append(("grid", f"여백 값의 {int(share * 100)}%가 4의 배수가 아니에요({n}개 중). 여백은 4·8·12·16·24·32·48·64 가운데에서 골라 주세요."))
+    ml = max_layers(css)
+    if ml > BAMTI["layers_max"]:
+        out.append(("density", f"한 요소에 장식이 {ml}겹 쌓여 있어요. 무늬·그림자는 한 화면에 한두 가지면 충분해요."))
+    fam = font_families(css)
+    if len(fam) > BAMTI["families_max"]:
+        out.append(("fonts", f"글꼴이 {len(fam)}가지예요({', '.join(fam[:4])}). 한 가지(제목용 명조를 더하면 두 가지)로 맞춰 주세요."))
+    if re.search(r"font-style\s*:\s*(?:italic|oblique)", css) and re.search(r"[가-힣]", html):
+        out.append(("italic", "기울인 글씨(이탤릭)가 있어요. 한글은 기울이지 않고 굵기나 색으로 강조해 주세요."))
+    lm = re.search(r"(?:^|[}\s])body\s*\{[^}]*?line-height\s*:\s*([\d.]+)\s*[;}]", css)
+    if lm and float(lm.group(1)) < BAMTI["body_leading_min"] and "/* stage */" not in css and not re.search(r"1920|data-stage|#stage", css[:6000]):
+        out.append(("leading", f"본문 줄 간격이 {lm.group(1)}로 빽빽해요. 본문은 1.5 안팎으로 해 주세요."))
+    return out
+
+
+PRO_CRITERIA = (
+    ("type", "글꼴은 한두 가지, 굵기 800 이하, 기울임 없음", ("fonts", "weight", "italic")),
+    ("colour", "강조색은 주 색 + 보조 색, 형광 없음", ("accents", "neon")),
+    ("surface", "빛 번짐·속 빈 글자·여러 색 그라데이션 없음", ("glow", "hollow", "gradient")),
+    ("rhythm", "여백이 4·8 단위, 본문 줄 간격 넉넉", ("grid", "leading")),
+    ("restraint", "장식은 한두 가지, 제목에 이모지 없음", ("density", "emoji")),
+)
+
+
+def pro_gate(html: str) -> dict:
+    """The self-review gate 「전문 디자이너가 그대로 쓸 수준인가?」 as five checkable criteria. {"pass": n, "of": 5, "failed": [(id, label)], "warn": [...]}."""
+    warns = bamti(html)
+    codes = {c for c, _ in warns}
+    failed = [(cid, label) for cid, label, cs in PRO_CRITERIA if codes & set(cs)]
+    return {"pass": len(PRO_CRITERIA) - len(failed), "of": len(PRO_CRITERIA), "failed": failed, "warn": warns}
+
+
+def bamti_results(html: str) -> list[tuple[str, str]]:
+    """For the checkers: WARN lines, or one PASS line. Never raises."""
+    try:
+        if USER_MARKERS.search(html or ""):
+            return []
+        g = pro_gate(html)
+        if not g["warn"]:
+            return [("PASS", "밤티 검사 통과: 전문 디자이너 기준 5/5 (글꼴·색·표면·여백·절제)")] if len(_styles_of(html).strip()) >= 40 else []
+        return [("WARN", "밤티 검사: " + msg) for _c, msg in g["warn"]] + [("WARN", "전문 디자이너 기준 %d/%d: %s" % (g["pass"], g["of"], " / ".join(l for _i, l in g["failed"])))]
     except Exception:  # a taste hint must never break a check
         return []
 
@@ -219,7 +448,9 @@ def main() -> int:
     a = ap.parse_args()
     if a.html:
         h = Path(a.html).read_text(encoding="utf-8", errors="replace")
-        print(json.dumps({"tokens": page_tokens(h), "warn": check_html(h)}, ensure_ascii=False, indent=1))
+        g = pro_gate(h)
+        print(json.dumps({"tokens": page_tokens(h), "warn": check_html(h), "bamti": [m for _c, m in g["warn"]], "pro_gate": "%d/%d" % (g["pass"], g["of"]),
+                          "failed": [l for _i, l in g["failed"]]}, ensure_ascii=False, indent=1))
     elif a.colors:
         print(json.dumps(measure(a.colors[0], a.colors[1:], a.font), ensure_ascii=False, indent=1))
     else:

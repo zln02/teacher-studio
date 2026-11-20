@@ -46,6 +46,14 @@ This product includes third-party components:
     Font Name 'Source' is not used as a name. License texts: shared/fonts/OFL-NotoSansKR.txt, OFL-NotoSerifKR.txt.
     Source of the fonts: github.com/google/fonts (ofl/notosanskr, ofl/notoserifkr).
 
+10a. TS Sans (the studio's default UI / display face) = Pretendard 1.3.9, subset and renamed — SIL Open Font License 1.1
+    Pretendard: Copyright (c) 2021, Kil Hyung-jin (https://github.com/orioncactus/pretendard), with Reserved Font Name Pretendard.
+    Location: shared/fonts/base/TSSans-ksx1001-wght100-900.woff2 (KS X 1001 subset of PretendardVariable.woff2, weights 100-900,
+    cut by tools/build_ts_sans.py) and, in each generated page, a further subset embedded as base64 WOFF2. A subset is a Modified
+    Version, so the family is renamed "TS Sans": the Reserved Font Name "Pretendard" is not used as a font name (it appears only
+    as a fallback name in CSS font stacks, for PCs that have the original installed). Copyright and licence records stay inside
+    the font file. License text: shared/fonts/OFL-Pretendard.txt. Source: the official release (pretendard npm package / GitHub).
+
 11. Other fonts are loaded at view time from Google Fonts; no font files of these are redistributed.
     Families used: Black Han Sans, Do Hyeon, Jua, Gowun Batang, Gowun Dodum, Nanum Myeongjo, Song Myung —
     each licensed under the SIL Open Font License 1.1. Generated pages request them from Google when opened;

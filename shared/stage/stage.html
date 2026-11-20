@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Batang:wght@400;700&family=Jua&family=Nanum+Myeongjo:wght@400;800&family=Noto+Sans+KR:wght@400;700;900&family=Song+Myung&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg1:#0e1726;--bg2:#1c2b45;--text:#ffffff;--muted:rgba(255,255,255,.72);--primary:#ffd23f;--accent:#3ee6ff;--card:#16233a;--line:rgba(255,255,255,.18);
-  --font-display:"Black Han Sans","Do Hyeon","Noto Sans KR",sans-serif;--font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--font-serif:"Nanum Myeongjo","Gowun Batang",serif;
+  --bg1:#11100f;--bg2:#191816;--text:#f4f0e7;--muted:rgba(244,240,231,.72);--primary:#d7ac68;--accent:#8ac6d5;--card:#1e1d1b;--line:rgba(244,240,231,.16);
+  --font-display:"TS Sans","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--font-body:"TS Sans","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--font-serif:"Noto Serif KR","Nanum Myeongjo","Gowun Batang",serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
@@ -27,13 +27,13 @@ body{font-family:var(--font-body);color:var(--text)}
 #scene{position:absolute;inset:0}
 .layer{position:absolute;inset:0}
 .word-break{word-break:keep-all;overflow-wrap:break-word}
-#ui{position:fixed;right:14px;top:14px;display:flex;gap:10px;z-index:50;transition:opacity .4s}
+#ui{position:fixed;right:14px;top:14px;display:flex;gap:8px;z-index:50;transition:opacity .4s}
 #ui.hide{opacity:0;pointer-events:none}
 #ui button{width:52px;height:52px;border-radius:14px;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:24px;cursor:pointer;backdrop-filter:blur(6px)}
 #ui button:hover{background:rgba(0,0,0,.7)}
-#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 22px;border-radius:12px;font-size:18px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none}
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(0,0,0,.75);color:#fff;padding:12px 24px;border-radius:12px;font-size:18px;opacity:0;transition:opacity .3s;z-index:60;pointer-events:none}
 #toast.show{opacity:1}
-#rec-dot{position:fixed;left:16px;top:16px;width:18px;height:18px;border-radius:50%;background:#ff3045;box-shadow:0 0 12px #ff3045;display:none;z-index:60}
+#rec-dot{position:fixed;left:16px;top:16px;width:18px;height:18px;border-radius:50%;background:#ff3045;box-shadow:none;display:none;z-index:60}
 body.recording #rec-dot{display:block}
 body.recording #ui{display:none}
 body.rendering #rec-dot{display:none}
