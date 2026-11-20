@@ -844,3 +844,65 @@ h1,h2,.big,.stmt .big{font-weight:800}
 @media (prefers-reduced-motion: reduce){.horsep .kb,.horsep .mean{animation:none}.horsep .kb{transform:scale(1.08)}}
 /* 그림책 장의 툰 색을 덱 쪽으로 한 단계 가라앉혀요 (그림책다움은 남기고 형광기만 빼요) */
 .storyc .gl canvas,.storyc .fb{filter:saturate(.86)}
+
+/* ---------- AI 회사들도 하네스로 경쟁해요 (hx): 같은 크기의 AI 두뇌 + 앱마다 다른 둘레 ----------
+   상표: ChatGPT만 공식 로고(OpenAI Blossom 흰색, 받은 그대로 · 색 안 바꿈 · 여백은 파일에 들어 있는 그대로).
+   Claude · Gemini는 가이드라인이 사전 승인을 요구해서 이름 글자만(브랜드 색). 근거는 deck-v2-NOTICE.md */
+.hx h2{font-size:60px;margin-bottom:0}
+.hxgrid{position:absolute;left:110px;right:110px;top:250px;display:grid;grid-template-columns:repeat(3,540px);justify-content:space-between}
+.hxapp{position:relative;border-radius:22px;background:linear-gradient(180deg,#1e2025,#17191d);border:1px solid rgba(243,240,233,.13);box-shadow:0 36px 70px -44px rgba(0,0,0,.9)}
+/* 창 바탕은 불투명하게: 반투명 판에 CSS 등장 움직임(opacity)을 걸면 소프트웨어 렌더링에서 판이 하얗게 덧칠돼요 (motion QA에서 찾음) */
+.hxapp:before{content:"";position:absolute;left:22px;right:22px;top:-1px;height:3px;border-radius:2px;background:var(--bc);opacity:.85}
+.hxapp.chatgpt{--bc:#f3f0e9}.hxapp.claude{--bc:#d97757}.hxapp.gemini{--bc:#4285f4}
+.hxapp .bar{display:flex;align-items:center;gap:9px;height:60px;padding:0 22px;border-bottom:1px solid rgba(243,240,233,.1)}
+.hxapp .bar i{width:11px;height:11px;border-radius:50%;background:rgba(243,240,233,.2)}
+.hxapp .bar b{margin-left:14px;font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--bc)}
+.hxapp .bar .mark{width:60px;height:60px;margin:0 -14px 0 2px;display:block}
+.hxapp .bar .mark+b{margin-left:0}
+.hxapp .bar small{margin-left:auto;font-size:22px;font-weight:600;color:var(--sub);letter-spacing:.04em}
+.hxcore{position:relative;height:500px}
+.hxcore .orb{position:absolute;inset:0;width:540px;height:500px;overflow:visible}
+.hxcore .o1{fill:none;stroke:rgba(243,240,233,.2);stroke-width:1.5;stroke-dasharray:3 11;animation:hxdrift 60s linear infinite}
+.hxcore .strap{fill:none;stroke:var(--acc);stroke-width:2;stroke-dasharray:1;stroke-dashoffset:1;opacity:.85;transition:stroke-dashoffset 1.3s cubic-bezier(.6,0,.2,1)}
+.hx.done .hxcore .strap{stroke-dashoffset:0}
+.hxcore .ln line{stroke:rgba(243,240,233,.2);stroke-width:1.5}
+.hxcore .sat{position:absolute;left:0;top:0;width:9px;height:9px;margin:-4.5px;border-radius:50%;background:var(--ink);opacity:.7;offset-path:path("M488 250A218 192 0 1 1 52 250A218 192 0 1 1 488 250");offset-rotate:0deg;animation:hxsat 26s linear infinite}
+.hxapp:nth-child(2) .sat{animation-delay:-9s}.hxapp:nth-child(3) .sat{animation-delay:-17s}
+@keyframes hxdrift{to{stroke-dashoffset:-280}}
+@keyframes hxsat{from{offset-distance:0%}to{offset-distance:100%}}
+.hxcore .brain{position:absolute;left:50%;top:50%;width:128px;height:128px;margin:-64px 0 0 -64px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:var(--warm);color:#1c1509;box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 24px 40px -22px rgba(0,0,0,.9);z-index:2}
+.hxcore .brain .ic{width:44px;height:44px;stroke-width:1.8}
+.hxcore .brain b{font-size:24px;font-weight:800;letter-spacing:-.02em}
+.hc{position:absolute;z-index:3;display:flex;align-items:center;gap:9px;height:46px;margin-top:-23px;padding:0 17px 0 13px;border-radius:999px;white-space:nowrap;width:max-content;font-size:24px;font-weight:700;letter-spacing:-.01em;color:var(--ink);background:#1d1f24;border:1px solid rgba(243,240,233,.2);opacity:0;will-change:transform,opacity}
+.hc .ic{width:22px;height:22px;color:var(--acc)}
+.hc sup{font-size:.6em;color:var(--sub);margin-left:-4px;align-self:flex-start;margin-top:6px}
+.hc.df{border-color:rgba(217,168,92,.55)}
+.hc.df .ic{color:var(--warm)}
+.hc.no{background:#16181d;border:1.5px dashed rgba(243,240,233,.3);color:var(--sub);font-weight:600}
+.hc.no .ic{color:var(--sub);opacity:.7}
+.hc.n,.hc.s{left:0;right:0;margin-left:auto;margin-right:auto}
+.hc.n{top:calc(50% - 222px)}.hc.s{top:calc(50% + 222px)}
+.hc.nw,.hc.sw{right:calc(50% + 8px)}.hc.ne,.hc.se{left:calc(50% + 8px)}
+.hc.nw,.hc.ne{top:calc(50% - 150px)}.hc.sw,.hc.se{top:calc(50% + 150px)}
+.hc.w{right:calc(50% + 84px);top:50%}.hc.e{left:calc(50% + 84px);top:50%}
+.hxcap,.hxpunch{position:absolute;left:var(--g-x);right:var(--g-x);top:836px;z-index:2}
+.hxcap p{position:absolute;left:0;top:0;font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1.3;color:var(--ink);white-space:nowrap}
+.hxcap p b{color:var(--warm);font-weight:800}
+.hxcap .hk{display:inline-block;margin-right:26px;padding-right:26px;border-right:1px solid rgba(243,240,233,.3);font-size:30px;font-weight:700;color:var(--acc);letter-spacing:.01em;vertical-align:3px}
+.hxpunch p{font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1.3;color:var(--ink)}
+.hxpunch p b{color:var(--warm);font-weight:800}
+.hxpunch .p2{font-size:36px;font-weight:600;color:var(--sub);margin-top:6px}
+.hxpunch .p2 em{font-style:normal;color:var(--acc);font-weight:800}
+.hxtm{position:absolute;left:var(--g-x);right:var(--g-x);bottom:86px;display:flex;justify-content:space-between;align-items:center;font-size:22px;line-height:1.2;color:var(--sub);z-index:2}
+.hxtm .lg{display:flex;align-items:center}
+.hxtm .lg i{display:inline-block;width:30px;height:16px;border-radius:999px;margin:0 9px 0 0}
+.hxtm .lg i.d{border:1px solid rgba(217,168,92,.7)}
+.hxtm .lg i.n{border:1.5px dashed rgba(243,240,233,.4);margin-left:22px}
+.hxtm .lg u{text-decoration:none;margin-left:22px}
+.reduced .hxcore .o1,.reduced .hxcore .sat{animation:none!important}
+.reduced .hxcore .strap{transition:none}
+.reduced .hxcore .sat{display:none}
+@media (prefers-reduced-motion: reduce){.hxcore .o1,.hxcore .sat{animation:none!important}.hxcore .strap{transition:none}.hxcore .sat{display:none}}
+
+/* motion QA: 벽을 다시 세울 때는 전환 없이 */
+.crack .wall.reset .brick,.crack .wall.reset .cracks,.crack .wall.reset .cracks path{transition:none!important}

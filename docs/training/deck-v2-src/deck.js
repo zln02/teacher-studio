@@ -127,6 +127,49 @@
     }
   };
 
+  /* AI 회사들도 하네스로: 두뇌 둘레에 기능 알약이 소용돌이로 날아와 끼워지고(선이 따라 그려져요), 마지막에 고리가 닫혀요 */
+  FX.hx = {
+    enter: function (s, st) {
+      [].forEach.call(s.querySelectorAll('.hxcore'), function (core) {
+        var g = core.querySelector('.ln'), cx = core.offsetWidth / 2, cy = core.offsetHeight / 2;
+        while (g.firstChild) g.removeChild(g.firstChild);
+        [].forEach.call(core.querySelectorAll('.hc'), function (c) {
+          var fx = c.offsetLeft + c.offsetWidth / 2 - cx, fy = c.offsetTop + c.offsetHeight / 2 - cy;
+          var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          ln.setAttribute('x1', cx); ln.setAttribute('y1', cy); ln.setAttribute('x2', cx + fx); ln.setAttribute('y2', cy + fy);
+          var len = Math.sqrt(fx * fx + fy * fy);
+          ln.style.strokeDasharray = len; g.appendChild(ln);
+          c.__g = { fx: fx, fy: fy, th: Math.atan2(fy, fx), r: len, ln: ln, len: len }; c.__on = false;
+          FX.hx.draw(c, 0);
+        });
+      });
+      FX.hx.apply(s, st, false);
+      if (!st) anim(s.querySelectorAll('.brain'), { scale: [0.72, 1], duration: 760, delay: A.stagger(110, { start: 180 }), ease: 'outBack' });
+    },
+    draw: function (c, t) {
+      var G = c.__g, th = G.th - 1.35 * (1 - t), r = G.r * (0.12 + 0.88 * t);
+      var x = Math.cos(th) * r - G.fx, y = Math.sin(th) * r - G.fy;
+      c.style.transform = t >= 1 ? '' : 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px) scale(' + (0.5 + 0.5 * t).toFixed(3) + ')';
+      c.style.opacity = Math.min(1, t * 2.5);
+      G.ln.style.strokeDashoffset = G.len * (1 - Math.max(0, (t - 0.35) / 0.65));
+    },
+    apply: function (s, st, move) {
+      var k = 0;
+      s.classList.toggle('done', st >= 5);
+      [].forEach.call(s.querySelectorAll('.hc'), function (c) {
+        var vis = st >= +c.getAttribute('data-s');
+        if (vis === c.__on) return;
+        if (c.__an) { c.__an.pause(); c.__an = null; }
+        c.__on = vis;
+        if (!vis || !move || REDUCED) { FX.hx.draw(c, vis ? 1 : 0); return; }
+        var o = { t: 0 }, d = 60 * (k % 2) + 70 * Math.floor(k / 2); k++;
+        c.__an = A.animate(o, { t: 1, duration: 760, delay: d, ease: 'outCubic', onUpdate: function () { FX.hx.draw(c, o.t); }, onComplete: function () { FX.hx.draw(c, 1); } });
+      });
+    },
+    step: function (s, st, dir) { FX.hx.apply(s, st, dir !== -1); },
+    leave: function (s) { [].forEach.call(s.querySelectorAll('.hc'), function (c) { if (c.__an) { c.__an.pause(); c.__an = null; } }); }
+  };
+
   FX.install = {
     enter: function (s) {
       var tx = s.querySelector('[data-type]'), full = tx.getAttribute('data-type');
@@ -164,7 +207,8 @@
   FX.crack = {
     enter: function (s) {
       var w = s.querySelector('.wall'), big = s.querySelector('.big');
-      w.classList.remove('fallen'); w.classList.add('on');
+      // 무너진 모습에서 되돌릴 때는 전환을 끄고 바로 세워요 (안 그러면 벽돌이 바닥에서 거꾸로 날아올라요: motion QA)
+      w.classList.add('reset'); w.classList.remove('fallen', 'cracked'); w.classList.add('on'); void w.offsetWidth; w.classList.remove('reset');
       if (REDUCED) { w.classList.add('fallen'); A.utils.set(big, { opacity: 1 }); return; }
       A.utils.set(big, { opacity: 0 });
       later(function () { w.classList.add('cracked'); }, 350);
@@ -561,6 +605,8 @@
     return l;
   }
   function damp(k, dt) { return 1 - Math.exp(-k * dt); }
+  // 카메라 옮기기: 처음 0.45초는 천천히 출발(덜컥 시작하지 않게), 그 뒤 1초 남짓이면 자리를 잡아요 (motion QA)
+  function camK(rate, since, dt) { var r = Math.max(0, Math.min(1, since / 0.45)); return damp(rate * (0.12 + 0.88 * r * r * (3 - 2 * r)), dt); }
   function V(x, y, z) { return new THREE.Vector3(x, y, z); }
   function backOut(u) { u = Math.max(0, Math.min(1, u)); var c = 1.70158; return 1 + (c + 1) * Math.pow(u - 1, 3) + c * Math.pow(u - 1, 2); }
   function ease(u) { u = Math.max(0, Math.min(1, u)); return u < 0.5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; }
@@ -1024,7 +1070,7 @@
       [[recipe, V(3.3, 1.35, 0.1), V(0, -0.35, 0.1)], [jar, V(1.9, 0.0, -0.9), V(0, 0, 0)], [egg, V(3.6, 0.0, 0.7), V(0, 0, 0)], [spatPro, V(2.4, 0.03, 0.75), V(0, 0.9, 0)]].forEach(function (d, i) {
         var o = d[0]; o.userData.seat = d[1]; o.userData.rot = d[2]; o.userData.snapT = -1; var r = snapRing(0xe9e2d2); scene.add(r); o.userData.ring = r; scene.add(o); items.push(o);
       });
-      L.push(lbl('셰프 레시피', 'tag cool', recipe, [0, 0.62, 0]), lbl('좋은 재료', 'tag cool', jar, [0, 0.95, 0]), lbl('전문 도구', 'tag cool', spatPro, [0, 0.3, 0.3]), lbl('한 번에 완성 ✓', 'ck', plate, [0, 1.1, 0]));
+      L.push(lbl('셰프 레시피', 'tag cool', recipe, [0, 0.62, 0]), lbl('좋은 재료', 'tag cool', jar, [0, 0.95, 0]), lbl('전문 도구', 'tag cool', spatPro, [0, 0.3, 0.3]), lbl('제대로 완성 ✓', 'ck', plate, [0, 1.1, 0]));
     } else {
       L.push(lbl('레시피도, 도구도 없어요…', 'think', chef, [0, 1.35, 0]), lbl('「김치 왜 안 넣었어?」', 'say user', V(-3.3, 2.3, 0.6)), lbl('레시피 검색 중…', 'think', chef, [0, 1.35, 0]), lbl('「…따로 주면 어떡해」', 'say user bad', V(-3.3, 2.3, 0.6)));
     }
@@ -1438,7 +1484,7 @@
         var cp = n === 6 ? V(-0.9, 4.3, 10.6) : n === 4 ? V(-0.5, 4.0, 10.8) : n >= 7 ? V(0.7, 3.9, 9.9) : n === 5 ? V(0.5, 5.2, 13.6) : V(0.3, 5.0, 13.9);
         var cl2 = n === 6 ? V(-1.0, 0.95, -0.5) : n === 4 ? V(-0.5, 1.25, -0.6) : n >= 7 ? V(0.7, 0.85, -0.4) : n === 5 ? V(0.5, 0.75, -0.5) : V(0.3, 0.85, -0.6);
         if (!S.cp) { S.cp = cp.clone(); S.cl = cl2.clone(); }
-        var kk = snap ? 1 : damp(1.5, dt); S.cp.lerp(cp, kk); S.cl.lerp(cl2, kk); cam.position.copy(S.cp); cam.lookAt(S.cl);
+        var kk = snap ? 1 : camK(2.4, A, dt); S.cp.lerp(cp, kk); S.cl.lerp(cl2, kk); cam.position.copy(S.cp); cam.lookAt(S.cl);
         S.focusObj = n === 4 ? recipe : n === 6 ? wok : n >= 7 ? plate : robot;
       } };
     S.setStep(0, true);
@@ -1649,7 +1695,7 @@
     var T = [0, 0, 1, 2, 5, 6, 7, 7];
     // 카메라 자리 [위치, 바라보는 곳]
     var Wd = [V(1.8, 1.55, 4.5), V(1.55, 0.98, -0.9)], N1 = [V(1.25, 1.8, 2.15), V(0.05, 0.92, 0.3)], N2 = [V(1.05, 1.6, 2.0), V(0.12, 1.12, 0.05)];
-    var CAM = [Wd, N1, N2, Wd, [V(2.2, 1.45, 2.6), V(3.6, 1.15, -2.6)], Wd, N2, [V(2.1, 1.9, 3.8), V(0.7, 1.0, -0.2)]];
+    var CAM = [Wd, N1, N2, Wd, [V(2.0, 1.4, 3.5), V(3.6, 0.95, -2.6)], Wd, N2, [V(2.1, 1.9, 3.8), V(0.7, 1.0, -0.2)]];
     var S = { scene: scene, camera: cam, labels: L, st: 0, p: 0, clock: 0, cp: CAM[0][0].clone(), cl: CAM[0][1].clone(),
       setStep: function (n, snap) {
         if (n !== S.st || snap) S.p = snap ? 0.62 : 0;
@@ -1657,7 +1703,7 @@
         if (snap) { S.cp.copy(CAM[n][0]); S.cl.copy(CAM[n][1]); S.clock = T[n]; }
       },
       update: function (dt, t, snap) {
-        var n = S.st, k = snap ? 1 : damp(1.5, dt);
+        var n = S.st, k = snap ? 1 : camK(2.4, S.p * 2.6, dt);
         if (!snap) S.p = Math.min(1, S.p + dt / 2.6);
         S.cp.lerp(CAM[n][0], k); S.cl.lerp(CAM[n][1], k);
         cam.position.copy(S.cp); cam.lookAt(S.cl);
@@ -1720,11 +1766,12 @@
       var base = cyl(0.95, 1.0, 0.06, PH.metal(0x2c2f36, 0.42), 64); base.position.set(X[i], -0.87, 0); scene.add(shadows(base));
       var ring = noSh(new THREE.Mesh(new THREE.TorusGeometry(1.0, 0.012, 6, 64), Bm(P.amber, { transparent: true, opacity: 0.4 }))); ring.rotation.x = Math.PI / 2; ring.position.set(X[i], -0.85, 0); scene.add(ring);
       o.position.set(X[i], 0.0, 0); o.scale.setScalar(sc[i]); o.rotation.y = ry[i]; o.userData.ry = ry[i]; scene.add(o);
+      var sh = blob(0.62, 0.5); sh.position.set(X[i], -0.835, 0); scene.add(sh);   // 받침 위에 떠 있는 물건 밑의 그늘 (motion QA: 그늘이 없어 붙여 놓은 것처럼 보였어요)
     });
     if (objs[2].userData.waves) objs[2].userData.waves.forEach(function (w, i) { w.material.opacity = 0.6 - i * 0.18; });
     var desk = woodTop(16.5, 4.2); desk.position.y = -0.9 - 0.06; scene.add(desk); fogFor(scene, 'hall', 18, 40);
     var D = [['카메라 안경', '안경테에 작은 카메라.<br>문제를 찍어요'], ['화면 안경', '렌즈 안쪽 작은 화면.<br>답이 떠요'], ['초소형 이어폰', '귀 속에 쏙.<br>답을 소리로 읽어 줘요'],
-      ['휴대폰', '주머니 속 중계소.<br>사진을 보내고 답을 받아요'], ['스마트워치', '손목 위 작은 화면.<br>글자를 보여 줘요'], ['노트북·클라우드 AI', '멀리서 문제를 읽고<br>답을 만들어요']];
+      ['휴대폰', '주머니 속에서<br>보내고 받아요'], ['스마트워치', '손목 위 작은 화면.<br>글자를 보여 줘요'], ['멀리 있는 AI', '멀리서 문제를 읽고<br>답을 만들어요']];
     var L = D.map(function (d, i) { return lbl('<b>' + d[0] + '</b><span>' + d[1] + '</span>', 'kc', V(X[i], -2.3, 0.6)); });
     cam.position.set(0, 1.6, 16.2); cam.lookAt(0, -0.75, 0);
     var S = { scene: scene, camera: cam, labels: L, st: 0,

@@ -139,6 +139,11 @@ def main() -> int:
             g.evaluate(f"window.__deck.go({rv}, 0)"); grab(3000)
             hs = g.evaluate("[].findIndex.call(document.querySelectorAll('.slide'), function (s) { return s.classList.contains('horsep'); })")
             g.evaluate(f"window.__deck.go({hs}, 0)"); grab(3200)   # 진짜 말 사진: 천천히 다가가고 한 줄 뜻이 떠요
+            # AI 회사들도 하네스로: 두뇌 둘레에 기능이 두 개씩 날아와 끼워지고 고리가 닫혀요
+            hx = g.evaluate("[].findIndex.call(document.querySelectorAll('.slide'), function (s) { return s.classList.contains('hx'); })")
+            g.evaluate(f"window.__deck.go({hx}, 0)"); grab(700)
+            for st in range(1, 6):
+                step(hx, st, 1250 if st < 5 else 1900)
             # 김치볶음밥 그림책: 로봇이 걸어 들어오고 → 레시피 · 도구 · 재료가 날아와 → 엄지척 → 「이게 하네스!」
             kb = fnd("robot")
             g.evaluate(f"window.__deck.go({kb}, 0)"); grab(2600)

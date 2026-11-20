@@ -138,6 +138,12 @@ def data_uri(p: Path) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(p.read_bytes()).decode()
 
 
+def svg_uri(p: Path) -> str:
+    """공식 로고 SVG를 받은 그대로(바이트 그대로) 넣어요: 색·비율·여백을 건드리지 않아요."""
+    import base64
+    return "data:image/svg+xml;base64," + base64.b64encode(p.read_bytes()).decode()
+
+
 def ink_uri(p: Path, sat: float, tint, k: float) -> str:
     """흐린 배경 사진(bd_* · hb_*)의 색을 빼고 먹빛 쪽으로 기울여요: 사진은 질감으로만 남고, 색은 덱의 강조색 둘만 남아요."""
     import base64
@@ -202,6 +208,7 @@ def main() -> int:
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    slides = slides.replace("__LOGO_OPENAI__", svg_uri(ASSETS / "logo_openai_blossom_white.svg"))
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
@@ -229,6 +236,7 @@ def main() -> int:
   - Noto Sans KR subset (fallback) · SIL Open Font License 1.1
   - CC0 models: Poly Haven round_spectacles (glTF, textures shrunk); RobotExpressive.glb by Tomás Laulhé (CC0 1.0, from three.js examples)
   - CC0 photo: "Three horse power." by Bernard Spragg. NZ (Wikimedia Commons, CC0 1.0), cropped and graded
+  - Trademark: OpenAI Blossom logo (official file from openai.com/brand, unaltered, identification only). OpenAI, ChatGPT, Anthropic, Claude, Google and Gemini are trademarks of their owners; no endorsement implied.
   - QR Code generator (Project Nayuki) · MIT License (drawn at build time)
 -->
 <style>
