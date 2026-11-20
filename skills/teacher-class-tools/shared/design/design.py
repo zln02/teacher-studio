@@ -20,7 +20,9 @@ Prints tokens JSON (schema: tokens.schema.json). Same input -> same output.
 --palette-from takes the user's OWN colours (JSON from color_from.py, or "saved" = the default saved in ~/.teacher-studio/prefs.json) instead of a built-in
 palette; text colours are re-fitted in lightness only so contrast stays >= 4.5. Without it nothing changes. Builders read spec "design": {"palette_from": ...}.
 Moods may be given in everyday words ("따뜻하게", "고급스럽게", "깔끔하게"): see palettes.json "moods.aliases".
-tokens.fonts.embeddable = true means every font in the pair can be embedded offline (Noto Sans/Serif KR, see shared/fonts).
+tokens.fonts.embeddable = true means every font in the pair can be embedded offline (TS Sans = Pretendard subset, Noto Serif KR: see shared/fonts).
+tokens.system carries the shared numbers of system.py (face, 8pt spacing, motion durations, max weight). The rules in words: DESIGN-RULES.md;
+the look check (「밤티 검사」): ai_look.py. Type scale, grids, ramps and the per-weapon polish CSS live in system.py.
 """
 from __future__ import annotations
 
@@ -213,6 +215,14 @@ def generate(subject: str = "", grade: int = 5, mood: str = "", use: str = "clas
                      "cardText_on_card": round(contrast(p["cardText"], p["card"]), 2),
                      "btnText_on_primary": round(contrast(p["btnText"], p["primary"]), 2)},
     }
+    try:  # the shared system numbers ride along so every builder reads the same spacing / motion / face (shared/design/system.py)
+        if str(HERE) not in sys.path:
+            sys.path.insert(0, str(HERE))
+        import system as _ds
+        tokens["system"] = {"face": _ds.FONT_SANS, "space": list(_ds.SPACE), "motion": dict(_ds.MOTION["dur"]), "maxWeight": _ds.MAX_WEIGHT,
+                            "rules": "shared/design/DESIGN-RULES.md"}
+    except ImportError:
+        pass
     return apply_palette_from(tokens, palette_from) if palette_from else tokens
 
 

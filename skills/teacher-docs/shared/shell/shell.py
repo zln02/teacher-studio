@@ -8,14 +8,14 @@ mock screens, all driven by design tokens so they always match the chosen style.
     t = shell.tokens("neon-cyber")                      # a style id from shared/design/styles.py, design tokens, or a flat palette
     t = shell.tokens("pastel-cute", user={"bg1": "#102a43", "primary": "#f0b429"})   # the user's own colours win
     shell.frame("tv", inner_html, t)                     # phone | tablet | tv | board | laptop | a4
-    shell.pattern(t)                                     # CSS background for the style (dots, grid, paper, mesh, rays ...)
+    shell.pattern(t)                                     # CSS background for the style (dotgrid, frame, blocks, panels, planes, bands ...)
     shell.icon("bulb", 24)                               # inline SVG (Tabler, MIT); unknown names -> "sparkles"
     shell.icon_for("빛의 반사")                           # icon name chosen from the words
-    shell.spot("bulb", t)                                # a small spot illustration (blob + ring + icon + sparkles)
+    shell.spot("bulb", t)                                # a small spot illustration (icon on one matte tonal tile)
     shell.character("a")                                 # DiceBear thumbs face (CC0)
     shell.badge("3분", t) / shell.ornament("tape")
     shell.css()                                          # the stylesheet every helper relies on (put once in <style>)
-    shell.page(title, body_html, embed=True)             # a full offline page; Noto Sans/Serif KR subset embedded when fonttools exists
+    shell.page(title, body_html, embed=True)             # a full offline page; TS Sans (+ Noto Serif KR) subset embedded when fonttools exists
 
 All text goes through html.escape; colours are accepted only as #rrggbb; fonts come from a fixed list.
 Assets: icons.json (Tabler Icons, MIT, LICENSE-tabler.txt), characters/ (DiceBear thumbs, CC0 1.0). Built by tools/build_shell_kit.py.
@@ -43,32 +43,39 @@ try:
     import oklch as _ok  # noqa: E402
 except Exception:  # pragma: no cover
     _ok = None
+try:
+    import system as _ds  # noqa: E402  (type scale, tracking, motion, polish layer)
+except Exception:  # pragma: no cover
+    _ds = None
 
 _HEX = re.compile(r"#[0-9a-fA-F]{6}")
 _ICONS: dict | None = None
 KINDS = ("phone", "tablet", "tv", "board", "laptop", "a4")
-PATTERNS = ("none", "dots", "grid", "paper", "mesh", "diamond", "confetti", "rays", "halftone", "pixel", "chalk", "leaves", "sparkle", "neongrid")
+PATTERNS = ("none", "dots", "grid", "paper", "dotgrid", "frame", "blocks", "papercut", "panels", "planes", "halftone", "pixel", "chalk", "bands", "hills")
+# retired (2026-11, 「밤티」 pass): neongrid, mesh blobs, confetti spots, light rays, sparkle, leaves. Old names map to their replacement.
+_PATTERN_ALIAS = {"neongrid": "dotgrid", "mesh": "planes", "confetti": "papercut", "rays": "panels", "sparkle": "hills", "leaves": "bands", "diamond": "frame"}
 
-# how each style is "dressed": radius, background pattern, title effect, button shape, serif headline, weight, letter-spacing
+# how each style is "dressed". The numbers come from shared/design/styles.py (grid, type, radius, ornaments); only the mock-screen pieces live here:
+# pat = backdrop pattern, fx = title treatment (plain | rule | serif | block | under | chalk | pixel), btn = button shape. No glow anywhere.
 DRESS = {
-    "neon-cyber": dict(r=12, pat="neongrid", fx="glow", btn="neon", serif=False, w=900, tr=-0.02),
-    "gold-luxury": dict(r=4, pat="diamond", fx="serif", btn="line", serif=True, w=700, tr=0.0),
-    "pop-colorful": dict(r=16, pat="dots", fx="stamp", btn="stamp", serif=False, w=900, tr=-0.03),
-    "festival-party": dict(r=22, pat="confetti", fx="stamp", btn="pill", serif=False, w=900, tr=-0.02),
-    "tv-gameshow": dict(r=10, pat="rays", fx="stack", btn="tile", serif=False, w=900, tr=-0.02),
-    "glass-3d": dict(r=20, pat="mesh", fx="plain", btn="glass", serif=False, w=800, tr=-0.02),
-    "anime-cartoon": dict(r=12, pat="halftone", fx="stamp", btn="stamp", serif=False, w=900, tr=-0.03),
-    "pastel-cute": dict(r=24, pat="sparkle", fx="under", btn="pill", serif=False, w=800, tr=-0.02),
-    "retro-pixel": dict(r=0, pat="pixel", fx="pixel", btn="tile", serif=False, w=900, tr=0.02),
-    "minimal-premium": dict(r=3, pat="none", fx="serif", btn="line", serif=True, w=700, tr=-0.015),
-    "chalk-paper": dict(r=10, pat="chalk", fx="chalk", btn="note", serif=False, w=700, tr=0.0),
-    "nature-calm": dict(r=22, pat="leaves", fx="under", btn="pill", serif=False, w=800, tr=-0.02),
-    "own-palette": dict(r=14, pat="dots", fx="plain", btn="pill", serif=False, w=800, tr=-0.02),
-    "studio-clean": dict(r=14, pat="dots", fx="plain", btn="pill", serif=False, w=800, tr=-0.02),
+    "neon-cyber": dict(r=6, pat="dotgrid", fx="rule", btn="line", serif=False, w=700, tr=-0.04),
+    "gold-luxury": dict(r=2, pat="frame", fx="serif", btn="line", serif=True, w=600, tr=-0.02),
+    "pop-colorful": dict(r=14, pat="blocks", fx="block", btn="stamp", serif=False, w=800, tr=-0.045),
+    "festival-party": dict(r=20, pat="papercut", fx="under", btn="pill", serif=False, w=800, tr=-0.04),
+    "tv-gameshow": dict(r=8, pat="panels", fx="rule", btn="tile", serif=False, w=800, tr=-0.035),
+    "glass-3d": dict(r=20, pat="planes", fx="plain", btn="soft", serif=False, w=700, tr=-0.035),
+    "anime-cartoon": dict(r=10, pat="halftone", fx="block", btn="stamp", serif=False, w=800, tr=-0.045),
+    "pastel-cute": dict(r=24, pat="hills", fx="under", btn="pill", serif=False, w=760, tr=-0.035),
+    "retro-pixel": dict(r=0, pat="pixel", fx="pixel", btn="tile", serif=False, w=800, tr=0.02),
+    "minimal-premium": dict(r=2, pat="none", fx="rule", btn="line", serif=False, w=700, tr=-0.04),
+    "chalk-paper": dict(r=10, pat="chalk", fx="chalk", btn="note", serif=False, w=700, tr=-0.02),
+    "nature-calm": dict(r=16, pat="bands", fx="under", btn="pill", serif=False, w=700, tr=-0.035),
+    "own-palette": dict(r=12, pat="none", fx="plain", btn="pill", serif=False, w=760, tr=-0.035),
+    "studio-clean": dict(r=12, pat="none", fx="plain", btn="pill", serif=False, w=760, tr=-0.035),
 }
 # the harness default when nothing is chosen: cool paper, ink-blue, one warm accent, sans. Deliberately NOT cream + clay + serif.
-DEFAULT_PAL = {"bg1": "#f3f6fb", "bg2": "#e4ebf7", "text": "#172033", "card": "#ffffff", "primary": "#2f5bea", "btnText": "#ffffff", "accent": "#ff8a3d",
-               "good": "#1d7a4c", "bad": "#c4302b"}
+DEFAULT_PAL = {"bg1": "#f5f7fa", "bg2": "#e9edf2", "text": "#161b22", "card": "#ffffff", "primary": "#2a4fb8", "btnText": "#ffffff", "accent": "#b9853a",
+               "good": "#005c75", "bad": "#cb4a2a"}
 SERIF_FONTS = {"Noto Serif KR", "Gowun Batang", "Nanum Myeongjo", "Song Myung"}
 
 # words -> icon (first hit wins; Korean classroom vocabulary). Unknown -> a stable pick from GENERIC.
@@ -141,7 +148,7 @@ def _legible(fg: str, bg: str, need: float) -> str:
 # ---------------------------------------------------------------- tokens ----------------------------------------------------------------
 def tokens(src=None, user: dict | None = None, name: str = "") -> dict:
     """Normalised shell tokens from a style id / style dict / design tokens / flat palette (None = studio default). `user` colours win."""
-    sid, pal, font, dark = "studio-clean", dict(DEFAULT_PAL), "Noto Sans KR", False
+    sid, pal, font, dark = "studio-clean", dict(DEFAULT_PAL), "TS Sans", False
     if isinstance(src, str) and _styles and src in _styles.STYLES:
         s = _styles.STYLES[src]
         sid, pal, font, dark = src, dict(s["pal"]), s.get("font", font), bool(s.get("dark"))
@@ -181,7 +188,7 @@ def tokens(src=None, user: dict | None = None, name: str = "") -> dict:
         "style": sid, "name": name or sid, "dark": dark, "own": own, "font": font, "serif": serif,
         "bg": bg, "bg2": bg2, "surface": surface, "ink": ink, "card_ink": card_ink, "muted": _legible(mix(ink, bg, 0.32), bg, 4.5),
         "primary": primary, "on_primary": on_primary, "accent": accent, "line": mix(ink, bg, 0.82),
-        "good": _hex(pal.get("good"), "#1d7a4c"), "bad": _hex(pal.get("bad"), "#c4302b"),
+        "good": _hex(pal.get("good"), "#005c75"), "bad": _hex(pal.get("bad"), "#cb4a2a"),
         "r": d["r"], "pattern": d["pat"], "fx": d["fx"], "btn": d["btn"], "w": d["w"], "tr": d["tr"],
     }
     t["pr_text"] = _legible(primary, bg, 3.0)
@@ -191,7 +198,7 @@ def tokens(src=None, user: dict | None = None, name: str = "") -> dict:
 def font_stack(t: dict, display: bool = True) -> str:
     if display and t.get("serif"):
         return "'Noto Serif KR','Batang',serif"
-    return "'Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif"
+    return "'TS Sans','Pretendard','Noto Sans KR','Malgun Gothic','Apple SD Gothic Neo',sans-serif"
 
 
 def vars_style(t: dict) -> str:
@@ -206,53 +213,56 @@ def vars_style(t: dict) -> str:
 
 # ---------------------------------------------------------------- patterns --------------------------------------------------------------
 def pattern(t: dict, kind: str | None = None) -> str:
-    """A CSS `background` value (gradients only, no images) for the style's pattern over its background colour."""
-    k = kind or t.get("pattern", "dots")
+    """A CSS `background` value (gradients only, no images) for the style's backdrop over its background colour.
+
+    Every backdrop is flat and matte: tonal planes, hairlines and fine grain built from the palette's own neutrals, with at most ONE accent shape.
+    No glow, no multi-colour gradient, no scattered confetti. (Rules: shared/design/DESIGN-RULES.md, ornaments.)"""
+    k = kind or t.get("pattern", "none")
+    k = _PATTERN_ALIAS.get(k, k)
     bg, bg2, pr, ac, ink = t["bg"], t["bg2"], t["primary"], t["accent"], t["ink"]
     dk = t.get("dark")
-    soft = 0.10 if not dk else 0.16
     if k == "dots":
-        return "radial-gradient(%s 1.2px,transparent 1.7px) 0 0/14px 14px,linear-gradient(160deg,%s,%s)" % (rgba(ink, 0.13), bg, bg2)
+        return "radial-gradient(%s 1px,transparent 1.5px) 0 0/16px 16px,%s" % (rgba(ink, 0.10), bg)
     if k == "grid":
-        return ("linear-gradient(%s 1px,transparent 1px) 0 0/18px 18px,linear-gradient(90deg,%s 1px,transparent 1px) 0 0/18px 18px,%s"
-                % (rgba(ink, 0.07), rgba(ink, 0.07), bg))
-    if k == "neongrid":
-        return ("linear-gradient(%s 1px,transparent 1px) 0 0/22px 22px,linear-gradient(90deg,%s 1px,transparent 1px) 0 0/22px 22px,"
-                "radial-gradient(120%% 80%% at 50%% 110%%,%s,transparent 60%%),linear-gradient(180deg,%s,%s)"
-                % (rgba(pr, 0.16), rgba(pr, 0.16), rgba(ac, 0.45), bg, bg2))
+        return ("linear-gradient(%s 1px,transparent 1px) 0 0/16px 16px,linear-gradient(90deg,%s 1px,transparent 1px) 0 0/16px 16px,%s"
+                % (rgba(ink, 0.06), rgba(ink, 0.06), bg))
+    if k == "dotgrid":   # fine dot grain + one hairline rule near the top (ledger look)
+        return ("linear-gradient(%s,%s) 0 13%%/100%% 1px no-repeat,radial-gradient(%s 1px,transparent 1.5px) 0 0/16px 16px,linear-gradient(180deg,%s,%s)"
+                % (rgba(ink, 0.14), rgba(ink, 0.14), rgba(ink, 0.07), bg, bg2))
+    if k == "frame":     # one inset double hairline frame
+        return ("linear-gradient(%s,%s) 50%% 50%%/calc(100%% - 16px) calc(100%% - 16px) no-repeat,linear-gradient(%s,%s) 50%% 50%%/calc(100%% - 14px) calc(100%% - 14px) no-repeat,"
+                "linear-gradient(%s,%s) 50%% 50%%/calc(100%% - 8px) calc(100%% - 8px) no-repeat,linear-gradient(%s,%s) 50%% 50%%/calc(100%% - 6px) calc(100%% - 6px) no-repeat,%s"
+                % (bg, bg, rgba(pr, 0.55), rgba(pr, 0.55), bg, bg, rgba(pr, 0.3), rgba(pr, 0.3), bg))
     if k == "paper":
-        return ("repeating-linear-gradient(180deg,transparent 0 19px,%s 19px 20px),linear-gradient(90deg,transparent 30px,%s 30px 31px,transparent 31px),%s"
-                % (rgba(pr, 0.14), rgba(ac, 0.35), bg))
-    if k == "mesh":
-        return ("radial-gradient(60%% 70%% at 12%% 18%%,%s,transparent 70%%),radial-gradient(55%% 60%% at 88%% 22%%,%s,transparent 70%%),"
-                "radial-gradient(70%% 60%% at 60%% 100%%,%s,transparent 70%%),%s" % (rgba(pr, 0.55 if dk else 0.30), rgba(ac, 0.5 if dk else 0.28), rgba(bg2, 0.9), bg))
-    if k == "diamond":
-        return ("repeating-linear-gradient(45deg,%s 0 1px,transparent 1px 16px),repeating-linear-gradient(-45deg,%s 0 1px,transparent 1px 16px),"
-                "radial-gradient(80%% 60%% at 50%% 0%%,%s,transparent 70%%),%s" % (rgba(pr, 0.16), rgba(pr, 0.16), rgba(pr, 0.22), bg))
-    if k == "confetti":
-        spots = [(12, 20, pr), (78, 14, ac), (30, 82, ac), (88, 70, pr), (55, 30, "#ffffff"), (8, 60, ac), (66, 88, pr)]
-        lay = ",".join("radial-gradient(circle at %d%% %d%%,%s 0 3px,transparent 3.5px)" % (x, y, rgba(c, 0.8)) for x, y, c in spots)
-        return lay + ",linear-gradient(160deg,%s,%s)" % (bg, bg2)
-    if k == "rays":
-        return ("repeating-conic-gradient(from 0deg at 50%% 110%%,%s 0 6deg,transparent 6deg 14deg),radial-gradient(90%% 70%% at 50%% 100%%,%s,transparent 70%%),"
-                "linear-gradient(180deg,%s,%s)" % (rgba(pr, 0.10), rgba(pr, 0.35), bg, bg2))
-    if k == "halftone":
-        return ("radial-gradient(%s 2px,transparent 2.6px) 0 0/10px 10px,repeating-conic-gradient(from 0deg at 85%% 15%%,%s 0 4deg,transparent 4deg 12deg),"
-                "linear-gradient(160deg,%s,%s)" % (rgba(ink, 0.10), rgba("#ffffff", 0.35), bg, bg2))
+        return ("repeating-linear-gradient(180deg,transparent 0 23px,%s 23px 24px),linear-gradient(90deg,transparent 31px,%s 31px 32px,transparent 32px),%s"
+                % (rgba(ink, 0.08), rgba(ac, 0.3), bg))
+    if k == "blocks":    # two flat colour blocks bleeding off opposite corners
+        return ("radial-gradient(circle at 100%% 0%%,%s 0 22%%,transparent 22.3%%),linear-gradient(%s,%s) 0 100%%/26%% 18%% no-repeat,%s"
+                % (rgba(ac, 0.9), pr, pr, bg))
+    if k == "papercut":  # a row of paper-cut shapes on the top edge, on a grid
+        return ("radial-gradient(circle at 12%% 0,%s 0 9%%,transparent 9.3%%),radial-gradient(circle at 36%% 0,%s 0 6%%,transparent 6.3%%),"
+                "radial-gradient(circle at 64%% 0,%s 0 6%%,transparent 6.3%%),radial-gradient(circle at 88%% 0,%s 0 9%%,transparent 9.3%%),"
+                "linear-gradient(%s,%s) 0 100%%/100%% 5%% no-repeat,%s" % (pr, ac, pr, ac, bg2, bg2, bg))
+    if k == "panels":    # vertical tonal panels of a studio set + one marquee line
+        return ("linear-gradient(%s,%s) 0 82%%/100%% 2px no-repeat,repeating-linear-gradient(90deg,%s 0 12.5%%,%s 12.5%% 25%%)" % (pr, pr, bg, bg2))
+    if k == "planes":    # two matte planes at different depths
+        return ("linear-gradient(155deg,transparent 0 58%%,%s 58%% 100%%),linear-gradient(155deg,transparent 0 76%%,%s 76%% 100%%),%s"
+                % (bg2, mix(bg2, "#ffffff" if dk else "#000000", 0.05), bg))
+    if k == "halftone":  # halftone corner + a flat ink band
+        return "radial-gradient(circle at 100%% 0,transparent 0 34%%,%s 34.3%%),radial-gradient(%s 1.6px,transparent 2.2px) 0 0/10px 10px,%s" % (bg, rgba(ink, 0.22), bg)
     if k == "pixel":
         return ("conic-gradient(%s 25%%,transparent 0 50%%,%s 0 75%%,transparent 0) 0 0/16px 16px,linear-gradient(180deg,%s,%s)"
-                % (rgba(pr, 0.07), rgba(pr, 0.07), bg, bg2))
+                % (rgba(pr, 0.06), rgba(pr, 0.06), bg, bg2))
     if k == "chalk":
-        return ("radial-gradient(40%% 30%% at 20%% 30%%,%s,transparent 70%%),radial-gradient(35%% 25%% at 75%% 70%%,%s,transparent 70%%),"
-                "repeating-linear-gradient(12deg,%s 0 1px,transparent 1px 7px),%s" % (rgba("#ffffff", 0.07), rgba("#ffffff", 0.06), rgba("#ffffff", 0.02), bg))
-    if k == "leaves":
-        return ("radial-gradient(70%% 50%% at 0%% 100%%,%s,transparent 70%%),radial-gradient(50%% 40%% at 100%% 0%%,%s,transparent 70%%),"
-                "radial-gradient(%s 1.2px,transparent 1.7px) 0 0/16px 16px,%s" % (rgba(pr, 0.28), rgba(ac, 0.30), rgba(pr, 0.18), bg))
-    if k == "sparkle":
-        return ("radial-gradient(circle at 15%% 20%%,%s 0 2px,transparent 2.5px),radial-gradient(circle at 80%% 30%%,%s 0 2.5px,transparent 3px),"
-                "radial-gradient(circle at 70%% 80%%,%s 0 2px,transparent 2.5px),radial-gradient(60%% 50%% at 90%% 100%%,%s,transparent 70%%),linear-gradient(170deg,%s,%s)"
-                % (rgba(pr, 0.45), rgba(ac, 0.55), rgba(pr, 0.4), rgba(ac, 0.25), bg, bg2))
-    return "radial-gradient(120%% 90%% at 50%% 0%%,%s,transparent 70%%),%s" % (rgba("#ffffff" if not dk else pr, soft), bg)
+        return ("repeating-linear-gradient(12deg,%s 0 1px,transparent 1px 8px),linear-gradient(180deg,%s,%s)" % (rgba("#ffffff", 0.025), bg, bg2))
+    if k == "bands":     # three flat tonal bands along the bottom
+        m1, m2, m3 = mix(bg, pr, 0.10), mix(bg, pr, 0.20), mix(bg, pr, 0.32)
+        return "linear-gradient(180deg,%s 0 70%%,%s 70%% 80%%,%s 80%% 90%%,%s 90%% 100%%)" % (bg, m1, m2, m3)
+    if k == "hills":     # two soft flat hills + a sun disc
+        return ("radial-gradient(circle at 84%% 22%%,%s 0 7%%,transparent 7.3%%),radial-gradient(70%% 34%% at 22%% 108%%,%s 0 99%%,transparent 100%%),"
+                "radial-gradient(80%% 30%% at 82%% 112%%,%s 0 99%%,transparent 100%%),linear-gradient(180deg,%s,%s)"
+                % (rgba("#ffffff", 0.75), mix(bg2, ac, 0.35), mix(bg2, pr, 0.22), bg, bg2))
+    return "linear-gradient(180deg,%s,%s)" % (bg, bg2)
 
 
 # ---------------------------------------------------------------- icons -----------------------------------------------------------------
@@ -295,27 +305,20 @@ def icon_for(text: str, salt: str = "") -> str:
 
 
 def spot(name: str, t: dict, size: int = 96, seed: str = "") -> str:
-    """A spot illustration: soft blob + accent ring + sparkles + the icon. Pure SVG, coloured by the tokens."""
+    """A spot illustration: the icon on one matte tonal tile (rounded square or circle, by style radius) with a hairline. Pure SVG, coloured by the tokens.
+    (The old blob + ring + sparkles version was retired: generic decoration.)"""
     h = int(hashlib.sha256((str(name) + seed).encode("utf-8")).hexdigest()[:6], 16)
-    blobs = ["M60 8c22 0 46 14 50 38s-6 52-30 60-56 2-68-20S30 8 60 8z", "M58 10c26-4 50 18 50 44s-18 52-48 54S10 92 10 62 32 14 58 10z",
-             "M64 9c24 4 44 26 42 50s-26 48-52 47S12 84 12 58 40 5 64 9z"]
-    pr, ac, ink = t["primary"], t["accent"], t["ink"]
+    pr, ink = t["primary"], t["ink"]
     dk = t.get("dark")
-    fill = rgba(pr, 0.22 if dk else 0.16)
-    ring = rgba(ac, 0.9)
-    sw = 1.7
     body = _icons().get(str(name)) or _icons().get("sparkles", "")
     stroke_c = pr if not dk else mix(pr, "#ffffff", 0.15)
     if contrast(stroke_c, t["bg"]) < 3:
         stroke_c = ink
+    rx = 60 if int(t.get("r", 12)) >= 20 else max(0, min(28, int(t.get("r", 12)) * 2))
     return ('<svg class="sk-spot" viewBox="0 0 120 120" width="%d" height="%d" aria-hidden="true">'
-            '<path d="%s" fill="%s"/>'
-            '<circle cx="%d" cy="%d" r="9" fill="none" stroke="%s" stroke-width="3"/>'
-            '<path d="M%d %dl2.2 5.8 5.8 2.2-5.8 2.2-2.2 5.8-2.2-5.8-5.8-2.2 5.8-2.2z" fill="%s"/>'
-            '<circle cx="%d" cy="%d" r="3.4" fill="%s"/>'
-            '<g transform="translate(30 30) scale(2.5)" fill="none" stroke="%s" stroke-width="%.2f" stroke-linecap="round" stroke-linejoin="round">%s</g></svg>'
-            % (int(size), int(size), blobs[h % 3], fill, 96 - h % 9, 22 + h % 7, ring, 14 + h % 6, 84 - h % 8, ac, 22 + h % 11, 24 + h % 5, rgba(pr, 0.7),
-               stroke_c, sw, body))
+            '<rect x="6" y="6" width="108" height="108" rx="%d" fill="%s" stroke="%s" stroke-width="1.5"/>'
+            '<g transform="translate(%d 30) scale(2.5)" fill="none" stroke="%s" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">%s</g></svg>'
+            % (int(size), int(size), rx, rgba(pr, 0.12 if dk else 0.08), rgba(pr, 0.30), 30, stroke_c, body))
 
 
 def character(seed: str = "a", size: int = 72) -> str:
@@ -337,8 +340,8 @@ def badge(text: str, t: dict | None = None, kind: str = "soft") -> str:
 
 
 def ornament(kind: str = "tape") -> str:
-    """Card ornaments: tape (washi strip), pin, corner (folded), stars."""
-    kind = kind if kind in ("tape", "pin", "corner", "stars") else "tape"
+    """Card ornaments: rule (hairline), kicker (short accent rule), edge (accent bar), corner (tonal corner). Old names tape / pin / stars still work."""
+    kind = kind if kind in ("rule", "kicker", "edge", "corner", "tape", "pin", "stars") else "rule"
     return '<span class="sk-orn sk-orn-%s" aria-hidden="true"></span>' % kind
 
 
@@ -366,14 +369,14 @@ def css() -> str:
     return (
         ".sk-dev{margin:0;position:relative;width:100%}.sk-body{position:relative}"
         ".sk-scr{position:relative;overflow:hidden;container-type:inline-size;color:var(--sk-ink);font-family:var(--sk-fb);line-height:1.3;word-break:keep-all}"
-        ".sk-tv .sk-body,.sk-board .sk-body{background:linear-gradient(180deg,#23262d,#14161a);border-radius:12px;padding:2.4%;box-shadow:0 14px 28px -10px rgba(10,14,24,.45),inset 0 0 0 1px rgba(255,255,255,.07)}"
+        ".sk-tv .sk-body,.sk-board .sk-body{background:#1a1c20;border-radius:10px;padding:2.2%;box-shadow:0 16px 28px -18px rgba(10,14,24,.55)}"
         ".sk-tv .sk-scr,.sk-board .sk-scr,.sk-laptop .sk-scr{aspect-ratio:16/9;border-radius:4px}"
-        ".sk-stand{display:block;margin:0 auto;width:22%;height:10px;background:linear-gradient(180deg,#2a2d34,#14161a);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);border-radius:0 0 4px 4px}"
-        ".sk-board .sk-body{padding:2.2% 2.2% 3.2%;background:linear-gradient(180deg,#2c3038,#1a1d22)}"
-        ".sk-tray{display:block;margin:-2px 3% 0;height:9px;border-radius:0 0 6px 6px;background:linear-gradient(180deg,#d9dde3,#9aa2ad);box-shadow:0 6px 12px -6px rgba(0,0,0,.4)}"
-        ".sk-tray::after{content:'';display:block;width:14%;height:4px;margin:2px 0 0 70%;border-radius:3px;background:#e2483d}"
+        ".sk-stand{display:block;margin:0 auto;width:22%;height:10px;background:#1a1c20;clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);border-radius:0 0 4px 4px}"
+        ".sk-board .sk-body{padding:2.2% 2.2% 3.2%;background:#22252a}"
+        ".sk-tray{display:block;margin:-2px 3% 0;height:9px;border-radius:0 0 6px 6px;background:#c3c8cf}"
+        ""
         ".sk-laptop .sk-body{background:#1b1d22;border-radius:12px 12px 0 0;padding:2.4% 2.4% 3%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}"
-        ".sk-base{display:block;height:11px;margin:0 -6%;border-radius:0 0 12px 12px;background:linear-gradient(180deg,#d7dbe1,#a3aab4);box-shadow:0 10px 16px -8px rgba(0,0,0,.35)}"
+        ".sk-base{display:block;height:11px;margin:0 -6%;border-radius:0 0 12px 12px;background:#c3c8cf}"
         ".sk-base::before{content:'';display:block;width:16%;height:4px;margin:0 auto;border-radius:0 0 6px 6px;background:#8d949e}"
         ".sk-phone{width:46%;margin:0 auto}.sk-phone .sk-body{background:#16181d;border-radius:26px;padding:6px;box-shadow:0 14px 26px -10px rgba(10,14,24,.5),inset 0 0 0 2px #2c2f36}"
         ".sk-phone .sk-scr{aspect-ratio:9/19;border-radius:20px}.sk-phone .sk-scr::before{content:'';position:absolute;z-index:5;top:2.2%;left:50%;width:30%;height:2.4%;transform:translateX(-50%);border-radius:99px;background:#0c0d10}"
@@ -381,30 +384,33 @@ def css() -> str:
         ".sk-tablet .sk-scr{aspect-ratio:4/3;border-radius:8px}"
         ".sk-a4{width:62%;margin:0 auto}.sk-a4 .sk-scr{aspect-ratio:1/1.414;border-radius:2px;box-shadow:0 1px 0 rgba(0,0,0,.05),0 12px 24px -10px rgba(10,14,24,.35),0 0 0 1px rgba(0,0,0,.06)}"
         ".sk-fold{position:absolute;right:0;top:0;width:14%;aspect-ratio:1;background:linear-gradient(225deg,transparent 50%,rgba(0,0,0,.12) 50%,#fff 56%);}"
-        ".sk-lab{margin-top:8px;text-align:center;font-size:13px;opacity:.75}"
-        ".sk-h{font-family:var(--sk-fd);font-weight:var(--sk-dw);letter-spacing:var(--sk-tr);line-height:1.12;color:var(--sk-ink)}"
-        ".sk-fx-glow{color:#fff;text-shadow:0 0 .35em var(--sk-pr),0 0 .9em var(--sk-pr)}"
-        ".sk-fx-stamp{color:var(--sk-ink);text-shadow:.06em .06em 0 var(--sk-ac)}"
-        ".sk-fx-stack{color:#fff;text-shadow:0 .05em 0 var(--sk-pr),0 .1em 0 rgba(0,0,0,.35)}"
-        ".sk-fx-serif{font-weight:700}.sk-fx-serif::after{content:'';display:block;width:2.2em;height:2px;margin-top:.28em;background:var(--sk-ac)}"
-        ".sk-fx-under{background:linear-gradient(transparent 62%,color-mix(in srgb,var(--sk-ac) 45%,transparent) 62%);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone}"
-        ".sk-fx-pixel{text-shadow:.06em 0 0 var(--sk-ac),-.06em 0 0 var(--sk-pr)}"
-        ".sk-fx-chalk{color:var(--sk-ink);text-shadow:0 0 1px rgba(255,255,255,.6);opacity:.95}"
-        ".sk-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;font-weight:800;font-family:var(--sk-fb);background:var(--sk-pr);color:var(--sk-op);padding:.5em 1.2em;border-radius:999px;white-space:nowrap;box-shadow:0 .25em .6em -.2em color-mix(in srgb,var(--sk-pr) 60%,transparent)}"
-        ".sk-btn-tile{border-radius:var(--sk-r)}.sk-btn-line{background:transparent;color:var(--sk-pt);border:1.5px solid currentColor;border-radius:var(--sk-r);box-shadow:none}"
-        ".sk-btn-neon{background:transparent;color:var(--sk-pr);border:2px solid var(--sk-pr);border-radius:var(--sk-r);box-shadow:0 0 .6em var(--sk-pr),inset 0 0 .5em color-mix(in srgb,var(--sk-pr) 40%,transparent);text-shadow:0 0 .4em var(--sk-pr)}"
-        ".sk-btn-stamp{border-radius:var(--sk-r);border:2px solid var(--sk-ink);box-shadow:.18em .18em 0 var(--sk-ink)}"
-        ".sk-btn-glass{background:color-mix(in srgb,#fff 18%,transparent);color:var(--sk-ink);border:1px solid color-mix(in srgb,#fff 40%,transparent);backdrop-filter:blur(6px)}"
-        ".sk-btn-note{border-radius:3px;transform:rotate(-1.5deg);box-shadow:.12em .2em 0 rgba(0,0,0,.25)}"
-        ".sk-btn-ghost{background:transparent;color:var(--sk-ink);box-shadow:none;border:1.5px solid color-mix(in srgb,var(--sk-ink) 35%,transparent)}"
-        ".sk-badge{display:inline-flex;align-items:center;gap:.3em;font-size:12px;font-weight:700;padding:.15em .65em;border-radius:999px;background:color-mix(in srgb,var(--sk-pr) 14%,transparent);color:var(--sk-ink)}"
-        ".sk-badge-solid{background:var(--sk-pr);color:var(--sk-op)}.sk-badge-outline{background:transparent;border:1px solid currentColor}"
+        ".sk-lab{margin-top:8px;text-align:center;font-size:13px;letter-spacing:.01em;opacity:.7}"
+        ".sk-h{font-family:var(--sk-fd);font-weight:var(--sk-dw);letter-spacing:var(--sk-tr);line-height:1.14;color:var(--sk-ink);text-wrap:balance}"
+        ".sk-fx-rule::before{content:'';display:block;width:1.6em;height:.09em;min-height:2px;margin-bottom:.4em;background:var(--sk-pt)}"
+        ".sk-fx-serif::after{content:'';display:block;width:2em;height:1px;margin-top:.34em;background:var(--sk-pt)}"
+        ".sk-fx-block{display:inline;background:var(--sk-pr);color:var(--sk-op);padding:.04em .22em;box-decoration-break:clone;-webkit-box-decoration-break:clone}"
+        ".sk-fx-under{background:linear-gradient(transparent 68%,color-mix(in srgb,var(--sk-ac) 38%,transparent) 68%);display:inline;box-decoration-break:clone;-webkit-box-decoration-break:clone}"
+        ".sk-fx-pixel{text-shadow:.07em .07em 0 color-mix(in srgb,var(--sk-ink) 28%,transparent)}"
+        ".sk-fx-chalk{color:var(--sk-ink);opacity:.96}"
+        # legacy names keep working, drawn the new way
+        ".sk-fx-glow::before,.sk-fx-stack::before{content:'';display:block;width:1.6em;height:.09em;min-height:2px;margin-bottom:.4em;background:var(--sk-pt)}"
+        ".sk-fx-stamp{display:inline;background:var(--sk-pr);color:var(--sk-op);padding:.04em .22em;box-decoration-break:clone;-webkit-box-decoration-break:clone}"
+        ".sk-btn{display:inline-flex;align-items:center;justify-content:center;gap:.4em;font-weight:700;letter-spacing:-.012em;font-family:var(--sk-fb);background:var(--sk-pr);color:var(--sk-op);padding:.5em 1.2em;border-radius:999px;white-space:nowrap}"
+        ".sk-btn-tile{border-radius:var(--sk-r)}.sk-btn-line,.sk-btn-neon{background:transparent;color:var(--sk-pt);border:1.5px solid currentColor;border-radius:var(--sk-r)}"
+        ".sk-btn-stamp{border-radius:var(--sk-r);border:2px solid var(--sk-ink);box-shadow:.16em .16em 0 var(--sk-ink)}"
+        ".sk-btn-soft,.sk-btn-glass{border-radius:var(--sk-r);box-shadow:0 .5em 1em -.6em rgba(0,0,0,.6)}"
+        ".sk-btn-note{border-radius:3px;transform:rotate(-1.2deg)}"
+        ".sk-btn-ghost{background:transparent;color:var(--sk-ink);box-shadow:none;border:1.5px solid color-mix(in srgb,var(--sk-ink) 30%,transparent)}"
+        ".sk-badge{display:inline-flex;align-items:center;gap:.3em;font-size:12px;font-weight:600;letter-spacing:.01em;padding:.15em .65em;border-radius:999px;background:color-mix(in srgb,var(--sk-pr) 12%,transparent);color:var(--sk-ink);font-variant-numeric:tabular-nums}"
+        ".sk-badge-solid{background:var(--sk-pr);color:var(--sk-op)}.sk-badge-outline{background:transparent;border:1px solid color-mix(in srgb,currentColor 45%,transparent)}"
         ".sk-orn{position:absolute;pointer-events:none;z-index:3}"
-        ".sk-orn-tape{top:-9px;left:50%;width:64px;height:18px;transform:translateX(-50%) rotate(-3deg);background:repeating-linear-gradient(45deg,rgba(255,255,255,.55) 0 6px,rgba(255,255,255,.25) 6px 12px),var(--sk-ac,#ffd166);opacity:.85;border-radius:2px;box-shadow:0 2px 4px rgba(0,0,0,.12)}"
-        ".sk-orn-pin{top:-7px;left:50%;width:14px;height:14px;margin-left:-7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff8,transparent 40%),var(--sk-ac,#e2483d);box-shadow:0 3px 5px rgba(0,0,0,.3)}"
-        ".sk-orn-corner{right:0;top:0;width:22px;height:22px;background:linear-gradient(225deg,transparent 50%,rgba(0,0,0,.14) 50%)}"
-        ".sk-orn-stars{right:10px;top:8px;width:30px;height:20px;background:radial-gradient(circle at 20% 60%,var(--sk-ac,#ffd166) 0 2.5px,transparent 3px),radial-gradient(circle at 70% 30%,var(--sk-ac,#ffd166) 0 3.5px,transparent 4px),radial-gradient(circle at 90% 85%,var(--sk-ac,#ffd166) 0 2px,transparent 2.5px)}"
+        # ornaments (shared/design/system.py ORNAMENTS): rule, kicker, edge, corner. tape / pin / stars are kept as names and drawn as these.
+        ".sk-orn-rule,.sk-orn-tape{top:0;left:0;right:0;height:1px;background:color-mix(in srgb,var(--sk-ink) 14%,transparent)}"
+        ".sk-orn-kicker,.sk-orn-pin{top:10px;left:12px;width:28px;height:2px;background:var(--sk-pt)}"
+        ".sk-orn-edge{top:0;bottom:0;left:0;width:3px;background:var(--sk-pt)}"
+        ".sk-orn-corner,.sk-orn-stars{right:0;top:0;width:20px;height:20px;background:linear-gradient(225deg,color-mix(in srgb,var(--sk-pr) 22%,transparent) 50%,transparent 50%)}"
         ".sk-i{display:inline-block;vertical-align:middle;flex:none}.sk-spot,.sk-char{display:block;flex:none}"
+        + (_ds.polish_css("shell") if _ds else "")
     )
 
 
@@ -416,7 +422,7 @@ def embed_fonts(page_html: str) -> str:
         if str(_FONTS) not in sys.path:
             sys.path.insert(0, str(_FONTS))
         import embed as _embed
-        fams = ["Noto Sans KR"] + (["Noto Serif KR"] if "--sk-fd:'Noto Serif KR'" in page_html or "font-family:'Noto Serif KR'" in page_html else [])
+        fams = ["TS Sans" if "TS Sans" in page_html else "Noto Sans KR"] + (["Noto Serif KR"] if "--sk-fd:'Noto Serif KR'" in page_html or "font-family:'Noto Serif KR'" in page_html else [])
         out, _rep = _embed.embed(page_html, fams)  # the serif subset only when a serif headline is really used (it is the slow, big one)
         return out
     except Exception:

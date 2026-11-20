@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Shared style taxonomy (games AND slides): 12 styles, each with its own composition language. Lives in shared/design; scripts/style_auto.py (game) re-exports it.
+"""Shared style taxonomy (games AND slides): 12 styles, each with its own composition language (grid, type, ornament, backdrop: not a palette swap). Lives in shared/design; scripts/style_auto.py (game) re-exports it.
 
 A WORLD (theme_auto.py: space, sea, fairy ... = props, character, signature drawing) is orthogonal to a STYLE (this file = how it is staged:
 palette, background generator, layout, button/card/scoreboard/title treatments, transitions). Same world x different style = different look.
 
-  neon-cyber        네온/사이버      dark, perspective neon grid, glowing outlines, LED scoreboard
-  gold-luxury       골드 럭셔리      black + gold, bokeh, ticket cards, serif titles
-  pop-colorful      팝 컬러풀        flat bright shapes, thick outlines, hard shadows, stickers
-  festival-party    축제/파티        bunting, confetti, balloons, polaroid cards
-  tv-gameshow       TV 게임쇼        stage lights + LED panel wall (generic, no legacy mascot or signs)
-  glass-3d          글래스/3D        frosted translucent panels over blurred colour orbs
-  anime-cartoon     애니/카툰        speed lines + halftone, heavy ink outlines
-  pastel-cute       파스텔 귀여움    soft clouds and hills, rounded pills, sticker scores
-  retro-pixel       레트로/픽셀      blocky pixel backdrop, square hard-edged UI
-  minimal-premium   미니멀 프리미엄  cool off-white (not cream), sans headline, hairlines, lots of whitespace, one accent, no props
-  chalk-paper       칠판/종이        chalkboard with dust and dashed chalk frames
-  nature-calm       자연/차분        hills and leaves, calm motion, soft rounded UI
+  neon-cyber        먹빛 테크        matte ink, ivory type, mist-blue signal + brass; ledger grid, hairline cards (the old neon grid is retired)
+  gold-luxury       먹과 놋쇠        warm ink + brass, serif headline, one inset frame, poster grid
+  pop-colorful      팝 블록          cool white, two flat colour blocks, heavy tight type, sticker cards
+  festival-party    축제 포스터      riso poster: coral + teal paper-cut edge shapes, centred stack
+  tv-gameshow       스튜디오 쇼      petrol set, amber marquee line, tonal panels, scoreboard banner (no light beams)
+  glass-3d          소프트 뎁스      slate planes at three depths, matte cards, one falling shadow (no blur blobs)
+  anime-cartoon     만화 컷          comic panels with an ink line, halftone corner, red + ink blue
+  pastel-cute       파스텔           blush + plum + mint, soft hills, fully rounded
+  retro-pixel       픽셀             square UI on an 8px grid, phosphor green + amber
+  minimal-premium   에디토리얼       cool off-white (not cream), ink, one ochre accent, hairlines, asymmetric grid, no props
+  chalk-paper       칠판             board green, chalk yellow, dashed chalk frames
+  nature-calm       자연             sage paper, forest + wheat, flat tonal bands, editorial stack
+Each style also names its grid, type treatment, radius and its two allowed ornaments (shared/design/system.py, DESIGN-RULES.md).
 Usage: python3 styles.py --words "우주 미니멀" --seed 3
 """
 from __future__ import annotations
@@ -31,55 +32,84 @@ for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
+# Each style is a COMPOSITION LANGUAGE, not a recolour: its own grid (system.GRIDS), type treatment, ornament pair (system.ORNAMENTS, max two),
+# corner radius and backdrop. Palettes are built in OKLCH by system.palette(): a tinted neutral ramp + ONE primary + ONE support colour,
+# every text pair contrast-fitted, good/bad apart for colour-blind eyes, no fluorescent colour (system.is_neon), no cream paper.
+#   name = what the teacher sees   grid = named layout grid   type = display treatment (weight, tracking em, label case)
+#   orn  = the only two ornaments this style may use           rad  = corner radius px on the 1920 stage
 STYLES: dict[str, dict] = {
-    "neon-cyber": {"keys": ["네온", "사이버", "미래", "게임", "해킹", "코딩"], "dark": True, "bg": "neongrid", "pattern": "grid", "font": "Black Han Sans", "music": "tension", "motion": "high",
-        "pal": {"bg1": "#05070f", "bg2": "#1a0b3d", "text": "#ffffff", "card": "#0d1230", "cardText": "#eaf2ff", "cardBorder": "#00e5ff", "primary": "#00e5ff", "btnText": "#02111a", "accent": "#ff2bd6", "good": "#39ff9c", "bad": "#ff5c7a"},
-        "layout": {"split": 4, "news": 3, "poster": 2, "bento": 1}, "choice": {"neon": 6, "tile": 1}, "card": {"hex": 3, "ticket": 3, "default": 1}, "score": {"led": 5, "banner": 1}, "title": {"outline": 4, "stack3d": 3},
-        "transition": {"wipe": 3, "fade": 1}, "props": True, "css": "neon"},
-    "gold-luxury": {"keys": ["골드", "럭셔리", "고급", "송년", "연말", "시상", "품격", "우아", "프리미엄 파티"], "dark": True, "bg": "bokeh", "pattern": "diamond", "font": "Noto Serif KR", "music": "upbeat", "motion": "normal",
-        "pal": {"bg1": "#14110f", "bg2": "#2b2118", "text": "#fff4d6", "card": "#1f1a14", "cardText": "#fff4d6", "cardBorder": "#e0b44c", "primary": "#e0b44c", "btnText": "#1a1206", "accent": "#f4e3b2", "good": "#5be0a0", "bad": "#ff8a8a"},
-        "layout": {"poster": 4, "news": 3, "split": 2, "stack": 1}, "choice": {"tile": 3, "pill": 3}, "card": {"ticket": 5, "default": 2}, "score": {"banner": 5, "led": 1}, "title": {"underline": 5, "outline": 1},
-        "transition": {"fade": 4, "wipe": 1}, "props": True, "css": "gold"},
-    "pop-colorful": {"keys": ["팝", "컬러풀", "발랄", "신나", "신남", "알록달록"], "dark": False, "bg": "memphis", "pattern": "dots", "font": "Jua", "music": "upbeat", "motion": "high",
-        "pal": {"bg1": "#fff1a8", "bg2": "#ffd0e8", "text": "#1b1230", "card": "#ffffff", "cardText": "#1b1230", "cardBorder": "#1b1230", "primary": "#d6214a", "btnText": "#ffffff", "accent": "#2b6cff", "good": "#0f8a4a", "bad": "#c4163a"},
-        "layout": {"bento": 4, "stack": 2, "poster": 2, "split": 2}, "choice": {"stamp": 3, "tile": 4, "pill": 1}, "card": {"round": 2, "ticket": 3, "default": 1}, "score": {"sticker": 6}, "title": {"stamp": 4, "stack3d": 3},
-        "transition": {"iris": 3, "wipe": 2}, "props": True, "css": "pop"},
-    "festival-party": {"keys": ["축제", "파티", "생일", "운동회", "잔치", "페스티벌", "기념일"], "dark": True, "bg": "bunting", "pattern": "dots", "font": "Jua", "music": "upbeat", "motion": "high",
-        "pal": {"bg1": "#3b0a45", "bg2": "#7a1e5a", "text": "#ffffff", "card": "#fff3fb", "cardText": "#3b0a45", "cardBorder": "#ffd23f", "primary": "#ffd23f", "btnText": "#3b0a45", "accent": "#ff5ca8", "good": "#0f8a4a", "bad": "#c4163a"},
-        "layout": {"bento": 3, "stack": 3, "split": 2, "poster": 1}, "choice": {"pill": 4, "note": 2, "stamp": 1}, "card": {"polaroid": 4, "round": 2}, "score": {"sticker": 4, "banner": 2}, "title": {"stamp": 4, "stack3d": 2},
-        "transition": {"iris": 3, "fade": 1}, "props": True, "css": "party"},
-    "tv-gameshow": {"keys": ["게임쇼", "방송", "퀴즈쇼", "대결", "최종 결전", "도전"], "dark": True, "bg": "stage", "pattern": "dots", "font": "Black Han Sans", "music": "upbeat", "motion": "high",
-        "pal": {"bg1": "#08202a", "bg2": "#0f4a5a", "text": "#ffffff", "card": "#0c2f3b", "cardText": "#ffffff", "cardBorder": "#ff9f1c", "primary": "#ff9f1c", "btnText": "#1a1004", "accent": "#2ec4b6", "good": "#5df2a3", "bad": "#ff7a7a"},
-        "layout": {"news": 4, "split": 3, "bento": 1, "stack": 1}, "choice": {"pill": 3, "tile": 3, "neon": 1}, "card": {"ticket": 3, "round": 2}, "score": {"led": 3, "banner": 4}, "title": {"stack3d": 4, "stamp": 2},
-        "transition": {"wipe": 3, "iris": 2}, "props": True, "css": "show"},
-    "glass-3d": {"keys": ["글래스", "3D", "3d", "유리", "입체", "모던", "세련"], "dark": True, "bg": "glassblobs", "pattern": "dots", "font": "Noto Sans KR", "music": "mystery", "motion": "normal",
-        "pal": {"bg1": "#0f1b4d", "bg2": "#5b2a86", "text": "#ffffff", "card": "#1c2a6e", "cardText": "#ffffff", "cardBorder": "#9fb7ff", "primary": "#7cf2e6", "btnText": "#04201d", "accent": "#ff8bd1", "good": "#6bffb0", "bad": "#ff8a9a"},
-        "layout": {"bento": 4, "split": 3, "poster": 2, "stack": 1}, "choice": {"pill": 4, "tile": 2}, "card": {"round": 5, "default": 1}, "score": {"banner": 3, "chalk": 2, "sticker": 1}, "title": {"underline": 3, "outline": 2, "default": 2},
-        "transition": {"fade": 4, "iris": 2}, "props": False, "css": "glass"},
-    "anime-cartoon": {"keys": ["애니", "카툰", "만화", "웹툰", "히어로"], "dark": False, "bg": "speed", "pattern": "dots", "font": "Black Han Sans", "music": "sports", "motion": "high",
-        "pal": {"bg1": "#8fd3ff", "bg2": "#fff3b0", "text": "#0b1b3a", "card": "#ffffff", "cardText": "#0b1b3a", "cardBorder": "#0b1b3a", "primary": "#d7263d", "btnText": "#ffffff", "accent": "#1d4ed8", "good": "#0f8a4a", "bad": "#c4163a"},
-        "layout": {"split": 3, "bento": 3, "news": 2, "poster": 2}, "choice": {"stamp": 3, "tile": 4, "note": 1}, "card": {"ticket": 3, "default": 3, "round": 1}, "score": {"sticker": 5, "banner": 1}, "title": {"stamp": 3, "stack3d": 4},
-        "transition": {"wipe": 4, "iris": 2}, "props": True, "css": "anime"},
-    "pastel-cute": {"keys": ["파스텔", "귀엽", "귀여", "동화", "유아", "저학년", "몽글"], "dark": False, "bg": "hills", "pattern": "sparkle", "font": "Jua", "music": "cute", "motion": "normal",
-        "pal": {"bg1": "#ffe8f1", "bg2": "#e0f3ff", "text": "#4a2f5e", "card": "#ffffff", "cardText": "#4a2f5e", "cardBorder": "#ffb3d1", "primary": "#a63d8f", "btnText": "#ffffff", "accent": "#5fbfa8", "good": "#1b7a55", "bad": "#c43d5a"},
-        "layout": {"bento": 4, "stack": 3, "poster": 1, "split": 1}, "choice": {"pill": 5, "note": 2}, "card": {"round": 5, "polaroid": 2}, "score": {"sticker": 4, "chalk": 1, "banner": 1}, "title": {"underline": 3, "stack3d": 3, "stamp": 1},
-        "transition": {"iris": 4, "fade": 2}, "props": True, "css": "pastel"},
-    "retro-pixel": {"keys": ["레트로", "픽셀", "8비트", "오락실", "아케이드", "도트"], "dark": True, "bg": "pixel", "pattern": "grid", "font": "Do Hyeon", "music": "upbeat", "motion": "high",
-        "pal": {"bg1": "#1a0f2e", "bg2": "#2b1850", "text": "#f4ecff", "card": "#2b1850", "cardText": "#fff7d6", "cardBorder": "#5cff8a", "primary": "#5cff8a", "btnText": "#07210f", "accent": "#ff5c5c", "good": "#5cff8a", "bad": "#ff7a7a"},
-        "layout": {"split": 3, "news": 3, "bento": 2, "stack": 2}, "choice": {"tile": 5, "stamp": 2}, "card": {"default": 4, "hex": 1}, "score": {"led": 5, "banner": 1}, "title": {"outline": 3, "stack3d": 3},
+    # 먹빛 테크 (was: neon grid). Matte ink, ivory type, one mist-blue signal + brass. Ledger grid, hairline cards, small tracked labels. No glow.
+    "neon-cyber": {"name": "먹빛 테크", "keys": ["네온", "사이버", "미래", "게임", "해킹", "코딩", "테크"], "dark": True, "bg": "dotgrid", "pattern": "none", "font": "TS Sans", "music": "tension", "motion": "normal",
+        "grid": "ledger", "type": {"w": 700, "tr": -0.04, "label": "tracked"}, "orn": ["kicker", "grain"], "rad": 6,
+        "pal": {"bg1": "#11100f", "bg2": "#191816", "text": "#f4f0e7", "card": "#1e1d1b", "cardText": "#f4f0e7", "cardBorder": "#383633", "primary": "#8ac6d5", "btnText": "#071417", "accent": "#d7ac68", "good": "#79e5eb", "bad": "#e76444"},
+        "layout": {"split": 4, "news": 4, "poster": 1, "stack": 1}, "choice": {"tile": 5, "neon": 2}, "card": {"default": 4, "ticket": 2}, "score": {"led": 4, "banner": 2}, "title": {"underline": 4, "default": 3},
+        "transition": {"wipe": 2, "fade": 3}, "props": False, "css": "neon"},
+    # 먹과 놋쇠 (was: black + gold bokeh). Warm ink, brass, a serif headline, one inset frame. Poster grid, generous margins.
+    "gold-luxury": {"name": "먹과 놋쇠", "keys": ["골드", "럭셔리", "고급", "송년", "연말", "시상", "품격", "우아", "프리미엄 파티"], "dark": True, "bg": "frame", "pattern": "none", "font": "Noto Serif KR", "music": "upbeat", "motion": "calm",
+        "grid": "poster", "type": {"w": 600, "tr": -0.02, "label": "tracked"}, "orn": ["frame", "rule"], "rad": 2,
+        "pal": {"bg1": "#110e0b", "bg2": "#191511", "text": "#f6efe8", "card": "#1d1a17", "cardText": "#f6efe8", "cardBorder": "#38332e", "primary": "#d7ac68", "btnText": "#161107", "accent": "#dcd0b8", "good": "#79e5eb", "bad": "#e76444"},
+        "layout": {"poster": 5, "news": 2, "split": 2, "stack": 1}, "choice": {"tile": 4, "pill": 1}, "card": {"ticket": 3, "default": 3}, "score": {"banner": 5}, "title": {"underline": 5, "default": 1},
+        "transition": {"fade": 5}, "props": False, "css": "gold"},
+    # 팝 블록. Cool white paper, two flat colour blocks bleeding off the corners, heavy tight type, sticker cards with ONE ink offset shadow.
+    "pop-colorful": {"name": "팝 블록", "keys": ["팝", "컬러풀", "발랄", "신나", "신남", "알록달록"], "dark": False, "bg": "blocks", "pattern": "none", "font": "TS Sans", "music": "upbeat", "motion": "high",
+        "grid": "bento", "type": {"w": 800, "tr": -0.045, "label": "plain"}, "orn": ["corner", "numeral"], "rad": 20,
+        "pal": {"bg1": "#f6f8fa", "bg2": "#eaecef", "text": "#171b20", "card": "#ffffff", "cardText": "#171b20", "cardBorder": "#c1c4c7", "primary": "#cc342d", "btnText": "#fff8f7", "accent": "#305eb7", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"bento": 5, "poster": 2, "split": 2, "stack": 1}, "choice": {"stamp": 4, "tile": 3}, "card": {"round": 2, "default": 3}, "score": {"sticker": 5, "banner": 1}, "title": {"stamp": 4, "default": 2},
+        "transition": {"iris": 2, "wipe": 3}, "props": True, "css": "pop"},
+    # 축제 포스터. Riso-print poster: warm white, coral + teal paper-cut shapes lined up on the edges, a centred stack.
+    "festival-party": {"name": "축제 포스터", "keys": ["축제", "파티", "생일", "운동회", "잔치", "페스티벌", "기념일"], "dark": False, "bg": "papercut", "pattern": "none", "font": "TS Sans", "music": "upbeat", "motion": "high",
+        "grid": "stack", "type": {"w": 800, "tr": -0.04, "label": "plain"}, "orn": ["corner", "rule"], "rad": 28,
+        "pal": {"bg1": "#fef3f2", "bg2": "#f4e7e5", "text": "#201918", "card": "#fffcfc", "cardText": "#201918", "cardBorder": "#cdbdbc", "primary": "#ca435f", "btnText": "#fffafb", "accent": "#209993", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"stack": 4, "bento": 3, "poster": 2, "split": 1}, "choice": {"pill": 5, "note": 1}, "card": {"round": 4, "polaroid": 1}, "score": {"sticker": 3, "banner": 3}, "title": {"stamp": 3, "underline": 2},
+        "transition": {"iris": 3, "fade": 2}, "props": True, "css": "party"},
+    # 스튜디오 쇼 (was: stage lights + LED wall). Deep petrol set, amber marquee line, vertical tonal panels, split grid, a scoreboard banner.
+    "tv-gameshow": {"name": "스튜디오 쇼", "keys": ["게임쇼", "방송", "퀴즈쇼", "대결", "최종 결전", "도전"], "dark": True, "bg": "panels", "pattern": "none", "font": "TS Sans", "music": "upbeat", "motion": "high",
+        "grid": "split", "type": {"w": 800, "tr": -0.035, "label": "tracked"}, "orn": ["edge", "rule"], "rad": 10,
+        "pal": {"bg1": "#071c27", "bg2": "#0a2533", "text": "#e9f2f7", "card": "#142935", "cardText": "#e9f2f7", "cardBorder": "#234559", "primary": "#eeb154", "btnText": "#171008", "accent": "#69bbba", "good": "#79e5eb", "bad": "#e76444"},
+        "layout": {"news": 4, "split": 4, "bento": 1}, "choice": {"tile": 4, "pill": 2}, "card": {"ticket": 4, "default": 2}, "score": {"banner": 5, "led": 1}, "title": {"underline": 3, "stamp": 2},
+        "transition": {"wipe": 4, "fade": 1}, "props": False, "css": "show"},
+    # 소프트 뎁스 (was: glass over colour blobs). Slate planes at three depths, matte cards with one soft falling shadow, bento tiles.
+    "glass-3d": {"name": "소프트 뎁스", "keys": ["글래스", "3D", "3d", "유리", "입체", "모던", "세련"], "dark": True, "bg": "planes", "pattern": "none", "font": "TS Sans", "music": "mystery", "motion": "normal",
+        "grid": "bento", "type": {"w": 700, "tr": -0.035, "label": "plain"}, "orn": ["edge", "grain"], "rad": 28,
+        "pal": {"bg1": "#111724", "bg2": "#171f2f", "text": "#ecf0f9", "card": "#1d2432", "cardText": "#ecf0f9", "cardBorder": "#343e55", "primary": "#7dcece", "btnText": "#061414", "accent": "#d9a3d3", "good": "#79e5eb", "bad": "#e76444"},
+        "layout": {"bento": 5, "split": 3, "poster": 1}, "choice": {"pill": 3, "tile": 3}, "card": {"round": 5, "default": 1}, "score": {"banner": 3, "sticker": 2}, "title": {"default": 4, "underline": 2},
+        "transition": {"fade": 4, "iris": 1}, "props": False, "css": "glass"},
+    # 만화 컷. Cool paper, comic panels with a 4px ink line, a halftone corner, red + ink blue, heavy type with a flat offset.
+    "anime-cartoon": {"name": "만화 컷", "keys": ["애니", "카툰", "만화", "웹툰", "히어로"], "dark": False, "bg": "halftone", "pattern": "none", "font": "TS Sans", "music": "sports", "motion": "high",
+        "grid": "split", "type": {"w": 800, "tr": -0.045, "label": "plain"}, "orn": ["corner", "grain"], "rad": 12,
+        "pal": {"bg1": "#f4f8fb", "bg2": "#e8edf1", "text": "#161b20", "card": "#ffffff", "cardText": "#161b20", "cardBorder": "#bec4c9", "primary": "#cc272e", "btnText": "#fff8f8", "accent": "#234993", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"split": 4, "bento": 3, "news": 2}, "choice": {"stamp": 4, "tile": 3}, "card": {"default": 4, "ticket": 2}, "score": {"sticker": 4, "banner": 2}, "title": {"stamp": 5, "default": 1},
+        "transition": {"wipe": 4, "iris": 1}, "props": True, "css": "anime"},
+    # 파스텔. Blush paper, plum type, mint support, soft hills, fully rounded cards.
+    "pastel-cute": {"name": "파스텔", "keys": ["파스텔", "귀엽", "귀여", "동화", "유아", "저학년", "몽글"], "dark": False, "bg": "hills", "pattern": "none", "font": "TS Sans", "music": "cute", "motion": "normal",
+        "grid": "bento", "type": {"w": 760, "tr": -0.035, "label": "plain"}, "orn": ["corner", "kicker"], "rad": 40,
+        "pal": {"bg1": "#fdedf4", "bg2": "#f4e0e8", "text": "#1f181b", "card": "#fff6fa", "cardText": "#1f181b", "cardBorder": "#ceb6c0", "primary": "#954074", "btnText": "#fff8fb", "accent": "#65af9c", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"bento": 4, "stack": 3, "poster": 1}, "choice": {"pill": 5, "note": 1}, "card": {"round": 5, "polaroid": 1}, "score": {"sticker": 4, "banner": 1}, "title": {"underline": 4, "default": 2},
+        "transition": {"iris": 3, "fade": 3}, "props": True, "css": "pastel"},
+    # 픽셀. A deliberate genre look: square UI, 8px grid, phosphor green + amber on CRT ink, hard 1-step shadows. No scanline glow.
+    "retro-pixel": {"name": "픽셀", "keys": ["레트로", "픽셀", "8비트", "오락실", "아케이드", "도트"], "dark": True, "bg": "pixel", "pattern": "none", "font": "TS Sans", "music": "upbeat", "motion": "high",
+        "grid": "split", "type": {"w": 800, "tr": 0.02, "label": "tracked"}, "orn": ["grain", "edge"], "rad": 0,
+        "pal": {"bg1": "#141327", "bg2": "#1c1a34", "text": "#efeff8", "card": "#212035", "cardText": "#efeff8", "cardBorder": "#3a385b", "primary": "#7cdd93", "btnText": "#0b140d", "accent": "#e8a95c", "good": "#79e5eb", "bad": "#e76444"},
+        "layout": {"split": 4, "news": 3, "stack": 2}, "choice": {"tile": 6}, "card": {"default": 5}, "score": {"led": 5, "banner": 1}, "title": {"default": 3, "stamp": 3},
         "transition": {"wipe": 5}, "props": True, "css": "pixel"},
-    "minimal-premium": {"keys": ["미니멀", "심플", "프리미엄", "깔끔", "모노", "화이트"], "dark": False, "bg": "minimal", "pattern": "none", "font": "Noto Sans KR", "music": "mystery", "motion": "calm",
-        "pal": {"bg1": "#f4f6f8", "bg2": "#e6ebf0", "text": "#1a1a1a", "card": "#ffffff", "cardText": "#1a1a1a", "cardBorder": "#1a1a1a", "primary": "#1a1a1a", "btnText": "#f4f6f8", "accent": "#b08d3c", "good": "#1d6f45", "bad": "#b3261e"},
-        "layout": {"poster": 4, "split": 4, "news": 1, "stack": 1}, "choice": {"tile": 4, "pill": 2}, "card": {"default": 4, "round": 1}, "score": {"banner": 3, "chalk": 3}, "title": {"underline": 4, "default": 3},
+    # 에디토리얼. Cool off-white (not cream), ink, one ochre accent. Asymmetric editorial grid, hairlines, lots of white, no props.
+    "minimal-premium": {"name": "에디토리얼", "keys": ["미니멀", "심플", "프리미엄", "깔끔", "모노", "화이트", "에디토리얼"], "dark": False, "bg": "minimal", "pattern": "none", "font": "TS Sans", "music": "mystery", "motion": "calm",
+        "grid": "editorial", "type": {"w": 700, "tr": -0.04, "label": "tracked"}, "orn": ["rule", "kicker"], "rad": 2,
+        "pal": {"bg1": "#f4f6f8", "bg2": "#e8eaed", "text": "#161b20", "card": "#fcfdff", "cardText": "#161b20", "cardBorder": "#bfc2c5", "primary": "#1a2026", "btnText": "#f6fbff", "accent": "#a38043", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"poster": 4, "split": 4, "news": 1, "stack": 1}, "choice": {"tile": 5, "pill": 1}, "card": {"default": 5}, "score": {"banner": 3, "chalk": 2}, "title": {"underline": 4, "default": 3},
         "transition": {"fade": 6}, "props": False, "css": "minimal"},
-    "chalk-paper": {"keys": ["칠판", "종이", "분필", "노트", "교실", "수업"], "dark": True, "bg": "chalk", "pattern": "none", "font": "Gowun Dodum", "music": "cute", "motion": "calm",
-        "pal": {"bg1": "#1f3d33", "bg2": "#16302a", "text": "#f5f5ef", "card": "#2a4d41", "cardText": "#f5f5ef", "cardBorder": "#f5f5ef", "primary": "#ffe066", "btnText": "#2a2200", "accent": "#ff9e9e", "good": "#8dffb8", "bad": "#ff9e9e"},
-        "layout": {"stack": 3, "split": 3, "poster": 2, "bento": 1}, "choice": {"stamp": 4, "note": 3}, "card": {"polaroid": 2, "default": 3, "ticket": 1}, "score": {"chalk": 6}, "title": {"underline": 4, "stamp": 2},
-        "transition": {"fade": 3, "wipe": 2}, "props": True, "css": "chalk"},
-    "nature-calm": {"keys": ["자연", "차분", "숲", "힐링", "식물", "정원", "생태"], "dark": False, "bg": "hills", "pattern": "leaves", "font": "Jua", "music": "nature", "motion": "calm",
-        "pal": {"bg1": "#dff5e1", "bg2": "#b6e3c0", "text": "#1d3a26", "card": "#ffffff", "cardText": "#1d3a26", "cardBorder": "#4caf6a", "primary": "#237a43", "btnText": "#ffffff", "accent": "#f2b134", "good": "#1a7a43", "bad": "#b8322d"},
-        "layout": {"stack": 3, "bento": 3, "poster": 2, "split": 1}, "choice": {"pill": 4, "note": 2, "tile": 1}, "card": {"round": 4, "polaroid": 2}, "score": {"sticker": 3, "banner": 2, "chalk": 1}, "title": {"underline": 4, "stack3d": 1},
-        "transition": {"fade": 4, "iris": 2}, "props": True, "css": "nature"},
+    # 칠판. Board green, chalk yellow, dashed chalk frames, a stack of rows like board writing.
+    "chalk-paper": {"name": "칠판", "keys": ["칠판", "종이", "분필", "노트", "교실", "수업"], "dark": True, "bg": "chalk", "pattern": "none", "font": "TS Sans", "music": "cute", "motion": "calm",
+        "grid": "stack", "type": {"w": 700, "tr": -0.02, "label": "plain"}, "orn": ["frame", "rule"], "rad": 14,
+        "pal": {"bg1": "#253d32", "bg2": "#29473a", "text": "#e9f3ee", "card": "#334b40", "cardText": "#e9f3ee", "cardBorder": "#446c5a", "primary": "#eed780", "btnText": "#141207", "accent": "#eda9a8", "good": "#79e5eb", "bad": "#ec6949"},
+        "layout": {"stack": 4, "split": 3, "poster": 1}, "choice": {"stamp": 3, "note": 3}, "card": {"default": 4, "polaroid": 1}, "score": {"chalk": 6}, "title": {"underline": 4, "default": 2},
+        "transition": {"fade": 4, "wipe": 1}, "props": True, "css": "chalk"},
+    # 자연. Sage paper, forest green, wheat. Flat tonal bands along the bottom (not the pastel hills), editorial stack, soft radius.
+    "nature-calm": {"name": "자연", "keys": ["자연", "차분", "숲", "힐링", "식물", "정원", "생태"], "dark": False, "bg": "bands", "pattern": "none", "font": "TS Sans", "music": "nature", "motion": "calm",
+        "grid": "editorial", "type": {"w": 700, "tr": -0.035, "label": "plain"}, "orn": ["rule", "corner"], "rad": 20,
+        "pal": {"bg1": "#ecf6ea", "bg2": "#e0ebdd", "text": "#181c17", "card": "#f4fdf2", "cardText": "#181c17", "cardBorder": "#b6c3b3", "primary": "#296a3b", "btnText": "#f1fef3", "accent": "#c69449", "good": "#005c75", "bad": "#cb4a2a"},
+        "layout": {"stack": 4, "split": 3, "poster": 2}, "choice": {"pill": 3, "tile": 3}, "card": {"round": 3, "default": 3}, "score": {"banner": 3, "sticker": 2}, "title": {"underline": 4, "default": 2},
+        "transition": {"fade": 5, "iris": 1}, "props": True, "css": "nature"},
 }
 # which styles suit which world when the words do not name a style (weights; 1 = possible, 4 = natural fit)
 WORLD_STYLE = {

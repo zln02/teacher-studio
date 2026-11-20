@@ -1,35 +1,39 @@
 {
- "_note": "Shared design system (games, slides, motion, posters, invitations, print, web). Every palette is validated by design.py --validate: text/cardText/btnText >= 4.5:1, good/bad on card >= 3:1. 'uses' = where a palette may be picked; baseTheme/bgType map to the game engine themes.",
+ "_note": "Shared design system (games, slides, motion, posters, invitations, print, web). Every palette is validated by design.py --validate: text/cardText/btnText >= 4.5:1, good/bad on card >= 3:1 and apart for colour-blind eyes (teal-blue vs orange-red, different lightness). No fluorescent colours (system.is_neon). Fonts: TS Sans (Pretendard subset) everywhere, Noto Serif KR only for the editorial pairs. 'uses' = where a palette may be picked; baseTheme/bgType map to the game engine themes.",
  "fonts": {
   "pairs": [
    {
     "id": "bold-clean",
-    "display": "Black Han Sans",
-    "body": "Noto Sans KR",
-    "tone": "bold"
+    "display": "TS Sans",
+    "body": "TS Sans",
+    "tone": "bold",
+    "embeddable": true
    },
    {
     "id": "round-soft",
-    "display": "Jua",
-    "body": "Gowun Dodum",
-    "tone": "friendly"
+    "display": "TS Sans",
+    "body": "TS Sans",
+    "tone": "friendly",
+    "embeddable": true
    },
    {
     "id": "classic",
-    "display": "Do Hyeon",
-    "body": "Noto Sans KR",
-    "tone": "neutral"
+    "display": "TS Sans",
+    "body": "TS Sans",
+    "tone": "neutral",
+    "embeddable": true
    },
    {
     "id": "hanok-serif",
-    "display": "Song Myung",
-    "body": "Gowun Batang",
-    "tone": "traditional"
+    "display": "Noto Serif KR",
+    "body": "TS Sans",
+    "tone": "traditional",
+    "embeddable": true
    },
    {
     "id": "noto-sans",
-    "display": "Noto Sans KR",
-    "body": "Noto Sans KR",
+    "display": "TS Sans",
+    "body": "TS Sans",
     "tone": "clean",
     "embeddable": true
    },
@@ -43,7 +47,7 @@
    {
     "id": "noto-warm",
     "display": "Noto Serif KR",
-    "body": "Noto Sans KR",
+    "body": "TS Sans",
     "tone": "warm",
     "embeddable": true
    }
@@ -66,17 +70,17 @@
    "baseTheme": "arcade",
    "bgType": "grid",
    "font": "bold-clean",
-   "bg1": "#0e0b24",
-   "bg2": "#2a1456",
-   "text": "#ffffff",
-   "card": "#1d1440",
-   "cardText": "#ffffff",
-   "cardBorder": "#7a5cd6",
-   "primary": "#ffd23f",
-   "btnText": "#1b1230",
-   "accent": "#ff4d8d",
-   "good": "#3dffa8",
-   "bad": "#ff7a90",
+   "bg1": "#14101b",
+   "bg2": "#1c1825",
+   "text": "#f1eef7",
+   "card": "#211d28",
+   "cardText": "#f1eef7",
+   "cardBorder": "#3c3548",
+   "primary": "#e3c470",
+   "btnText": "#151107",
+   "accent": "#e28dae",
+   "good": "#79e5eb",
+   "bad": "#e76444",
    "uses": [
     "class",
     "personal",
@@ -99,17 +103,17 @@
    "baseTheme": "space",
    "bgType": "stars",
    "font": "classic",
-   "bg1": "#04121f",
-   "bg2": "#0b3550",
-   "text": "#f2fbff",
-   "card": "#0f2a40",
-   "cardText": "#f2fbff",
-   "cardBorder": "#3fb6d6",
-   "primary": "#5ef0ff",
-   "btnText": "#02202b",
-   "accent": "#b48cff",
-   "good": "#4dffb8",
-   "bad": "#ff8aa0",
+   "bg1": "#09141b",
+   "bg2": "#0e1d25",
+   "text": "#e9f2f7",
+   "card": "#152128",
+   "cardText": "#e9f2f7",
+   "cardBorder": "#283c48",
+   "primary": "#89dae3",
+   "btnText": "#061416",
+   "accent": "#b9a6dd",
+   "good": "#79e5eb",
+   "bad": "#e76444",
    "uses": [
     "class",
     "personal",
@@ -137,12 +141,12 @@
    "text": "#3b2200",
    "card": "#ffffff",
    "cardText": "#3b2200",
-   "cardBorder": "#f08c00",
+   "cardBorder": "#db9757",
    "primary": "#c2410c",
    "btnText": "#ffffff",
    "accent": "#0b7285",
-   "good": "#2b8a3e",
-   "bad": "#c92a2a",
+   "good": "#005c75",
+   "bad": "#cb4a2a",
    "uses": [
     "class",
     "personal",
@@ -177,8 +181,8 @@
    "primary": "#0b6fb3",
    "btnText": "#ffffff",
    "accent": "#d9480f",
-   "good": "#2b8a3e",
-   "bad": "#c92a2a",
+   "good": "#005c75",
+   "bad": "#cb4a2a",
    "uses": [
     "class",
     "personal",
@@ -212,8 +216,8 @@
    "primary": "#a82920",
    "btnText": "#fff8e7",
    "accent": "#1f5f8b",
-   "good": "#1f7a44",
-   "bad": "#b02318",
+   "good": "#005c75",
+   "bad": "#cb4a2a",
    "uses": [
     "class",
     "personal",
@@ -248,8 +252,8 @@
    "primary": "#b83c0a",
    "btnText": "#ffffff",
    "accent": "#1c6e8c",
-   "good": "#2b7a3d",
-   "bad": "#b72b2b",
+   "good": "#005c75",
+   "bad": "#cb4a2a",
    "uses": [
     "class",
     "personal",
@@ -281,11 +285,11 @@
    "card": "#17493a",
    "cardText": "#f4fff6",
    "cardBorder": "#6fbf8a",
-   "primary": "#ffe066",
+   "primary": "#e6d180",
    "btnText": "#2a2200",
-   "accent": "#a8f07a",
-   "good": "#7dffb0",
-   "bad": "#ffa08a",
+   "accent": "#b1e294",
+   "good": "#79e5eb",
+   "bad": "#e76444",
    "uses": [
     "class",
     "personal",
@@ -318,8 +322,8 @@
    "primary": "#e8b04a",
    "btnText": "#1c1400",
    "accent": "#9fb4ff",
-   "good": "#69e3a0",
-   "bad": "#ff8f86",
+   "good": "#79e5eb",
+   "bad": "#e76444",
    "uses": [
     "class",
     "personal",
@@ -360,8 +364,8 @@
    "primary": "#d4af61",
    "btnText": "#14100a",
    "accent": "#8fb5d9",
-   "good": "#6fdca0",
-   "bad": "#ff9a8f"
+   "good": "#79e5eb",
+   "bad": "#e76444"
   },
   "linen-soft": {
    "mood": [
@@ -396,8 +400,8 @@
    "primary": "#a8471c",
    "btnText": "#ffffff",
    "accent": "#3f6f6a",
-   "good": "#2b7a3d",
-   "bad": "#b3261e"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   },
   "rose-garden": {
    "mood": [
@@ -431,8 +435,8 @@
    "primary": "#a3294d",
    "btnText": "#ffffff",
    "accent": "#5a6f3c",
-   "good": "#2b7a3d",
-   "bad": "#b3261e"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   },
   "clean-white": {
    "mood": [
@@ -466,8 +470,8 @@
    "primary": "#1f5fbf",
    "btnText": "#ffffff",
    "accent": "#c2410c",
-   "good": "#1f7a44",
-   "bad": "#b42318"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   },
   "mono-print": {
    "mood": [
@@ -497,8 +501,8 @@
    "primary": "#222222",
    "btnText": "#ffffff",
    "accent": "#444444",
-   "good": "#1f6b3a",
-   "bad": "#a61b1b"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   },
   "festival-pop": {
    "mood": [
@@ -532,8 +536,8 @@
    "primary": "#b3261e",
    "btnText": "#ffffff",
    "accent": "#0b6e8a",
-   "good": "#2b7a3d",
-   "bad": "#b3261e"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   },
   "mint-study": {
    "mood": [
@@ -567,8 +571,8 @@
    "primary": "#0b7a56",
    "btnText": "#ffffff",
    "accent": "#b45309",
-   "good": "#1f7a44",
-   "bad": "#b42318"
+   "good": "#005c75",
+   "bad": "#cb4a2a"
   }
  },
  "type_scales": {

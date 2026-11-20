@@ -5,10 +5,10 @@
   background:repeating-conic-gradient(from 0deg at 50% 50%,rgba(255,255,255,.0) 0deg 5deg,rgba(255,255,255,.22) 5deg 6.5deg);
   -webkit-mask-image:radial-gradient(circle at 50% 50%,transparent 38%,#000 85%);mask-image:radial-gradient(circle at 50% 50%,transparent 38%,#000 85%)}
 .juice-live{position:fixed;left:0;top:0;right:0;height:0;pointer-events:none;z-index:9600}
-.juice-banner{position:fixed;left:50%;top:15%;transform:translate(-50%,0);padding:12px 40px;border-radius:999px;font-weight:900;font-size:clamp(34px,4vw,76px);line-height:1.2;white-space:nowrap;
+.juice-banner{position:fixed;left:50%;top:15%;transform:translate(-50%,0);padding:12px 40px;border-radius:999px;font-weight:800;font-size:clamp(34px,4vw,76px);line-height:1.2;white-space:nowrap;
   background:var(--card,#fff);color:var(--cardText,#222);border:6px solid var(--accent,#ffd447);box-shadow:0 10px 30px rgba(0,0,0,.28);word-break:keep-all}
 .juice-banner.t2{border-color:var(--primary,#4a8);font-size:clamp(40px,4.6vw,88px)}
-.juice-banner.t3{border-color:var(--good,#3c8);font-size:clamp(44px,5.2vw,100px);padding:14px 56px}
+.juice-banner.t3{border-color:var(--good,#3c8);font-size:clamp(44px,5.2vw,100px);padding:16px 56px}
 .juice-paper{position:fixed;left:0;top:0;right:0;bottom:0;z-index:9300;pointer-events:none;filter:drop-shadow(0 0 10px rgba(0,0,0,.3))}
 .juice-slash{position:fixed;height:6px;border-radius:3px;background:#fff;box-shadow:0 0 12px #fff;z-index:9100;pointer-events:none;transform-origin:left center}
 .juice-orbit,.juice-dial{display:block;color:var(--text,#222)}
@@ -19,16 +19,16 @@
 .juice-on .btn:active,.juice-on .choice:active,.juice-on .juice-toggle:active{transform:scale(.95)!important}
 .juice-on .timer.warn>i{animation:none!important} /* gentle pulse on the number instead of blinking */
 .juice-toggles{display:flex;gap:12px;flex-wrap:wrap}
-.juice-toggle{min-height:56px;min-width:56px;padding:8px 22px;border-radius:14px;border:3px solid currentColor;background:transparent;color:inherit;font:inherit;font-weight:800;font-size:34px;cursor:pointer}
+.juice-toggle{min-height:56px;min-width:56px;padding:8px 24px;border-radius:14px;border:3px solid currentColor;background:transparent;color:inherit;font:inherit;font-weight:800;font-size:34px;cursor:pointer}
 /* podium (teams only; 3rd -> 2nd -> 1st) */
-.juice-podium{display:flex;flex-direction:column;align-items:center;gap:18px}
+.juice-podium{display:flex;flex-direction:column;align-items:center;gap:16px}
 .jp-stage{display:flex;align-items:flex-end;justify-content:center;gap:28px;min-height:420px}
-.jp-rest{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;visibility:hidden}
-.jp-chip{padding:6px 22px;border-radius:999px;background:var(--card,#fff);color:var(--cardText,#222);border:3px solid var(--cardBorder,#ccc);font-size:34px;font-weight:800}
+.jp-rest{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;visibility:hidden}
+.jp-chip{padding:8px 24px;border-radius:999px;background:var(--card,#fff);color:var(--cardText,#222);border:3px solid var(--cardBorder,#ccc);font-size:34px;font-weight:800}
 .jp-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:260px}
-.jp-who{display:flex;flex-direction:column;align-items:center;font-weight:900;font-size:40px;line-height:1.2;margin-bottom:8px;word-break:keep-all}
+.jp-who{display:flex;flex-direction:column;align-items:center;font-weight:800;font-size:40px;line-height:1.2;margin-bottom:8px;word-break:keep-all}
 .jp-ico{font-size:72px;line-height:1}
-.jp-block{width:240px;border-radius:18px 18px 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:14px;color:var(--on-podium,#fff);font-weight:900;box-shadow:inset 0 -10px 0 rgba(0,0,0,.18);text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.jp-block{width:240px;border-radius:18px 18px 6px 6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:16px;color:var(--on-podium,#fff);font-weight:800;box-shadow:inset 0 -10px 0 rgba(0,0,0,.18);text-shadow:0 2px 0 rgba(0,0,0,.35)}
 .jp-rank{font-size:64px;line-height:1}
 .jp-score{font-size:40px;line-height:1.3}
 .jp-col.r1 .jp-who{font-size:48px}
