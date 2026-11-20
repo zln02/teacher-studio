@@ -440,7 +440,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             deco.append(rect(s, 0.8, 7.28, 1.6, 0.1, C["pr"], round_=False))
         else:  # bubbles: soft discs in the corner, for a young room
             deco.append(rect(s, 13.333 - 1.5, -1.3, 2.7, 2.7, tint(tone(1), 0.26), shape=MSO_SHAPE.OVAL))
-            deco.append(rect(s, 13.333 - 2.55, 0.5, 0.42, 0.42, tone(2), shape=MSO_SHAPE.OVAL))
+            deco.append(rect(s, 13.333 - 0.95, 1.62, 0.36, 0.36, tone(2), shape=MSO_SHAPE.OVAL))  # below the title line, never under a long title
             deco.append(rect(s, -0.7, 6.6, 1.7, 1.7, tint(C["pr"], 0.22), shape=MSO_SHAPE.OVAL))
         for d_ in deco:
             behind(d_)
