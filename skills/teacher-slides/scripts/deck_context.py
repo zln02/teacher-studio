@@ -149,7 +149,8 @@ def pre(spec: dict) -> dict:
     """Before normalising: context slide types (objectives / recap / activity / toc aliases) and auto slides from top-level lists."""
     ctx = context_of(spec)
     s = dict(spec)
-    slides = [dict(x) for x in (s.get("slides") or s.get("items") or [])]
+    import deck_shape
+    slides = deck_shape.resolve([dict(x) for x in (s.get("slides") or s.get("items") or [])])  # {"type": "auto"} -> the type the content's shape asks for
     out = []
     for it in slides:
         t = str(it.get("type", ""))
@@ -235,6 +236,8 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
     ctx = context_of(spec)
     errs: list[str] = []
     warns: list[str] = []
+    import deck_shape
+    warns += deck_shape.notes(spec.get("slides") or [])  # every deck, with or without a context: the slide type follows the content's shape
     if not ctx:
         return errs, warns
     slides = spec.get("slides") or []
