@@ -26,6 +26,7 @@ THREE_SHA = "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
 SITE = "https://github.com/zln02/teacher-studio"
 THREE_HEAD = "<script>/* three.js r128 · MIT License · Copyright (c) 2010-2021 three.js authors */\n"
 COMPARE_DIR = HERE.parent / "compare"
+BARE_DIR = HERE / "compare-bare"
 CASES = [
     ("game", "중2 과학 빛 복습 게임", "기획 3안을 먼저 보여 주고, 고른 안으로 만들고 스스로 점검해요",
      "「첫 번째 부탁이에요. 왼쪽은 바로 만들었고, 오른쪽은 기획 3안부터 보여 줬어요. 저는 하나 골랐을 뿐이에요.」"),
@@ -43,10 +44,14 @@ def shot(case: str, side: str) -> str:
     import base64
     import io
     for ext in ("png", "jpg", "jpeg", "webp"):
-        p = COMPARE_DIR / f"{case}-{side}.{ext}"
+        p = BARE_DIR / f"{case}-{side}.{ext}"      # 「그냥 AI」 쪽: 화면 가득 다시 찍은 사진이 있으면 그것부터 (recapture_bare.py)
+        if side != "bare" or not p.exists():
+            p = COMPARE_DIR / f"{case}-{side}.{ext}"
         if p.exists():
             from PIL import Image
             im = Image.open(p).convert("RGB")
+            if im.height * 16 > im.width * 9:      # 틀(16:9)을 가득 채우게: 긴 그림은 윗부분만
+                im = im.crop((0, 0, im.width, im.width * 9 // 16))
             im.thumbnail((1616, 910))
             buf = io.BytesIO()
             im.save(buf, "JPEG", quality=84, optimize=True)
@@ -133,11 +138,31 @@ def data_uri(p: Path) -> str:
     return "data:image/jpeg;base64," + base64.b64encode(p.read_bytes()).decode()
 
 
+def ink_uri(p: Path, sat: float, tint, k: float) -> str:
+    """흐린 배경 사진(bd_* · hb_*)의 색을 빼고 먹빛 쪽으로 기울여요: 사진은 질감으로만 남고, 색은 덱의 강조색 둘만 남아요."""
+    import base64
+    import io
+    from PIL import Image, ImageEnhance
+    im = ImageEnhance.Color(Image.open(p).convert("RGB")).enhance(sat)
+    im = Image.blend(im, Image.new("RGB", im.size, tint), k)
+    buf = io.BytesIO()
+    im.save(buf, "JPEG", quality=82, optimize=True)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+INK = {"road": (0.32, (30, 33, 38), 0.34), "hall": (0.5, (38, 31, 25), 0.3), "kitchen": (1.0, (0, 0, 0), 0.0)}
+
+
+def backdrop_uri(p: Path) -> str:
+    sat, tint, k = INK.get(p.stem.split("_", 1)[1], (1.0, (0, 0, 0), 0.0))
+    return ink_uri(p, sat, tint, k) if k else data_uri(p)
+
+
 def cine_assets() -> tuple[str, str]:
     """(JS object of 3D assets, CSS with photo backdrops + no-WebGL stills)."""
     import json
-    js = {p.stem: data_uri(p) for p in sorted(ASSETS.glob("*.jpg")) if not p.stem.startswith("hb_")}
-    css = [":root{" + "".join(f"--hb-{p.stem[3:]}:url({data_uri(p)});" for p in sorted(ASSETS.glob("hb_*.jpg"))) + "}"]
+    js = {p.stem: (backdrop_uri(p) if p.stem.startswith("bd_") else data_uri(p)) for p in sorted(ASSETS.glob("*.jpg")) if not p.stem.startswith(("hb_", "p_"))}
+    css = [":root{" + "".join(f"--hb-{p.stem[3:]}:url({backdrop_uri(p)});" for p in sorted(ASSETS.glob("hb_*.jpg"))) + "}"]
     for p in sorted(STILLS.glob("*.jpg")):
         k = p.stem
         css.append(f'.slide[data-scene="{k}"] .fb{{background-image:url({data_uri(p)})}}'
@@ -176,7 +201,7 @@ def main() -> int:
     slides = (HERE / "slides.html").read_text(encoding="utf-8")
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
-    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness"))
+    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
@@ -190,19 +215,20 @@ def main() -> int:
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
 <title>AI에게 무기를 주면 · 교사 연수</title>
 <meta name="generator" content="교사 스튜디오 · 박진영 (hand-built deck-v2)">
 <!--
   Third-party code inlined below (see docs/training/deck-v2-NOTICE.md):
   - three.js r128 (npm three@0.128.0, build/three.min.js) · MIT License · Copyright (c) 2010-2021 three.js authors
   - three.js r128 examples/js post-processing (EffectComposer, RenderPass, ShaderPass, UnrealBloomPass, CopyShader, LuminosityHighPassShader) · MIT
-  - CC0 photos/textures: Poly Haven (evening_road_01, school_hall, blinds, asphalt_02, aerial_grass_rock, wood_table_001, marble_01), ambientCG (Paper003)
+  - CC0 photos/textures: Poly Haven (evening_road_01, school_hall, blinds, asphalt_02, wood_table_001, marble_01), ambientCG (Paper003)
   - anime.js 4.5.0 · MIT License · Copyright (c) 2025 Julian Garnier
   - Lucide icons 1.75.0 · ISC License · Copyright (c) 2026 Lucide Icons and Contributors
   - Pretendard 1.3.9 subset, renamed "TS Deck Sans" · SIL Open Font License 1.1 · Copyright (c) 2021 Kil Hyung-jin
   - Noto Sans KR subset (fallback) · SIL Open Font License 1.1
-  - CC0 models: Poly Haven horse_statue_01, round_spectacles (glTF, textures shrunk); RobotExpressive.glb by Tomás Laulhé (CC0 1.0, from three.js examples)
+  - CC0 models: Poly Haven round_spectacles (glTF, textures shrunk); RobotExpressive.glb by Tomás Laulhé (CC0 1.0, from three.js examples)
+  - CC0 photo: "Three horse power." by Bernard Spragg. NZ (Wikimedia Commons, CC0 1.0), cropped and graded
   - QR Code generator (Project Nayuki) · MIT License (drawn at build time)
 -->
 <style>

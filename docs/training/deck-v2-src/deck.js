@@ -296,7 +296,7 @@
     tint: function (c, op) { return new THREE.MeshPhysicalMaterial({ color: c, roughness: 0.05, metalness: 0, transparent: true, opacity: op, depthWrite: false, clearcoat: 1 }); }
   };
   // 장면마다 어떤 사진 환경을 쓰는지: 길(해 질 녘 시골길) · 시험장(학교 강당)
-  var SEG = { cover: 'road', reveal: 'road', horse: 'road', kitchenA: 'kitchen', kitchenB: 'kitchen', robot: 'none', made: 'road', swap: 'hall', recap: 'hall', story: 'hall', kit: 'hall', look: 'hall' };
+  var SEG = { cover: 'road', reveal: 'road', kitchenA: 'kitchen', kitchenB: 'kitchen', robot: 'none', made: 'road', swap: 'hall', recap: 'hall', story: 'hall', kit: 'hall', look: 'hall' };
   function envTex(seg) {
     if (GL.env[seg] !== undefined) return GL.env[seg];
     var im = IMG['env_' + seg]; if (!im) { GL.env[seg] = null; return null; }
@@ -310,7 +310,7 @@
     var bd = IMG['bd_' + seg];
     if (bd && !S.noBg) { var t = new THREE.Texture(bd); t.needsUpdate = true; t.center.set(0.5, 0.5); t.repeat.set(0.9, 0.9); sc.background = t; S.bg = t; }
     if (env) sc.traverse(function (o) { if (o.isHemisphereLight) o.intensity *= 0.3; else if (o.isDirectionalLight) o.intensity *= (S.lightK || 0.75); });
-    S.fx = Object.assign({ focus: [0.5, 0.5], r: [0.62, 0.6], blur: 0.7, bloom: 0.45, grain: 0.035, vig: 0.42 }, S.fx || {});
+    S.fx = Object.assign({ focus: [0.5, 0.5], r: [0.62, 0.6], blur: 0.7, bloom: 0.14, bloomT: 0.93, grain: 0.028, vig: 0.4 }, S.fx || {});
   }
   // 후처리 마지막 단: 얕은 초점(초점 밖 흐림) · 비네트 · 필름 그레인 · 부드러운 S 곡선
   function finalShader() {
@@ -336,7 +336,7 @@
     if (!THREE.EffectComposer || !THREE.UnrealBloomPass || FXMODE === 0) return;
     try {
       var c = new THREE.EffectComposer(GL.r), rp = new THREE.RenderPass(new THREE.Scene(), new THREE.PerspectiveCamera());
-      var bl = new THREE.UnrealBloomPass(new THREE.Vector2(960, 540), 0.45, 0.5, 0.9), fin = new THREE.ShaderPass(finalShader());
+      var bl = new THREE.UnrealBloomPass(new THREE.Vector2(960, 540), 0.14, 0.5, 0.93), fin = new THREE.ShaderPass(finalShader());
       c.addPass(rp); c.addPass(bl); c.addPass(fin);
       GL.fx = { c: c, rp: rp, bl: bl, fin: fin }; GL.fxOn = true;
     } catch (e) { GL.fx = null; GL.fxOn = false; }
@@ -454,7 +454,7 @@
     var acc = 0, frames = 0;
     function loop(now) {
       GL.raf = requestAnimationFrame(loop);
-      var dt = Math.min(0.2, (now - GL.last) / 1000); GL.last = now;
+      var dt = Math.max(0, Math.min(0.2, (now - GL.last) / 1000)); GL.last = now;
       // 느린 학교 PC: 평균 프레임이 40ms를 넘으면 해상도를 낮춰요
       acc += dt; frames++;
       // 느린 PC: 먼저 후처리를 끄고(점검용 fx=1이 아니면), 그래도 느리면 해상도를 낮춰요
@@ -485,10 +485,10 @@
      icons: lightbulb file-text layout-grid hammer pencil send gamepad-2 presentation clapperboard timer chart-column scale
      ===================================================================== */
   // 3D 재질 색은 여기 한 곳에서만 정해요 (어두운 키노트: 짙은 새틴 몸체 + 강조색 빛)
-  var P = { cream: 0x47557f, stone2: 0x5b6a98, paper: 0xe6ecf8, slab: 0x1b2443, sand: 0x6f7ca6, ground: 0x111a31, road: 0x0a0f1e, curb: 0x2a3558, roadBad: 0x222b48,
-    terra: 0x22d3ee, terra2: 0x22d3ee, teal: 0xa3e635, teal2: 0x84cc16, car: 0x3552a8, ink: 0x0e1322, brown: 0x2c3657, wood: 0x6b5442, amber: 0xf59e0b,
-    mint: 0x22d3ee, cool: 0x22d3ee, coral: 0xfb7185, dk: 0x120d18, dk2: 0x1d1626, skin: 0xe9bb97, hair: 0x1c130f, leaf: 0x3d6b54, idle: 0x3a4466 };
-  var CSS = { acc: '#22d3ee', acc2: '#a3e635', warm: '#f59e0b', ink: '#04131a', paper: '#eef2ff' };
+  var P = { cream: 0x4b4f5a, stone2: 0x646976, paper: 0xece8df, slab: 0x1d2026, sand: 0x7d8088, ground: 0x15171b, road: 0x0c0d10, curb: 0x2c2f37, roadBad: 0x25272e,
+    terra: 0x8fc4d6, terra2: 0x8fc4d6, teal: 0x8fc4d6, teal2: 0x6fa9be, car: 0x4a6a7a, ink: 0x101114, brown: 0x2f3138, wood: 0x6b5442, amber: 0xd9a85c,
+    mint: 0x8fc4d6, cool: 0x8fc4d6, coral: 0xd5806a, dk: 0x141210, dk2: 0x1f1c19, skin: 0xe9bb97, hair: 0x1c130f, leaf: 0x3d6b54, idle: 0x3d4048 };
+  var CSS = { acc: '#8fc4d6', acc2: '#8fc4d6', warm: '#d9a85c', ink: '#0e1418', paper: '#f3f0e9' };
   function M(color, o) { return new THREE.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.62, metalness: 0.0 }, o || {})); }
   function MF(color, o) { return M(color, Object.assign({ flatShading: true, roughness: 0.78 }, o || {})); }
   function E(color, k, o) { return M(color, Object.assign({ emissive: color, emissiveIntensity: k === undefined ? 0.8 : k }, o || {})); }
@@ -503,8 +503,8 @@
     key.castShadow = true;
     var s = size || 12, c = key.shadow.camera; c.left = -s; c.right = s; c.top = s; c.bottom = -s; c.near = 1; c.far = 60;
     key.shadow.mapSize.set(1024, 1024); key.shadow.bias = -0.0005; key.shadow.normalBias = 0.02;
-    var fill = new THREE.DirectionalLight(warmSeg ? 0xf59e0b : 0x6d8cff, warmSeg ? 0.32 : 0.3); fill.position.set(-8, 4, 6); scene.add(fill);
-    var rim = new THREE.DirectionalLight(0x22d3ee, warmSeg ? 0.9 : 1.0); rim.position.set(-4, 7, -10); scene.add(rim);
+    var fill = new THREE.DirectionalLight(warmSeg ? 0xe8c48a : 0xa9b6c8, warmSeg ? 0.3 : 0.28); fill.position.set(-8, 4, 6); scene.add(fill);
+    var rim = new THREE.DirectionalLight(warmSeg ? 0xf1dcb8 : 0xcfe0e8, warmSeg ? 0.5 : 0.55); rim.position.set(-4, 7, -10); scene.add(rim);
     return key;
   }
   function rrShape(w, h, r) {
@@ -569,17 +569,17 @@
   function card(w, h, color, text, fg, icon) {
     // 색은 하나로: 짙은 남색 유리 타일 + 강조색 아이콘 (color가 호박색이면 따뜻한 강조). 카드마다 다른 색을 쓰지 않아요.
     var g = new THREE.Group(), acc = color === P.amber ? CSS.warm : CSS.acc;
-    var body = rbox(w, h, 0.16, Math.min(w, h) * 0.16, PH.plastic(0x101a36, { roughness: 0.22, clearcoat: 1, envMapIntensity: 1.2 })); g.add(body);
+    var body = rbox(w, h, 0.16, Math.min(w, h) * 0.16, PH.plastic(0x1b1d22, { roughness: 0.6, clearcoat: 0.12, envMapIntensity: 0.5 })); g.add(body);
     var W = 512, H = Math.round(512 * h / w), img = null;
     var t = tex(W, H, paint);
     function paint(c) {
-      var gr = c.createLinearGradient(0, 0, W * 0.4, H); gr.addColorStop(0, '#22335f'); gr.addColorStop(1, '#0d152d');
+      var gr = c.createLinearGradient(0, 0, W * 0.4, H); gr.addColorStop(0, '#2b2e36'); gr.addColorStop(1, '#1b1d22');
       c.fillStyle = gr; rr2d(c, 3, 3, W - 6, H - 6, 58); c.fill();
-      var sh = c.createLinearGradient(0, 0, 0, H * 0.5); sh.addColorStop(0, 'rgba(255,255,255,.16)'); sh.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sh; rr2d(c, 3, 3, W - 6, H * 0.5, 58); c.fill();
-      c.strokeStyle = 'rgba(255,255,255,.3)'; c.lineWidth = 4; rr2d(c, 5, 5, W - 10, H - 10, 56); c.stroke();
-      c.fillStyle = '#eef2ff'; c.textAlign = 'center'; c.textBaseline = 'middle';
-      c.font = '800 ' + (text.length > 4 ? 64 : 80) + 'px ' + FONT;
-      if (icon) { if (img) { c.shadowColor = acc; c.shadowBlur = 26; c.drawImage(img, W / 2 - 66, H * 0.35 - 66, 132, 132); c.shadowBlur = 0; } c.fillText(text, W / 2, H * 0.76); }
+      var sh = c.createLinearGradient(0, 0, 0, H * 0.5); sh.addColorStop(0, 'rgba(255,255,255,.06)'); sh.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sh; rr2d(c, 3, 3, W - 6, H * 0.5, 58); c.fill();
+      c.strokeStyle = 'rgba(243,240,233,.2)'; c.lineWidth = 3; rr2d(c, 5, 5, W - 10, H - 10, 56); c.stroke();
+      c.fillStyle = '#f3f0e9'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.font = '700 ' + (text.length > 4 ? 60 : 74) + 'px ' + FONT;
+      if (icon) { if (img) { c.drawImage(img, W / 2 - 60, H * 0.35 - 60, 120, 120); } c.fillText(text, W / 2, H * 0.76); }
       else c.fillText(text, W / 2, H / 2 + 4);
     }
     if (icon) iconImg(icon, acc, function (im) { img = im; t.redraw(paint); });
@@ -625,7 +625,7 @@
       g.userData.cam = cam; g.userData.ring = ring;
     }
     if (o.disp) {
-      var t = tex(256, 160, function (c, w, h) { c.fillStyle = 'rgba(34,211,238,0.92)'; rr2d(c, 8, 8, w - 16, h - 16, 26); c.fill(); c.fillStyle = '#0d2a30'; c.font = '800 96px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(o.dispText || '③', w / 2, h / 2 + 4); });
+      var t = tex(256, 160, function (c, w, h) { c.fillStyle = 'rgba(143,196,214,0.92)'; rr2d(c, 8, 8, w - 16, h - 16, 26); c.fill(); c.fillStyle = '#0d2a30'; c.font = '800 96px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(o.dispText || '③', w / 2, h / 2 + 4); });
       var d = plane(0.36, 0.22, t, { opacity: 0 }); d.position.set(0.62, 0.05, 0.012); g.add(d); g.userData.disp = d;
     }
     return shadows(g);
@@ -713,7 +713,7 @@
     var g = new THREE.Group();
     var frame = rbox(2.1, 1.4, 0.12, 0.1, M(P.ink, { roughness: 0.35 })); frame.position.y = 1.0; g.add(frame);
     var t = tex(512, 320, function (c, w, h) {
-      c.fillStyle = '#eef2ff'; c.fillRect(0, 0, w, h);
+      c.fillStyle = '#f3f0e9'; c.fillRect(0, 0, w, h);
       c.fillStyle = CSS.acc; rr2d(c, 230, 34, 250, 64, 26); c.fill(); c.fillStyle = CSS.ink; c.font = '700 30px ' + FONT; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('3번 문제 풀어 줘', 254, 67);
       c.fillStyle = '#f1e2cf'; rr2d(c, 32, 130, 300, 120, 28); c.fill(); c.fillStyle = '#2b2019'; c.font = '800 44px ' + FONT; c.fillText('답: ③', 62, 178); c.fillStyle = '#a99784'; rr2d(c, 62, 212, 220, 14, 7); c.fill();
     });
@@ -753,19 +753,13 @@
   function pulseMesh(r, color) {
     var g = new THREE.Group();
     g.add(noSh(sph(r, Bm(color || P.cool))));
-    var h = blob(r * 4, 0, color === P.amber ? 'rgba(245,158,11,0.75)' : 'rgba(34,211,238,0.75)'); h.rotation.x = 0; g.add(h); g.userData.halo = h;
+    var h = blob(r * 4, 0, color === P.amber ? 'rgba(217,168,92,0.3)' : 'rgba(143,196,214,0.3)'); h.rotation.x = 0; g.add(h); g.userData.halo = h;
     return g;
   }
   function pathTube(curve, r, color, op) { return noSh(new THREE.Mesh(new THREE.TubeGeometry(curve, 80, r, 8, false), Bm(color || P.cool, { transparent: true, opacity: op === undefined ? 0.25 : op, depthWrite: false }))); }
   function face(o, cam) { o.quaternion.copy(cam.quaternion); }
 
-  // 땅: 넓은 풀밭(CC0 PBR) · 멀리는 안개로 사진 배경과 이어져요
-  function groundBox(w, d, color, x, z) {
-    var has = !!IMG.t_aerial_grass_rock_diff;
-    var m = new THREE.Mesh(new THREE.PlaneGeometry(90, 90), M(has ? 0x6c7766 : color, Object.assign({ roughness: 1 }, pbr('aerial_grass_rock', 26, 26))));
-    m.rotation.x = -Math.PI / 2; m.position.set(x || 0, -0.002, z || 0); m.receiveShadow = true; return m;
-  }
-  function fogFor(scene, seg, near, far) { scene.fog = new THREE.Fog(seg === 'hall' ? 0x2a1d26 : seg === 'kitchen' ? 0x2a1810 : 0x2c3a52, near, far); }
+  function fogFor(scene, seg, near, far) { scene.fog = new THREE.Fog(seg === 'hall' ? 0x241f1a : seg === 'kitchen' ? 0x2a1810 : 0x23262c, near, far); }
 
   var SCENES = {};
 
@@ -809,7 +803,7 @@
   /* 「하네스」 한 단어: 글자 셋이 위에서 떨어져 꽂히고 → 충격파·빛 조각 → 빛이 훑고 → 카메라가 다가가 멈춰요 (약 2.6초) */
   function glyphTex(ch, fill) {
     return tex(512, 512, function (c, w, h) {
-      if (fill) { var gr = c.createLinearGradient(0, 70, 0, 470); gr.addColorStop(0, '#ffffff'); gr.addColorStop(0.5, '#d6f6ff'); gr.addColorStop(1, '#4fc8e6'); c.fillStyle = gr; } else c.fillStyle = '#ffffff';
+      if (fill) { var gr = c.createLinearGradient(0, 70, 0, 470); gr.addColorStop(0, '#fbf8f1'); gr.addColorStop(0.55, '#f1ebdf'); gr.addColorStop(1, '#d8cfbd'); c.fillStyle = gr; } else c.fillStyle = '#ffffff';
       c.font = '900 440px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(ch, w / 2, h / 2 + 24);
     });
   }
@@ -817,38 +811,38 @@
     var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, 16 / 9, 1.5, 120);
     rig(scene, false, 8, 0, 0);
     fogFor(scene, 'road', 12, 42);
-    var fl = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), M(0x262c3a, Object.assign({ roughness: 0.5, metalness: 0.25, envMapIntensity: 0.5 }, pbr('asphalt_02', 24, 24))));
+    var fl = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), M(0x1f2023, Object.assign({ roughness: 0.82, metalness: 0.0, envMapIntensity: 0.25 }, pbr('asphalt_02', 24, 24))));
     fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; scene.add(fl);
-    var back = new THREE.DirectionalLight(0x22d3ee, 1.4); back.position.set(0, 4, -8); scene.add(back);
+    var back = new THREE.DirectionalLight(0xffe6c2, 0.55); back.position.set(-3, 5, -8); scene.add(back);
     var sweepU = { value: -6 };
     var chars = ['하', '네', '스'], SZ = 2.0, GAP = 1.72, LAY = 18, DEP = 0.013;
     var sideM = [];
     var letters = chars.map(function (ch, i) {
       var g = new THREE.Group(), face = glyphTex(ch, true), mask = glyphTex(ch, false);
-      var fm = new THREE.MeshStandardMaterial({ map: face, alphaTest: 0.5, metalness: 0.15, roughness: 0.3, emissive: 0xffffff, emissiveMap: face, emissiveIntensity: 0.5, envMapIntensity: 0.6 });
+      var fm = new THREE.MeshStandardMaterial({ map: face, alphaTest: 0.5, metalness: 0.0, roughness: 0.62, emissive: 0xffffff, emissiveMap: face, emissiveIntensity: 0.46, envMapIntensity: 0.3 });
       var front = new THREE.Mesh(new THREE.PlaneGeometry(SZ, SZ), fm); g.add(front);
-      var sm = new THREE.MeshStandardMaterial({ color: 0x0c2f4a, alphaMap: mask, alphaTest: 0.5, transparent: false, metalness: 0.6, roughness: 0.35, emissive: 0x0b5f7a, emissiveIntensity: 0.35 });
+      var sm = new THREE.MeshStandardMaterial({ color: 0x8a6d3e, alphaMap: mask, alphaTest: 0.5, transparent: false, metalness: 0.75, roughness: 0.42, emissive: 0x3a2c14, emissiveIntensity: 0.3 });
       sideM.push(sm);
       for (var k = 1; k <= LAY; k++) { var l = new THREE.Mesh(front.geometry, sm); l.position.z = -k * DEP; l.castShadow = k === LAY; g.add(l); }
       var sw = new THREE.Mesh(front.geometry, new THREE.ShaderMaterial({ uniforms: { map: { value: mask }, p: sweepU }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
         vertexShader: 'varying vec2 vUv; varying vec3 vW; void main(){ vUv = uv; vec4 w = modelMatrix * vec4(position, 1.0); vW = w.xyz; gl_Position = projectionMatrix * viewMatrix * w; }',
-        fragmentShader: 'uniform sampler2D map; uniform float p; varying vec2 vUv; varying vec3 vW; void main(){ float a = texture2D(map, vUv).a; float d = vW.x * 0.9 + vW.y * 0.45 - p; float band = exp(-d * d * 5.0); gl_FragColor = vec4(vec3(1.0, 0.97, 0.88) * band * a * 1.5, 1.0); }' }));
+        fragmentShader: 'uniform sampler2D map; uniform float p; varying vec2 vUv; varying vec3 vW; void main(){ float a = texture2D(map, vUv).a; float d = vW.x * 0.9 + vW.y * 0.45 - p; float band = exp(-d * d * 5.0); gl_FragColor = vec4(vec3(1.0, 0.96, 0.86) * band * a * 0.55, 1.0); }' }));
       sw.position.z = 0.003; noSh(sw); g.add(sw);
       g.userData.x = (i - 1) * GAP; g.userData.t0 = 0.2 + i * 0.2;
       scene.add(g); return g;
     });
     // 바닥 빛 웅덩이 · 충격파 고리 셋 · 빛 조각
-    var pool = blob(3.8, 0, 'rgba(34,211,238,0.14)'); pool.position.y = 0.01; scene.add(pool);
-    var rings = [0, 1, 2, 3].map(function () { var r = noSh(new THREE.Mesh(new THREE.RingGeometry(0.92, 1.0, 96), Bm(0x7fe9ff, { transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide }))); r.rotation.x = -Math.PI / 2; r.position.y = 0.02; scene.add(r); return r; });
+    var pool = blob(4.6, 0, 'rgba(255,232,196,0.07)'); pool.position.y = 0.01; scene.add(pool);
+    var rings = [0, 1, 2, 3].map(function () { var r = noSh(new THREE.Mesh(new THREE.RingGeometry(0.92, 1.0, 96), Bm(0xe9e2d2, { transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }))); r.rotation.x = -Math.PI / 2; r.position.y = 0.02; scene.add(r); return r; });
     var NP = 360, ppos = new Float32Array(NP * 3), pv = [], p0 = [];
     for (var k = 0; k < NP; k++) { var a = k * 2.39996, r = (k * 0.618034) % 1; p0.push(V((r - 0.5) * 5.4, 0.05, ((k * 0.3819) % 1 - 0.5) * 0.6)); pv.push(V(Math.cos(a) * (1 + r * 3.2), 1.2 + ((k * 0.7548) % 1) * 4.2, Math.sin(a) * (0.6 + r * 2.4))); }
     var pgeo = new THREE.BufferGeometry(); pgeo.setAttribute('position', new THREE.BufferAttribute(ppos, 3));
-    var pmat = new THREE.PointsMaterial({ color: 0xaef4ff, size: 0.06, map: dotTex(), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0 });
+    var pmat = new THREE.PointsMaterial({ color: 0xcfc4ae, size: 0.045, map: dotTex(), transparent: true, depthWrite: false, opacity: 0 });
     var pts = noSh(new THREE.Points(pgeo, pmat)); pts.frustumCulled = false; scene.add(pts);
     var L = [lbl('HARNESS', 'hx', V(0, -0.35, 0.6))];
     var Y = SZ / 2 - 0.02, TI = 0.2 + 2 * 0.2 + 0.42;   // 마지막 글자가 닿는 때
     var CA = V(0, 2.4, 17), CB = V(0, 1.15, 9.6), LK = V(0, 0.95, 0);
-    var S = { scene: scene, camera: cam, labels: L, age: 0, noDrift: true, lightK: 0.6, fx: { bloom: 0.32, blur: 0.5, r: [0.62, 0.5], vig: 0.5 },
+    var S = { scene: scene, camera: cam, labels: L, age: 0, noDrift: true, lightK: 0.6, fx: { bloom: 0.1, blur: 0.5, r: [0.62, 0.5], vig: 0.46 },
       setStep: function (n, snap) { if (snap) S.age = REDUCED ? 99 : 0; },
       finish: function () { S.age = 99; },
       update: function (dt, t, snap) {
@@ -863,17 +857,17 @@
           g.scale.set(1 + sq * 0.5, 1 - sq, 1);
           if (A > 3) g.position.y += Math.sin(t * 1.1 + i * 0.9) * 0.025;
           var rg = rings[i], lt = land;
-          rg.position.x = g.userData.x; rg.scale.setScalar(0.4 + Math.max(0, lt) * 3.2); rg.material.opacity = lt > 0 && lt < 0.5 ? (1 - lt / 0.5) * 0.7 : 0;
+          rg.position.x = g.userData.x; rg.scale.setScalar(0.4 + Math.max(0, lt) * 3.2); rg.material.opacity = lt > 0 && lt < 0.5 ? (1 - lt / 0.5) * 0.16 : 0;
         });
         var tau = A - TI;
-        var big = rings[3]; big.scale.setScalar(0.5 + Math.max(0, tau) * 11); big.material.opacity = tau > 0 && tau < 0.9 ? (1 - tau / 0.9) * 0.9 : 0;
+        var big = rings[3]; big.scale.setScalar(0.5 + Math.max(0, tau) * 11); big.material.opacity = tau > 0 && tau < 0.9 ? (1 - tau / 0.9) * 0.2 : 0;
         pool.material.opacity = tau > 0 ? Math.min(1, tau * 3) * (0.75 + 0.6 * Math.exp(-tau * 4)) : 0;
         var tt = Math.max(0, Math.min(tau, 1.8));
         for (var k = 0; k < NP; k++) { var o = p0[k], v = pv[k]; ppos[k * 3] = o.x + v.x * tt; ppos[k * 3 + 1] = Math.max(0.02, o.y + v.y * tt - 3.4 * tt * tt); ppos[k * 3 + 2] = o.z + v.z * tt; }
         pgeo.attributes.position.needsUpdate = true;
-        pmat.opacity = tau > 0 && tau < 1.8 ? 1 - tau / 1.8 : 0;
+        pmat.opacity = tau > 0 && tau < 1.8 ? (1 - tau / 1.8) * 0.5 : 0;
         sweepU.value = -6 + Math.max(0, Math.min(1, (A - 1.3) / 0.9)) * 12;
-        S.fx.bloom = 0.32 + (tau > 0 ? 1.2 * Math.exp(-tau * 3) : 0);
+        S.fx.bloom = 0.1 + (tau > 0 ? 0.22 * Math.exp(-tau * 3) : 0);
         var push = 1 - Math.pow(1 - Math.min(1, A / 2.6), 3);
         cam.position.lerpVectors(CA, CB, push);
         if (tau > 0 && tau < 0.6) { cam.position.x += Math.sin(tau * 70) * 0.05 * Math.exp(-tau * 7); cam.position.y += Math.cos(tau * 63) * 0.04 * Math.exp(-tau * 7); }
@@ -893,104 +887,6 @@
     return noSh(new THREE.Mesh(new THREE.RingGeometry(0.8, 1.0, 64), Bm(color || P.cool, { transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })));
   }
   function ringPop(r, pos, age, size) { r.position.copy(pos); r.scale.setScalar(0.05 + Math.min(1, age / 0.5) * (size || 0.6)); r.material.opacity = age >= 0 && age < 0.5 ? (1 - age / 0.5) * 0.9 : 0; }
-
-  /* =====================================================================
-     말과 하네스(마구): 힘센 말에 목걸이·뱃대·끄는 줄을 채워 수레를 원하는 쪽으로 끌어요 (안장 아님)
-     ===================================================================== */
-  // 옆에서 본 말 실루엣 (오른쪽을 봐요). 0~100 좌표 → 0.03배
-  var HORSE = [[64, 74], [56, 72], [40, 71], [28, 72], [20, 70], [16, 66], [12, 60], [10, 48], [12, 39], [15, 47], [17, 57], [18, 55], [20, 46], [24, 38], [24, 26], [22, 12], [23, 2], [29, 2], [28, 12], [30, 26], [32, 36],
-    [34, 30], [35, 12], [34, 2], [40, 2], [40, 12], [39, 30], [41, 40], [55, 40], [60, 37], [61, 26], [61, 12], [60, 2], [66, 2], [66, 12], [66, 28], [68, 33], [70, 26], [71, 12], [70, 2], [76, 2], [76, 12], [75, 28],
-    [74, 42], [76, 52], [78, 60], [84, 69], [90, 75], [96, 71], [101, 73], [102, 79], [97, 88], [93, 96], [92, 101], [90, 105], [88, 99], [85, 97], [78, 89], [70, 81]];
-  var HORSE_NECK = [0.1, 0.7];   // [앞으로, 높이 비율] 사진으로 맞춘 값
-  function horseMesh() {
-    var m = modelOf('horse', 3.0);
-    if (!m) return horseShape();
-    m.updateMatrixWorld(true);
-    var H = m.userData.dims.y, head = V(0, 0, 0), chest = V(0, 0, 0), nh = 0, nc = 0, v = V(0, 0, 0);
-    m.traverse(function (o) {
-      if (!o.isMesh || /base/.test(o.material.name)) return;
-      var pa = o.geometry.attributes.position;
-      for (var i = 0; i < pa.count; i += 2) { v.fromBufferAttribute(pa, i).applyMatrix4(o.matrixWorld); if (v.y > H * 0.86) { head.add(v); nh++; } else if (v.y > H * 0.5 && v.y < H * 0.64) { chest.add(v); nc++; } }
-    });
-    head.divideScalar(nh || 1); chest.divideScalar(nc || 1);
-    var g = new THREE.Group(), turn = new THREE.Group(); turn.rotation.y = Math.atan2(head.z, head.x); turn.add(m); g.add(turn);
-    turn.updateMatrixWorld(true); head.applyAxisAngle(V(0, 1, 0), turn.rotation.y); chest.applyAxisAngle(V(0, 1, 0), turn.rotation.y);
-    var dir = head.clone().sub(chest).normalize();
-    // 목 밑동(어깨 위): 모델 높이의 약 65% 지점, 머리 쪽으로 살짝 앞. 목걸이는 목을 감싸는 타원 고리(앞으로 기울임)
-    m.traverse(function (o) { if (o.isMesh) { o.material = o.material.clone(); o.material.color.multiplyScalar(0.8); o.material.envMapIntensity = 0.7; o.material.roughness = Math.max(0.55, o.material.roughness || 0); } });
-    var fw = V(head.x, 0, head.z).normalize();
-    var neck = V(fw.x * HORSE_NECK[0], H * HORSE_NECK[1], fw.z * HORSE_NECK[0]);
-    g.userData = { H: H, head: head, chest: chest, neck: neck, dir: V(fw.x * 0.5, 0.82, fw.z * 0.5 + 0.28).normalize(), fw: fw };
-    return shadows(g);
-  }
-  function horseShape() {
-    var g = new THREE.Group(), K = 0.03, D = 0.62;
-    var sh = new THREE.Shape(); HORSE.forEach(function (p, i) { if (i) sh.lineTo(p[0] * K, p[1] * K); else sh.moveTo(p[0] * K, p[1] * K); }); sh.closePath();
-    var geo = new THREE.ExtrudeGeometry(sh, { depth: D, bevelEnabled: true, bevelThickness: 0.2, bevelSize: 0.09, bevelSegments: 8, curveSegments: 4 });
-    geo.translate(-55 * K, 0, -D / 2);
-    var body = new THREE.Mesh(geo, PH.metal(0x9a7552, 0.27, { envMapIntensity: 1.4 })); g.add(body);
-    [-1, 1].forEach(function (s) { var eye = sph(0.045, PH.plastic(0x0a0806, { roughness: 0.05 })); eye.position.set(93 * K - 55 * K, 89 * K, s * (D / 2 + 0.17)); g.add(eye); });
-    // 갈기: 목덜미를 따라 짧은 띠
-    var mane = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([V(64 * K, 75 * K, 0), V(72 * K, 83 * K, 0), V(80 * K, 92 * K, 0), V(86 * K, 99 * K, 0)].map(function (v) { v.x -= 55 * K; return v; })), 20, 0.07, 8), PH.plastic(0x1e140e, { roughness: 0.6, clearcoat: 0.2 }));
-    g.add(mane);
-    g.userData = { H: 3.1, neck: V(0.7, 2.05, 0), chest: V(0.4, 1.7, 0), dir: V(0.6, 0.8, 0) };
-    return shadows(g);
-  }
-  // 수레 (나무 + 금속 바퀴 테)
-  function cartMesh() {
-    var g = new THREE.Group(), wood = M(IMG.t_wood_table_001_diff ? 0xe2c9a6 : P.wood, Object.assign({ roughness: 0.7 }, pbr('wood_table_001', 0.6, 0.6))), iron = PH.metal(0x3b3d42, 0.45);
-    var bed = rbox(1.9, 1.3, 0.14, 0.05, wood); bed.rotation.x = -Math.PI / 2; bed.position.set(0, 1.0, 0); g.add(bed);
-    [[0, 1.25, 0.6, 1.9, 0.36, 0.08], [0, 1.25, -0.6, 1.9, 0.36, 0.08], [-0.92, 1.25, 0, 0.08, 0.36, 1.2]].forEach(function (b) { var m = rbox(b[3], b[4], b[5], 0.03, wood); m.position.set(b[0], b[1], b[2]); g.add(m); });
-    var wheels = [-1, 1].map(function (s) {
-      var w = new THREE.Group(); w.position.set(-0.1, 0.62, s * 0.78); g.add(w);
-      var rim = new THREE.Mesh(new THREE.TorusGeometry(0.58, 0.05, 10, 40), iron); w.add(rim);
-      var hub = cyl(0.1, 0.1, 0.16, iron, 16); hub.rotation.x = Math.PI / 2; w.add(hub);
-      for (var k = 0; k < 8; k++) { var sp = rbox(0.05, 1.1, 0.05, 0.02, wood); sp.rotation.z = k / 8 * Math.PI; w.add(sp); }
-      return w;
-    });
-    // 끌채 두 개: 수레에서 말 옆구리까지
-    [-1, 1].forEach(function (s) { var sf = rbox(2.6, 0.07, 0.07, 0.03, wood); sf.position.set(2.15, 1.12, s * 0.5); sf.rotation.z = 0.06; g.add(sf); });
-    g.userData.wheels = wheels;
-    return shadows(g);
-  }
-  /* 하네스의 유래: 도자기 말 조각상 목에 채운 마구(목걸이 · 가슴띠)를 가까이서. 짧고 조용하게 (안장 아님) */
-  SCENES.horse = function () {
-    var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(26, 16 / 9, 0.5, 200);
-    rig(scene, false, 6, 0, 0);
-    scene.add(groundBox(30, 30, P.ground, 0, 0)); fogFor(scene, 'road', 9, 36);
-    var horse = horseMesh(); scene.add(horse);
-    var hd = horse.userData, NK = hd.neck.clone(), CH = hd.chest.clone();
-    var leather = PH.plastic(0x3a2416, { roughness: 0.42, clearcoat: 0.5 }), brass = PH.metal(0xd4ab52, 0.22);
-    var collar = new THREE.Group();
-    var c1 = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.07, 16, 56), leather); c1.scale.set(1.2, 1, 1.5); collar.add(c1);
-    var c2 = new THREE.Mesh(new THREE.TorusGeometry(0.335, 0.02, 8, 56), brass); c2.scale.set(1.2, 1, 1); c2.position.z = 0.02; collar.add(c2);
-    [-1, 1].forEach(function (s) { var r = new THREE.Mesh(new THREE.TorusGeometry(0.055, 0.017, 8, 24), brass); r.position.set(0, s * 0.37, 0.0); r.rotation.y = Math.PI / 2; collar.add(r); });
-    collar.quaternion.setFromUnitVectors(V(0, 0, 1), hd.dir);
-    var girth = new THREE.Group();
-    var gb = new THREE.Mesh(new THREE.TorusGeometry(0.36, 0.045, 10, 48), leather); gb.scale.set(1, 1.15, 1); girth.add(gb);
-    var buckle = rbox(0.1, 0.14, 0.04, 0.02, brass); buckle.position.set(0, -0.4, 0.02); girth.add(buckle);
-    girth.quaternion.setFromUnitVectors(V(0, 0, 1), hd.dir.clone().lerp(V(1, 0, 0), 0.5).normalize());
-    var parts = [[collar, NK]].map(function (d, i) { var o = shadows(d[0]); o.userData.seat = d[1]; o.userData.from = d[1].clone().add(V(0.8, 1.6 + i * 0.3, 1.2)); var r = snapRing(0x7fe9ff); scene.add(r); o.userData.ring = r; scene.add(o); return o; });
-    var L = [lbl('하네스(마구)', 'ck', collar, [-0.8, -0.16, 0.3])];
-    var S = { scene: scene, camera: cam, labels: L, t: 0, drift: 0.5, lightK: 0.55, focusObj: collar, fx: { r: [0.42, 0.6], blur: 0.8, bloom: 0.3 },
-      setStep: function (n, snap) { if (snap) S.t = REDUCED ? 9 : 0; },
-      finish: function () { S.t = 9; },
-      update: function (dt, t, snap) {
-        if (!snap) S.t += dt;
-        var flash = 0;
-        parts.forEach(function (p, i) {
-          var d = p.userData, u = Math.max(0, Math.min(1, (S.t - 0.4 - i * 0.35) / 0.7)), q = ease(u), age = S.t - 0.4 - i * 0.35 - 0.7;
-          p.position.lerpVectors(d.from, d.seat, q); p.position.y += Math.sin(Math.PI * q) * 0.4;
-          p.visible = u > 0;
-          ringPop(d.ring, d.seat, age, 0.8); d.ring.lookAt(cam.position);
-          flash = Math.max(flash, age > 0 && age < 0.5 ? 1 - age / 0.5 : 0);
-        });
-        if (S.fx) S.fx.bloom = 0.3 + flash * 0.5;
-        L[0].el.style.opacity = S.t > 1.6 ? 1 : 0;
-        cam.position.copy(NK).add(V(0.7, 0.5, 5.9)); cam.lookAt(NK.x - 1.15, NK.y - 0.05, NK.z);
-      } };
-    return S;
-  };
 
   /* =====================================================================
      김치볶음밥 이야기: 진짜 부엌(CC0 HDRI) · 대리석 조리대 · 웍 · 그릇 · 밥알 · 김치 · 달걀
@@ -1072,8 +968,8 @@
     var lid = new THREE.Group(); lid.position.set(0, 0.4, -0.5); g.add(lid);
     var lp = rbox(1.5, 0.08, 1.0, 0.05, PH.tint(0x9fe8f5, 0.35)); lp.position.set(0, 0, 0.5); lid.add(lp);
     var lr = rbox(1.56, 0.04, 1.06, 0.03, PH.glass()); lr.position.set(0, 0.03, 0.5); lid.add(lr);
-    var glow = blob(0.9, 0, 'rgba(34,211,238,0.85)'); glow.position.y = 0.42; g.add(glow);
-    var t = tex(512, 128, function (c, w, h) { c.fillStyle = '#22d3ee'; c.font = '900 64px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('하네스', w / 2, h / 2 + 4); });
+    var glow = blob(0.9, 0, 'rgba(143,196,214,0.85)'); glow.position.y = 0.42; g.add(glow);
+    var t = tex(512, 128, function (c, w, h) { c.fillStyle = '#8fc4d6'; c.font = '900 64px ' + FONT; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('하네스', w / 2, h / 2 + 4); });
     var lab = plane(0.9, 0.22, t); lab.position.set(0, 0.2, 0.505); g.add(lab);
     g.userData = { lid: lid, glow: glow };
     return shadows(g);
@@ -1126,7 +1022,7 @@
       recipe = recipeCard(); jar = jarMesh(); egg = eggMesh(); spatPro = new THREE.Group();
       var sb = rbox(0.34, 0.02, 0.26, 0.02, PH.metal(0xd9dde3, 0.18)); spatPro.add(sb); var sh3 = cyl(0.025, 0.025, 0.7, PH.metal(0x9aa1ab, 0.25), 10); sh3.rotation.x = Math.PI / 2; sh3.position.z = 0.45; spatPro.add(sh3); shadows(spatPro);
       [[recipe, V(3.3, 1.35, 0.1), V(0, -0.35, 0.1)], [jar, V(1.9, 0.0, -0.9), V(0, 0, 0)], [egg, V(3.6, 0.0, 0.7), V(0, 0, 0)], [spatPro, V(2.4, 0.03, 0.75), V(0, 0.9, 0)]].forEach(function (d, i) {
-        var o = d[0]; o.userData.seat = d[1]; o.userData.rot = d[2]; o.userData.snapT = -1; var r = snapRing(0x7fe9ff); scene.add(r); o.userData.ring = r; scene.add(o); items.push(o);
+        var o = d[0]; o.userData.seat = d[1]; o.userData.rot = d[2]; o.userData.snapT = -1; var r = snapRing(0xe9e2d2); scene.add(r); o.userData.ring = r; scene.add(o); items.push(o);
       });
       L.push(lbl('셰프 레시피', 'tag cool', recipe, [0, 0.62, 0]), lbl('좋은 재료', 'tag cool', jar, [0, 0.95, 0]), lbl('전문 도구', 'tag cool', spatPro, [0, 0.3, 0.3]), lbl('한 번에 완성 ✓', 'ck', plate, [0, 1.1, 0]));
     } else {
@@ -1250,7 +1146,7 @@
     return noSh(new THREE.Mesh(new THREE.PlaneGeometry(w, h), Bm(0xffffff, { map: t, transparent: true, depthWrite: false })));
   }
   var KP = { wall: '#f1c88e', wallLo: '#d99a5e', floor: '#c58a55', floorLine: '#9c6436', cab: 0x1f6f7a, door: 0x2b8792, top: 0xfff0d8, knob: 0xf2b53a, wood: 0xb5733c,
-    tomato: 0xe24a2c, mustard: 0xf2b53a, leaf: 0x58b45c, mintJar: 0x7fcbbb, white: 0xffffff, steel: 0x3b3f4e, robot: 0x1fb4d6, robotJoint: 0xf2f6fb, robotEye: 0x17203a };
+    tomato: 0xe24a2c, mustard: 0xf2b53a, leaf: 0x58b45c, mintJar: 0x7fcbbb, white: 0xffffff, steel: 0x3b3f4e, robot: 0x4fa8c4, robotJoint: 0xf2f6fb, robotEye: 0x17203a };
   function toonKitchen(scene) {
     var Y = -1.2, WZ = -3.4;
     // 벽: 가운데가 밝고 모서리·바닥 쪽이 어두운 그림(구워 넣은 그늘)
@@ -1585,7 +1481,7 @@
     var tB = [cB1, cB2, cB3, cB4].map(function (c) { return pathTube(c, 0.025, P.cool, 0); });
     tA.concat(tBn, tB).forEach(function (m) { scene.add(m); });
     var pA = pulseMesh(0.07, P.amber), pB = pulseMesh(0.07, P.cool); scene.add(pA); scene.add(pB);
-    var hlA = blob(1.6, 0, 'rgba(245,158,11,0.28)'), hlB = blob(1.6, 0, 'rgba(245,158,11,0.28)'); hlA.position.copy(aiA.position); hlB.position.copy(aiB.position); hlA.rotation.x = hlB.rotation.x = 0; scene.add(hlA); scene.add(hlB);
+    var hlA = blob(1.6, 0, 'rgba(217,168,92,0.28)'), hlB = blob(1.6, 0, 'rgba(217,168,92,0.28)'); hlA.position.copy(aiA.position); hlB.position.copy(aiB.position); hlA.rotation.x = hlB.rotation.x = 0; scene.add(hlA); scene.add(hlB);
     var L = [
       lbl('평소', 'row', V(-7.1, Y0, 0)), lbl('부정행위', 'row bad', V(-7.1, Y1, 0)),
       lbl('손으로 쳐서 넣기', 'tag', kbA, [0, -0.55, 0.6]), lbl('같은 AI', 'tag ai', aiA, [0, 0.95, 0]), lbl('화면에서 눈으로 읽기', 'tag', monA, [0, -0.15, 0.6]),
@@ -1621,7 +1517,7 @@
         tBn[0].material.opacity = tBn[1].material.opacity = 0.35 * r * (1 - out);
         tB.forEach(function (m) { m.material.opacity = 0.55 * inn; });
         // 신호
-        S.pu = snap ? 0.55 : (S.pu + dt * 0.28) % 1;
+        S.pu = snap ? 0.55 : (((S.pu + dt * 0.28) % 1) + 1) % 1; if (!(S.pu >= 0)) S.pu = 0;   // 멈췄다 다시 돌 때 dt가 음수여도 곡선 밖으로 나가지 않게
         var u = S.pu, pa = u < 0.5 ? cA1.getPointAt(u * 2) : cA2.getPointAt(u * 2 - 1);
         pA.position.copy(pa); face(pA.userData.halo, cam);
         var curves = inn > 0.5 ? [cB1, cB2, cB3, cB4] : [cBn, cBn2];
@@ -1686,7 +1582,7 @@
     [[-0.5, 0.2], [0.5, 0.2], [-0.5, 0.72], [0.5, 0.72]].forEach(function (p) { var l = cyl(0.02, 0.02, 0.76, metal, 8); l.position.set(p[0], 0.38, p[1]); g.add(l); });
     var paperT = tex(300, 420, function (c, w, h) {
       c.fillStyle = '#fffcf6'; c.fillRect(0, 0, w, h); if (IMG.t_paper_diff) { c.globalAlpha = 0.9; c.drawImage(IMG.t_paper_diff, 0, 0, w, h); c.globalAlpha = 1; } c.fillStyle = '#2b2019'; c.font = '800 30px ' + FONT; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillText('시험지', 24, 18);
-      for (var i = 0; i < 5; i++) { var y = 74 + i * 66; c.fillStyle = i === 2 ? 'rgba(245,158,11,.45)' : 'rgba(0,0,0,0)'; c.fillRect(12, y - 8, w - 24, 58); c.fillStyle = '#2b2019'; c.font = '800 24px ' + FONT; c.fillText((i + 1) + '.', 22, y); c.fillStyle = '#b3a08a'; c.fillRect(60, y + 6, 200 - i * 12, 9); c.fillRect(60, y + 26, 150, 9); }
+      for (var i = 0; i < 5; i++) { var y = 74 + i * 66; c.fillStyle = i === 2 ? 'rgba(217,168,92,.45)' : 'rgba(0,0,0,0)'; c.fillRect(12, y - 8, w - 24, 58); c.fillStyle = '#2b2019'; c.font = '800 24px ' + FONT; c.fillText((i + 1) + '.', 22, y); c.fillStyle = '#b3a08a'; c.fillRect(60, y + 6, 200 - i * 12, 9); c.fillRect(60, y + 26, 150, 9); }
     });
     var paperHl = tex(300, 420, function (c, w, h) { c.strokeStyle = '#f2a65a'; c.lineWidth = 8; rr2d(c, 10, 74 + 2 * 66 - 10, w - 20, 62, 12); c.stroke(); });
     var paper = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 0.42), M(0xffffff, { map: paperT, roughness: 0.9 })); paper.rotation.x = -Math.PI / 2; paper.position.set(-0.04, 0.799, 0.5); paper.receiveShadow = true; g.add(paper);
@@ -1728,7 +1624,7 @@
     var st = studentMesh(); scene.add(st);
     var U = st.userData;
     var cloud = cloudMesh(true); cloud.position.set(3.4, 1.3, -2.6); cloud.scale.setScalar(0.8); scene.add(cloud);
-    var cloudGlow = blob(2.6, 0, 'rgba(245,158,11,0.3)'); cloudGlow.rotation.x = 0; cloudGlow.position.copy(cloud.position); scene.add(cloudGlow);
+    var cloudGlow = blob(2.6, 0, 'rgba(217,168,92,0.3)'); cloudGlow.rotation.x = 0; cloudGlow.position.copy(cloud.position); scene.add(cloudGlow);
     // 거리 표시: 멀리 점선 고리
     var W = V(0, 0, 0);
     function wp(o) { st.updateMatrixWorld(true); return o.getWorldPosition(V(0, 0, 0)); }
@@ -1744,7 +1640,7 @@
     var photo = plane(0.18, 0.155, photoTex()); scene.add(photo);
     var bubble = plane(0.2, 0.156, bubbleTex()); scene.add(bubble);
     var flash = blob(0.25, 0, 'rgba(255,240,210,0.9)'); flash.rotation.x = 0; scene.add(flash);
-    var phGlow = blob(0.2, 0, 'rgba(34,211,238,0.8)'); phGlow.rotation.x = 0; phGlow.position.copy(phPt); scene.add(phGlow);
+    var phGlow = blob(0.2, 0, 'rgba(143,196,214,0.8)'); phGlow.rotation.x = 0; phGlow.position.copy(phPt); scene.add(phGlow);
     var thinking = [0, 1, 2].map(function (i) { var d = noSh(sph(0.12, Bm(P.amber, { transparent: true, opacity: 0 }))); d.position.set(clPt.x - 0.26 + i * 0.26, clPt.y - 0.85, clPt.z + 0.7); d.scale.setScalar(0.55); scene.add(d); return d; });
     var L = [lbl('안경 카메라', 'tag cool', U.glasses.userData.cam, [0.16, 0.05, 0]), lbl('주머니 속 휴대폰', 'tag cool', U.phone, [0.2, -0.05, 0]),
       lbl('멀리 있는 AI', 'tag ai', cloud, [0, 1.05, 0]), lbl('귀 속 이어폰', 'tag cool', U.bud, [0.17, -0.04, 0]),
@@ -1891,7 +1787,7 @@
     var names = [['게임', 'gamepad-2'], ['슬라이드', 'presentation'], ['영상', 'clapperboard'], ['수업 도구', 'timer'], ['데이터', 'chart-column'], ['법 확인', 'scale']];
     var pos = [[-2.45, 1.15, 0.3], [0, 1.45, -0.2], [2.45, 1.15, 0.3], [-2.45, -1.25, 0.1], [0, -0.95, -0.3], [2.45, -1.25, 0.1]];
     var cards = names.map(function (n, i) { var c = card(2.15, 1.5, P.terra, n[0], null, n[1]); c.userData = { p: V(pos[i][0], pos[i][1], pos[i][2]), ph: i * 1.1, t0: 0.25 + i * 0.13 }; grp.add(c); return c; });
-    var glow = blob(4.6, 0, 'rgba(34,211,238,0.16)'); glow.rotation.x = 0; glow.position.z = -1.2; grp.add(glow);
+    var glow = blob(4.6, 0, 'rgba(143,196,214,0.16)'); glow.rotation.x = 0; glow.position.z = -1.2; grp.add(glow);
     var sh = catcher(14, 8, 0.12); sh.position.set(0, -2.6, 0); grp.add(sh);
     var S = { scene: scene, camera: cam, labels: [], a: 0,
       setStep: function (n, snap) { if (snap) S.a = REDUCED ? 9 : 0; },
@@ -1950,7 +1846,7 @@
     steps: function (i) { return maxStep(slides[i]); },
     settle: function () { if (GL.active) { camRestore(GL.active); GL.active.setStep(step, true); if (GL.active.finish) GL.active.finish(); GL.active.update(0, 2.0, true); renderOnce(); } },
     freeze: function (on) { if (on) { stopLoop(); if (document.getAnimations) document.getAnimations().forEach(function (a) { try { a.finish(); } catch (e) {} }); document.documentElement.classList.add('freeze'); if (GL.active) renderOnce(); } else { document.documentElement.classList.remove('freeze'); if (GL.active) startLoop(); } },
-    active: function () { return GL.active; }, at: function (a) { var S = GL.active; if (!S) return -1; if (S.a !== undefined) S.a = a; if (S.age !== undefined) S.age = a; if (S.t !== undefined && S.kind === 'horse') S.t = a; return a; }, redraw: function () { if (GL.active) renderOnce(); },
+    active: function () { return GL.active; }, at: function (a) { var S = GL.active; if (!S) return -1; if (S.a !== undefined) S.a = a; if (S.age !== undefined) S.age = a; return a; }, redraw: function () { if (GL.active) renderOnce(); },
     models: function () { var o = {}; Object.keys(MDL).forEach(function (k) { var n = []; MDL[k].traverse(function (m) { if (m.isMesh) n.push(m.name + ':' + m.material.name); }); var b = new THREE.Box3().setFromObject(MDL[k]); o[k] = { meshes: n, min: b.min.toArray(), max: b.max.toArray() }; }); return o; },
     find: function (kind) { for (var i = 0; i < slides.length; i++) if (slides[i].getAttribute('data-scene') === kind) return i; return -1; },
     // 점검용: 3D 물건 하나를 따로 찍어요 (shoot.py --closeup)
@@ -1958,7 +1854,7 @@
       var K = { '카메라 안경': function () { return glassesMesh({ cam: true }); }, '화면 안경': function () { var g = glassesMesh({ disp: true }); g.userData.disp.material.opacity = 0.95; return g; },
         '초소형 이어폰': function () { var e = earbudMesh(1); e.userData.waves.forEach(function (w, i) { w.material.opacity = 0.7 - i * 0.2; }); return e; }, '휴대폰': function () { return phoneMesh(); },
         '스마트워치': watchMesh, '노트북': laptopMesh, '클라우드 AI': function () { return cloudMesh(true); }, '키보드와 손': keyboardMesh, '모니터 대화창': monitorMesh,
-        '학생과 책상': studentMesh, '말 모델(원본)': function () { return modelOf('horse', 3); }, '안경 모델(원본)': function () { return modelOf('specs', 2.2); }, '말(조각)': horseMesh, '수레': cartMesh, '웍': wokMesh, '밥그릇': function () { var b = bowlMesh(); var r = riceMound(380, 0.38, 0.2, null, 3); r.position.y = 0.2; b.add(r); return b; },
+        '학생과 책상': studentMesh, '안경 모델(원본)': function () { return modelOf('specs', 2.2); }, '웍': wokMesh, '밥그릇': function () { var b = bowlMesh(); var r = riceMound(380, 0.38, 0.2, null, 3); r.position.y = 0.2; b.add(r); return b; },
         '김치볶음밥': function () { var p = plateMesh(0.8); var f = friedRice(); f.position.y = 0.05; p.add(f); return p; }, '김치 병': jarMesh, '셰프 레시피': recipeCard, '셰프 AI': chefAI, '하네스 상자': harnessCase, '로봇 (툰)': function () { var src = MDL.robot; if (!src) return chefAI(); var home = src.parent, R = robotRig(); R.root.updateMatrixWorld(true); if (R.headEnd) { R.headEnd.getWorldPosition(R.hat.position); R.root.add(R.hat); } var g = new THREE.Group(); g.add(R.root); g.userData.home = home; g.userData.src = src; return g; }, '툰 웍': toonWok, '툰 김치볶음밥': function () { var p = toonPlate(0.8); var f = toonFriedRice(); f.position.y = 0.05; p.add(f); return p; },
         '연필': pencilMesh, '도구 카드': function () { return card(1.6, 1.1, P.terra, '게임', null, 'gamepad-2'); } };
       if (name === 'list') return Object.keys(K);

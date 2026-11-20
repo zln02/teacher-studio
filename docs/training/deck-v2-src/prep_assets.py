@@ -82,14 +82,24 @@ def pack_model(folder: Path, name: str, tex_px: int = 512) -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--src", required=True)
-    ap.add_argument("--models", default="", help="Poly Haven glTF 폴더들이 든 상위 폴더 (horse_statue_01, round_spectacles)")
+    ap.add_argument("--src", default="")
+    ap.add_argument("--models", default="", help="Poly Haven glTF 폴더들이 든 상위 폴더 (round_spectacles)")
+    ap.add_argument("--horse", default="", help="말 사진 한 장 (Wikimedia Commons 「Three horse power.」, CC0): 16:9로 잘라 p_horse.jpg로")
     a = ap.parse_args()
+    if a.horse:
+        # 받은 사진은 그림으로만 열어요. 다시 저장하면서 EXIF(위치 정보 포함)는 버려요.
+        OUT.mkdir(exist_ok=True)
+        im = Image.open(a.horse).convert("RGB")
+        w, h = im.size
+        x0 = int(w * 0.099); cw = w - x0; ch = cw * 9 // 16; y0 = int(h * 0.09)   # 왼쪽 차를 잘라 내고, 말 머리부터 발굽까지
+        im = im.crop((x0, y0, x0 + cw, min(h, y0 + ch))).resize((1920, 1080), Image.LANCZOS)
+        save(im, "p_horse.jpg", 80)
+        if not a.src:
+            return 0
     src = Path(a.src)
     OUT.mkdir(exist_ok=True)
     if a.models:
         m = Path(a.models)
-        pack_model(m / "horse_statue_01", "horse")
         pack_model(m / "round_spectacles", "specs")
         # three.js 예제의 RobotExpressive.glb (Tomás Laulhé, CC0 1.0): 뼈대·애니메이션째 그대로 (README.md 라이선스 확인)
         rb = m / "RobotExpressive" / "RobotExpressive.glb"
@@ -118,7 +128,7 @@ def main() -> int:
     bd = crop(kit, 0.46, 0.34, 0.86, 0.565).resize((1600, 900), Image.LANCZOS).filter(ImageFilter.GaussianBlur(6))
     save(grade(bd, (150, 80, 50), 0.85, 0.85), "bd_kitchen.jpg", 72)
     # 3) 텍스처 (1k 색 · 512 노멀/거칠기)
-    for t in ("asphalt_02", "aerial_grass_rock", "wood_table_001", "marble_01"):
+    for t in ("asphalt_02", "wood_table_001", "marble_01"):
         save(Image.open(src / f"{t}_diff_1k.jpg").convert("RGB"), f"t_{t}_diff.jpg", 74)
         save(Image.open(src / f"{t}_nor_gl_1k.jpg").convert("RGB").resize((512, 512), Image.LANCZOS), f"t_{t}_nor.jpg", 82)
         save(Image.open(src / f"{t}_rough_1k.jpg").convert("L").resize((512, 512), Image.LANCZOS).convert("RGB"), f"t_{t}_rough.jpg", 72)

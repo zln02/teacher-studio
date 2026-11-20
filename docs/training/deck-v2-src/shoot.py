@@ -38,6 +38,7 @@ def main() -> int:
     ap.add_argument("--reduced", action="store_true")
     ap.add_argument("--only", default="")
     ap.add_argument("--closeup", action="store_true")
+    ap.add_argument("--phone", action="store_true", help="휴대폰 창(세로 390x844 · 가로 844x390)에서 무대가 잘리지 않는지 확인")
     ap.add_argument("--stills", action="store_true", help="WebGL 없을 때 쓸 장면 사진을 stills/에 저장")
     a = ap.parse_args()
     q = [] if a.nogl else ["fx=1"]  # 점검·사진은 후처리를 늘 켠 상태로
@@ -136,10 +137,8 @@ def main() -> int:
             # 하네스 한 단어: 글자가 떨어져 꽂히고 빛이 훑어요
             rv = fnd("reveal")
             g.evaluate(f"window.__deck.go({rv}, 0)"); grab(3000)
-            # 말과 하네스: 부품이 철컥 붙고 원하는 방향으로
-            hs = fnd("horse")
-            g.evaluate(f"window.__deck.go({hs}, 0)"); g.wait_for_timeout(900)
-            grab(300); step(hs, 1, 1800); step(hs, 2, 1500)
+            hs = g.evaluate("[].findIndex.call(document.querySelectorAll('.slide'), function (s) { return s.classList.contains('horsep'); })")
+            g.evaluate(f"window.__deck.go({hs}, 0)"); grab(3200)   # 진짜 말 사진: 천천히 다가가고 한 줄 뜻이 떠요
             # 김치볶음밥 그림책: 로봇이 걸어 들어오고 → 레시피 · 도구 · 재료가 날아와 → 엄지척 → 「이게 하네스!」
             kb = fnd("robot")
             g.evaluate(f"window.__deck.go({kb}, 0)"); grab(2600)
@@ -182,13 +181,30 @@ def main() -> int:
                 im.save(out / f"{k}.jpg", "JPEG", quality=68, optimize=True, progressive=True)
                 pg.evaluate("window.__deck.freeze(false)")
                 print("  still", k, (out / f"{k}.jpg").stat().st_size // 1024, "KB")
+        if a.phone:
+            # 휴대폰: 무대(1920x1080)가 창 안에 다 들어오는지, 브라우저가 페이지를 제멋대로 줄이지 않는지(minimum-scale=1) 확인
+            for name, vw, vh in (("phone-portrait", 390, 844), ("phone-landscape", 844, 390)):
+                c3 = b.new_context(viewport={"width": vw, "height": vh}, device_scale_factor=2, is_mobile=True, has_touch=True)
+                ph = c3.new_page()
+                ph.goto(DECK.as_uri() + "?nogl=1")
+                ph.wait_for_function("window.__deck && window.__deck.state().slide === 0", timeout=20000)
+                ph.evaluate("window.__deck.go(1, 0)")
+                ph.wait_for_timeout(1200)
+                r = ph.evaluate("(function(){var r=document.getElementById('stage').getBoundingClientRect();var v=window.visualViewport;return {l:r.left,t:r.top,r:r.right,b:r.bottom,iw:window.innerWidth,ih:window.innerHeight,vs:v?v.scale:1,vw:v?v.width:0,sw:document.documentElement.scrollWidth};})()")
+                ok = r["l"] >= -1 and r["t"] >= -1 and r["r"] <= r["iw"] + 1 and r["b"] <= r["ih"] + 1 and abs(r["iw"] - vw) <= 1 and abs(r["vs"] - 1) < 0.01
+                print(f"{name}: stage {r['l']:.0f},{r['t']:.0f} → {r['r']:.0f},{r['b']:.0f} in {r['iw']}x{r['ih']} (visual scale {r['vs']:.2f}) {'ok' if ok else 'FAIL cropped'}")
+                if not ok:
+                    fails += 1
+                if shots:
+                    ph.screenshot(path=str(shots / f"{name}.png"))
+                c3.close()
         if a.closeup:
             import base64
             from PIL import ImageDraw, ImageFont
             names = pg.evaluate("window.__deck.closeup('list')")
             cols, cw, ch, cap = 6, 480, 400, 54
             rows = (len(names) + cols - 1) // cols
-            sheet = Image.new("RGB", (cols * cw, rows * (ch + cap)), (11, 16, 32))
+            sheet = Image.new("RGB", (cols * cw, rows * (ch + cap)), (14, 16, 19))
             dr = ImageDraw.Draw(sheet)
             try:
                 font = ImageFont.truetype("C:/Windows/Fonts/malgunbd.ttf", 30)
@@ -199,7 +215,7 @@ def main() -> int:
                 im = Image.open(io.BytesIO(base64.b64decode(url.split(",", 1)[1]))).convert("RGBA")
                 x, y = (k % cols) * cw, (k // cols) * (ch + cap)
                 sheet.paste(im, (x, y), im)
-                dr.text((x + 24, y + ch + 6), nm, fill=(238, 242, 255), font=font)
+                dr.text((x + 24, y + ch + 6), nm, fill=(243, 240, 233), font=font)
             out = HERE.parent / "deck-v2-3d-closeup.png"
             sheet.save(out, optimize=True)
             print("closeup:", out, len(names), "objects")
