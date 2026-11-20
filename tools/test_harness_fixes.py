@@ -310,7 +310,7 @@ class FontAndVignette(unittest.TestCase):
 
     def test_font_choice_beats_the_style_font(self):
         sp, tk = self.tokens(style="minimal-premium", font="sans")  # minimal-premium is a serif style
-        self.assertEqual(tk["fonts"]["display"], "Noto Sans KR")
+        self.assertEqual(tk["fonts"]["display"], "TS Sans")  # the studio face (Pretendard subset) since the 2026-11 design overhaul
         self.assertEqual(tk["fontChoice"], "sans")
         sp, tk = self.tokens(font="serif")
         self.assertEqual(tk["fonts"]["body"], "Noto Serif KR")

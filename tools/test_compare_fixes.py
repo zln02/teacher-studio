@@ -53,7 +53,12 @@ class Clip(unittest.TestCase):
     def test_decoration_keeps_out_of_text_band(self):
         js = (ROOT / "skills" / "teacher-game" / "assets" / "themes" / "auto.js").read_text(encoding="utf-8")
         self.assertIn("function clear(", js)
-        self.assertIn("clear(mx, my, ms * 0.8)", js)  # memphis shapes are placed around the title/question/answers band
+        # 2026-11 design overhaul: the scattered memphis / bunting / confetti backdrops were retired. The matte backdrops draw only on the
+        # stage edges and corners (blocks, papercut, halftone ...), so nothing can sit behind the title / question / answers band.
+        for retired in ('kind === "memphis"', 'kind === "bunting"', 'kind === "neongrid"', 'kind === "glassblobs"'):
+            self.assertNotIn(retired, js)
+        for kept in ('kind === "blocks"', 'kind === "papercut"', 'kind === "dotgrid"', 'kind === "planes"'):
+            self.assertIn(kept, js)
 
 
 class Law(unittest.TestCase):
