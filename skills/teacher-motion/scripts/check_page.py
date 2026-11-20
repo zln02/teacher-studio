@@ -25,6 +25,10 @@ for folder in (HERE.parent / "shared" / "tools", HERE.parent / "tools"):
         sys.path.insert(0, str(folder))
         break
 from syntax_check import checks as syntax_checks  # noqa: E402
+try:
+    import example_likeness  # noqa: E402  (shared/tools: 「예시를 그대로 따라간 것 같아요」)
+except ImportError:  # an older install without the module: the check is skipped
+    example_likeness = None
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
@@ -457,8 +461,11 @@ def main(path: Path, play: bool = True, consent: bool = False) -> int:
         return 1
     html = path.read_text(encoding="utf-8", errors="replace")
     syntax_results = syntax_checks(html, consent=consent, allow_modern="ts-allow-modern" in html)
+    # only pages built from a spec (game build.py, deck.py); an old skin fired with its own sample content is a demo, not a copy
+    spec_built = "TS:BUILD" in html or 'name="ts-deck"' in html
+    likeness = example_likeness.check_text(html, [HERE.parent / "assets" / "spec-examples"]) if example_likeness and spec_built else []
     html = re.sub(r"<!--.*?-->", "", html, flags=re.S)  # ignore HTML comments
-    results: list[tuple[str, str]] = []
+    results: list[tuple[str, str]] = list(likeness)
 
     def add(level: str, msg: str) -> None:
         results.append((level, msg))
