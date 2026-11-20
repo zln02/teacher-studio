@@ -59,6 +59,10 @@ SCHEMA = (
     '"checkpoint": "<where your first reply stops for the user to react in the production pipeline: plan = after the plan/options; storyboard = after the storyboard sheet, before building; build = you built and now ask ok-or-tweak after the first build; deliver = before sharing/sending; none = no stop at all, you run straight through>", '
     '"skipped_stages": [<production stages you skip or merge, from: plan, script, storyboard>], '
     '"artifact": "<what your first reply shows: options | outline | storyboard | shot_list | slide_list | spec | privacy_check | file | none>", '
+    '"audience": "<teacher or general: who you take the user to be (never ask)>", '
+    '"use": "<how the finished result will be used, as said in the message or your default when nothing is said: tv | tablet | print | lms | home | archive | screen | share | sns | drive; none if you would ask the user>", '
+    '"use_formats": [<file types you would hand over for that use, from: html, pdf, pptx, docx, hwpx, csv, xlsx, png, mp4, qr>], '
+    '"asks_use": <true if your reply asks the user how they will use the result>, '
     '"first_reply": "<your first reply to the user, max 4 short lines>"}\n'
     "Route meanings: " + "; ".join(f"{k} = {v}" for k, v in ROUTES.items()) + ". Do not run anything; decide what you would do for this first message."
 )
@@ -199,6 +203,29 @@ def score(case: dict, out: dict | None) -> dict:
                 notes.append(f"artifact {out.get('artifact')} not in {want_a}")
         parts["pipeline"] = round(sum(checks) / len(checks), 3) if checks else 1.0
         total = total * 0.6 + parts["pipeline"] * 0.4
+    uc = case.get("use")
+    if uc:  # 활용·전달 cases: 60% routing, 40% right use / audience / files, and no use question when the use was said
+        checks = []
+        if "use" in uc:
+            want_u = uc["use"] if isinstance(uc["use"], list) else [uc["use"]]
+            checks.append(str(out.get("use", "none")) in want_u)
+            if not checks[-1]:
+                notes.append(f"use {out.get('use')} not in {want_u}")
+        if "asks_use" in uc:
+            checks.append(bool(out.get("asks_use")) == uc["asks_use"])
+            if not checks[-1]:
+                notes.append(f"asks_use={out.get('asks_use')} expected {uc['asks_use']}")
+        if "audience" in uc:
+            checks.append(str(out.get("audience", "")) == uc["audience"])
+            if not checks[-1]:
+                notes.append(f"audience {out.get('audience')} expected {uc['audience']}")
+        if uc.get("formats_any"):
+            got_f = {str(f).lower().lstrip(".") for f in (out.get("use_formats") or [])}
+            checks.append(bool(got_f & set(uc["formats_any"])))
+            if not checks[-1]:
+                notes.append(f"use_formats {sorted(got_f)} has none of {uc['formats_any']}")
+        parts["use"] = round(sum(checks) / len(checks), 3) if checks else 1.0
+        total = total * 0.6 + parts["use"] * 0.4
     return {"score": round(total, 3), "parts": parts, "notes": notes}
 
 

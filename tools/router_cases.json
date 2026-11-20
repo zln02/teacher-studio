@@ -1,5 +1,5 @@
 {
- "_about": "Router eval cases. route: acceptable route(s); direction: True=options first expected, False=build now, null=either; max_questions: questions allowed in the first reply; must_not: reads_raw_data, asks_student_info, refuses, privacy_note (over-trigger), no_privacy_note (privacy note required), route:<x>. pipeline: {checkpoint: plan|storyboard|build|deliver|none, skips: stages that must be listed in skipped_stages, artifact: allowed artifact values}; scored as 40% of the case. trigger: skill(s) a model should invoke FIRST when it sees only the skill list (router_eval.py --trigger).",
+ "_about": "Router eval cases. route: acceptable route(s); direction: True=options first expected, False=build now, null=either; max_questions: questions allowed in the first reply; must_not: reads_raw_data, asks_student_info, refuses, privacy_note (over-trigger), no_privacy_note (privacy note required), route:<x>. pipeline: {checkpoint: plan|storyboard|build|deliver|none, skips: stages that must be listed in skipped_stages, artifact: allowed artifact values}; scored as 40% of the case. trigger: skill(s) a model should invoke FIRST when it sees only the skill list (router_eval.py --trigger). use: {use: allowed use names, asks_use, audience: teacher|general, formats_any: at least one of these file types}; scored as 40% of the case (활용·전달 단계, classroom-use.md).",
  "cases": [
   {
    "id": "c01",
@@ -967,6 +967,247 @@
    ],
    "tags": [
     "docs"
+   ]
+  },
+  {
+   "id": "u01",
+   "request": "중1 수학 정수 퀴즈 만들어 줘, 교실 TV로 띄울 거야",
+   "route": "game",
+   "direction": null,
+   "max_questions": 1,
+   "must_not": [
+    "privacy_note"
+   ],
+   "use": {
+    "use": [
+     "tv"
+    ],
+    "asks_use": false,
+    "audience": "teacher",
+    "formats_any": [
+     "html"
+    ]
+   },
+   "tags": [
+    "use",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u02",
+   "request": "아이들 태블릿으로 풀게 영어 단어 퀴즈 만들어 줘",
+   "route": "game",
+   "direction": null,
+   "max_questions": 1,
+   "must_not": [],
+   "use": {
+    "use": [
+     "tablet"
+    ],
+    "asks_use": false,
+    "audience": "teacher",
+    "formats_any": [
+     "qr"
+    ]
+   },
+   "tags": [
+    "use",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u03",
+   "request": "분수 덧셈 활동지 만들어 줘, 인쇄해서 나눠 줄게",
+   "route": [
+    "docs",
+    "docfile",
+    "game",
+    "webapp"
+   ],
+   "direction": null,
+   "max_questions": 1,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "print"
+    ],
+    "asks_use": false,
+    "audience": "teacher",
+    "formats_any": [
+     "pdf"
+    ]
+   },
+   "tags": [
+    "use",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u04",
+   "request": "알아서 수업용 퀴즈 하나 만들어 줘",
+   "route": "game",
+   "direction": false,
+   "max_questions": 0,
+   "must_not": [
+    "privacy_note"
+   ],
+   "use": {
+    "use": [
+     "tv",
+     "screen"
+    ],
+    "asks_use": false,
+    "formats_any": [
+     "html",
+     "pdf"
+    ]
+   },
+   "tags": [
+    "use",
+    "skip-all"
+   ]
+  },
+  {
+   "id": "u05",
+   "request": "현장체험학습 가정통신문 만들어 줘, 가정에 보낼 거야",
+   "route": [
+    "docs",
+    "docfile"
+   ],
+   "direction": null,
+   "max_questions": 1,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "home"
+    ],
+    "asks_use": false,
+    "audience": "teacher",
+    "formats_any": [
+     "pdf",
+     "hwpx"
+    ]
+   },
+   "tags": [
+    "use",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u06",
+   "request": "생성형 AI 활용 연수 슬라이드 10장, 나중에 내가 직접 고칠 거야",
+   "route": "slides",
+   "direction": null,
+   "max_questions": 1,
+   "must_not": [
+    "privacy_note"
+   ],
+   "use": {
+    "use": [
+     "archive"
+    ],
+    "asks_use": false,
+    "formats_any": [
+     "pptx"
+    ]
+   },
+   "tags": [
+    "use",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u07",
+   "request": "회사 회의 때 띄울 3분기 실적 발표자료 만들어 줘",
+   "route": "slides",
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "screen",
+     "tv"
+    ],
+    "asks_use": false,
+    "audience": "general",
+    "formats_any": [
+     "html",
+     "pptx"
+    ]
+   },
+   "tags": [
+    "use",
+    "general"
+   ]
+  },
+  {
+   "id": "u08",
+   "request": "동호회 단톡방에 올릴 정기 모임 안내문 만들어 줘",
+   "route": [
+    "docs",
+    "docfile",
+    "slides",
+    "co-plan"
+   ],
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "share",
+     "sns"
+    ],
+    "asks_use": false,
+    "audience": "general",
+    "formats_any": [
+     "pdf",
+     "png"
+    ]
+   },
+   "tags": [
+    "use",
+    "general"
+   ]
+  },
+  {
+   "id": "u09",
+   "request": "가게 홍보로 인스타에 올릴 신메뉴 소개 만들어 줘",
+   "route": [
+    "motion",
+    "slides",
+    "co-plan",
+    "webapp",
+    "docs",
+    "scout",
+    "bare"
+   ],
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "sns"
+    ],
+    "asks_use": false,
+    "audience": "general",
+    "formats_any": [
+     "png",
+     "mp4"
+    ]
+   },
+   "tags": [
+    "use",
+    "general"
    ]
   }
  ]
