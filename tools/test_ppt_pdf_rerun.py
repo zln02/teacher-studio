@@ -127,6 +127,12 @@ class PptxGate(unittest.TestCase):
             self.assertIn("tailEnd", xml)         # with arrow heads
             self.assertIn('prst="arc"', xml)      # angle marks
 
+    def test_target_slides_stops_a_deck_that_runs_long(self):
+        import deck_context as dctx
+        base = {"context": "class", "target_slides": 4, "slides": [{"type": "title", "title": "t"}] + [{"type": "bullets", "title": "a", "items": ["x", "y"]}] * 5}
+        self.assertTrue(any("요청 4장" in e for e in dctx.lint(base)[0]))
+        self.assertFalse([e for e in dctx.lint({**base, "target_slides": 6})[0] if "요청" in e])
+
     def test_diagram_spec_errors_are_fix_lines(self):
         import deck_spec
         bad = {"slides": [{"type": "diagram", "title": "그림", "shapes": [{"kind": "blob", "x": 1, "y": 1}, {"kind": "line", "x1": 0, "y1": 0, "x2": 300, "y2": 10}]}]}

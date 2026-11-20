@@ -239,6 +239,14 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
         return errs, warns
     slides = spec.get("slides") or []
     types = [x.get("type") for x in slides]
+    try:  # the user named a length (「10장 정도」): the deck may run a quarter over, not more
+        want = int(spec.get("target_slides") or 0)
+    except (TypeError, ValueError):
+        want = 0
+    if want:
+        n_out = len(slides) - (types.count("section") if ctx == "public" else 0) + (1 if "quiz" in types else 0)
+        if n_out > round(want * 1.25):
+            errs.append(f"{n_out}장이에요 (요청 {want}장 정도, 「확인 문제 정답」 장 포함) -> {round(want * 1.25)}장 이하로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 (내용을 버리지 말고 한 장에 두 가지를 담기)")
     if ctx == "public":
         for i, it in enumerate(slides, 1):
             t = it.get("type")
