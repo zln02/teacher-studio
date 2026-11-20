@@ -1,4 +1,4 @@
-{"title": "학부모 만족도 설문 결과", "audience": "학부모", "subject": "",
+{"_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.", "title": "학부모 만족도 설문 결과", "audience": "학부모", "subject": "",
  "analyses": [
   {"id": "q", "type": "likert", "columns": ["수업", "소통", "급식", "안전", "숙제양"], "scale_max": 5, "labels": {"수업": "수업", "소통": "소통", "급식": "급식", "안전": "안전", "숙제양": "숙제 양"}, "title": "질문별 평균 만족도 (점, 5점 만점)"},
   {"id": "who", "type": "distribution", "column": "학년군", "style": "share", "count_unit": "명", "order": ["저학년", "중학년", "고학년"], "title": "응답한 학부모의 자녀 학년 (명)"},

@@ -1,11 +1,11 @@
 {
+  "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
   "context": "class",
   "purpose": "수업",
   "audience": "중학교 2학년",
   "subject": "과학",
   "mood": "깔끔하게",
   "title": "빛의 반사와 굴절",
-  "seed": 11,
   "objectives": [
     "반사 법칙(입사각 = 반사각)을 그림으로 설명할 수 있다",
     "평면거울에 생기는 상의 특징을 말할 수 있다",

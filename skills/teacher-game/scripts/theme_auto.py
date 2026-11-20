@@ -116,7 +116,7 @@ RECIPE_HOSTS = {"space": ["space-station", "dice", "tv-studio"], "sea": ["animal
                 "science": ["antidote-lab", "recycle-robot", "space-station"]}
 RECIPE_STAGE = {"luxe": "tv-studio", "sports": "tv-studio"}
 # a request that clearly names one ported world uses that whole theme as is (word -> theme id)
-NAMED = {"tv-studio": ["방송국", "생방송", "퀴즈쇼", "스튜디오"], "auditorium-bell": ["강당", "종 울리", "종을 울"], "space-station": ["우주 정거장", "우주선", "우주 기지"],
+NAMED = {"tv-studio": ["방송국", "생방송", "TV 스튜디오", "방송 스튜디오"], "auditorium-bell": ["강당", "종 울리", "종을 울"], "space-station": ["우주 정거장", "우주선", "우주 기지"],
          "joseon-war-room": ["거북선", "임진왜란", "이순신", "수군"], "antidote-lab": ["해독제", "연구소", "바이러스"], "sun-temple": ["사원", "유적", "이집트", "잉카", "마야"],
          "post-office-night": ["우체국", "편지 배달", "우편"], "cell-feeding": ["세포"], "recycle-robot": ["분리배출", "재활용", "분리수거"]}
 HOST_BY_WORD = {"역사": "joseon-war-room", "조선": "joseon-war-room", "실험": "antidote-lab", "우주": "space-station", "재활용": "recycle-robot", "세포": "cell-feeding",
@@ -255,7 +255,9 @@ def compose(spec: dict, tokens: dict | None = None) -> dict:
         letter = "abcdef"[_h(key + "l") % 6]
     itemtxt = " ".join(" ".join(str(v) for k, v in it.items() if k in ("q", "a", "b", "word", "clue", "exp")) for it in (spec.get("items") or [])[:40] if isinstance(it, dict))
     sig = pick_signature(text + " " + itemtxt)
-    named = named_theme(text)
+    # a whole ported world only when the REQUESTED LOOK names it (design.words / mood), never because the topic's title happens to hold
+    # a word such as 「퀴즈쇼」「세포」「재활용」: otherwise every quiz show, biology or recycling game lands on the same scene
+    named = named_theme(words + " " + str(d.get("mood", "")))
     cands = RECIPE_HOSTS.get(rid, ["dice", "creature:owl", "none"])
     host_id = cands[_h(key + "h") % len(cands)]
     if sid == "minimal-premium":

@@ -1,4 +1,4 @@
-{"title": "우리 반 성적, 과목별로 한눈에 봤어요", "audience": "학부모", "subject": "",
+{"_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.", "title": "우리 반 성적, 과목별로 한눈에 봤어요", "audience": "학부모", "subject": "",
  "analyses": [
   {"id": "all", "type": "overview", "unit": "점", "title": "과목별 평균 (점)"}
  ]}

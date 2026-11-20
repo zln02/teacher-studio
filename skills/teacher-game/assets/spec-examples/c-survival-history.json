@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "역사 인물 OX 서바이벌",
  "subtitle": "초5 사회 · 틀리면 라이프가 줄어요",
  "mechanic": "survival",
@@ -11,7 +12,6 @@
   "subject": "역사",
   "grade": 5,
   "mood": "긴장감",
-  "seed": 3,
   "words": [
    "역사",
    "전통"

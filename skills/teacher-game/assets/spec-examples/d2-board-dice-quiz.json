@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "주사위 말판 퀴즈",
  "subtitle": "초4 과학 · 주사위를 굴리고 문제를 맞혀요",
  "mechanic": "board",
@@ -11,7 +12,6 @@
   "subject": "과학",
   "grade": 4,
   "mood": "신남",
-  "seed": 5,
   "words": [
    "우주",
    "신남"

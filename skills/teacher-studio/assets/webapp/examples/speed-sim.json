@@ -1,7 +1,8 @@
 {
+  "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
   "title": "속력 실험실",
   "subtitle": "중1 과학 · 거리 = 속력 × 시간",
-  "words": "과학 깔끔",
+  "words": "과학 실험",
   "ai": "none",
   "about": "속력과 시간을 바꾸면 이동 거리가 어떻게 달라지는지 바로 계산하고 막대로 보여 주는 프로그램이에요.",
   "parts": [

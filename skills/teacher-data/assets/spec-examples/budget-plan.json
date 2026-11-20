@@ -1,4 +1,4 @@
-{"title": "가계부 3개월 살펴보기", "audience": "선생님", "subject": "",
+{"_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.", "title": "가계부 3개월 살펴보기", "audience": "선생님", "subject": "",
  "analyses": [
   {"id": "month", "type": "trend", "time": "날짜", "value": "금액", "agg": "sum", "freq": "month", "unit": "원", "metric": "지출", "title": "달별 지출 (원)", "filter": [{"column": "구분", "equals": "지출"}]},
   {"id": "cat", "type": "groupby", "by": "분류", "value": "금액", "agg": "sum", "sort": "desc", "top": 5, "style": "share", "unit": "원", "metric": "지출", "title": "어디에 가장 많이 썼나요? 분류별 지출 (원)", "filter": [{"column": "구분", "equals": "지출"}]},

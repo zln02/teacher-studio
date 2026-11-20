@@ -7,9 +7,10 @@ Needs a server, login, database or app store -> R5.
 ## Fast path (target: 3 minutes, one conversation)
 Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「알아서」「묻지 말고」 = 0 questions; still use this path.
 1. Say one line: 「바로 만들게요. (<가정: 학년·과목·언어>) 1~2분 걸려요.」
-2. Copy the closest example from `../assets/webapp/examples/` into the working folder as `app.json` and change only the content:
-   - `coding-helper.json`: question helper + JavaScript practice pad (코딩 도우미, 개념 튜터)
-   - `speed-sim.json`: custom part with sliders and a live result (계산기, 시뮬레이션, 연습기, 대시보드)
+2. Write `app.json` from the request (Spec below). Choose the parts from what the user will DO, not from a stock pair:
+   - asks questions in words -> `helper` · tries code -> `runner` · changes quantities and watches a result, fills a form, sorts, counts -> `custom` (your own controls)
+   - 1 part when one job is enough; 2-3 only when the request has that many jobs. The page layout is picked from the parts (how many, which kinds, how much text), so do not arrange it yourself.
+   - `../assets/webapp/examples/` holds test fixtures, not patterns for the builder. Open one only to see how a `custom` part wires `html` / `js`; never reuse its questions, its part order or its `words`. A page that repeats one gets the WARN 「예시를 그대로 따라간 것 같아요」.
 3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds and checks. Report `PARTIAL` when checks could not run and `NOT READY` when a check failed.
 4. FAIL -> fix the spec (shorter labels, a missing `<label>`, `?.`), rebuild. Max 2 fixes, then the plain way (no-regret rule).
 5. Final message: full path, 「더블클릭하면 브라우저에서 열려요」, the check line, the honest-AI line below, 2 tweak offers (예: 「질문 더 넣기」「파이썬 예시로」).
@@ -20,11 +21,11 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 3. **Every control gives a visible result at once** (number + unit + one plain sentence 「시속 60 km로 2시간이면 120 km를 가요」), and wrong input gets a kind hint, not NaN.
 4. **Facts are right for the grade**; unsure -> 「확인 필요」. Formulas are shown the way the textbook writes them.
 5. **Readable on the projector**: test with P (projector mode); labels are short enough not to wrap inside buttons.
-6. The honest-AI line and what it can / cannot do (`can`, `cannot`) are filled in for this app, not copied from the example.
+6. The honest-AI line and what it can / cannot do (`can`, `cannot`) are written for this app.
 
 ## Spec
 ```
-{"title": "≤40자", "subtitle": "학년 · 과목 · 핵심", "words": "style hint (코딩, 과학, 깔끔, 파스텔 …)", "style": "<optional id from shared/design/styles.py>",
+{"title": "≤40자", "subtitle": "학년 · 과목 · 핵심", "words": "2-3 words from THIS topic and the mood the user asked for (they pick the look: do not reuse a stock word)", "style": "<optional id from shared/design/styles.py>",
  "palette": {"primary": "#…"}, "ai": "rules" | "none", "about": "한 문장", "can": [...], "cannot": [...],
  "parts": [ 1-3 of:
    {"type": "helper", "name", "greeting", "placeholder", "fallback", "chips": [4-6 common questions],

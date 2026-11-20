@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "분리배출 분류왕",
  "subtitle": "초4 과학 · 끌어서 알맞은 통에 넣어요",
  "mechanic": "sort",
@@ -8,8 +9,7 @@
  "design": {
   "subject": "환경",
   "grade": 4,
-  "mood": "차분",
-  "seed": 7
+  "mood": "차분"
  },
  "items": [
   {

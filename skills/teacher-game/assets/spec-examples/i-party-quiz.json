@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "송년회 상식 퀴즈",
  "subtitle": "올해도 수고 많으셨습니다 · 팀 대항전",
  "mechanic": "quiz",
@@ -11,7 +12,6 @@
   "subject": "상식",
   "grade": 5,
   "mood": "고급스럽게",
-  "seed": 13,
   "large": true,
   "words": [
    "송년",

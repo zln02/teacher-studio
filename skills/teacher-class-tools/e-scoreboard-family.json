@@ -1,3 +1,0 @@
-{"tool":"scoreboard","title":"가족 윷놀이 점수판","use":"personal","sound":true,
- "design":{"mood":"따뜻하게","seed":5,"large":true},
- "scoreboard":{"teams":["아빠팀","엄마팀","아이팀"],"steps":[1,2,5]}}

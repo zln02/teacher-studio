@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "바다 동물 짝 맞추기",
  "subtitle": "초2 통합 · 동물과 알맞은 설명을 찾아요",
  "mechanic": "match",
@@ -9,7 +10,6 @@
   "subject": "통합",
   "grade": 2,
   "mood": "따뜻함",
-  "seed": 11,
   "words": [
    "바다",
    "동화"

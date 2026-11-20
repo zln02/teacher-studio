@@ -1,6 +1,6 @@
 # 게임 기획 한 장 (spec) — 요청을 부품으로 바꾸는 표
 
-AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향). 엔진·부품·디자인·점검은 도구가 맡는다. 형식 전체는 `spec.schema.json`, 예시 10개는 `assets/spec-examples/`.
+AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향). 엔진·부품·디자인·점검은 도구가 맡는다. 형식 전체는 `spec.schema.json`. `assets/spec-examples/`의 파일은 도구가 받는 모양을 시험하는 파일(fixture)이지 본보기가 아니다: 차례·문장·분위기 낱말을 베끼지 않는다(베끼면 점검기가 「예시를 그대로 따라간 것 같아요」라고 알린다). `design.seed`는 비워 둔다(같은 모양을 다시 만들 때만 적는다).
 
 ## 1. 요청 → 방식(mechanic)
 | 선생님·사용자 말 | mechanic | items 한 칸 | 비고 |
@@ -29,7 +29,7 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `design.large` | false | 어르신·먼 화면 → true (personal에서 칠판 수준 글자) |
 | `design.style` | 자동 | **정하는 순서: `design.style` > `design.words`·`mood`의 스타일 낱말 > 제목·부제·과목 낱말 > 씨앗.** 제목의 「AI」가 「미니멀」보다 앞서는 일은 없어요. 미리 보기: `style_auto.py --spec spec.json` · `layout_auto.py --spec spec.json`(build와 같은 입력·같은 결과). 만든 뒤에는 `look: style=… layout=…` 한 줄과 파일 속 `<meta name="ts-look">`에 나와요. **12가지 스타일 중 하나** (네온/사이버 `neon-cyber` · 골드 럭셔리 `gold-luxury` · 팝 컬러풀 `pop-colorful` · 축제/파티 `festival-party` · TV 게임쇼 `tv-gameshow` · 글래스/3D `glass-3d` · 애니/카툰 `anime-cartoon` · 파스텔 귀여움 `pastel-cute` · 레트로/픽셀 `retro-pixel` · 미니멀 프리미엄 `minimal-premium` · 칠판/종이 `chalk-paper` · 자연/차분 `nature-calm`). 스타일마다 색·배경·배치·버튼·카드·점수판·제목·전환이 다른 「구성 언어」예요. 안 적으면 `design.words`의 스타일 낱말(네온·미니멀·글래스 …)이나 세계(우주·바다 …)에 어울리는 것이 `seed`로 뽑혀요 |
 | `design.seed` | **매번 새로** | 안 적으면 만들 때마다 새 조합(스타일·배치·버튼·카드·점수판·제목)이 뽑히고, 뽑힌 숫자가 화면에 출력돼요(파일 안 `<meta name="ts-seed">`에도 있어요). 「아까 그거 다시」는 그 숫자를 `design.seed`에 적으면 똑같이 나와요 |
-| `design.layout` · `choice` · `card` · `score` · `title_style` | 자동 | 직접 지정: layout `stack·split·bento·news·poster`(문제 화면 배치), choice `pill·tile·stamp·neon·note`, card `round·ticket·polaroid·hex`, score `led·chalk·sticker·banner`, title_style `outline·stack3d·stamp·underline`. 방식별 판 배치(짝 맞추기 grid·scatter·shelf·brick, 빙고 grid·tilt·shelf, 분류 bins·shelves·conveyor, 말판 snake·wave·stair, 서바이벌 row·bridge·stagger·arena, 방탈출 top·side)는 seed가 골라요 |
+| `design.layout` · `choice` · `card` · `score` · `title_style` | 자동 | 직접 지정: layout `stack·split·bento·news·poster·column·left·right·rail·stair`(문제 화면 배치: 화면을 덮는 자리가 서로 다른 10가지), choice `pill·tile·stamp·neon·note`, card `round·ticket·polaroid·hex`, score `led·chalk·sticker·banner`, title_style `outline·stack3d·stamp·underline`. 방식별 판 배치(짝 맞추기 grid·scatter·shelf·brick, 빙고 grid·tilt·shelf, 분류 bins·shelves·conveyor, 말판 snake·wave·stair, 서바이벌 row·bridge·stagger·arena, 방탈출 top·side)는 seed가 골라요 |
 | `custom_css` · `custom_svg` | 없음 | **AI 자유 칸**: 도구가 만든 바닥 위에 AI가 더하는 한 끗. `custom_css`(6000자 이내, 글자 크기 34px 이상 규칙 그대로)·`custom_svg`(12000자 이내, `<svg viewBox="0 0 1920 1080">` 전체 무대 장식, 맨 뒤에 깔림). 바깥 주소·script·onclick·`?.` `??` 금지, 점검(check)과 디자인 점검을 그대로 통과해야 해요 |
 | `design.theme` | **auto** | 기본은 auto. 요청이 한 세계를 분명히 가리킬 때만 이름 지정: `tv-studio`(방송국 퀴즈쇼) · `auditorium-bell`(강당 종 울리기) · `space-station` · `joseon-war-room`(거북선·임진왜란) · `antidote-lab`(해독제·연구소) · `sun-temple`(유적·이집트) · `post-office-night`(우체국) · `cell-feeding`(세포) · `recycle-robot`(분리배출). 그 밖에 notebook(필기 느낌)·spotlight(쇼 느낌)·default. **이식 테마(옛 스킨 9개)는 가장 마지막 선택지**: 요청이 그 세계를 직접 부를 때만(예: 「방송국」「거북선」「분리배출」) 쓰고, 자동 조합에서는 옛 진행자·LED 벽·ON AIR 간판·연단을 쓰지 않아요 |
 | `design.words` | 없음 | auto일 때 장면 낱말 목록: 우주·바다·동화·숲·역사·긴장감·따뜻하게·고급스럽게·송년·스포츠·과학 … 도우미 캐릭터·배경·소품·축하 연출·글꼴·음악이 낱말로 정해져요 (낱말이 없으면 제목·과목·분위기에서 찾아요) |

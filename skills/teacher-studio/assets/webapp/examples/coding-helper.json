@@ -1,7 +1,8 @@
 {
+  "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
   "title": "코딩 도우미 코디",
   "subtitle": "중학교 코딩 수업 · 변수 · 조건문 · 반복문 · 함수",
-  "words": "코딩 깔끔",
+  "words": "코딩",
   "ai": "rules",
   "about": "코딩 수업에서 자주 나오는 질문에 바로 답하고, 오른쪽 연습장에서 자바스크립트 코드를 직접 실행해 볼 수 있는 프로그램이에요.",
   "can": ["변수·조건문·반복문·함수·배열 같은 기본 개념을 예시 코드와 함께 설명해요", "예시 코드를 연습장으로 보내 바로 실행해 볼 수 있어요", "끝나지 않는 반복은 3초 뒤 자동으로 멈춰요"],

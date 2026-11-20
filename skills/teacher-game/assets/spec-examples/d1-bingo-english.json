@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "영어 단어 빙고",
  "subtitle": "초3 영어 · 뜻을 듣고 알맞은 단어를 찾아요",
  "mechanic": "bingo",
@@ -14,7 +15,6 @@
   "subject": "영어",
   "grade": 3,
   "mood": "신남",
-  "seed": 4,
   "words": [
    "동화",
    "영어"

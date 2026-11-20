@@ -1,4 +1,5 @@
 {
+ "_fixture": "test fixture, not a pattern: it proves the builder accepts this shape. Do not copy its outline, wording, look words or seed into an output.",
  "title": "독도 퀴즈쇼",
  "subtitle": "사회 · 우리 땅 독도 생방송",
  "mechanic": "quiz",
@@ -10,10 +11,8 @@
   "subject": "사회",
   "grade": 5,
   "mood": "신남",
-  "seed": 21,
   "words": [
-   "방송국",
-   "퀴즈쇼"
+   "섬", "동해"
   ]
  },
  "items": [
