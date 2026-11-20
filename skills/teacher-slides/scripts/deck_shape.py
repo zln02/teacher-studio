@@ -156,8 +156,40 @@ def notes(slides: list) -> list[str]:
                 out.append(f"slide {i} bullets: {NOTE_TEXT[k]} (내용 모양에 맞는 장으로 바꾸면 한눈에 읽혀요)")
     typed = [it.get("type") for it in slides if isinstance(it, dict)]
     body = [t for t in typed if t not in ("title", "cover", "hero", "section", "closing", "toc", "end")]
-    if len(body) >= 6 and sum(1 for t in body if t in ("bullets", "list", "cards")) / len(body) > 0.6:
-        out.append("본문 장의 60% 넘게가 글머리표예요 → 순서는 steps, 비교는 compare/table, 수치는 bignumbers/chart, 구조는 diagram으로 내용 모양을 따라가세요")
+    out += variety(slides)
+    return out
+
+
+LISTS = ("bullets", "list", "cards")
+
+
+def variety(slides: list) -> list[str]:
+    """NOTE lines about the deck as a whole: it must not look the same on every slide, and evidence belongs next to its claim."""
+    out = []
+    its = [it for it in slides if isinstance(it, dict)]
+    body = [it for it in its if it.get("type") not in ("title", "cover", "hero", "section", "closing", "toc", "end") and not it.get("_role")]
+    types = [it.get("type") for it in body]
+    n = len(types)
+    if n >= 6:
+        nl = sum(1 for t in types if t in LISTS)
+        if nl / n > 1 / 3:
+            out.append(f"본문 {n}장 가운데 {nl}장이 글머리표예요 → 순서는 steps, 비교는 compare/table, 수치는 bignumbers/chart, 구조는 diagram, 근거가 둘이면 panel로 내용 모양을 따라가세요")
+        top = max(set(types), key=types.count)
+        if top not in LISTS and types.count(top) / n > 0.5:
+            out.append(f"본문의 절반 넘게가 같은 종류({top})예요 → 장마다 내용 모양에 맞는 종류로 (모든 장이 같은 모양이면 단조로워요)")
+    seq = [it.get("type") for it in its]
+    for i in range(len(seq) - 2):
+        if all(t in LISTS for t in seq[i:i + 3]) and not any(its[j].get("_role") for j in range(i, i + 3)):
+            out.append(f"slide {i + 1}-{i + 3}: 글머리표 장이 세 장 이어져요 → 가운데 장을 표·그림·비교·panel로")
+            break
+    for i in range(len(its) - 1):
+        a, b = its[i].get("type"), its[i + 1].get("type")
+        if {a, b} & {"bignumber", "bignumbers"} and {a, b} & {"chart", "table"}:
+            out.append(f"slide {i + 1}-{i + 2}: 숫자 장과 그 근거(표·그래프) 장이 따로 있어요 → 한 장으로: {{\"type\":\"panel\",\"blocks\":[{{\"kind\":\"kpis\"}},{{\"kind\":\"chart\"}}]}}")
+            break
+    data = [it for it in body if it.get("type") in ("chart", "table") or (it.get("type") == "panel" and any(isinstance(b, dict) and b.get("kind") in ("chart", "table") for b in it.get("blocks") or []))]
+    if len(data) >= 2 and not any(it.get("takeaway") for it in data):
+        out.append("표·그래프 장에 결론 한 줄이 없어요 → 그 자료가 무엇을 뜻하는지 \"takeaway\"로 (제목을 되풀이하지 말고 의미를)")
     return out
 
 

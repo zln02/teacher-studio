@@ -71,7 +71,7 @@ def _need_pptx(consent: bool):
     import pptx  # noqa: F401
 
 
-def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overrides: dict | None = None, template: Path | None = None) -> dict:
+def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overrides: dict | None = None, template: Path | None = None, avoid: list | None = None) -> dict:
     """Build the .pptx. Returns {ok, slides, errors, warnings, style, seed, template}."""
     from pptx import Presentation
     from pptx.chart.data import CategoryChartData
@@ -98,7 +98,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     if isinstance(pf, str) and pf.strip().lower() not in ("saved", "prefs") and not Path(pf).is_absolute():
         spec = {**spec, "design": {**spec["design"], "palette_from": str((base / pf).resolve())}}
     seed = int(seed if seed is not None else (spec.get("seed") or 7))
-    dz = dstyle.resolve(spec, seed)
+    dz = dstyle.resolve(spec, seed, avoid)
     if dstyle.contrast_report(dz):
         dz = dstyle.resolve({**spec, "design": {**(spec.get("design") or {}), "style": dz["style"]}}, seed + 1000)
     C = dz["colors"]
@@ -144,6 +144,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
 
     fit_log: list[dict] = []
     cur = [0]
+    import deck_diagram as _dg
 
     def set_font(run, size, color=None, bold=False, name=None, italic=False):
         f = run.font
@@ -234,7 +235,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             tbox(sl, 0.8, 0.38, 11.7, 0.4, "정답", 14, C["emc"], True)
             put_title(sl, "확인 문제 정답" + (f" ({k0 // 4 + 1})" if len(pend) > 4 else ""))
             gap = 0.2
-            rh = min(1.6, (4.9 - gap * (len(part) - 1)) / len(part))
+            few = len(part) <= 2  # one or two answers: bigger cards and type, not a strip lost on the page
+            rh = min(2.1 if few else 1.6, (4.9 - gap * (len(part) - 1)) / len(part))
             y0 = 1.95 + max(0.0, (4.9 - (rh * len(part) + gap * (len(part) - 1))) / 2)
             for i, (no, q) in enumerate(part):
                 y = y0 + i * (rh + gap)
@@ -242,9 +244,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 card(sl, 0.8, y, 11.7, rh)
                 d_ = rect(sl, 1.05, y + rh / 2 - 0.32, 0.64, 0.64, C["pr"], shape=MSO_SHAPE.OVAL)
                 tbox(sl, 1.05, y + rh / 2 - 0.32, 0.64, 0.64, str(no), 18, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d_)
-                tbox(sl, 1.95, y + 0.05, 10.4, rh * 0.42, plain(q["q"]), 18, C["ct"], anchor="m", emc=C["emcc"])
+                tbox(sl, 1.95, y + 0.05, 10.4, rh * 0.42, plain(q["q"]), 22 if few else 18, C["ct"], anchor="m", emc=C["emcc"])
                 line2 = f"**정답 {'ABCDE'[a_]}. {plain(q['choices'][a_])}**" + (f"   {plain(q['explain'])}" if q.get("explain") else "")
-                tbox(sl, 1.95, y + rh * 0.45, 10.4, rh * 0.5, line2, 20, C["ct"], anchor="m", emc=C["emcc"])
+                tbox(sl, 1.95, y + rh * 0.45, 10.4, rh * 0.5, line2, 24 if few else 20, C["ct"], anchor="m", emc=C["emcc"])
             drop_empty(sl)
             extra_slides[0] += 1
 
@@ -264,6 +266,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         if kind in ("title", "closing", "section"):
             c = rect(s, W / k - 4.2, -1.6, 6.2, 6.2, C["bg2"], round_=False, shape=MSO_SHAPE.OVAL)
             c.name = "decor"
+            tree_ = c._element.getparent()  # behind the title placeholder: a long title must never be covered by the ornament
+            tree_.remove(c._element)
+            tree_.insert(2, c._element)
         rect(s, 0, 7.5 - 0.14, 13.333, 0.14, C["pr"], round_=False).name = "decor"
 
     def qr_shapes(s, url, x, y, size):
@@ -286,8 +291,183 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     xx += 1
 
     def card(s, x, y, w, h, fill=None):
-        c = rect(s, x, y, w, h, fill or C["card"], line=C["line"] if dz["lang"]["card"] in ("hair", "chalk", "glass") else None)
+        f_ = fill or C["card"]
+        # a card the colour of the page is invisible (white on white): it gets a hairline so lists, choices and panels keep their shape
+        same = _dg._contrast(f_, C["bg1"]) < 1.07
+        c = rect(s, x, y, w, h, f_, line=C["line"] if (same or dz["lang"]["card"] in ("hair", "chalk", "glass")) else None, lw=1.25 if same else 1.5)
         return c
+
+    def line(s, x1, y1, x2, y2, color, w=2.0, arrow=False, dash=False):
+        from pptx.enum.dml import MSO_LINE
+        from pptx.enum.shapes import MSO_CONNECTOR
+        from pptx.oxml.ns import qn as _qn
+        cn = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, I(x1), I(y1), I(x2), I(y2))
+        cn.line.color.rgb = rgb(color)
+        cn.line.width = Pt(w)
+        if dash:
+            cn.line.dash_style = MSO_LINE.DASH
+        if arrow:
+            ln_ = cn.line._get_or_add_ln()
+            ln_.append(ln_.makeelement(_qn("a:tailEnd"), {"type": "triangle", "w": "med", "len": "med"}))
+        return cn
+
+    def draw_table(s, cols, rows, x, y, w, h, fs, hi=None):
+        gt = s.shapes.add_table(len(rows) + 1, len(cols), I(x), I(y), I(w), I(h))
+        tb = gt.table
+        for r in range(len(rows) + 1):
+            for c_ in range(len(cols)):
+                cell = tb.cell(r, c_)
+                txt = plain(str(cols[c_] if r == 0 else rows[r - 1][c_]))
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = rgb(C["pr"] if r == 0 else ("#ffffff" if r % 2 else C["bg2"]))
+                tf = cell.text_frame
+                tf.paragraphs[0].text = ""
+                # a number with an optional unit is right-aligned; a label that starts with a digit (1학년, 3분기, 2026년) is not
+                num_ = c_ > 0 and bool(re.match(r"^[\s+\-−]?[\d,.]+\s*(?:%p?|명|개|원|건|회|점|교|학급|시간|차시|만 ?원|억 ?원|천 ?원|권|대|곳|가구|세대)?$", txt))
+                tf.paragraphs[0].alignment = PP_ALIGN.CENTER if r == 0 else (PP_ALIGN.RIGHT if num_ else PP_ALIGN.LEFT)
+                fill_runs(tf.paragraphs[0], txt, fs, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
+                cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+        return gt
+
+    def draw_chart(s, it, x, y, w, h, fs=16):
+        cd = CategoryChartData()
+        cd.categories = [plain(x_) for x_ in it["labels"]]
+        for se in it["series"]:
+            cd.add_series(se.get("name", ""), se["data"])
+        kind = it.get("kind", "bar")
+        ct = {"bar": XL_CHART_TYPE.COLUMN_CLUSTERED, "line": XL_CHART_TYPE.LINE_MARKERS, "pie": XL_CHART_TYPE.PIE, "doughnut": XL_CHART_TYPE.DOUGHNUT}[kind]
+        gf = s.shapes.add_chart(ct, I(x), I(y), I(w), I(h), cd)
+        ch = gf.chart
+        ch.font.size = Pt(fs)
+        ch.font.color.rgb = rgb(C["tx"])
+        ch.has_legend = kind in ("pie", "doughnut") or len(it["series"]) > 1
+        if ch.has_legend:
+            ch.legend.position = XL_LEGEND_POSITION.BOTTOM
+            ch.legend.include_in_layout = False
+        pal = [C["pr"], C["ac"], C["good"], C["bad"], C["mu"], C["emc"], C["line"], C["cb"]]
+        plot = ch.plots[0]
+        if kind in ("pie", "doughnut"):
+            plot.has_data_labels = True
+            plot.data_labels.font.size = Pt(fs)
+            for pi, pt in enumerate(plot.series[0].points):
+                pt.format.fill.solid()
+                pt.format.fill.fore_color.rgb = rgb(pal[pi % len(pal)])
+        else:
+            plot.has_data_labels = True
+            plot.data_labels.font.size = Pt(fs)
+            plot.data_labels.font.color.rgb = rgb(C["tx"])
+            for si, se in enumerate(plot.series):
+                if kind == "bar":
+                    se.format.fill.solid()
+                    se.format.fill.fore_color.rgb = rgb(pal[si % len(pal)])
+                else:
+                    se.format.line.color.rgb = rgb(pal[si % len(pal)])
+                    se.format.line.width = Pt(3.5 if fs >= 16 else 2.5)
+            ch.value_axis.has_major_gridlines = True
+            ch.value_axis.major_gridlines.format.line.color.rgb = rgb(C["line"])
+            if it.get("unit"):
+                ch.value_axis.has_title = True
+                ch.value_axis.axis_title.text_frame.text = str(it["unit"])
+                ch.value_axis.axis_title.text_frame.paragraphs[0].runs[0].font.size = Pt(max(11, fs - 2))
+                ch.value_axis.axis_title.text_frame.paragraphs[0].runs[0].font.color.rgb = rgb(C["mu"])
+        return gf
+
+    def band(s, text, y=6.0, h=0.72):
+        """The slide's conclusion in a filled band (the answer to 'so what')."""
+        b_ = rect(s, 0.8, y, 11.7, h, C["pr"], round_=False)
+        b_.name = "takeaway"
+        tbox(s, 0.8, y, 11.7, h, text, 20, C["bt"], True, "c", "m", emc=C["bt"], shape=b_)
+
+    def draw_diagram(s, it, cx0, cy0, cw_, backing=True):
+        import deck_diagram as dg
+        from pptx.oxml.ns import qn as _qn
+        ch_ = cw_ * 0.6
+        if backing:
+            card(s, cx0, cy0, cw_, ch_)
+        u = cw_ / 100.0
+        fz = min(1.0, max(0.72 if ctx_name == "class" else 0.62, cw_ / 7.6))  # a small canvas (inside a panel) gets smaller labels
+        for n_, sh_ in enumerate(it["shapes"]):
+            kd = dg.kind_of(sh_)
+            col = dg.legible(dg.color(sh_.get("color"), C, "ct" if kd in ("label", "line", "dash") else "pr"), it["shapes"], n_, C)
+            if kd in ("line", "dash", "arrow", "dasharrow"):
+                cn = line(s, cx0 + float(sh_["x1"]) * u, cy0 + float(sh_["y1"]) * u, cx0 + float(sh_["x2"]) * u, cy0 + float(sh_["y2"]) * u,
+                          col, max(2.0, float(sh_.get("w", 4)) * 0.75), "arrow" in kd, "dash" in kd)
+                cn.name = "diagram"
+            elif kd in ("rect", "circle"):
+                fill_ = None if sh_.get("fill") == "none" else dg.color(sh_.get("fill"), C, "bg2")
+                line_ = dg.color(sh_.get("color"), C, "line") if (sh_.get("color") or fill_ is None) else None
+                if kd == "rect":
+                    bx = (cx0 + float(sh_["x"]) * u, cy0 + float(sh_["y"]) * u, float(sh_["w"]) * u, float(sh_["h"]) * u)
+                    g_ = rect(s, *bx, fill_, line=line_, round_=False, lw=2)
+                else:
+                    rx_, ry_ = (v * u for v in dg.radii(sh_))
+                    bx = (cx0 + float(sh_["cx"]) * u - rx_, cy0 + float(sh_["cy"]) * u - ry_, 2 * rx_, 2 * ry_)
+                    g_ = rect(s, *bx, fill_, line=line_, shape=MSO_SHAPE.OVAL, lw=2)
+                g_.name = "diagram"
+                if sh_.get("text"):
+                    tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
+                    tbox(s, bx[0], bx[1], bx[2], bx[3], plain(sh_["text"]), max(11, 16 * fz), tc_, True, "c", "m", emc=tc_, shape=g_)
+            elif kd == "poly":
+                pts = [(cx0 + float(p_[0]) * u, cy0 + float(p_[1]) * u) for p_ in sh_["points"]]
+                fb_ = s.shapes.build_freeform(I(pts[0][0]), I(pts[0][1]))
+                fb_.add_line_segments([(I(px), I(py)) for px, py in pts[1:]], close=True)
+                g_ = fb_.convert_to_shape()
+                fill_ = None if sh_.get("fill") == "none" else dg.color(sh_.get("fill"), C, "bg2")
+                if fill_:
+                    g_.fill.solid()
+                    g_.fill.fore_color.rgb = rgb(fill_)
+                else:
+                    g_.fill.background()
+                if sh_.get("color") or fill_ is None:
+                    g_.line.color.rgb = rgb(dg.color(sh_.get("color"), C, "line"))
+                    g_.line.width = Pt(2)
+                else:
+                    g_.line.fill.background()
+                g_.shadow.inherit = False
+                g_.name = "diagram"
+                if sh_.get("text"):
+                    tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
+                    mx_, my_ = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
+                    tbox(s, mx_ - 1.0, my_ - 0.25, 2.0, 0.5, plain(sh_["text"]), max(11, 16 * fz), tc_, True, "c", "m", emc=tc_).name = "diagram label"
+            elif kd == "arc":
+                acx, acy, ar, a0, a1 = dg.arc_points(sh_)
+                ar *= u
+                g_ = s.shapes.add_shape(MSO_SHAPE.ARC, I(cx0 + acx * u - ar), I(cy0 + acy * u - ar), I(2 * ar), I(2 * ar))
+                av = g_._element.spPr.find(_qn("a:prstGeom")).find(_qn("a:avLst"))
+                if av is None:
+                    pg_ = g_._element.spPr.find(_qn("a:prstGeom"))
+                    av = pg_.makeelement(_qn("a:avLst"), {})
+                    pg_.append(av)
+                for old_ in list(av):
+                    av.remove(old_)
+                for nm_, vv in (("adj1", a0), ("adj2", a1)):
+                    av.append(av.makeelement(_qn("a:gd"), {"name": nm_, "fmla": "val %d" % int(round(vv * 60000))}))
+                g_.fill.background()
+                g_.line.color.rgb = rgb(col)
+                g_.line.width = Pt(2.5)
+                g_.shadow.inherit = False
+                g_.name = "diagram"
+            elif kd == "label":
+                fs_ = max(11, {"s": 14, "m": 18, "l": 24}.get(str(sh_.get("size", "m")), 18) * fz)
+                al_ = str(sh_.get("align", "c"))[:1]
+                al_ = al_ if al_ in ("l", "c", "r") else "c"
+                wd_ = max(1.2 * fz, pfit.width_em(plain(sh_["text"])) * fs_ / 72 + 0.45)
+                lx = cx0 + float(sh_["x"]) * u - {"l": 0.08, "r": wd_ - 0.08}.get(al_, wd_ / 2)
+                tbox(s, lx, cy0 + float(sh_["y"]) * u - 0.27, wd_, 0.54, plain(sh_["text"]), fs_, col, True, al_, "m", emc=col).name = "diagram label"
+
+    import types as _types
+    import deck_panel as dpanel
+    KIT = _types.SimpleNamespace(tbox=tbox, rect=rect, card=card, line=line, chart=draw_chart, table=draw_table, diagram=draw_diagram, C=C,
+                                 z=1.18 if ctx_name == "class" else 1.0, lo=14.0 if ctx_name == "class" else 12.0, OVAL=MSO_SHAPE.OVAL, ink=_dg.ink_on)
+    _rgb3 = lambda h: [int(h.lstrip("#")[j:j + 2], 16) for j in (0, 2, 4)]  # noqa: E731
+    _far = sum(abs(a_ - b_) for a_, b_ in zip(_rgb3(C["ac"]), _rgb3(C["pr"]))) >= 110  # the accent must be a visibly different colour
+    TONES = [C["pr"], C["ac"]] if _dg._contrast(C["ac"], C["bg1"]) >= 1.6 and _far else [C["pr"]]
+    tone = lambda i: TONES[i % len(TONES)]  # noqa: E731
+    KIT.tone = tone
+    zz = 1.18 if ctx_name in ("class", "promo") else 1.0  # rooms and posters are read from far away: step / timeline text starts larger (it still shrinks to fit)
+    KIT.z = 1.25 if ctx_name == "promo" else KIT.z
+    KIT.lo = 14.0 if ctx_name == "promo" else KIT.lo
+    TAKE = ("bullets", "compare", "steps", "timeline", "bignumbers", "table", "panel")  # types whose "takeaway" becomes a band under the body
 
     slides = spec["slides"]
     n_sec = 0
@@ -315,6 +495,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         src = ctx_source(it)
         if src:  # 자료/주 line on data slides
             tbox(s, 0.8, 6.85, 11.7, 0.4, src, 12, C["mu"])
+        cut = 0.0  # room taken at the bottom of the body by the takeaway band
+        if t in TAKE and it.get("takeaway"):
+            cut = 1.0
+            band(s, it["takeaway"], 6.0 if (src or pub) else 6.1)
         if t == "title" and pub:
             rect(s, 0, 0, 13.333, 0.2, C["pr"], round_=False).name = "decor"
             if it.get("_org"):
@@ -342,31 +526,17 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     cnt[dd] = 0
                 lines.append(("    " * (lv - 1)) + m + " " + plain(tx_))
             nl = len(lines)
-            rect(s, 0.8, 1.72, 11.7, 5.0, C["bg2"], round_=False).name = "panel"
-            rect(s, 0.8, 1.72, 0.1, 5.0, C["pr"], round_=False).name = "accent"
-            tbox(s, 1.15, 1.85, 11.2, 4.75, "\n".join(lines), 28 if nl <= 3 else (26 if nl == 4 else (22 if nl <= 6 else 20)), C["tx"],
+            rect(s, 0.8, 1.72, 11.7, 5.0 - cut - (0.15 if cut else 0), C["bg2"], round_=False).name = "panel"
+            rect(s, 0.8, 1.72, 0.1, 5.0 - cut - (0.15 if cut else 0), C["pr"], round_=False).name = "accent"
+            tbox(s, 1.15, 1.85, 11.2, 4.75 - cut - (0.15 if cut else 0), "\n".join(lines), 28 if nl <= 3 else (26 if nl == 4 else (22 if nl <= 6 else 20)), C["tx"],
                  spacing=2.3 if nl <= 3 else (2.1 if nl == 4 else (1.7 if nl == 5 else (1.5 if nl == 6 else 1.35))))
         elif t == "table":
             put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
             cols, rows = it["columns"], it["rows"]
             if it.get("unit"):
                 tbox(s, 8.5, 1.5, 4.0, 0.35, f"(단위: {it['unit']})", 12, C["mu"], align="r")
-            gt = s.shapes.add_table(len(rows) + 1, len(cols), I(0.8), I(1.9), I(11.7), I(min(4.8, 0.85 * (len(rows) + 1))))
-            tb = gt.table
-            hi = it.get("highlight")
-            for r in range(len(rows) + 1):
-                for c_ in range(len(cols)):
-                    cell = tb.cell(r, c_)
-                    txt = plain(str(cols[c_] if r == 0 else rows[r - 1][c_]))
-                    cell.fill.solid()
-                    cell.fill.fore_color.rgb = rgb(C["pr"] if r == 0 else ("#ffffff" if r % 2 else C["bg2"]))
-                    tf = cell.text_frame
-                    tf.paragraphs[0].text = ""
-                    # a number with an optional unit is right-aligned; a label that starts with a digit (1학년, 3분기, 2026년) is not
-                    num_ = c_ > 0 and bool(re.match(r"^[\s+\-−]?[\d,.]+\s*(?:%p?|명|개|원|건|회|점|교|학급|시간|차시|만 ?원|억 ?원|천 ?원|권|대|곳|가구|세대)?$", txt))
-                    tf.paragraphs[0].alignment = PP_ALIGN.CENTER if r == 0 else (PP_ALIGN.RIGHT if num_ else PP_ALIGN.LEFT)
-                    fill_runs(tf.paragraphs[0], txt, 18 if len(rows) <= 6 else 16, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
-                    cell.vertical_anchor = MSO_ANCHOR.MIDDLE
+            draw_table(s, cols, rows, 0.8, 1.9, 11.7, min(4.8 - cut, 0.95 * (len(rows) + 1)), (22 if len(cols) <= 4 else 20) if len(rows) <= 4 else (20 if len(rows) <= 6 and len(cols) <= 4 else (18 if len(rows) <= 6 else 16)),
+                       it.get("highlight"))
         elif t == "summary":
             put_title(s, plain(it.get("title") or "요약"), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
             y0 = 1.8
@@ -406,6 +576,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 hc, mc = "#ffffff", "#f2f2f2"
             else:
                 rect(s, 8.6, 0, 4.733, 7.5, C["pr"], round_=False).name = "decor"
+                if not it.get("url"):  # no QR on the colour block: two quiet rings so it is not a blank wall
+                    for rx_, ry_, rr_ in ((10.9, 2.6, 1.9), (11.7, 4.6, 1.1)):
+                        o_ = rect(s, rx_ - rr_, ry_ - rr_, 2 * rr_, 2 * rr_, None, line=C["bt"], shape=MSO_SHAPE.OVAL, lw=3)
+                        o_.name = "decor"
                 hc, mc = C["tx"], C["mu"]
             if it.get("kicker"):
                 tbox(s, 0.8, 3.6, 7.6, 0.4, it["kicker"], 16, mc, True)
@@ -418,12 +592,15 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             if it.get("url"):
                 qr_shapes(s, it["url"], 10.2, 4.1, 2.4)
         elif t == "title":
+            tw_ = 6.0 if it.get("shapes") else 10.5  # a cover drawing takes the right side
             rect(s, 0.8, 2.0, 0.18, 2.3, C["pr"], round_=False).name = "accent"
-            put_title(s, plain(it["title"]).replace("\n", "\n"), 1.25, 1.8, 10.5, 2.6, 54, align="l", anchor="m")
+            put_title(s, plain(it["title"]).replace("\n", "\n"), 1.25, 1.8, tw_, 2.6, 54, align="l", anchor="m")
             if it.get("subtitle"):
-                tbox(s, 1.25, 4.6, 10.5, 0.7, it["subtitle"], 24, C["mu"], name="body")
+                tbox(s, 1.25, 4.6, tw_, 0.7, it["subtitle"], 24, C["mu"], name="body")
             if it.get("meta"):
-                tbox(s, 1.25, 5.5, 10.5, 0.5, it["meta"], 16, C["mu"])
+                tbox(s, 1.25, 5.5, tw_, 0.5, it["meta"], 16, C["mu"])
+            if it.get("shapes"):
+                draw_diagram(s, it, 7.55, 1.75, 5.0)
         elif t == "section":
             n_sec += 1
             tbox(s, 0.8, 1.7, 4, 1.4, str(it.get("num") or f"{n_sec:02d}"), 80, C["emc"], True, name="disp")
@@ -439,21 +616,22 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             items = it["items"]
             n = len(items)
             gap = 0.2
-            ch = min(1.5, (4.9 - gap * (n - 1)) / n)  # cards grow to fill the body; a short list is centred, not stuck to the top
-            y0 = 1.95 + max(0.0, (4.9 - (ch * n + gap * (n - 1))) / 2)
+            bh_ = 4.9 - cut
+            ch = min(1.5, (bh_ - gap * (n - 1)) / n)  # cards grow to fill the body; a short list is centred, not stuck to the top
+            y0 = 1.95 + max(0.0, (bh_ - (ch * n + gap * (n - 1))) / 2)
             fs = 26 if n <= 3 else (24 if n == 4 else 22)
             for i, x in enumerate(items):
                 y = y0 + i * (ch + gap)
                 card(s, 0.8, y, 11.7, ch)
                 rect(s, 0.8, y, 0.14, ch, C["pr"], round_=False).name = "accent"
-                d_ = rect(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, C["pr"], shape=MSO_SHAPE.OVAL)
-                tbox(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, str(i + 1), 18, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d_)
+                d_ = rect(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, tone(i), shape=MSO_SHAPE.OVAL)
+                tbox(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, str(i + 1), 18, _dg.ink_on(tone(i)) if i % 2 else C["bt"], True, "c", "m", "disp", emc=_dg.ink_on(tone(i)) if i % 2 else C["bt"], shape=d_)
                 tbox(s, 2.05, y, 10.3, ch, x, fs, C["ct"], anchor="m", emc=C["emcc"])
         elif t == "compare":
             put_title(s, plain(it["title"]))
             if it.get("rows"):
                 rows = it["rows"]
-                gt = s.shapes.add_table(len(rows) + 1, 3, I(0.8), I(1.95), I(11.7), I(min(4.9, 0.9 * (len(rows) + 1))))
+                gt = s.shapes.add_table(len(rows) + 1, 3, I(0.8), I(1.95), I(11.7), I(min(4.9 - cut, 0.9 * (len(rows) + 1))))
                 tb = gt.table
                 tb.columns[0].width, tb.columns[1].width, tb.columns[2].width = I(3.1), I(4.3), I(4.3)
                 head = ["", it["a"].get("label", "A"), it["b"].get("label", "B")]
@@ -470,11 +648,11 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             else:
                 for j, side in enumerate(("a", "b")):
                     x = 0.8 + j * 6.0
-                    card(s, x, 1.95, 5.7, 4.9)
+                    card(s, x, 1.95, 5.7, 4.9 - cut)
                     hd = rect(s, x, 1.95, 5.7, 0.9, C["pr"] if j == 0 else C["ac"])
                     tbox(s, x, 1.95, 5.7, 0.9, it[side].get("label", side.upper()), 26, C["bt"], True, "c", "m", "disp", emc=C["bt"])
                     its_ = it[side].get("items", [])[:5]
-                    rh_ = min(1.15, 3.8 / max(len(its_), 1))  # rows spread over the whole panel
+                    rh_ = min(1.15, (3.8 - cut) / max(len(its_), 1))  # rows spread over the whole panel
                     for i, x_ in enumerate(its_):
                         tbox(s, x + 0.3, 3.0 + i * rh_, 5.1, rh_, "• " + plain(x_), 22 if len(its_) <= 4 else 20, C["ct"], anchor="m", emc=C["emcc"])
         elif t == "steps":
@@ -485,11 +663,11 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             rect(s, 0.8 + cw / 2, 2.85, 11.7 - cw, 0.05, C["line"], round_=False).name = "line"
             for i, x_ in enumerate(st):
                 cx = 0.8 + i * cw
-                d = rect(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, C["pr"], shape=MSO_SHAPE.OVAL)
-                tbox(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, str(i + 1), 28, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d)
-                card(s, cx + 0.1, 3.6, cw - 0.2, 2.9)
-                tbox(s, cx + 0.2, 3.7, cw - 0.4, 0.8, x_.get("title", ""), 22, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
-                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.9, x_.get("text", ""), 18, C["ct"], align="c", emc=C["emcc"])
+                d = rect(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, tone(i), shape=MSO_SHAPE.OVAL)
+                tbox(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, str(i + 1), 28, _dg.ink_on(tone(i)) if i % 2 else C["bt"], True, "c", "m", "disp", emc=_dg.ink_on(tone(i)) if i % 2 else C["bt"], shape=d)
+                card(s, cx + 0.1, 3.6, cw - 0.2, 2.9 - cut)
+                tbox(s, cx + 0.2, 3.7, cw - 0.4, 0.8, x_.get("title", ""), 22 * zz, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
+                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.9 - cut, x_.get("text", ""), 18 * zz, C["ct"], align="c", emc=C["emcc"])
         elif t == "bignumber":
             if it.get("title"):
                 put_title(s, plain(it["title"]))
@@ -505,9 +683,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             cw = (11.7 - 0.3 * (n - 1)) / n
             for i, x_ in enumerate(its):
                 x = 0.8 + i * (cw + 0.3)
-                card(s, x, 2.0, cw, 4.3)
-                tbox(s, x, 2.5, cw, 1.9, f"{plain(x_.get('value', ''))}{x_.get('unit', '')}", 72 if n == 2 else 60, C["emcc"], True, "c", "m", "disp")
-                tbox(s, x + 0.2, 4.6, cw - 0.4, 1.3, x_.get("caption", x_.get("label", "")), 22, C["ct"], align="c")
+                card(s, x, 2.0, cw, 4.3 - cut)
+                tbox(s, x, 2.5 - cut * 0.35, cw, 1.9 - cut * 0.3, f"{plain(x_.get('value', ''))}{x_.get('unit', '')}", 72 if n == 2 else 60, C["emcc"], True, "c", "m", "disp")
+                tbox(s, x + 0.2, 4.6 - cut * 0.75, cw - 0.4, 1.3 - cut * 0.2, x_.get("caption", x_.get("label", "")), 22, C["ct"], align="c")
         elif t == "quote":
             tbox(s, 1.0, 0.3, 2.5, 2.3, "“", 120, C["emc"], True, name="disp")
             put_title(s, it["text"], 1.3, 2.0, 10.7, 3.4, 44)
@@ -530,7 +708,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 rows = (len(ch) + cols - 1) // cols
                 bw = (11.7 - 0.3 * (cols - 1)) / cols
                 top, room = ((2.6, 3.0) if it.get("explain") else (2.6, 4.1)) if reveal else (3.0, 3.9)
-                bh = min(1.15, (room - 0.2 * (rows - 1)) / rows)
+                bh = min(1.3, (room - 0.2 * (rows - 1)) / rows)
                 for i, x_ in enumerate(ch):
                     x = 0.8 + (i % cols) * (bw + 0.3)
                     y = top + (i // cols) * (bh + 0.2)
@@ -539,7 +717,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                         rect(sl, x, y, bw, bh, C["pr"])
                     else:
                         card(sl, x, y, bw, bh)
-                    tbox(sl, x + 0.2, y, bw - 0.3, bh, f"{'ABCDE'[i]}.  {plain(x_)}" + ("   (정답)" if hit else ""), 24, C["bt"] if hit else C["ct"], hit, anchor="m",
+                    tbox(sl, x + 0.2, y, bw - 0.3, bh, f"{'ABCDE'[i]}.  {plain(x_)}" + ("   (정답)" if hit else ""), 26, C["bt"] if hit else C["ct"], hit, anchor="m",
                          emc=C["bt"] if hit else C["emcc"])
                 if reveal and it.get("explain"):
                     rect(sl, 0.8, 5.85, 11.7, 0.95, None, line=C["pr"], lw=2)
@@ -556,55 +734,16 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             for i, e in enumerate(ev):
                 cx = 0.8 + i * cw
                 tbox(s, cx, 2.3, cw, 0.6, e.get("when", ""), 22, C["emc"], True, "c", name="disp")
-                rect(s, cx + cw / 2 - 0.16, 3.05, 0.32, 0.32, C["pr"], shape=MSO_SHAPE.OVAL)
-                card(s, cx + 0.1, 3.65, cw - 0.2, 2.8)
-                tbox(s, cx + 0.2, 3.75, cw - 0.4, 0.75, e.get("title", ""), 22, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
-                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.85, e.get("text", ""), 18, C["ct"], align="c", emc=C["emcc"])
+                rect(s, cx + cw / 2 - 0.16, 3.05, 0.32, 0.32, tone(i), shape=MSO_SHAPE.OVAL)
+                card(s, cx + 0.1, 3.65, cw - 0.2, 2.8 - cut)
+                tbox(s, cx + 0.2, 3.75, cw - 0.4, 0.75, e.get("title", ""), 22 * zz, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
+                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.85 - cut, e.get("text", ""), 18 * zz, C["ct"], align="c", emc=C["emcc"])
         elif t == "chart":
             put_title(s, plain(it["title"]), h=1.0)
-            cd = CategoryChartData()
-            cd.categories = [plain(x) for x in it["labels"]]
-            for se in it["series"]:
-                cd.add_series(se.get("name", ""), se["data"])
-            kind = it.get("kind", "bar")
-            ct = {"bar": XL_CHART_TYPE.COLUMN_CLUSTERED, "line": XL_CHART_TYPE.LINE_MARKERS, "pie": XL_CHART_TYPE.PIE, "doughnut": XL_CHART_TYPE.DOUGHNUT}[kind]
             has_t = bool(it.get("takeaway"))
-            gf = s.shapes.add_chart(ct, I(0.8), I(1.75), I(11.7), I(4.2 if has_t else 5.0), cd)
-            ch = gf.chart
-            ch.font.size = Pt(16)
-            ch.font.color.rgb = rgb(C["tx"])
-            ch.has_legend = kind in ("pie", "doughnut") or len(it["series"]) > 1
-            if ch.has_legend:
-                ch.legend.position = XL_LEGEND_POSITION.BOTTOM
-                ch.legend.include_in_layout = False
-            pal = [C["pr"], C["ac"], C["good"], C["bad"], C["mu"], C["emc"], C["line"], C["cb"]]
-            plot = ch.plots[0]
-            if kind in ("pie", "doughnut"):
-                plot.has_data_labels = True
-                plot.data_labels.font.size = Pt(16)
-                for pi, pt in enumerate(plot.series[0].points):
-                    pt.format.fill.solid()
-                    pt.format.fill.fore_color.rgb = rgb(pal[pi % len(pal)])
-            else:
-                plot.has_data_labels = True
-                plot.data_labels.font.size = Pt(16)
-                plot.data_labels.font.color.rgb = rgb(C["tx"])
-                for si, se in enumerate(plot.series):
-                    if kind == "bar":
-                        se.format.fill.solid()
-                        se.format.fill.fore_color.rgb = rgb(pal[si % len(pal)])
-                    else:
-                        se.format.line.color.rgb = rgb(pal[si % len(pal)])
-                        se.format.line.width = Pt(3.5)
-                ch.value_axis.has_major_gridlines = True
-                ch.value_axis.major_gridlines.format.line.color.rgb = rgb(C["line"])
-                if it.get("unit"):
-                    ch.value_axis.has_title = True
-                    ch.value_axis.axis_title.text_frame.text = str(it["unit"])
-                    ch.value_axis.axis_title.text_frame.paragraphs[0].runs[0].font.size = Pt(14)
-                    ch.value_axis.axis_title.text_frame.paragraphs[0].runs[0].font.color.rgb = rgb(C["mu"])
+            draw_chart(s, it, 0.8, 1.75, 11.7, 4.1 if has_t else 5.0, 16)
             if has_t:
-                tbox(s, 0.8, 6.1, 11.7, 0.8, it["takeaway"], 24, C["tx"], align="c")
+                band(s, it["takeaway"], 6.0 if (src or pub) else 6.1)
         elif t == "math":
             put_title(s, plain(it["title"]) if it.get("title") else "수식", h=1.0)
             card(s, 0.8, 2.0, 11.7, 2.2)
@@ -644,70 +783,12 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             card(s, 2.5, 2.2, 8.3, 3.6)
             tbox(s, 2.5, 2.2, 8.3, 3.6, f"영상 파일: {Path(it['file']).name}\n[삽입 > 비디오]로 이 자리에 넣어 주세요", 24, C["ct"], align="c", anchor="m")
         elif t == "diagram":
-            import deck_diagram as dg
-            from pptx.enum.dml import MSO_LINE
-            from pptx.enum.shapes import MSO_CONNECTOR
-            from pptx.oxml.ns import qn as _qn
             put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.95, 28 if pub else 34)
             pts_ = it.get("points") or []
             cw_ = 7.6 if pts_ else 8.4
             ch_ = cw_ * 0.6
             cx0, cy0 = (0.8 if pts_ else (13.333 - cw_) / 2), 1.75
-            card(s, cx0, cy0, cw_, ch_)
-            u = cw_ / 100.0
-            for n_, sh_ in enumerate(it["shapes"]):
-                kd = dg.kind_of(sh_)
-                col = dg.legible(dg.color(sh_.get("color"), C, "ct" if kd in ("label", "line", "dash") else "pr"), it["shapes"], n_, C)
-                if kd in ("line", "dash", "arrow", "dasharrow"):
-                    cn = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, I(cx0 + float(sh_["x1"]) * u), I(cy0 + float(sh_["y1"]) * u),
-                                                I(cx0 + float(sh_["x2"]) * u), I(cy0 + float(sh_["y2"]) * u))
-                    cn.line.color.rgb = rgb(col)
-                    cn.line.width = Pt(max(2.0, float(sh_.get("w", 4)) * 0.75))
-                    if "dash" in kd:
-                        cn.line.dash_style = MSO_LINE.DASH
-                    if "arrow" in kd:
-                        ln_ = cn.line._get_or_add_ln()
-                        ln_.append(ln_.makeelement(_qn("a:tailEnd"), {"type": "triangle", "w": "med", "len": "med"}))
-                    cn.name = "diagram"
-                elif kd in ("rect", "circle"):
-                    fill_ = None if sh_.get("fill") == "none" else dg.color(sh_.get("fill"), C, "bg2")
-                    line_ = dg.color(sh_.get("color"), C, "line") if (sh_.get("color") or fill_ is None) else None
-                    if kd == "rect":
-                        bx = (cx0 + float(sh_["x"]) * u, cy0 + float(sh_["y"]) * u, float(sh_["w"]) * u, float(sh_["h"]) * u)
-                        g_ = rect(s, *bx, fill_, line=line_, round_=False, lw=2)
-                    else:
-                        r_ = float(sh_["r"]) * u
-                        bx = (cx0 + float(sh_["cx"]) * u - r_, cy0 + float(sh_["cy"]) * u - r_, 2 * r_, 2 * r_)
-                        g_ = rect(s, *bx, fill_, line=line_, shape=MSO_SHAPE.OVAL, lw=2)
-                    g_.name = "diagram"
-                    if sh_.get("text"):
-                        tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
-                        tbox(s, bx[0], bx[1], bx[2], bx[3], plain(sh_["text"]), 16, tc_, True, "c", "m", emc=tc_, shape=g_)
-                elif kd == "arc":
-                    acx, acy, ar, a0, a1 = dg.arc_points(sh_)
-                    ar *= u
-                    g_ = s.shapes.add_shape(MSO_SHAPE.ARC, I(cx0 + acx * u - ar), I(cy0 + acy * u - ar), I(2 * ar), I(2 * ar))
-                    av = g_._element.spPr.find(_qn("a:prstGeom")).find(_qn("a:avLst"))
-                    if av is None:
-                        pg_ = g_._element.spPr.find(_qn("a:prstGeom"))
-                        av = pg_.makeelement(_qn("a:avLst"), {})
-                        pg_.append(av)
-                    for old_ in list(av):
-                        av.remove(old_)
-                    for nm_, vv in (("adj1", a0), ("adj2", a1)):
-                        av.append(av.makeelement(_qn("a:gd"), {"name": nm_, "fmla": "val %d" % int(round(vv * 60000))}))
-                    g_.fill.background()
-                    g_.line.color.rgb = rgb(col)
-                    g_.line.width = Pt(2.5)
-                    g_.shadow.inherit = False
-                    g_.name = "diagram"
-                elif kd == "label":
-                    fs_ = {"s": 14, "m": 18, "l": 24}.get(str(sh_.get("size", "m")), 18)
-                    al_ = str(sh_.get("align", "c"))[:1]
-                    al_ = al_ if al_ in ("l", "c", "r") else "c"
-                    wd_ = max(1.2, pfit.width_em(plain(sh_["text"])) * fs_ / 72 + 0.45)
-                    lx = cx0 + float(sh_["x"]) * u - {"l": 0.08, "r": wd_ - 0.08}.get(al_, wd_ / 2)
-                    tbox(s, lx, cy0 + float(sh_["y"]) * u - 0.27, wd_, 0.54, plain(sh_["text"]), fs_, col, True, al_, "m", emc=col).name = "diagram label"
+            draw_diagram(s, it, cx0, cy0, cw_)
             if pts_:
                 px_, pw_ = cx0 + cw_ + 0.3, 12.5 - (cx0 + cw_ + 0.3)
                 rh_ = min(1.4, (ch_ - 0.2 * (len(pts_) - 1)) / len(pts_))
@@ -719,6 +800,12 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     tbox(s, px_ + 0.25, yy, pw_ - 0.35, rh_, x_, 20, C["ct"], anchor="m", emc=C["emcc"])
             if it.get("caption"):
                 tbox(s, 0.8, cy0 + ch_ + 0.1, 11.7, 0.45, it["caption"], 16, C["mu"], align="c")
+        elif t == "panel":
+            put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.9, 28 if pub else 32)
+            if pub:
+                rect(s, 0.8, 1.55, 11.7, 0.03, C["pr"], round_=False).name = "rule"
+            top_ = 1.75 if pub else 1.6
+            dpanel.draw_pptx(KIT, s, it, 0.8, top_, 11.7, ((6.0 if (src or pub) else 6.1) - 0.16 if cut else (6.72 if (src or pub) else 6.9)) - top_)
         elif t == "closing":
             put_title(s, plain(it["title"]), 0.8, 1.2, 7.4, 2.4, 52, anchor="m")
             if it.get("sub"):

@@ -62,6 +62,41 @@ def pptx_to_html(path: Path, outdir: Path, overflow=()):
     return files
 
 
+class _one_browser:
+    """One preview browser at a time on this computer (two decks drawn at once make a slow PC crawl): a lock file, given up after 4 minutes."""
+
+    def __enter__(self):
+        import os
+        import time
+        self.p = Path(tempfile.gettempdir()) / "teacher-studio-preview.lock"
+        t0 = time.time()
+        self.own = False
+        while time.time() - t0 < 240:
+            try:
+                os.close(os.open(str(self.p), os.O_CREAT | os.O_EXCL | os.O_WRONLY))
+                self.own = True
+                break
+            except FileExistsError:
+                try:
+                    if time.time() - self.p.stat().st_mtime > 300:  # left behind by a crashed run
+                        self.p.unlink()
+                        continue
+                except OSError:
+                    pass
+                time.sleep(1.0)
+            except OSError:
+                break
+        return self
+
+    def __exit__(self, *exc):
+        if self.own:
+            try:
+                self.p.unlink()
+            except OSError:
+                pass
+        return False
+
+
 def render(path: Path, out: Path, consent: bool = False, overflow=()) -> dict:
     """Returns {mode: 'libreoffice'|'approx', files: [sheet, png...], note}."""
     out.mkdir(parents=True, exist_ok=True)
@@ -92,7 +127,7 @@ def render(path: Path, out: Path, consent: bool = False, overflow=()) -> dict:
         from playwright.sync_api import sync_playwright
         ch = ensure.find_system_browser() if ensure else ""
         pngs = []
-        with sync_playwright() as pw:
+        with _one_browser(), sync_playwright() as pw:
             b = pw.chromium.launch(channel=ch) if ch else pw.chromium.launch()
             pg = b.new_page(viewport={"width": 1600, "height": 900})
             for f in files:

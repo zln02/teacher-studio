@@ -62,6 +62,9 @@ def cover_left(ctx, it):
         h.append(T(ctx, it["subtitle"], MX, 740, 1060, 130, 44, cls="p mu", va="t"))
     if it.get("meta"):
         h.append(T(ctx, it["meta"], MX, 920, 1060, 60, 28, cls="p mu small", va="b"))
+    if it.get("shapes"):  # the cover drawing sits on the right panel
+        import deck_diagram
+        h.append(box(1290, 351, 620, 372, deck_diagram.svg(it, d["colors"], 620, 372, ctx.floor, f"cv{ctx.idx}"), "dgm"))
     return {"html": "".join(h), "role": "cover"}
 
 

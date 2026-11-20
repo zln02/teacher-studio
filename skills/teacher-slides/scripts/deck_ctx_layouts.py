@@ -255,6 +255,22 @@ def diagram_canvas(ctx, it):
     return {"html": "".join(hh), "role": "content", "room": True}
 
 
+def panel_board(ctx, it):
+    """One claim + 2-4 blocks (deck_panel.py): the same regions as the .pptx."""
+    import deck_panel
+    pub = ctx.dz.get("context") == "public"
+    hh = [_head(ctx, it)] if pub else [T(ctx, it.get("title", ""), MX, 70, CW, 130, 68, 44, cls="h", va="m", lh=1.14)]
+    top = 1.95 if pub else 1.6
+    bottom = (6.45 if (pub or it.get("source") or it.get("footnote")) else 6.9) - (0.85 if it.get("takeaway") else 0)
+    hh.append(deck_panel.web_html(ctx, it, 0.8333, top, 11.667, bottom - top))
+    if it.get("takeaway"):
+        hh.append(deck_panel.takeaway_html(ctx, it["takeaway"], bottom * 144 + 26, 96))
+    return {"html": "".join(hh), "role": "content", "room": True}
+
+
+TAKE = ("bullets", "compare", "steps", "timeline", "bignumbers", "table")  # "takeaway" on these = a band under the body (chart and panel draw their own)
+
+
 def register(REG: dict) -> None:
     REG.setdefault("title", [])
     if not any(v[0] == "gov" for v in REG["title"]):
@@ -266,6 +282,7 @@ def register(REG: dict) -> None:
     REG["toc"] = [("list", "editorial", toc_list, _always)]
     REG["hero"] = [("full", "bigtype", hero_full, _always), ("split", "split", hero_split, _always)]
     REG["diagram"] = [("canvas", "split", diagram_canvas, _always)]
+    REG["panel"] = [("board", "bento", panel_board, _always)]
 
 
 # ------------------------------------------------------------------- decorate: public header + 자료/주 line
@@ -286,6 +303,13 @@ def decorate(ctx, it: dict, res: dict, spec: dict) -> str:
     pub = ctx.dz.get("context") == "public"
     src = source_line(it)
     content = res.get("role") == "content" or it["type"] not in ("title", "section", "closing", "hero")
+    tk = str(it.get("takeaway") or "") if it["type"] in TAKE else ""
+    if tk:  # the conclusion band: the body gives up its lowest strip
+        import deck_panel
+        ty = 64 if pub and content and not res.get("room") else 0
+        html = (f'<div class="bx ctxfit" style="left:0;top:0;width:{W}px;height:{H}px;transform:translateY({ty}px) scale(.84);transform-origin:50% 0">{html}</div>'
+                + deck_panel.takeaway_html(ctx, tk, 842 if (src or pub) else 884, 92))
+        res = {**res, "room": True}
     if not (pub or src):
         return html
     if not res.get("room") and (pub and content or src):

@@ -13,7 +13,7 @@ Template-first still wins: `--template mine.pptx` uses the user's masters; `desi
 
 ## Spec keys added by the recipes
 - top level: `"context"`, `"objectives": [..]`, `"recap": [..]` (class), `"summary": [..]`, `"org"`, `"date"` (any format -> `2026. 11. 19.`), `"dept"`, `"toc": false`, `"numbering": false` (public).
-- slide types: `diagram` {title, shapes (line / dash / arrow / dasharrow / rect / circle / arc / label on a 100 x 60 canvas), points 0-4, caption} · `table` {title, columns 2-6, rows 1-8, unit, highlight (column index), source, footnote} · `summary` {title, text, label, points 2-5} · `toc` {title, items (auto from sections in public)} · `hero` {headline ≤ 34, sub, kicker, cta ≤ 20, url (QR), file (photo)} · aliases `objectives`, `recap`, `activity` {steps or items, minutes}.
+- slide types: `panel` {title, blocks 2-4 (kpis / cards / list / chart / table / note / flow / tree / diagram), takeaway, layout} · `diagram` {title, shapes (line / dash / arrow / dasharrow / rect / circle / poly / arc / label on a 100 x 60 canvas), points 0-4, caption} · `table` {title, columns 2-6, rows 1-8, unit, highlight (column index), source, footnote} · `summary` {title, text, label, points 2-5} · `toc` {title, items (auto from sections in public)} · `hero` {headline ≤ 34, sub, kicker, cta ≤ 20, url (QR), file (photo)} · aliases `objectives`, `recap`, `activity` {steps or items, minutes}.
 - any data slide: `source` ("기관, 자료명(연도)") and `footnote` -> 「자료: … 주: …」 line. **public: `source` is required on chart / table / bignumber(s) / compare-with-rows** (build stops with a fix line).
 
 ## Type scale (1920×1080 stage px)
@@ -40,10 +40,14 @@ A context names the jobs a deck must do. Which slides do them, how many and in w
 | one figure / two or three figures / a series | `bignumber` / `bignumbers` / `chart` |
 | counts per group | `table` |
 | one sentence to remember | `statement` |
+| one claim that needs two or three kinds of evidence together (figures + their chart, a drawing + its rule, a table + what follows) | `panel` |
+| who does what / what belongs under what | `panel` with a `tree` block |
 | several points of equal weight with no other shape | `bullets` (the last choice, not the first) |
+- Any body slide may end with `takeaway` (the conclusion in a band). Use it where the audience could miss what the evidence means; not on every slide.
 - Body slides carry weight: 3-4 items or a figure. A slide with two short lines is merged into its neighbour (the .pptx gate FAILs empty-looking slides).
 
 ## Lints (printed as NOTE, public `source` is a FIX)
+- every context: three plain list slides in a row · lists are more than a third of the body · one slide type is more than half of the body · a lone `bignumber(s)` slide next to the chart or table it summarises (-> one `panel`)
 - public: missing `source` (FIX) · polite endings 「~습니다/~해요」 in body text (개조식: ~함, ~임, ~추진) · no 요약 slide · no 기관 · date not `YYYY. M. D.`
 - class: no objectives / quiz-or-activity / recap · more than 4 bullets on one slide · fewer than 2 check questions or no activity in a deck of 8+ slides · a quiz without `explain` · no figure slide (diagram / image / compare / table / chart / steps)
 - public (also): no table or chart · no 일정 (timeline / steps) · no 기관 -> write 「우리 학교」, never a slot

@@ -79,6 +79,7 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
     W, H = prs.slide_width, prs.slide_height
     results: list[tuple[str, str]] = []
     left_over, listed, texts_all, over, off, empty = [], [], [], [], [], []
+    tiny, small, plain_n, body_n = [], [], 0, 0
     for i, s in enumerate(prs.slides, 1):
         texts = []
         for sh, tf, label in _frames(s):
@@ -89,10 +90,24 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
             ov = frame_overflow(sh, tf)
             if ov and ov[2] > tol:
                 over.append((i, t.strip().split("\n")[0][:20], round(ov[2], 2)))
+            for p_ in tf.paragraphs:  # text too small to project (page numbers and footers at the very bottom are not body text)
+                for r_ in p_.runs:
+                    if r_.font.size and r_.text.strip() and len(r_.text.strip()) > 2 and (sh.top or 0) < H * 0.9:
+                        if r_.font.size.pt < 10:
+                            tiny.append((i, r_.text.strip()[:14], r_.font.size.pt))
+                        elif r_.font.size.pt < 12:
+                            small.append((i, r_.text.strip()[:14], r_.font.size.pt))
         if s.has_notes_slide:
             texts.append(s.notes_slide.notes_text_frame.text or "")
         txt = "\n".join(texts)
         texts_all.append(txt)
+        if 1 < i < len(prs.slides):  # body slides: is anything on it besides text? (table, chart, picture, line, a grid of 3+ boxes)
+            body_n += 1
+            kinds = [sh.shape_type for sh in s.shapes]
+            boxes = sum(1 for sh in s.shapes if sh.shape_type == 1 and sh.width and sh.width > W * 0.08 and sh.height > H * 0.08 and sh.width * sh.height < W * H * 0.5)
+            if not (any(k in (3, 13, 19, 6, 9) for k in kinds) or any(getattr(sh, "has_chart", False) and sh.has_chart for sh in s.shapes)
+                    or any(getattr(sh, "has_table", False) and sh.has_table for sh in s.shapes) or boxes >= 3):
+                plain_n += 1
         for m in ph.leftovers(txt, fillins):
             left_over.append((i, m))
         for m in ph.fillin_list([txt], fillins):
@@ -110,6 +125,11 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
     results.append(("FAIL" if over else "PASS", "text fits its box (estimate)" + (f": {over[:6]}" if over else "")))
     results.append(("FAIL" if off else "PASS", "every shape inside the slide" + (f": {off[:4]}" if off else "")))
     results.append(("FAIL" if empty else "PASS", "no empty placeholder" + (f": {empty[:4]}" if empty else "")))
+    results.append(("FAIL" if tiny else "PASS", "text large enough to project (>= 10pt)" + (f": {len(tiny)} runs under 10pt, e.g. {tiny[:3]} -> 글자를 키우고 내용을 줄이거나 두 장으로" if tiny else "")))
+    if small:
+        results.append(("NOTE", f"{len(small)} text runs are 10-12pt (e.g. {small[:2]}): 뒷자리에서는 읽기 어려워요. 꼭 필요한 주석이 아니면 14pt 이상으로"))
+    if body_n >= 6 and plain_n / body_n > 0.6:
+        results.append(("NOTE", f"본문 {body_n}장 가운데 {plain_n}장이 글만 있어요 (표·그래프·그림·카드 없음) -> 내용 모양에 맞는 장으로 바꾸면 덜 단조로워요"))
     try:  # visual weight: a body slide that is mostly empty (or stops above the middle) reads as unfinished on a projector
         import pptx_fill
         thin = pptx_fill.problems(prs)

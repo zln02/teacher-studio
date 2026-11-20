@@ -50,6 +50,27 @@ except ImportError:
 ASSETS = SKILL / "assets" / "deck"
 PURPOSE_ICON = {"학부모 설명회": "heart-handshake", "수업": "graduation-cap", "연수": "lightbulb", "발표": "megaphone", "동아리": "rocket", "개인": "sparkles"}
 RECENT = Path.home() / "TeacherStudio" / ".recent-styles.json"
+SEEDS = Path.home() / "TeacherStudio" / ".deck-seeds.json"  # spec file -> the seed of its last build (a rebuild keeps the look)
+
+
+def kept_seed(spec_path: Path, title: str = ""):
+    """The seed this spec file was last built with (same file, same deck title), or None. Fixing a FAIL must not change the look that was just reviewed."""
+    try:
+        e = json.loads(SEEDS.read_text(encoding="utf-8")).get(str(spec_path.resolve()))
+        return (int(e["seed"]), list(e.get("avoid") or [])) if e and e.get("title", "") == title else None
+    except Exception:
+        return None
+
+
+def keep_seed(spec_path: Path, seed: int, title: str = "", avoid=()) -> None:
+    try:
+        d = json.loads(SEEDS.read_text(encoding="utf-8")) if SEEDS.exists() else {}
+        d.pop(str(spec_path.resolve()), None)
+        d[str(spec_path.resolve())] = {"seed": int(seed), "title": title, "avoid": list(avoid or [])}
+        SEEDS.parent.mkdir(parents=True, exist_ok=True)
+        SEEDS.write_text(json.dumps(dict(list(d.items())[-60:]), ensure_ascii=False), encoding="utf-8")
+    except Exception:
+        pass
 OUT_DIR = Path.home() / "TeacherStudio"
 
 
@@ -108,7 +129,7 @@ def pick_layouts(dz: dict, slides: list[dict]) -> list[tuple[str, str, object]]:
         allowed = (dz.get("allowed") or {}).get(it["type"])
         if allowed and not it.get("layout"):  # context recipe: only its layout set (e.g. public = 개조식 lists, table compare)
             opts = [o for o in opts if o[0] in allowed] or opts
-        forced = str(it.get("layout", ""))
+        forced = str(it.get("layout", "")) or ("left" if it["type"] == "title" and it.get("shapes") and it.get("_ctx") != "public" else "")
         if forced:
             m = [o for o in opts if forced in (o[0], f"{it['type']}.{o[0]}")]
             if m:
@@ -219,14 +240,18 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         solve = f' data-solve="{res["solve"]}"' if res.get("solve") else ""
         note = f' data-note="{esc(it["note"])}"' if it.get("note") else ""
         layout_id = f"{it['type']}.{var}"
+        if it["type"] == "panel":  # a panel's look is its mix of blocks: two panels with different blocks are different layouts
+            layout_id = "panel." + "-".join(str(b.get("kind")) for b in it.get("blocks") or [])
         fp.append(layout_id)
         types.add(it["type"])
+        if it["type"] == "panel" and any(b.get("kind") == "chart" for b in it.get("blocks") or []):
+            types.add("chart")
         parts.append(f'<section class="sl tr-{dz["lang"]["trans"]}" id="{sid}" data-type="{it["type"]}" data-layout="{layout_id}" data-family="{fam}"{solve}{note}>'
                      f'{art.background(dz, i, role)}{fsvg}{res["html"]}</section>')
     js = (ASSETS / "deck.js").read_text(encoding="utf-8")
     for tag, used in (("chart", "chart" in types), ("math", "math" in types), ("timer", "timer" in types)):
         js = re.sub(rf"/\*#{tag}\*/(.*?)/\*#end\*/", (lambda m: m.group(1)) if used else "", js, flags=re.S)
-    css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + ctxlay.CSS + style_css(dz) + "\n" + "\n".join(css_extra)
+    css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + ctxlay.CSS + __import__("deck_panel").CSS + style_css(dz) + "\n" + "\n".join(css_extra)
     scene = ('<div id="deck">' + "".join(parts) + '</div><div id="chrome"><div class="prog"></div><div class="pn"></div></div><div id="notes"></div><div id="black"></div>')
     import placeholders as ph_
     doc = {"title": spec.get("title") or spec["slides"][0].get("title", "슬라이드"), "skin": "deck",
@@ -245,7 +270,7 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             RECENT.write_text(json.dumps((hist + [dz["style"]])[-6:]), encoding="utf-8")
         except Exception:
             pass
-    rep.update(ok=True, seed=seed, style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts),
+    rep.update(ok=True, seed=seed, avoid=list(avoid or []), style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts),
                context=dz.get("context", ""))
     return rep
 
@@ -277,6 +302,7 @@ def main() -> int:
     ap.add_argument("--spec", required=True, type=Path)
     ap.add_argument("--out", type=Path)
     ap.add_argument("--seed", type=int)
+    ap.add_argument("--fresh", action="store_true", help="pick a new look even though this spec file was built before (default: a rebuild keeps the look)")
     ap.add_argument("--purpose", default="")
     ap.add_argument("--mood", default="")
     ap.add_argument("--style", default="")
@@ -300,7 +326,16 @@ def main() -> int:
     ov: dict = {"purpose": a.purpose, "mood": a.mood}
     if a.style:
         ov["design"] = {**(spec.get("design") or {}), "style": a.style}
-    rep = build_deck(spec, a.spec.resolve().parent, out, a.seed, ov)
+    title_ = str(spec.get("title") or "")
+    avoid_ = None
+    if a.seed is None and spec.get("seed") is None and not a.fresh and not a.style:
+        kept = kept_seed(a.spec, title_)  # same spec file, built again (a fix round): the look that was reviewed stays
+        if kept:
+            a.seed, avoid_ = kept
+            print(f"NOTE 같은 모양으로 다시 만들어요 (seed {a.seed}). 다른 모양을 원하면 --fresh")
+    rep = build_deck(spec, a.spec.resolve().parent, out, a.seed, ov, avoid=avoid_)
+    if rep.get("seed") is not None:
+        keep_seed(a.spec, rep["seed"], title_, rep.get("avoid"))
     for w in rep["warnings"]:
         print("NOTE", w)
     if not rep["ok"]:
@@ -333,7 +368,7 @@ def main() -> int:
         px = out.with_suffix(".pptx") if a.pptx == "auto" else Path(a.pptx)
         import deck_pptx
         deck_pptx._need_pptx(a.yes)
-        pr_ = deck_pptx.build_pptx(spec, a.spec.resolve().parent, px, rep["seed"], ov, a.template)  # same seed = same style and colours as the HTML
+        pr_ = deck_pptx.build_pptx(spec, a.spec.resolve().parent, px, rep["seed"], ov, a.template, avoid=rep.get("avoid"))  # same seed + same steering = the style and colours of the HTML
         if pr_["ok"]:
             print(f"built {px} (편집할 수 있는 PPT) slides={pr_['slides']}")
             print("NOTE", pr_["font_note"])

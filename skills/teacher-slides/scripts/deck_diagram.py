@@ -10,7 +10,8 @@
                {"kind":"rect","x":0,"y":50,"w":100,"h":10,"fill":"water","text":"물"},
                {"kind":"circle","cx":20,"cy":20,"r":6,"fill":"ac","text":"광원"},
                {"kind":"label","x":22,"y":20,"text":"입사 광선","color":"ac","size":"m","align":"l"}]}
-kinds: line, dash, arrow, dasharrow, rect, circle, arc, label.  colours: pr ac tx mu good bad line water sky sun (or #rrggbb).
+               {"kind":"poly","points":[[30,50],[50,15],[70,50]],"fill":"ac"}                # any closed outline (3-12 corners)
+kinds: line, dash, arrow, dasharrow, rect, circle (rx, ry instead of r = an oval), poly, arc, label.  colours: pr ac tx mu good bad line water sky sun (or #rrggbb).
 The same list draws the web slide (inline SVG) and the .pptx (real lines, arrows, shapes and text boxes).
 """
 from __future__ import annotations
@@ -20,8 +21,8 @@ import re
 
 from deck_kit import esc, plain
 
-KINDS = ("line", "dash", "arrow", "dasharrow", "rect", "circle", "arc", "label")
-ALIAS = {"text": "label", "box": "rect", "oval": "circle", "ellipse": "circle", "dashed": "dash", "ray": "arrow", "dashedarrow": "dasharrow", "dash-arrow": "dasharrow"}
+KINDS = ("line", "dash", "arrow", "dasharrow", "rect", "circle", "arc", "label", "poly")
+ALIAS = {"text": "label", "box": "rect", "oval": "circle", "ellipse": "circle", "polygon": "poly", "triangle": "poly", "shape": "poly", "dashed": "dash", "ray": "arrow", "dashedarrow": "dasharrow", "dash-arrow": "dasharrow"}
 FIXED = {"water": "#bfe3f2", "sky": "#eaf4fb", "sun": "#f5b301", "white": "#ffffff", "black": "#111111", "glass": "#d7ecf5"}
 SIZES = {"s": 0.8, "m": 1.0, "l": 1.35}
 CW_, CH_ = 100.0, 60.0
@@ -50,7 +51,17 @@ def check(i: int, it: dict) -> list[str]:
             e.append(f"slide {i} diagram.shapes[{j}]: kind '{sh.get('kind') if isinstance(sh, dict) else sh}' -> one of {', '.join(KINDS)}")
             continue
         need = {"line": ("x1", "y1", "x2", "y2"), "dash": ("x1", "y1", "x2", "y2"), "arrow": ("x1", "y1", "x2", "y2"), "dasharrow": ("x1", "y1", "x2", "y2"),
-                "rect": ("x", "y", "w", "h"), "circle": ("cx", "cy", "r"), "arc": ("cx", "cy", "r", "from", "to"), "label": ("x", "y", "text")}[k]
+                "rect": ("x", "y", "w", "h"), "circle": ("cx", "cy", "r"), "arc": ("cx", "cy", "r", "from", "to"), "label": ("x", "y", "text"), "poly": ("points",)}[k]
+        if k == "circle" and sh.get("r") is None and sh.get("rx") is not None and sh.get("ry") is not None:
+            need = ("cx", "cy")
+        if k == "poly":
+            pts_ = sh.get("points")
+            if not isinstance(pts_, list) or not 3 <= len(pts_) <= 12 or any(not isinstance(p, (list, tuple)) or len(p) != 2 for p in pts_):
+                e.append(f"slide {i} diagram.shapes[{j}] poly: points = 3-12 corners [[x, y], ...]")
+                continue
+            if any(not -2 <= _f(p[0]) <= 102 or not -2 <= _f(p[1]) <= 62 for p in pts_):
+                e.append(f"slide {i} diagram.shapes[{j}] poly: outside the canvas (x 0-100, y 0-60)")
+            continue
         miss = [n for n in need if sh.get(n) is None]
         if miss:
             e.append(f"slide {i} diagram.shapes[{j}] {k}: missing {', '.join(miss)}")
@@ -137,12 +148,20 @@ def svg(it: dict, colors: dict, w: int, h: int, floor: int = 28, uid: str = "d")
                 out.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{ww:.1f}" height="{hh:.1f}" rx="{_f(sh.get("round"), 0) * k:.1f}" fill="{fill}"{st}/>')
                 tx, ty = x + ww / 2, y + hh / 2
             else:
-                cx, cy, r = (_f(sh.get(a)) * k for a in ("cx", "cy", "r"))
-                out.append(f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r:.1f}" fill="{fill}"{st}/>')
+                cx, cy = (_f(sh.get(a)) * k for a in ("cx", "cy"))
+                rx, ry = radii(sh)
+                out.append(f'<ellipse cx="{cx:.1f}" cy="{cy:.1f}" rx="{rx * k:.1f}" ry="{ry * k:.1f}" fill="{fill}"{st}/>')
                 tx, ty = cx, cy
             if sh.get("text"):
                 tc = ink_on(fill) if fill != "none" else onc
                 lab(tx, ty, sh["text"], base, tc)
+        elif kd == "poly":
+            fill = color(sh.get("fill"), colors, "bg2") if sh.get("fill") != "none" else "none"
+            st = f' stroke="{color(sh.get("color"), colors, "line")}" stroke-width="3" stroke-linejoin="round"' if sh.get("color") or fill == "none" else ""
+            out.append('<polygon points="' + " ".join(f"{_f(p[0]) * k:.1f},{_f(p[1]) * k:.1f}" for p in sh["points"]) + f'" fill="{fill}"{st}/>')
+            if sh.get("text"):
+                lab(sum(_f(p[0]) for p in sh["points"]) / len(sh["points"]) * k, sum(_f(p[1]) for p in sh["points"]) / len(sh["points"]) * k, sh["text"], base,
+                    ink_on(fill) if fill != "none" else onc)
         elif kd == "arc":
             cx, cy, r, s, e_ = arc_points(sh)
             p0 = (cx * k + r * k * math.cos(math.radians(s)), cy * k + r * k * math.sin(math.radians(s)))
@@ -155,6 +174,23 @@ def svg(it: dict, colors: dict, w: int, h: int, floor: int = 28, uid: str = "d")
             anc = {"l": "start", "c": "middle", "r": "end"}.get(str(sh.get("align", "c"))[:1], "middle")
             lab(_f(sh.get("x")) * k, _f(sh.get("y")) * k, sh["text"], size, col, anc)
     return "".join(out).replace("<defs></defs>", "<defs>" + "".join(defs) + "</defs>") + "</svg>" + "".join(labels)
+
+
+def radii(sh: dict) -> tuple[float, float]:
+    """(rx, ry) of a circle shape; rx / ry make it an oval."""
+    r = _f(sh.get("r"))
+    return _f(sh.get("rx"), r) or r, _f(sh.get("ry"), r) or r
+
+
+def _in_poly(x: float, y: float, pts: list) -> bool:
+    inside = False
+    n = len(pts)
+    for a in range(n):
+        x1, y1 = _f(pts[a][0]), _f(pts[a][1])
+        x2, y2 = _f(pts[(a + 1) % n][0]), _f(pts[(a + 1) % n][1])
+        if (y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / ((y2 - y1) or 1e-9) + x1:
+            inside = not inside
+    return inside
 
 
 def _contrast(a: str, b: str) -> float:
@@ -171,7 +207,9 @@ def backdrop(shapes: list, upto: int, x: float, y: float, colors: dict) -> str:
         kd = kind_of(sh)
         if kd == "rect" and _f(sh.get("x")) <= x <= _f(sh.get("x")) + _f(sh.get("w")) and _f(sh.get("y")) <= y <= _f(sh.get("y")) + _f(sh.get("h")):
             bg = color(sh.get("fill"), colors, "bg2")
-        elif kd == "circle" and (x - _f(sh.get("cx"))) ** 2 + (y - _f(sh.get("cy"))) ** 2 <= _f(sh.get("r")) ** 2:
+        elif kd == "circle" and ((x - _f(sh.get("cx"))) / (radii(sh)[0] or 1)) ** 2 + ((y - _f(sh.get("cy"))) / (radii(sh)[1] or 1)) ** 2 <= 1:
+            bg = color(sh.get("fill"), colors, "bg2")
+        elif kd == "poly" and isinstance(sh.get("points"), list) and _in_poly(x, y, sh["points"]):
             bg = color(sh.get("fill"), colors, "bg2")
     return bg
 

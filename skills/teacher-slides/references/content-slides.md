@@ -12,9 +12,11 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 1. **Write the deck's one sentence**: 「이 발표가 끝나면 〈청중〉은 〈무엇을 안다/한다/결정한다〉.」
 2. **Write the storyline as full-sentence claims**, one per slide, before choosing any slide type. Read only those sentences in order: they must make the argument or the lesson by themselves. A slide whose sentence is a topic word (「현황」「특징」) has no claim yet.
 3. **Give each claim its evidence**: a figure, a number with source, a worked example, a question. No evidence and not a transition → merge or cut.
-4. **Then choose the slide type from the shape of the evidence**: sequence → `steps`/`timeline`; two things on the same criteria → `compare`/`table`; one number that matters → `bignumber`; parts and relations → `diagram`; a check → `quiz`. `bullets` only when the items are truly parallel and unordered.
+4. **Then choose the slide type from the shape of the evidence**: sequence → `steps`/`timeline`; two things on the same criteria → `compare`/`table`; one number that matters → `bignumber`; parts and relations → `diagram`; a check → `quiz`. `bullets` only when the items are truly parallel and unordered. A claim that needs two kinds of evidence at once (the headline figures and the trend behind them; a drawing and the rule it shows; a table and what follows from it) keeps them on one slide: `panel`. Splitting them over two thin slides makes the audience hold the first in their head; packing two claims into one panel hides both.
 5. **Title = the claim** (class: may be the question being answered), short enough to read at a glance from the back; about 20자 is where to start checking, and a precise longer title beats a vague short one. Not a category label. Varied forms across the deck; not 「〈주제〉: 〈부제〉」 every time.
-6. **Body carries what the speaker cannot say fast**: the figure, the term, the number. Explanation and transitions go to `note`; a slide that only repeats the talk is trimmed.
+6. **Body carries what the speaker cannot say fast**: the figure, the term, the number. Explanation and transitions go to `note`; a slide that only repeats the talk is trimmed. Where the evidence does not speak for itself (a table, a chart, a comparison), the slide ends with what it means in one line (`takeaway`): the meaning, not a repeat of the title.
+   - Fill with substance, not with size: a slide whose body is two short lines is either missing its evidence (add the example, the figure, the case) or belongs on its neighbour.
+   - Each slide names particulars: the real example, the figure with its unit and base, the place and date, the term as the field writes it. Text has two levels (a short heading and its detail), not one long sentence per bullet.
    - Keep on the slide, even though the teacher also says it: task instructions and their conditions, safety steps, formulas and definitions, the key sentence students must copy or use, and what a figure shows (caption). Students who hear poorly, arrive late or read the handout later depend on these.
    - If the deck is also a 배포본 (printed, sent home, uploaded), check it as a handout too: does it make sense without the speaker? Add the missing sentence to the slide or to visible notes.
 7. **Budget**: slide count follows the story and the activities, not a quota. A rough check is one slide per 1.5-3 minutes of talking; activity, discussion and check slides stay up much longer. Cut slides to fit the time; do not shrink text to fit.
@@ -48,7 +50,8 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 - [ ] The slide claims, read alone in order, make the whole argument or lesson.
 - [ ] Every slide has one claim and its evidence; no slide exists to fill a layout.
 - [ ] Titles are claims or questions, readable at a glance, in varied forms.
-- [ ] Slide type matches the shape of the content; `bullets` is not the default.
+- [ ] Slide type matches the shape of the content; `bullets` is not the default; no slide type fills more than a third of the body and neighbours do not repeat one shape.
+- [ ] No body slide is half empty and none is a wall of text; a claim with two kinds of evidence shows both on one slide (`panel`); data slides say what the data means (`takeaway`).
 - [ ] Body is not the script, but instructions, safety steps, formulas, key sentences and figure captions are on the slide.
 - [ ] Checked on the final output: from the back of the room, and as the handout if it will be distributed.
 - [ ] No answer, date, number or safety condition on a slide is still 「확인 필요」; otherwise the deck is a 「교사 초안」.

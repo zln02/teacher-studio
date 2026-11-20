@@ -92,8 +92,10 @@ def chart_svg(blob: bytes, w: float, h: float, dr) -> str:
         sers = []
         for s in X(grp, "./c:ser"):
             name = "".join(_pts(X1(s, "./c:tx"))) if X1(s, "./c:tx") is not None else ""
-            cats = _pts(X1(s, "./c:cat")) if X1(s, "./c:cat") is not None else []
-            vals = [_num(v) for v in (_pts(X1(s, "./c:val")) if X1(s, "./c:val") is not None else [])]
+            cat_el = X1(s, "./c:cat") if X1(s, "./c:cat") is not None else X1(s, "./c:xVal")  # scatter charts keep x / y instead of category / value
+            val_el = X1(s, "./c:val") if X1(s, "./c:val") is not None else X1(s, "./c:yVal")
+            cats = _pts(cat_el) if cat_el is not None else []
+            vals = [_num(v) for v in (_pts(val_el) if val_el is not None else [])]
             fill = color_of(X1(s, "./c:spPr/a:solidFill"), th) or color_of(X1(s, "./c:spPr/a:ln/a:solidFill"), th)
             dpt = {}
             for d in X(s, "./c:dPt"):

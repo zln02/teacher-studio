@@ -81,7 +81,7 @@ RECIPES: dict[str, dict] = {
 }
 
 DATA_TYPES = ("chart", "table", "bignumber", "bignumbers")
-CONTENT_TYPES = ("bullets", "compare", "steps", "bignumbers", "bignumber", "timeline", "chart", "table", "summary", "illustration", "image", "quiz", "math", "diagram")
+CONTENT_TYPES = ("bullets", "compare", "steps", "bignumbers", "bignumber", "timeline", "chart", "table", "summary", "illustration", "image", "quiz", "math", "diagram", "panel")
 ROMAN = "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ".split()
 GANA = "가나다라마바사아자차카타파하"
 _NUMBERED = re.compile(r"^\s*(?:[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+\.|\d+\.|[가-하]\.|\d+\)|[가-하]\))\s")
@@ -242,18 +242,20 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
         return errs, warns
     slides = spec.get("slides") or []
     types = [x.get("type") for x in slides]
+    pk = {b.get("kind") for x in slides if x.get("type") == "panel" for b in x.get("blocks") or [] if isinstance(b, dict)}  # block kinds inside panels
     try:  # the user named a length (「10장 정도」): the deck may run a quarter over, not more
         want = int(spec.get("target_slides") or 0)
     except (TypeError, ValueError):
         want = 0
     if want:
         n_out = len(slides) - (types.count("section") if ctx == "public" else 0) + (1 if "quiz" in types else 0)
-        if n_out > round(want * 1.25):
-            errs.append(f"{n_out}장이에요 (요청 {want}장 정도, 「확인 문제 정답」 장 포함) -> {round(want * 1.25)}장 이하로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 (내용을 버리지 말고 한 장에 두 가지를 담기)")
+        cap_n = want + max(1, round(want * 0.15))  # 「10장 정도」 = up to 12, 「6장」 = up to 7: a deck that runs longer is not what was asked
+        if n_out > cap_n:
+            errs.append(f"{n_out}장이에요 (요청 {want}장 정도, 「확인 문제 정답」 장 포함) -> {cap_n}장 이하로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 (내용을 버리지 말고 한 장에 두 가지를 담기)")
     if ctx == "public":
         for i, it in enumerate(slides, 1):
             t = it.get("type")
-            if t in DATA_TYPES or (t == "compare" and it.get("rows")):
+            if t in DATA_TYPES or (t == "compare" and it.get("rows")) or (t == "panel" and any(isinstance(b, dict) and b.get("kind") in ("chart", "table", "kpis") for b in it.get("blocks") or [])):
                 if not str(it.get("source") or "").strip():
                     errs.append(f"slide {i} {t}: 공공 보고 자료 장에는 출처가 필요해요 -> \"source\": \"기관명, 자료명(연도)\" (주석은 \"footnote\")")
             texts = []
@@ -264,6 +266,9 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
                     texts.append(it[k])
             for k in ("items", "points"):
                 texts += [str(x) for x in it.get(k) or []]
+            if t == "panel":
+                import deck_panel
+                texts += deck_panel.texts(it)
             polite = [x for x in texts if _POLITE.search(x.replace("**", ""))]
             if polite:
                 warns.append(f"slide {i}: 개조식이 아니에요 ('{polite[0][:16]}...') -> 명사형으로 끝내기 (~함, ~임, ~추진, ~예정)")
@@ -271,9 +276,9 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
             warns.append("공공 보고: 요약(핵심) 장이 없어요 -> \"summary\": [\"핵심 1\", ...] 또는 {\"type\":\"summary\"} 추가")
         if not (spec.get("org") or spec.get("agency")):
             warns.append("공공 보고: 표지에 기관명이 없어요 -> spec \"org\": 실제 기관명, 모르면 \"우리 학교\" (빈칸·○○ 금지)")
-        if not ({"table", "chart"} & set(types)):
+        if not ({"table", "chart"} & (set(types) | pk)):
             warns.append("공공 보고: 표나 그래프가 없어요 -> 실적은 {\"type\":\"table\"} / {\"type\":\"chart\"} + \"source\" (서로 맞는 숫자로)")
-        if len(slides) >= 8 and not ({"timeline", "steps"} & set(types)):
+        if len(slides) >= 8 and not ({"timeline", "steps", "flow"} & (set(types) | pk)):
             warns.append("공공 보고: 일정 장이 없어요 -> 향후 계획은 {\"type\":\"timeline\"} (분기·월별)")
         d = str(spec.get("date") or "")
         if not d:
@@ -299,7 +304,7 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
                 warns.append(f"수업용: 확인 문제가 {n_quiz}개예요 -> 개념 묶음마다 하나씩, 2개 이상 ({{\"type\":\"quiz\",\"answer\":0,\"explain\":\"...\"}})")
             if not n_act:
                 warns.append("수업용: 활동 장이 없어요 -> {\"type\":\"activity\",\"minutes\":5,\"steps\":[...]} 한 장 (준비물은 note에)")
-            if not ({"diagram", "image", "compare", "table", "chart", "steps", "timeline", "illustration"} & set(types)):
+            if not ({"diagram", "image", "compare", "table", "chart", "steps", "timeline", "illustration", "panel"} & set(types)):
                 warns.append("수업용: 그림·표가 하나도 없어요 -> 교과서에 그림이 있는 개념은 {\"type\":\"diagram\"}으로 그리기 (광선, 순환, 구조)")
     elif ctx == "promo":
         if not any((x.get("type") in ("hero", "closing", "qr")) and (x.get("url") or x.get("cta")) for x in slides):
