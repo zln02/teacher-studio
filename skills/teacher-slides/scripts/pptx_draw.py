@@ -142,6 +142,10 @@ class Draw:
         self.part = slide.part
         self.defs: list[str] = []
         self._id = 0
+        try:
+            self.no = [s.slide_id for s in prs.slides].index(slide.slide_id) + 1
+        except Exception:
+            self.no = 0
 
     def uid(self, p="m") -> str:
         self._id += 1
@@ -360,6 +364,8 @@ class Draw:
                 if hl:
                     st += "background:%s;" % css_color(hl)
                 txt = "".join(X(r, "./a:t/text()"))
+                if tag == "fld" and r.get("type") == "slidenum" and self.no:
+                    txt = str(self.no)  # PowerPoint fills this field in; the stored text is only a cache
                 runs.append('<span style="%s">%s</span>' % (st, esc(txt).replace("\n", "<br>").replace("\x0b", "<br>")))
             if psz is None:
                 ep = X1(p, "./a:endParaRPr")

@@ -118,8 +118,10 @@ class PptxGate(unittest.TestCase):
             prs = Presentation(str(out))
             self.assertEqual(rep["slides"], len(prs.slides))
             texts = ["\n".join(sh.text_frame.text for sh in s.shapes if sh.has_text_frame) for s in prs.slides]
-            self.assertEqual(sum("(정답)" in t for t in texts), n_quiz)  # every question is followed by its answer screen
-            self.assertTrue(any("풀이:" in t for t in texts))
+            ans = [t for t in texts if "확인 문제 정답" in t]
+            self.assertEqual(len(ans), 1)                       # one answers slide, before the closing
+            self.assertEqual(ans[0].count("정답 "), n_quiz)       # one answer line per question
+            self.assertIn("확인 문제 정답", texts[-2])
             xml = "".join(s._element.xml for s in prs.slides)
             self.assertIn("<p:cxnSp>", xml)       # rays are real lines
             self.assertIn("tailEnd", xml)         # with arrow heads
@@ -210,7 +212,7 @@ class DocsPath(unittest.TestCase):
         self.assertIn("break-before:page", h)
         self.assertIn("data:image/png;base64,", h)
         self.assertRegex(h, r'<svg[^>]*width="28(\.0)?mm"')
-        self.assertIn("□ 방문", h)
+        self.assertIn("□ 방문", h)  # the box stays with its word (no line break between them)
 
     def test_guide_reply_on_its_own_page_and_form_kind(self):
         import docmodel

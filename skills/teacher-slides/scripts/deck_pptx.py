@@ -221,6 +221,32 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         return ph
 
     extra_slides = [0]
+    quizzes: list = []  # (number, quiz slide) waiting for the answers slide
+
+    def answers_slide():
+        """「확인 문제 정답」: every check question with its answer and one-line reason, on one slide (two when there are more than four)."""
+        pend = quizzes[:]
+        del quizzes[:]
+        for k0 in range(0, len(pend), 4):
+            part = pend[k0:k0 + 4]
+            sl = prs.slides.add_slide(layout_for("other"))
+            bg(sl, "bullets")
+            tbox(sl, 0.8, 0.38, 11.7, 0.4, "정답", 14, C["emc"], True)
+            put_title(sl, "확인 문제 정답" + (f" ({k0 // 4 + 1})" if len(pend) > 4 else ""))
+            gap = 0.2
+            rh = min(1.6, (4.9 - gap * (len(part) - 1)) / len(part))
+            y0 = 1.95 + max(0.0, (4.9 - (rh * len(part) + gap * (len(part) - 1))) / 2)
+            for i, (no, q) in enumerate(part):
+                y = y0 + i * (rh + gap)
+                a_ = int(q.get("answer", 0))
+                card(sl, 0.8, y, 11.7, rh)
+                d_ = rect(sl, 1.05, y + rh / 2 - 0.32, 0.64, 0.64, C["pr"], shape=MSO_SHAPE.OVAL)
+                tbox(sl, 1.05, y + rh / 2 - 0.32, 0.64, 0.64, str(no), 18, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d_)
+                tbox(sl, 1.95, y + 0.05, 10.4, rh * 0.42, plain(q["q"]), 18, C["ct"], anchor="m", emc=C["emcc"])
+                line2 = f"**정답 {'ABCDE'[a_]}. {plain(q['choices'][a_])}**" + (f"   {plain(q['explain'])}" if q.get("explain") else "")
+                tbox(sl, 1.95, y + rh * 0.45, 10.4, rh * 0.5, line2, 20, C["ct"], anchor="m", emc=C["emcc"])
+            drop_empty(sl)
+            extra_slides[0] += 1
 
     def kicker(s, text, y=0.38):
         if text:
@@ -268,6 +294,12 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     for idx, it in enumerate(slides):
         t = it["type"]
         cur[0] = idx + 1
+        if ctx_name == "public" and t == "section":  # 보고 자료: no divider pages; the section name is in every slide's header band
+            n_sec += 1
+            extra_slides[0] -= 1
+            continue
+        if t == "closing" and quizzes:
+            answers_slide()
         s = prs.slides.add_slide(layout_for("cover" if t in ("title", "closing") else "other"))
         bg(s, t)
         kicker(s, it.get("kicker"))
@@ -275,11 +307,11 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         pub = ctx_name == "public"
         if pub and t not in ("title", "section", "closing"):  # public header: section name left, 기관 right, thin rule
             sec, org = str(it.get("_section") or ""), str(spec.get("org") or spec.get("agency") or "")
+            rect(s, 0, 0, 13.333, 0.52, C["pr"], round_=False).name = "decor"  # header band: gives every page the accent colour
             if sec:
-                tbox(s, 0.8, 0.12, 7.5, 0.36, sec, 12, C["mu"], True)
+                tbox(s, 0.8, 0.08, 7.5, 0.36, sec, 13, C["bt"], True, anchor="m", emc=C["bt"])
             if org:
-                tbox(s, 7.5, 0.12, 5.0, 0.36, org, 12, C["mu"], True, "r")
-            rect(s, 0.8, 0.5, 11.7, 0.02, C["line"], round_=False).name = "rule"
+                tbox(s, 7.5, 0.08, 5.0, 0.36, org, 13, C["bt"], True, "r", "m", emc=C["bt"])
         src = ctx_source(it)
         if src:  # 자료/주 line on data slides
             tbox(s, 0.8, 6.85, 11.7, 0.4, src, 12, C["mu"])
@@ -296,6 +328,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 tbox(s, 0.8, 5.35, 11.7, 0.5, it["_date"], 20, C["tx"], align="c")
             if it.get("_dept"):
                 tbox(s, 0.8, 5.9, 11.7, 0.5, it["_dept"], 18, C["mu"], align="c")
+            rect(s, 0, 6.75, 13.333, 0.61, C["pr"], round_=False).name = "decor"
         elif t == "bullets" and pub:
             put_title(s, plain(it["title"]), 0.8, 0.65, 11.7, 0.85, 28)
             rect(s, 0.8, 1.55, 11.7, 0.03, C["pr"], round_=False).name = "rule"
@@ -309,8 +342,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     cnt[dd] = 0
                 lines.append(("    " * (lv - 1)) + m + " " + plain(tx_))
             nl = len(lines)
-            tbox(s, 0.9, 1.8, 11.5, 4.9, "\n".join(lines), 28 if nl <= 3 else (26 if nl == 4 else (22 if nl <= 6 else 20)), C["tx"],
-                 spacing=2.0 if nl <= 3 else (1.8 if nl == 4 else (1.55 if nl <= 6 else 1.35)))
+            rect(s, 0.8, 1.72, 11.7, 5.0, C["bg2"], round_=False).name = "panel"
+            rect(s, 0.8, 1.72, 0.1, 5.0, C["pr"], round_=False).name = "accent"
+            tbox(s, 1.15, 1.85, 11.2, 4.75, "\n".join(lines), 28 if nl <= 3 else (26 if nl == 4 else (22 if nl <= 6 else 20)), C["tx"],
+                 spacing=2.3 if nl <= 3 else (2.1 if nl == 4 else (1.7 if nl == 5 else (1.5 if nl == 6 else 1.35))))
         elif t == "table":
             put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
             cols, rows = it["columns"], it["rows"]
@@ -347,13 +382,13 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             put_title(s, plain(it.get("title") or "목차"), 0.8, 0.6, 5, 1.0, 40)
             rect(s, 0.8, 1.7, 0.7, 0.07, C["pr"], round_=False).name = "accent"
             its = it.get("items") or []
-            rh = min(0.8, 4.6 / max(len(its), 1))
+            rh = min(1.05, 4.7 / max(len(its), 1))  # rows use the whole page width and height (a short 목차 must not look empty)
             for i_, x_ in enumerate(its):
                 y = 2.0 + i_ * rh
                 lab = f"{dctx.roman(i_ + 1)}." if pub else f"{i_ + 1:02d}"
-                tbox(s, 4.6, y, 1.0, rh, lab, 24, C["emc"], True, anchor="m", name="disp")
-                tbox(s, 5.6, y, 6.9, rh, re.sub(r"^\s*[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+\.\s*", "", plain(str(x_))), 24, C["tx"], anchor="m")
-                rect(s, 4.6, y + rh - 0.02, 7.9, 0.015, C["line"], round_=False).name = "rule"
+                tbox(s, 1.3, y, 1.2, rh, lab, 28, C["emc"], True, anchor="m", name="disp")
+                tbox(s, 2.6, y, 9.9, rh, re.sub(r"^\s*[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+\.\s*", "", plain(str(x_))), 28, C["tx"], anchor="m")
+                rect(s, 1.3, y + rh - 0.02, 11.2, 0.015, C["line"], round_=False).name = "rule"
         elif t == "hero":
             if it.get("file"):
                 p_ = Path(it["file"])
@@ -509,13 +544,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     rect(sl, 0.8, 5.85, 11.7, 0.95, None, line=C["pr"], lw=2)
                     tbox(sl, 1.0, 5.85, 11.3, 0.95, "풀이: " + plain(it["explain"]), 22, C["tx"], anchor="m")
             quiz_draw(s, False)
-            notes.append(f"정답: {'ABCDE'[ans]}. {plain(ch[ans])}" + (f" - {plain(it['explain'])}" if it.get("explain") else "") + " (다음 장이 정답 화면이에요)")
-            s2 = prs.slides.add_slide(layout_for("other"))  # the answer screen: same question, the right choice filled in, the reason below
-            bg(s2, t)
-            tbox(s2, 0.8, 0.38, 11.7, 0.4, "정답", 14, C["emc"], True)
-            quiz_draw(s2, True)
-            drop_empty(s2)
-            extra_slides[0] += 1
+            quizzes.append((len(quizzes) + 1, it))
+            notes.append(f"정답: {'ABCDE'[ans]}. {plain(ch[ans])}" + (f" - {plain(it['explain'])}" if it.get("explain") else "") + " (뒤쪽 「확인 문제 정답」 장에 모아 두었어요)")
         elif t == "timeline":
             put_title(s, plain(it["title"]))
             ev = it["events"]
@@ -700,6 +730,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         if notes:
             s.notes_slide.notes_text_frame.text = "\n".join(plain(n) for n in notes if n)
         drop_empty(s)
+    if quizzes:  # a deck without a closing slide still gets its answers
+        answers_slide()
     out.parent.mkdir(parents=True, exist_ok=True)
     prs.core_properties.title = str(spec.get("title") or slides[0].get("title", ""))
     prs.core_properties.author = ""
