@@ -8,3 +8,5 @@
 *.otf binary
 *.mp4 binary
 *.webm binary
+*.cmd text eol=crlf
+*.sh text eol=lf
