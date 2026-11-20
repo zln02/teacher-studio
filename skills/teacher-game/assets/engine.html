@@ -54,6 +54,8 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 .h2{font-family:var(--font-display);font-size:64px;text-align:center;line-height:1.2}
 .big{font-size:56px;font-weight:900}
 .btn{font-family:var(--font-display);font-size:56px;padding:26px 72px;min-width:240px;min-height:110px;border:none;border-radius:999px;background:var(--primary);color:var(--btnText);cursor:pointer;box-shadow:0 10px 0 rgba(0,0,0,.28),0 0 0 6px rgba(255,255,255,.18);transition:transform .08s ease-out,box-shadow .08s ease-out;touch-action:manipulation}
+[data-kb]:focus{outline:6px solid var(--primary);outline-offset:4px}
+[data-kb]:focus:not(:focus-visible){outline:none}
 .btn:active,.btn.pressed{transform:translateY(6px) scale(.97);box-shadow:0 4px 0 rgba(0,0,0,.28),0 0 0 6px rgba(255,255,255,.18)}
 .btn.secondary{background:rgba(255,255,255,.16);color:var(--text);box-shadow:0 10px 0 rgba(0,0,0,.25),inset 0 0 0 4px var(--cardBorder)}
 .btn.small{font-size:38px;padding:16px 40px;min-height:84px;min-width:0}
@@ -659,6 +661,12 @@ NG.button = function(el, fn){
   el.addEventListener("pointerup", function(){ el.classList.remove("pressed"); });
   el.addEventListener("pointerleave", function(){ el.classList.remove("pressed"); });
   el.addEventListener("click", function(e){ if (NG.paused && !el.hasAttribute("data-always")) return; fn(e); });
+  if (!/^(BUTTON|A|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)){  /* keyboard path: a plain box that acts as a button can be reached with Tab and pressed with Enter / Space */
+    if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+    if (!el.hasAttribute("role")) el.setAttribute("role", "button");
+    el.setAttribute("data-kb", "1");
+    el.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); e.stopPropagation(); el.click(); } });
+  }
   return el;
 };
 NG.drag = function(el, o){
@@ -682,6 +690,14 @@ NG.drag = function(el, o){
     if (!ok){ el.style.transition = "transform .3s cubic-bezier(.34,1.56,.64,1)"; el._dx = 0; el._dy = 0; el.style.transform = ""; }
   }
   el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  if (o.onTap){  /* no-drag path by keyboard: Tab to the piece, Enter / Space picks it up (same as a tap), then Tab to the place and Enter */
+    if (el.tagName !== "BUTTON" && !el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
+    el.setAttribute("data-kb", "1");
+    el.addEventListener("keydown", function(e){
+      if (NG.paused || (e.key !== "Enter" && e.key !== " ")) return;
+      e.preventDefault(); e.stopPropagation(); NG.sfx("select"); var ok = o.onTap(e); if (o.onEnd) o.onEnd(!!ok, "tap");
+    });
+  }
 };
 NG.hitTest = function(pt, el){ var r = el.getBoundingClientRect(), s = NG.scale || 1, sr = stage.getBoundingClientRect(); var x = pt.x * s + sr.left, y = pt.y * s + sr.top; return x >= r.left && x <= r.right && y >= r.top && y <= r.bottom; };
 NG.snap = function(el, target){ var a = U.center(el), b = U.center(target); el._dx = (el._dx || 0) + (b.x - a.x); el._dy = (el._dy || 0) + (b.y - a.y); el.style.transition = "transform .25s cubic-bezier(.34,1.56,.64,1)"; el.style.transform = "translate(" + el._dx + "px," + el._dy + "px)"; };

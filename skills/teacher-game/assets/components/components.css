@@ -72,6 +72,7 @@ body[data-auto] .choice.correct,body[data-auto] .choice.wrong,body[data-auto] .t
 .ts-bin:before{content:"";position:absolute;left:50%;top:-58px;width:90px;height:14px;margin-left:-45px;border-radius:8px;background:var(--bc,var(--cardBorder))}
 .ts-bin .ts-bin-n{position:absolute;right:62px;bottom:62px;font-size:var(--t-s);font-weight:800;opacity:.85}
 .ts-bin.done{transform:scale(1.04)}
+.ts-bin .ts-bin-k{position:absolute;left:24px;top:16px;min-width:56px;height:56px;line-height:52px;border:3px solid var(--cardBorder);border-radius:8px;font-size:var(--t-s);font-weight:800;text-align:center;opacity:.9;font-variant-numeric:tabular-nums}
 .ts-hand{position:absolute;left:50%;margin-left:340px;top:100px;font-size:var(--t-c);animation:tsdrag 1.6s ease-in-out infinite;pointer-events:none}
 @keyframes tsdrag{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,50px)}}
 /* ---- TV parts: team podium row (bottom band) and wide host column (quiz/survival/escape on a board) ---- */

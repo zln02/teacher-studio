@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
-/* COMPONENT sort — drag-and-drop targets (works by touch): drag each card into the right bin; tap the card then a bin also works.
+/* COMPONENT sort — three equal ways to place a card: drag it into a bin · tap the card, then tap a bin · keyboard (number key 1-4 = that bin,
+   or Tab to the card, Enter, Tab to a bin, Enter). Bins carry their number and name, so colour is never the only cue.
    items: [{q:"카드 글자", a:"정답 통 이름", exp?}]  spec: bins (optional order, 2-4; default = distinct a values) */
 COMP.mech.sort = function(items){
   var bins = SPEC.bins && SPEC.bins.length ? SPEC.bins.slice(0, 4) : [], idx = -1, cur = null, locked = false, wrap = null, tries = 0, picked = null, ended = false, counts = [];
@@ -9,11 +10,11 @@ COMP.mech.sort = function(items){
   function show(i){ idx = i; locked = false; tries = 0; NG.hud.setProgress(i / items.length); if (i >= items.length) return end(); cur = items[i]; NG.go("ts-sort"); }
   NG.scene("ts-sort", function(el){
     var bw = Math.floor((1600 - 28 * (bins.length - 1)) / bins.length);
-    var html = '<div class="ts-wrap" style="top:140px;height:880px"><div class="ts-chips enter">' + H.chip("카드 " + (idx + 1) + " / " + items.length) + H.teamChip(NG.currentTeam()) + H.chip("끌어서 알맞은 통에 넣어요") + '</div>' +
+    var html = '<div class="ts-wrap" style="top:140px;height:880px"><div class="ts-chips enter">' + H.chip("카드 " + (idx + 1) + " / " + items.length) + H.teamChip(NG.currentTeam()) + H.chip("끌거나, 카드를 누른 뒤 통을 눌러요 · 숫자 키도 돼요") + '</div>' +
       '<div style="position:relative;width:1600px;height:230px;margin-top:20px"><span class="ts-hand">👆</span>' + (H.lay().mech === "conveyor" ? '<div class="ts-belt" style="left:100px;top:196px;width:1400px"></div>' : '') + '<button class="ts-tile enter' + (H.lay().mech === "conveyor" ? " ts-slidein" : "") + '" id="ts-card" data-fit="1" style="left:480px;top:20px;width:640px;min-height:170px;font-size:' + H.qSize(cur.q) + 'px;padding:14px 24px;cursor:grab;touch-action:none">' + H.esc(cur.q) + '</button></div>' +
       '<div class="ts-bins" style="display:flex;gap:28px;margin-top:40px;width:1600px">';
     var BC = [TK.colors.primary, TK.colors.accent, TK.colors.good, TK.colors.bad];
-    bins.forEach(function(b, i){ html += '<div class="card ts-bin" data-b="' + i + '" data-fit="1" style="--bc:' + BC[i % 4] + ';width:' + bw + 'px;height:360px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:var(--t-c);font-weight:900;border-width:6px;background:var(--card);color:var(--cardText)">' + H.esc(b) + '<span class="ts-bin-n">' + (counts[i] ? "× " + counts[i] : "") + '</span></div>'; });
+    bins.forEach(function(b, i){ html += '<div class="card ts-bin" data-b="' + i + '" data-fit="1" style="--bc:' + BC[i % 4] + ';width:' + bw + 'px;height:360px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:var(--t-c);font-weight:900;border-width:6px;background:var(--card);color:var(--cardText)" aria-label="' + H.esc(b) + ' 통 (숫자 키 ' + (i + 1) + ')">' + H.esc(b) + '<span class="ts-bin-k" aria-hidden="true">' + (i + 1) + '</span><span class="ts-bin-n">' + (counts[i] ? "× " + counts[i] : "") + '</span></div>'; });
     html += '</div><div class="ts-expl"><div class="ts-expltext ts-note" id="ts-msg">&nbsp;</div></div></div>';
     el.insertAdjacentHTML("beforeend", html); wrap = el.lastElementChild;
     var card = wrap.querySelector("#ts-card"), binEls = wrap.querySelectorAll(".ts-bin");
@@ -23,6 +24,13 @@ COMP.mech.sort = function(items){
     });
     Array.prototype.forEach.call(binEls, function(bn, i){ NG.button(bn, function(){ if (picked) { picked = false; card.classList.remove("sel"); drop(i, card, bn); } }); });
   });
+  function onKey(e){  /* number key = put the card straight into that bin (no drag, no pointer) */
+    var n = "1234".indexOf(e.key);
+    if (n < 0 || n >= bins.length || e.ctrlKey || e.altKey || e.metaKey || NG.paused || NG.sceneName !== "ts-sort" || !wrap) return;
+    var card = wrap.querySelector("#ts-card"), bn = wrap.querySelectorAll(".ts-bin")[n];
+    if (!card || !bn) return;
+    e.preventDefault(); picked = false; card.classList.remove("sel"); drop(n, card, bn);
+  }
   function drop(i, card, bin){
     if (locked) return false; tries++;
     var ok = bins[i] === cur.a;
@@ -40,7 +48,7 @@ COMP.mech.sort = function(items){
   }
   function end(){ if (ended) return; ended = true; H.finish({ total: items.length, ratio: items.length ? NG.state.correct / (NG.state.correct + NG.state.wrong) : 1, lines: ["카드 " + items.length + "장을 모두 넣었어요"] }); }
   return {
-    start: function(){ NG.teacher.hooks = { skip: function(){ show(idx + 1); } }; show(0); },
+    start: function(){ NG.teacher.hooks = { skip: function(){ show(idx + 1); } }; if (window.__tsSortKey) window.removeEventListener("keydown", window.__tsSortKey); window.__tsSortKey = onKey; window.addEventListener("keydown", onKey); show(0); },
     toText: function(){ return { mechanic: "sort", index: idx, total: items.length, bins: bins }; },
     auto: function(){
       if (locked || !wrap || NG.sceneName !== "ts-sort") return false;
