@@ -231,6 +231,54 @@ def ensure_libreoffice(consent: bool = False) -> dict:
     return {"ok": bool(found), "path": found, "prompt": "" if found else "LibreOffice 설치가 안 됐어요. 대략의 미리보기로 확인할게요. " + ((r.stderr or r.stdout).strip().splitlines() or [""])[-1]}
 
 
+# ---- earshot (Leonxlnx/earshot): AI ears for sound files. NOT pip's `earshot` (that name on PyPI is a different, unrelated package). ----
+EARSHOT_VERSION = "0.4.1"
+EARSHOT_URL = "https://github.com/Leonxlnx/earshot/archive/refs/tags/v%s.zip" % EARSHOT_VERSION
+EARSHOT_DIR = Path.home() / ".teacher-studio" / "tools" / "earshot"      # isolated venv + model cache (EARSHOT_HOME) live here
+EARSHOT_GB = "약 2.4GB (프로그램·라이브러리 약 1.3GB + 소리 모델 약 1.1GB)"
+EARSHOT_PROMPT = ("소리를 직접 듣고 평가하거나 효과음을 만들려면 earshot(무료·MIT)이 필요해요. " + EARSHOT_GB + "를 내려받아 "
+                  "이 컴퓨터의 전용 폴더(" + str(EARSHOT_DIR) + ")에만 설치하고, 다른 파이썬은 건드리지 않아요. "
+                  "나중에 `py ensure.py earshot --uninstall` 로 깨끗이 지울 수 있어요. 설치할까요?")
+
+
+def earshot_exe() -> str:
+    """Path of the isolated earshot CLI, or '' when it is not installed."""
+    exe = EARSHOT_DIR / ("Scripts" if os.name == "nt" else "bin") / ("earshot.exe" if os.name == "nt" else "earshot")
+    return str(exe) if exe.exists() else ""
+
+
+def ensure_earshot(consent: bool = False) -> dict:
+    """Install earshot into its own venv after consent (code + libraries, then the two models)."""
+    found = earshot_exe()
+    if found:
+        return {"ok": True, "path": found, "prompt": ""}
+    if not consent:
+        return {"ok": False, "path": "", "prompt": EARSHOT_PROMPT, "gb": EARSHOT_GB}
+    if not network_ok("github.com"):
+        return {"ok": False, "path": "", "prompt": "인터넷이 막혀 있어요. " + CODEX_NETWORK_HELP}
+    EARSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    py = EARSHOT_DIR / ("Scripts" if os.name == "nt" else "bin") / ("python.exe" if os.name == "nt" else "python")
+    env = dict(os.environ, EARSHOT_HOME=str(EARSHOT_DIR / "cache"), PYTHONUTF8="1")
+    steps = [[sys.executable, "-m", "venv", str(EARSHOT_DIR)],
+             [str(py), "-m", "pip", "install", "-q", EARSHOT_URL],
+             [str(EARSHOT_DIR / ("Scripts" if os.name == "nt" else "bin") / ("earshot.exe" if os.name == "nt" else "earshot")), "doctor", "--fetch"]]
+    for cmd in steps:
+        r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
+        if r.returncode != 0:
+            return {"ok": False, "path": "", "prompt": "earshot 설치가 안 됐어요. " + ((r.stderr or r.stdout).strip().splitlines() or [""])[-1]
+                    + " (지우려면 `py ensure.py earshot --uninstall`)"}
+    found = earshot_exe()
+    return {"ok": bool(found), "path": found, "prompt": "" if found else "earshot 설치가 안 됐어요."}
+
+
+def uninstall_earshot() -> dict:
+    """Delete the isolated venv and the model cache (everything earshot put on this PC)."""
+    if not EARSHOT_DIR.exists():
+        return {"ok": True, "prompt": "지울 earshot이 없어요."}
+    shutil.rmtree(EARSHOT_DIR, ignore_errors=True)
+    return {"ok": not EARSHOT_DIR.exists(), "prompt": "earshot을 지웠어요." if not EARSHOT_DIR.exists() else "일부 파일이 남았어요. " + str(EARSHOT_DIR) + " 폴더를 직접 지워 주세요."}
+
+
 def status() -> dict:
     """Which tools are present now and which would install on first need (for doctor.py)."""
     present, on_demand = [], []
@@ -238,14 +286,15 @@ def status() -> dict:
         (present if is_present(name) else on_demand).append({"name": name, "mb": spec["mb"], "why": spec["why"]})
     ff = shutil.which("ffmpeg")
     return {"present": present, "on_first_need": on_demand, "ffmpeg": "system" if ff else ("imageio-ffmpeg" if is_present("imageio-ffmpeg") else ""),
-            "browser": find_system_browser(), "libreoffice": find_libreoffice(), "network": network_ok()}
+            "browser": find_system_browser(), "libreoffice": find_libreoffice(), "earshot": earshot_exe(), "network": network_ok()}
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", help="status | ffmpeg | playwright | libreoffice | " + " | ".join(PACKAGES))
+    ap.add_argument("what", help="status | ffmpeg | playwright | libreoffice | earshot | " + " | ".join(PACKAGES))
     ap.add_argument("--yes", action="store_true", help="the teacher agreed: install now")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--uninstall", action="store_true", help="earshot only: delete its venv and models")
     a = ap.parse_args()
     if a.what == "status":
         out = status()
@@ -255,6 +304,8 @@ def main() -> int:
         out = ensure_playwright(a.yes)
     elif a.what == "libreoffice":
         out = ensure_libreoffice(a.yes)
+    elif a.what == "earshot":
+        out = uninstall_earshot() if a.uninstall else ensure_earshot(a.yes)
     else:
         out = ensure(a.what, a.yes)
     if a.json or a.what == "status":

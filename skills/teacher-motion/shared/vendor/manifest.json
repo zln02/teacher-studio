@@ -62,6 +62,27 @@
  },
  "install_on_need": {
   "_note": "NOT vendored, NOT redistributed: installed with pip on the teacher's own PC after consent (shared/tools/ensure.py). LICENSE files were read from the installed packages.",
+  "earshot": {
+   "version": "0.4.1",
+   "license": "MIT",
+   "copyright": "2026 Leon Lin",
+   "source": "github.com/Leonxlnx/earshot tag v0.4.1 (NOT the unrelated PyPI package named earshot)",
+   "models": {
+    "laion/larger_clap_general": {
+     "license": "Apache-2.0",
+     "mb": 776,
+     "revision": "16c8cc3"
+    },
+    "MIT/ast-finetuned-audioset-10-10-0.4593": {
+     "license": "BSD-3-Clause",
+     "mb": 346,
+     "revision": "f826b80"
+    }
+   },
+   "install": "isolated venv ~/.teacher-studio/tools/earshot (py shared/tools/ensure.py earshot --yes; remove: --uninstall); about 1.3GB libraries + 1.1GB models",
+   "use": "listen to / evaluate audio and render sound effects (shared/tools/sound_ears.py); optional, never bundled",
+   "license_file": "LICENSE in the v0.4.1 repository"
+  },
   "python-pptx": {
    "version": "1.0.2",
    "license": "MIT",
