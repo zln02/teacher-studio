@@ -289,15 +289,16 @@ def _fit(texts, hi: float, w: float, h: float, spacing: float = 1.2, lo: float |
 
 
 def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
-    """K: helpers from deck_pptx (tbox, rect, card, line, chart, table, diagram, C, z, OVAL)."""
+    """K: helpers from deck_pptx (tbox, rect, card, line, chart, table, diagram, badge, icon, picks, C, z, OVAL)."""
     C, z = K.C, K.z
-    _LO[0] = getattr(K, "lo", 12.0)
+    _LO[0] = getattr(K, "lo", 14.0)
+    edge = getattr(K, "edge", None) or (lambda s_, x_, y_, w_, h_, c_, top=False: setattr(K.rect(s_, x_, y_, w_ if top else 0.1, 0.08 if top else h_, c_, round_=False), "name", "accent"))
     for b, x, y, w, h in regions(it["blocks"], it.get("layout"), X, Y, W, H):
         k = b["kind"]
         if b.get("title") and k not in ("list", "note"):
-            K.tbox(s, x, y, w, 0.38, b["title"], 15 * z, C["emc"], True, anchor="m")
-            y += 0.44
-            h -= 0.44
+            K.tbox(s, x, y, w, 0.42, b["title"], max(16, 15 * z), C["emc"], True, anchor="m")
+            y += 0.48
+            h -= 0.48
         g = 0.2
         if k == "kpis":
             its = b["items"]
@@ -307,7 +308,7 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
             for i, m in enumerate(its):
                 cx, cy = (x + i * (cw + g), y) if horiz else (x, y + i * (ch + g))
                 K.card(s, cx, cy, cw, ch)
-                K.rect(s, cx, cy, cw, 0.08, K.tone(i), round_=False).name = "accent"
+                edge(s, cx, cy, cw, ch, K.tone(i), top=True)
                 val = f"{plain(str(m.get('value', '')))}{m.get('unit', '')}"
                 if ch >= 1.25:
                     vs = max(24, min(44, ch * 72 * 0.3, (cw - 0.3) * 72 / max(2.2, 0.62 * len(val))))
@@ -316,18 +317,23 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
                            _fit([x_.get("caption", "") for x_ in its], 17 * z, cw - 0.2, ch * 0.56 - 0.2, 1.1), C["ct"], align="c", emc=C["emcc"], spacing=1.1)
                 else:
                     K.tbox(s, cx + 0.1, cy, cw * 0.4, ch, val, max(20, min(32, ch * 72 * 0.42)), C["emcc"], True, "c", "m", "disp")
-                    K.tbox(s, cx + cw * 0.42, cy, cw * 0.56, ch, m.get("caption", ""), 14 * z, C["ct"], anchor="m", emc=C["emcc"])
+                    K.tbox(s, cx + cw * 0.42, cy, cw * 0.56, ch, m.get("caption", ""), max(_LO[0], 14 * z), C["ct"], anchor="m", emc=C["emcc"])
         elif k == "cards":
             its = b["items"]
             n = len(its)
             cols, rows = _grid(n, w, h, 2.3)
             cw, ch = (w - g * (cols - 1)) / cols, (h - g * (rows - 1)) / rows
             numbered = b.get("numbered", True) is not False
+            ics = K.picks([plain(m["title"]) for m in its], [m.get("icon") for m in its] if any(m.get("icon") for m in its) else None) if hasattr(K, "picks") else []
             THIN = 1.8  # below this a card is one text box (heading line + detail), not a heading over a body
             tw_ = cw - (0.95 if numbered else 0.4)
-            fb = (_fit([_body(m) for m in its], 24 * z, cw - 0.44, ch - 0.96, 1.22) if ch >= THIN else
+            import pptx_fit as _pf
+            th = 0.56  # a card heading that needs two lines at a readable size gets them (the body starts lower)
+            if ch >= THIN and any(_pf.lines_for(plain(m["title"]), max(_LO[0], 17 * z), (cw - (1.13 if numbered else 0.4) - 0.16) * 72) > 1 for m in its):
+                th = 0.92
+            fb = (_fit([_body(m) for m in its], 24 * z, cw - 0.44, ch - 0.4 - th, 1.22) if ch >= THIN else
                   _fit([plain(m["title"]) + "\n" + _body(m).replace("\n", "  ") for m in its], 18 * z, tw_, ch - 0.08, 1.15))
-            ft = _fit([m["title"] for m in its], min(21 * z, fb + 3), cw - (0.95 if numbered else 0.4), 0.56, 1.1)
+            ft = _fit([m["title"] for m in its], min(21 * z, fb + 3), cw - (1.13 if numbered else 0.4), th, 1.1)
             for i, m in enumerate(its):
                 cx, cy = x + (i % cols) * (cw + g), y + (i // cols) * (ch + g)
                 K.card(s, cx, cy, cw, ch)
@@ -337,7 +343,7 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
                 head = not numbered and not thin and bool(body)
                 tone = K.tone(i)  # neighbours alternate between the main and the accent colour
                 if thin:
-                    K.rect(s, cx, cy, 0.1, ch, tone, round_=False).name = "accent"
+                    edge(s, cx, cy, cw, ch, tone)
                 elif head:
                     hd = K.rect(s, cx, cy, cw, 0.62, tone)
                     ink_ = C["bt"] if tone == C["pr"] else K.ink(tone)
@@ -345,22 +351,21 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
                     K.tbox(s, cx + 0.22, cy + 0.76, cw - 0.44, ch - 0.88, body, fb, C["ct"], emc=C["emcc"], spacing=1.22)
                     continue
                 else:
-                    K.rect(s, cx, cy, cw, 0.08, tone, round_=False).name = "accent"
+                    edge(s, cx, cy, cw, ch, tone, top=True)
                 if numbered:
-                    by = cy + (ch / 2 - 0.22 if thin else 0.24)
-                    d_ = K.rect(s, cx + 0.2, by, 0.44, 0.44, tone, shape=K.OVAL)
-                    ink_ = C["bt"] if tone == C["pr"] else K.ink(tone)
-                    K.tbox(s, cx + 0.2, by, 0.44, 0.44, str(i + 1), 13, ink_, True, "c", "m", "disp", emc=ink_, shape=d_)
-                    tx0 = cx + 0.76
+                    bd = 0.56 if (thin and ch < 0.9) else 0.62
+                    by = cy + (ch / 2 - bd / 2 if thin else 0.2)
+                    K.badge(s, cx + 0.2, by, bd, tone, i + 1, ics[i] if ics else None)
+                    tx0 = cx + 0.2 + bd + 0.16
                 if thin or not body:
                     line = f"**{plain(m['title'])}**" + (("\n" if ch >= 0.95 else "  ") + body.replace("\n", "  ") if body else "")
                     K.tbox(s, tx0, cy + 0.04, cx + cw - tx0 - 0.15, ch - 0.08, line, fb if thin else ft, C["ct"], anchor="m", emc=C["emcc"], spacing=1.15)
                 else:
-                    K.tbox(s, tx0, cy + 0.18, cx + cw - tx0 - 0.15, 0.56, m["title"], ft, C["ct"], True, anchor="m", name="disp", emc=C["emcc"])
-                    K.tbox(s, cx + 0.22, cy + 0.84, cw - 0.44, ch - 0.96, body, fb, C["ct"], emc=C["emcc"], spacing=1.22)
+                    K.tbox(s, tx0, cy + 0.18, cx + cw - tx0 - 0.15, th, m["title"], ft, C["ct"], True, anchor="m", name="disp", emc=C["emcc"], spacing=1.1)
+                    K.tbox(s, cx + 0.22, cy + 0.28 + th, cw - 0.44, ch - 0.4 - th, body, fb, C["ct"], emc=C["emcc"], spacing=1.22)
         elif k == "list":
             K.card(s, x, y, w, h)
-            K.rect(s, x, y, 0.1, h, C["pr"], round_=False).name = "accent"
+            edge(s, x, y, w, h, C["pr"])
             yy, hh = y + 0.12, h - 0.24
             if b.get("title"):
                 K.tbox(s, x + 0.3, yy, w - 0.45, 0.46, b["title"], 17 * z, C["emcc"], True, anchor="m", name="disp", emc=C["emcc"])
@@ -371,18 +376,18 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
             body = "\n".join("• " + str(t) for t in b["items"])
             K.tbox(s, x + 0.3, yy, w - 0.45, hh, body, _fit([body], 22 * z, w - 0.45, hh, sp), C["ct"], anchor="m" if not b.get("title") else "t", emc=C["emcc"], spacing=sp)
         elif k == "chart":
-            K.chart(s, as_chart(b), x, y, w, h, 13 if w < 7.5 else 14)
+            K.chart(s, as_chart(b), x, y, w, h, 15 if w < 7.5 else 16)
         elif k == "table":
             nr = len(b["rows"]) + 1
-            K.table(s, b["columns"], b["rows"], x, y, w, min(h, 0.7 * nr), (16 if nr <= 5 else 14) if h / nr >= 0.4 else 14, b.get("highlight"))
+            K.table(s, b["columns"], b["rows"], x, y, w, min(h, 0.74 * nr), (18 if nr <= 5 else 16) if h / nr >= 0.46 else 16, b.get("highlight"))
         elif k == "note":
             K.rect(s, x, y, w, h, C["bg2"], round_=False).name = "panel"
             K.rect(s, x, y, 0.12, h, C["pr"], round_=False).name = "accent"
             tx0 = x + 0.35
             if b.get("label"):
-                lw = min(2.6, 0.5 + 0.2 * len(plain(str(b["label"]))))
+                lw = min(2.8, 0.55 + 0.23 * len(plain(str(b["label"]))))
                 lab = K.rect(s, x + 0.32, y + h / 2 - 0.22, lw, 0.44, C["pr"])
-                K.tbox(s, x + 0.32, y + h / 2 - 0.22, lw, 0.44, b["label"], 13, C["bt"], True, "c", "m", emc=C["bt"], shape=lab)
+                K.tbox(s, x + 0.32, y + h / 2 - 0.22, lw, 0.44, b["label"], 15, C["bt"], True, "c", "m", emc=C["bt"], shape=lab)
                 tx0 = x + 0.5 + lw
             K.tbox(s, tx0, y + 0.04, x + w - tx0 - 0.2, h - 0.08, b["text"], _fit([b["text"]], 19 * z, x + w - tx0 - 0.2, h - 0.08), C["tx"], True, anchor="m")
         elif k == "flow":
@@ -425,8 +430,9 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
                 cx = x + i * (cw + g)
                 K.line(s, cx + cw / 2, ymid, cx + cw / 2, ytop, C["mu"], 2)
                 hh = 0.56 if deep else min(1.0, y + h - ytop)
-                hd = K.rect(s, cx, ytop, cw, hh, C["ac"])
-                ink = K.ink(C["ac"])
+                tn = K.tone(i + 1)
+                hd = K.rect(s, cx, ytop, cw, hh, tn)
+                ink = K.ink(tn)
                 K.tbox(s, cx, ytop, cw, hh, m["title"], 15 * z, ink, True, "c", "m", "disp", emc=ink, shape=hd)
                 if deep and y + h - ytop - hh > 0.5:
                     K.card(s, cx, ytop + hh, cw, y + h - ytop - hh)

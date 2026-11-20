@@ -159,6 +159,9 @@ def check_extra(i: int, it: dict) -> list[str]:
             e.append(f"slide {i} hero.headline: {len(plain(str(it.get('headline', ''))))} chars > 34 -> short and punchy")
         if len(plain(str(it.get("cta", "")))) > 20:
             e.append(f"slide {i} hero.cta: <= 20 chars")
+        facts = it.get("facts") or []
+        if not isinstance(facts, list) or len(facts) > 3 or any(len(plain(str(x))) > 22 for x in facts):
+            e.append(f"slide {i} hero.facts: up to 3 short facts (<= 22 chars each: 날짜, 장소, 비용)")
     return e
 
 

@@ -30,6 +30,13 @@ def icon_name(word: str, default: str = "sparkles") -> str:
     w = (word or "").strip()
     if not w:
         return default
+    try:  # the shared picker knows more words (and checks that the icon exists); the short table below stays as the fallback
+        import deck_icons
+        n = deck_icons.name(w)
+        if n and deck_icons.exists(n):
+            return n
+    except Exception:
+        pass
     if w in ICON_ALIAS:
         return ICON_ALIAS[w]
     for k, v in ICON_ALIAS.items():

@@ -44,7 +44,7 @@ RECIPES: dict[str, dict] = {
         "family": {"stack": 1.5, "bento": 1.5, "split": 1.2, "center": 1.1, "editorial": 0.8, "poster": 0.8},
         "allowed": {"bullets": ["cards", "stack", "rows"]},
         "caps": {"bullet_items": (2, 6), "bullet_chars": 60, "total": 330},
-        "palette": "bright: the style's own high-contrast palette, ONE accent; answers blue/orange (colour-blind safe)",
+        "palette": "bright: the topic's colour when it has one, else the style's palette; one main colour + up to two marker colours; answers blue/orange (colour-blind safe)",
         "slide_defaults": "title -> objectives -> (concept / steps / quiz / activity + timer) x n -> recap -> closing",
     },
     "promo": {
@@ -329,6 +329,13 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
         elif not GOV_DATE_OK.match(d.strip()):
             warns.append(f"공공 보고: 날짜 형식 '{d}' -> 2026. 11. 19. (연·월·일 대신 온점)")
     elif ctx == "class":
+        import deck_style
+        if deck_style.audience_band(spec) in ("young", "kid"):  # a young room: the screen is read aloud, a line at a time
+            long_ = [i for i, it in enumerate(slides, 1) if it.get("type") == "bullets" and (len(it.get("items") or []) > 4 or any(len(str(x)) > 34 for x in it.get("items") or []))]
+            if long_:
+                warns.append(f"slide {', '.join(map(str, long_[:4]))}: 어린 학년에게는 글이 많아요 -> 한 장에 3~4줄, 한 줄 30자 안쪽, 아이 말투(~해요)로")
+            if deck_style.audience_band(spec) == "young" and not any(x.get("type") in ("diagram", "image", "illustration") or (x.get("type") == "title" and x.get("shapes")) or any(isinstance(b, dict) and b.get("kind") == "diagram" for b in x.get("blocks") or []) for x in slides):
+                warns.append("어린 학년 수업: 그림이 하나도 없어요 -> 표지의 \"shapes\"나 {\"type\":\"diagram\"}으로 주제를 직접 그리기 (산, 물방울, 해, 집 ...)")
         if not any(x.get("_role") == "objectives" for x in slides) and not spec.get("objectives"):
             warns.append("수업용: 학습 목표 장이 없어요 -> spec \"objectives\": [...] (표지 다음에 자동으로 들어가요)")
         if not ({"quiz", "timer"} & set(types)) and not any(x.get("_role") == "activity" for x in slides):

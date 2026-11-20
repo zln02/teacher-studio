@@ -7,7 +7,7 @@ license: Apache-2.0
 # 교사 스튜디오 · 슬라이드
 
 Teacher (no coding) asks in plain words for a PPT / talk / training / parent-meeting / club deck. You write a **short JSON spec**; tools design it, check it, and screenshot it.
-Principle: tools guarantee the floor (type scale, contrast, safe margins, keep-all Korean, density), you add the message. Restraint beats decoration: one claim per slide, one accent colour. One claim is not one box: when the claim needs two or three pieces of evidence (the figures and the chart behind them, a drawing and the rule it shows), they sit together on that slide (`panel`).
+Principle: tools guarantee the floor (type scale, contrast, safe margins, keep-all Korean, density), you add the message. Restraint beats decoration: one claim per slide, one main colour with at most two marker colours (picked by the tools, never by you). One claim is not one box: when the claim needs two or three pieces of evidence (the figures and the chart behind them, a drawing and the rule it shows), they sit together on that slide (`panel`).
 
 Respond in the user's language. Follow the ask-first rule: `../teacher-studio/references/ask-first.md`.
 The user's own template or reference comes first. (The user-template weapon - building from a PPT/design the user supplies - is planned, not built yet. Colours are covered: `shared/design/color_from.py deck.pptx --out pal.json`, then `"design": {"palette_from": "pal.json"}` in the spec, see `../teacher-studio/references/user-colors.md`; the composition stays ours. For type and layout learn from the file via `../teacher-studio/references/learn-from-reference.md` and say honestly that it is an approximation, not a copy.)
@@ -16,7 +16,7 @@ Content quality first: before writing any content read references/content-slides
 
 ## Words
 - Never show code or file names to the teacher. 「PPT 만들어 줘」「칠판에 띄울 거」「글씨 더 크게」 -> `references/teacher-language.md`.
-- **Editable PowerPoint** (「PPT」「파워포인트」「피피티」「.pptx」, or 「나중에 내가 고칠 거예요」) -> ALWAYS deliver an editable `.pptx` next to the web deck: add `--pptx` (same spec, same look; real text boxes, native charts and tables, speaker notes, QR as shapes). Say honestly what changes in PPT: 「단계별 나타나기·타이머·수식·아이콘 그림은 단순해져요」 and 「글꼴은 PC에 없으면 비슷한 글꼴로 바뀌어요」. python-pptx is installed on first need only after the teacher says yes (`shared/tools/ensure.py`, `--yes`). The teacher's own `.pptx/.potx` -> `--pptx --template mine.pptx` (their masters and layouts are used: template first). If the official `pptx` skill is listed by `doctor` (`official_doc_skills`) you may hand the file work to it for extras (animations, SmartArt, tracked edits); we still bring the structure, design and checks. PDF: 「Ctrl+P → PDF로 저장」.
+- **Editable PowerPoint** (「PPT」「파워포인트」「피피티」「.pptx」, or 「나중에 내가 고칠 거예요」) -> ALWAYS deliver an editable `.pptx` next to the web deck: add `--pptx` (same spec, same look; real text boxes, native charts and tables, speaker notes, QR as shapes). Say honestly what changes in PPT: 「단계별 나타나기·타이머·수식은 단순해져요」 (icons are drawn in the .pptx too, as editable outlines) and 「글꼴은 PC에 없으면 비슷한 글꼴로 바뀌어요」. python-pptx is installed on first need only after the teacher says yes (`shared/tools/ensure.py`, `--yes`). The teacher's own `.pptx/.potx` -> `--pptx --template mine.pptx` (their masters and layouts are used: template first). If the official `pptx` skill is listed by `doctor` (`official_doc_skills`) you may hand the file work to it for extras (animations, SmartArt, tracked edits); we still bring the structure, design and checks. PDF: 「Ctrl+P → PDF로 저장」.
 - Intro video / countdown -> teacher-motion. Quiz game -> teacher-game.
 
 ## Pick the context from the request (one spec key)
@@ -63,12 +63,12 @@ Words in `**stars**` are emphasised; `\n` breaks a line. Every slide may have `n
 
 | type | keys (limits) |
 |---|---|
-| title | title, subtitle, meta, shapes (optional: a small drawing of the topic beside the title, same shapes as `diagram`; not on a public cover) |
+| title | title, subtitle, meta, shapes (optional: a small drawing of the topic beside the title, same shapes as `diagram`; not on a public cover), icon (optional; without `shapes` the cover shows the topic's icon) |
 | section | title, sub |
 | statement | text (one big sentence <= 70), sub |
-| bullets | title, items 2-6 (<= 60 chars each) |
+| bullets | title, items 2-6 (<= 60 chars each; 「이름: 풀이」 becomes a bold name + its detail), icons (optional list, one per item) |
 | compare | title, a:{label,items}, b:{label,items} or rows:[{k,a,b}] (<= 5) |
-| steps | title, steps 3-6 [{title<=18,text<=44}] |
+| steps | title, steps 3-6 [{title<=18,text<=44,icon}] |
 | bignumber | value, unit, caption |
 | bignumbers | title, items 2-3 [{value,unit,caption}] (two big numbers side by side = compare) |
 | quote | text, source |
@@ -85,7 +85,7 @@ Words in `**stars**` are emphasised; `\n` breaks a line. Every slide may have `n
 | table | title, columns 2-6, rows 1-8 (cells <= 40), unit, highlight, source, footnote |
 | summary | title, text, label (핵심), points 2-5 |
 | toc | title, items 2-8 (public: filled from sections) |
-| hero | headline <= 34, sub, kicker, cta, url (QR), file (photo) |
+| hero | headline <= 34, sub, kicker, cta, url (QR), file (photo), facts 0-3 (<= 22 chars each: the things a reader acts on - 날짜, 장소, 비용 - shown on the colour field of the cover), icon |
 | panel | title, blocks 2-4, takeaway, layout (`rows` / `cols` / `side`, default automatic). Block = `{"kind": ...}`: `kpis` items 2-4 {value, unit, caption} · `cards` items 2-6 {title, text or items[<=4]} (`"numbered": false` = a filled heading band instead of numbers: terms and their meaning, two sides, kinds) · `list` title, items 2-6 · `chart` chart (bar / line / pie / doughnut), labels, series, unit · `table` columns, rows 1-7, highlight · `note` text, label (the rule, the formula, the caution) · `flow` items 2-6 {title, text} (arrows between) · `tree` root, children 2-5 {title, items[<=3]} (organisation, classification) · `diagram` shapes. Any block may have a `title`. Wide kinds (kpis, flow, note, tree) take a full row, the others sit side by side. Public: `source` needed when a block holds numbers |
 | diagram | title, shapes 2-40 on a 100 x 60 canvas: `line` `dash` `arrow` `dasharrow` {x1,y1,x2,y2,color,w} · `rect` {x,y,w,h,fill,text} · `circle` {cx,cy,r (or rx, ry for an oval),fill,text} · `poly` {points [[x,y],..] 3-12 corners, fill, color} (a mountain, a layer, a lens, a roof, a block arrow) · `arc` {cx,cy,r,from,to: degrees, 0 = right, 90 = up} · `label` {x,y,text,color,size s/m/l,align}; colours pr ac tx mu good bad water sky sun or #hex; points 0-4 (notes beside it), caption. Real lines and arrows in the .pptx. Example: `assets/spec-examples/context/class-light-reflection.json` |
 
@@ -95,13 +95,14 @@ Build errors are lists of 「고칠 곳」: fix exactly those and rerun. A date 
 Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest priority**: use it only if the teacher names a legacy look.
 
 ## Design language (automatic)
+**The look follows the room and the topic, not a template.** Write `"audience"` exactly as the user said it (「초등학교 2학년」, 「어르신」, 「고1」, 「교직원」): young children (유치원-초3) and 초4-6 get larger type, rounder shapes, a light friendly look and the topic's icon or drawing on the cover; 어르신 get the largest type on a light, high-contrast page; nobody gets neon. For a young room also write for it: 3 items or fewer per slide, short sentences in the children's register (~해요), and draw the thing itself (`title.shapes`, `diagram`). The deck's colours come from the topic when it has one (lava is warm, the sea is blue: `title` / `subject` words) and always from the design system: one main colour plus up to two marker colours for badges, card heads and chart series. In the .pptx **every slide type has several layouts and the build picks one from the content and the seed** (a list as rows, tiles or beside a colour field; steps as a track, block arrows or a ladder; a cover as a block, a band or plain; two sides as cards or facing fields; a 항목 | 내용 table as label tiles), never the same one twice running; `"layout": "bullets.grid"` forces one. **Icons are picked by meaning** (`scripts/deck_icons.py`, Lucide, ISC): a line that names a thing (전화, 지도, 달력, 화산 ...) gets its icon in the web deck and as an editable outline in the .pptx; a list shows icons only when every line has its own, otherwise numbers. Override with `"icons": ["phone", "지도", ...]` (Lucide names or Korean words) or `icon` on a step / card. Nothing on a .pptx slide is under 14pt (16pt for young and older audiences); text that would need less is reported as too long.
 `scripts/deck_style.py` maps purpose + mood + subject to one of the 12 shared styles (`shared/design/styles.py`) and a palette; each style has its own composition (title treatment, card, emphasis, background motif, transition, preferred layout families). Every slide type has 2-4 layout variants (asymmetric splits, full-bleed type, bento cards, editorial rows, numbered steps, comparison panels); the picker never repeats a layout twice in a row. Use the user's logo/template colours first (`design.palette_from`; means, not our design). `slides_review.py` and `check` WARN when correct/wrong or chart colours look alike to colour-blind eyes (add shapes or text). Custom flair is allowed per slide and sandboxed: `"flair":{"css":"...","svg":"<svg>..</svg>"}` (no external urls, scripts, fixed positioning; css is scoped to that slide). Keep it rare.
 
 ## Review gate (`scripts/slides_review.py`)
 **no placeholders left** (`placeholders.py`: `[대괄호]`, `20XX`, `OO`, `○○`, `000`, 학교명 ... FAIL unless listed in `fillins`) · External requests 0 · contrast >= 4.5 on real pixels · text >= 28px · overflow / safe margin / keep-all · not empty · **clutter caps** (elements <= 36, icons <= 3, big colours <= 5) · no 3 identical layouts in a row. Compare decks: `slides_review.py --compare a.html b.html` (distance >= 0.35).
 
 ## PowerPoint (.pptx) review - `scripts/pptx_check.py deck.pptx --spec deck.json --render review/`
-`deck.py --pptx` builds the file, **shrinks text that would overflow its box** (never below 60% / 12pt; same metrics as the check, `pptx_fit.py`), then runs `pptx_check`: placeholders FAIL · text fit (estimate) FAIL · shapes inside the slide · no empty placeholder · **no empty-looking slide** (`pptx_fill.py`: a body slide whose content covers < 6 % of the slide or stops above 60 % of its height FAILs: add content or merge it) · **text large enough to project** (any text under 10pt FAILs, under 12pt is a NOTE) · **not one layout all the way** (NOTE when most body slides are plain text lists, on any .pptx). A FAIL on text fit means: shorten or split that slide in the spec and rebuild. The build ends with `READY file` only when every check passes, otherwise `NOT DONE`.
+`deck.py --pptx` builds the file, **shrinks text that would overflow its box** (never below 60% / 12pt; same metrics as the check, `pptx_fit.py`), then runs `pptx_check`: placeholders FAIL · text fit (estimate) FAIL · shapes inside the slide · no empty placeholder · **no empty-looking slide** (`pptx_fill.py`: a body slide whose content covers < 6 % of the slide or stops above 60 % of its height FAILs: add content or merge it) · **text large enough to project** (any text under 11pt FAILs, under 14pt is a NOTE) · **not one layout all the way** (NOTE when most body slides are plain text lists, on any .pptx). A FAIL on text fit means: shorten or split that slide in the spec and rebuild. The build ends with `READY file` only when every check passes, otherwise `NOT DONE`.
 **Look at it.** `--review DIR` also draws PNGs: with **LibreOffice** installed it is a real rendering; otherwise it is an **approximate** preview drawn from the pptx itself (`pptx_draw.py`: shapes, lines and arrows, pictures, tables, native charts, groups, master art; red outline = estimated overflow). It works on any .pptx, so two decks can be compared with the same eyes. Always tell the teacher which one it was. LibreOffice is large (about 350MB download, 5-10 minutes): offer it once with the size (`py shared/tools/ensure.py libreoffice`, install only after a yes, `--yes-libreoffice`); declining is fine.
 **Last message** (pipeline.md, Final checkpoint): file path, how to open it, check result, the 「바꿔 넣을 곳」 list.
 
@@ -119,6 +120,7 @@ Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest p
 | `scripts/slides_review.py` | screenshots, contact sheet, metrics, `--compare` |
 | `scripts/pptx_check.py`, `pptx_fill.py`, `pptx_render.py`, `pptx_draw.py`, `pptx_chart.py`, `pptx_fit.py`, `placeholders.py` | .pptx gate (blanks, text fit, empty-looking slides), PNG drawing (shapes, tables, charts, pictures), placeholder detector |
 | `scripts/deck_diagram.py` | the `diagram` slide (web SVG + PowerPoint lines / arrows / shapes) |
+| `scripts/deck_icons.py` | icons by meaning (Korean word -> Lucide outline; web `<use>` and .pptx freeform) |
 | `scripts/deck_panel.py` | the `panel` slide (blocks, their arrangement, web + PowerPoint drawing) |
 | `scripts/deck_layouts.py` | layout variants (read only to add one) |
 | `assets/spec-examples/` | test fixtures, not patterns (they prove each slide type builds; never copy an outline, a heading or a look from them) |

@@ -228,6 +228,121 @@ def palette_for(style: str, mood: str, seed: int) -> tuple[dict, str]:
     return {k: p[k] for k in keys}, pick
 
 
+# ---- who is in the room, and what colour the topic has ----------------------------------------------------------------------
+_OLDER = ("중학", "고등", "중1", "중2", "중3", "고1", "고2", "고3", "대학", "교사", "교원", "학부모", "직원", "성인")
+_SENIOR = ("어르신", "노인", "시니어", "경로", "실버", "할머니", "할아버지", "60세", "65세", "70세", "60대", "70대", "80대")
+ZOOM = {"young": 1.3, "kid": 1.2, "senior": 1.3, "": 1.0}
+AUD_STYLES = {  # light, friendly structures for small children and for older eyes (a dark board or a tech look is not for them)
+    "young": {"pastel-cute": 4, "pop-colorful": 3, "festival-party": 2, "nature-calm": 2},
+    "kid": {"pop-colorful": 4, "pastel-cute": 2, "nature-calm": 3, "festival-party": 2, "anime-cartoon": 1},
+    "senior": {"nature-calm": 4, "pop-colorful": 2, "minimal-premium": 2, "pastel-cute": 1},
+}
+
+
+def audience_band(spec: dict) -> str:
+    """'young' (유치원 ~ 초3) | 'kid' (초4 ~ 6) | 'senior' (어르신) | '' : read from the audience / grade / title words of the spec.
+    It sets how big the type starts, how round the shapes are and which looks are allowed; the content stays the author's."""
+    import re
+    aud = " ".join(str(spec.get(k) or "") for k in ("audience", "grade"))
+    ttl = " ".join(str(spec.get(k) or "") for k in ("title", "subject"))
+    lesson = dctx.context_of(spec) in ("class", "") or "수업" in str(spec.get("purpose", ""))
+    for words in (aud, aud + " " + ttl):
+        w = words.replace(" ", "")
+        if not w:
+            continue
+        if any(k in w for k in _SENIOR):
+            return "senior"
+        if not lesson:
+            continue
+        if any(k in w for k in ("유치원", "어린이집", "유아", "저학년")):
+            return "young"
+        if any(k in w for k in _OLDER) and "초등" not in w:
+            return ""
+        if "초" in w or "어린이" in w:
+            m = re.search(r"초(?:등학교|등)?([1-6])(?:[~\-,·]([1-6]))?(?:학년)?", w) or re.search(r"([1-6])(?:[~\-,·]([1-6]))?학년", w)
+            if m:
+                return "young" if int(m.group(2) or m.group(1)) <= 3 else "kid"
+            return "kid"
+    return ""
+
+
+# topic words -> (primary hue, support hue, third hue) in OKLCH degrees: the colour people already give the thing (lava is not blue)
+TOPIC_HUES = (
+    (("화산", "용암", "마그마", "불", "화재", "소방", "연소"), (38, 78, 255)),
+    (("지진", "지층", "암석", "화석", "흙", "사막", "공룡"), (58, 30, 200)),
+    (("바다", "해양", "강", "물", "수영", "비", "날씨", "구름", "하늘", "얼음", "겨울", "눈"), (245, 195, 70)),
+    (("식물", "숲", "나무", "잎", "광합성", "자연", "환경", "생태", "텃밭", "봄", "새싹", "기후", "재활용"), (150, 100, 40)),
+    (("우주", "태양계", "행성", "별", "달", "밤", "천문"), (275, 85, 200)),
+    (("빛", "전기", "에너지", "여름", "태양"), (255, 80, 30)),
+    (("경제", "시장", "금융", "소비", "무역", "용돈", "저축", "창업", "매출", "돈"), (200, 65, 25)),
+    (("음악", "합창", "노래", "악기", "공연", "연극", "축제", "예술", "미술"), (320, 75, 200)),
+    (("마음", "감정", "사랑", "가족", "친구", "우정", "인권", "배려", "복지", "건강", "보건"), (20, 195, 90)),
+    (("스마트폰", "디지털", "인공지능", "코딩", "컴퓨터", "정보", "데이터", "미디어", "인터넷", "로봇"), (255, 190, 55)),
+    (("안전", "교통", "재난", "예방"), (65, 250, 25)),
+    (("역사", "전통", "문화유산", "한옥", "조선", "고려", "삼국", "독립"), (30, 230, 90)),
+    (("빵", "음식", "요리", "급식", "카페", "가을", "수확"), (55, 150, 20)),
+    (("동물", "곤충", "새", "반려"), (75, 150, 250)),
+    (("등산", "산행", "산", "캠핑", "여행", "체험", "진로"), (160, 60, 240)),
+    (("수학", "도형", "분수", "덧셈", "뺄셈", "곱셈", "나눗셈", "계산"), (265, 55, 165)),
+    (("국어", "독서", "책", "글쓰기", "한글", "받아쓰기", "문학", "광고", "설득"), (25, 215, 95)),
+    (("영어", "외국어", "세계", "지구", "나라", "지리"), (225, 150, 50)),
+    (("체육", "운동", "스포츠", "달리기", "축구"), (30, 250, 145)),
+)
+_ONE = {"불", "강", "물", "비", "눈", "숲", "잎", "봄", "별", "달", "밤", "빛", "돈", "빵", "새", "산", "책"}
+
+
+def topic_hues(spec: dict):
+    """(primary, support, third) hues for the deck's topic, or None when the title names nothing with a colour of its own."""
+    import re
+    t = " ".join(str(spec.get(k) or "") for k in ("title", "subject"))
+    best = None
+    for words, hues in TOPIC_HUES:
+        for w in words:
+            i = t.find(w)
+            if w in _ONE:  # one-syllable words must stand alone (산 in 생산, 비 in 준비)
+                m = re.search(r"(?<![가-힣])" + re.escape(w) + r"(?![가-힣])|(?<![가-힣])" + re.escape(w) + r"(?=[은는이가을를과와의에도])", t)
+                i = m.start() if m else -1
+            if i >= 0 and (best is None or (i, -len(w)) < best[:2]):
+                best = (i, -len(w), hues)
+    return best[2] if best else None
+
+
+def topic_palette(hues, dark: bool, seed: int, aud: str = "") -> dict:
+    """A design-system palette (shared/design/system.py: tinted neutral ramp + one primary + one support) in the topic's hues."""
+    import system as system_core
+    hp, hs, _ = hues
+    v = _h(f"tp|{seed}") % 3  # paper: near white / lightly tinted / a shade deeper (same hue family, never a second hue)
+    if dark:
+        return system_core.palette("dark", hp, (0.80, 0.11, hp), (0.80, 0.10, hs), bg_l=(0.19, 0.21, 0.23)[v], bg_c=0.022)
+    soft = aud in ("young", "kid")
+    return system_core.palette("light", hp, (0.56 if soft else 0.50, 0.15, hp), (0.66 if soft else 0.62, 0.14, hs),
+                               bg_l=(0.985, 0.972, 0.962)[v], bg_c=(0.006, 0.014, 0.02)[v] * (1.4 if soft else 1.0))
+
+
+def third_tone(pr: str, ac: str, bg1: str, dark: bool, hue=None, calm: bool = False) -> str:
+    """A third marker colour, far in hue from both the primary and the support (rule 13: at most three accent hues on a screen)."""
+    import oklch
+    hp, ha = oklch.hex_to_oklch(pr)[2], oklch.hex_to_oklch(ac)[2]
+    if hue is None:
+        cands = [(hp + 180) % 360, (ha + 180) % 360, (hp + 100) % 360, (hp - 100) % 360, ((hp + ha) / 2 + 180) % 360]
+        hue = max(cands, key=lambda h: min(oklch.hue_distance(h, hp), oklch.hue_distance(h, ha)))
+    c = oklch.oklch_to_hex(0.80 if dark else 0.55, 0.095 if calm else (0.10 if dark else 0.12), hue % 360)
+    return oklch.fit_contrast(c, bg1, 3.0)
+
+
+def tones_of(pr: str, ac: str, t3: str, bg1: str, card: str) -> list:
+    """The colours a slide may fill a badge, a card head or a band with, the primary first. A support colour too close to the page
+    or to the primary (a navy and its own lighter step) is left out: two near-equal blues are one colour to the eye."""
+    import oklch
+    out = [pr]
+    for c in (ac, t3):
+        if min(design_core.contrast(c, bg1), design_core.contrast(c, card)) < 1.9:
+            c = oklch.fit_contrast(c, [bg1, card], 2.4)
+        if all(oklch.delta_e(c, o) >= 0.11 for o in out):
+            out.append(c)
+    return out
+
+
 def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     """Design object used by every layout: style, language, colours (+ guarded derived colours), floors, fonts."""
     d = spec.get("design") or {}
@@ -238,9 +353,19 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     if rc and not mood.strip():
         mood = rc["mood"]
     words = " ".join([mood, str(spec.get("title", ""))])
-    style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid, context)
+    aud = audience_band(spec)
+    if aud and context != "public" and str(d.get("style", "")) not in STYLES:
+        opts = {k: v * 10 for k, v in AUD_STYLES[aud].items() if k not in (avoid or [])} or {k: v * 10 for k, v in AUD_STYLES[aud].items()}
+        style, why = weighted(opts, f"aud|{seed}|{aud}"), "audience"
+    else:
+        style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid, context)
     lang = dict(LANG[style])
     pal, pal_name = palette_for(style, mood, seed)
+    hues = topic_hues(spec) if context != "public" and not d.get("style") else None
+    if hues:  # the topic has a colour of its own: the deck takes it (the structure still comes from the style)
+        pal, pal_name = topic_palette(hues, bool(STYLES[style]["dark"]), seed, aud), "topic"
+    if aud in ("young", "kid"):
+        lang["rad"] = max(lang["rad"], 28)
     if rc.get("palettes") and not d.get("style"):  # public: restrained navy/slate/teal, seeded
         pal_name = weighted({k: 1 for k in rc["palettes"]}, f"gov|{seed}")
         pal = dict(dctx.PUBLIC_PALETTES[pal_name])
@@ -276,14 +401,22 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
     purpose_floor = 24 if purpose == "개인" else 28
     if rc:
         purpose_floor = rc["floor"]
+    user_pal = bool(d.get("palette_from"))
+    t3 = third_tone(pr, ac, bg1, dark, hues[2] if hues else None, calm=context == "public")
+    tones = tones_of(pr, ac, t3, bg1, card)
+    if context == "public" and len(tones) == 3:  # a report keeps one navy and marks with one other hue; the navy's own lighter step comes last
+        tones = [tones[0], tones[2], tones[1]]
+    if user_pal:  # the user's colours are used as given: nothing we derived is added to them
+        tones = [c for c in tones if c != t3] or [pr]
     return {
         "style": style, "why": why, "purpose": purpose, "palette": pal_name, "seed": seed, "lang": lang, "dark": dark,
-        "colors": {"bg1": bg1, "bg2": bg2, "tx": tx, "mu": mu, "card": card, "ct": ct, "cmu": cmu, "cb": mix(tx, bg1, 0.82), "line": mix(tx, bg1, 0.84), "pr": pr, "bt": pal["btnText"],
+        "colors": {"t3": t3, "bg1": bg1, "bg2": bg2, "tx": tx, "mu": mu, "card": card, "ct": ct, "cmu": cmu, "cb": mix(tx, bg1, 0.82), "line": mix(tx, bg1, 0.84), "pr": pr, "bt": pal["btnText"],
                    "ac": ac, "good": "#6ea8ff" if dark else "#1d4ed8", "bad": "#ffb454" if dark else "#c2410c", "emc": emc, "emcc": emcc, "emc2": emc2, "hl": hl, "hlc": hl_card,
                    "ink": "#1a1a1a" if not dark else "#f5f5f5"},
         "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "TS Sans", "body": "TS Sans"},
         "floor": purpose_floor, "motion": STYLES[style]["motion"],
         "context": context, "tscale": dict(rc.get("tscale") or {}), "allowed": dict(rc.get("allowed") or {}),
+        "audience": aud, "zoom": ZOOM[aud], "tones": tones, "topic": bool(hues),
     }
 
 

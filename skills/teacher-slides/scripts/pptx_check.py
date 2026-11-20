@@ -93,9 +93,9 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
             for p_ in tf.paragraphs:  # text too small to project (page numbers and footers at the very bottom are not body text)
                 for r_ in p_.runs:
                     if r_.font.size and r_.text.strip() and len(r_.text.strip()) > 2 and (sh.top or 0) < H * 0.9:
-                        if r_.font.size.pt < 10:
+                        if r_.font.size.pt < 11:
                             tiny.append((i, r_.text.strip()[:14], r_.font.size.pt))
-                        elif r_.font.size.pt < 12:
+                        elif r_.font.size.pt < 14:
                             small.append((i, r_.text.strip()[:14], r_.font.size.pt))
         if s.has_notes_slide:
             texts.append(s.notes_slide.notes_text_frame.text or "")
@@ -125,9 +125,9 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
     results.append(("FAIL" if over else "PASS", "text fits its box (estimate)" + (f": {over[:6]}" if over else "")))
     results.append(("FAIL" if off else "PASS", "every shape inside the slide" + (f": {off[:4]}" if off else "")))
     results.append(("FAIL" if empty else "PASS", "no empty placeholder" + (f": {empty[:4]}" if empty else "")))
-    results.append(("FAIL" if tiny else "PASS", "text large enough to project (>= 10pt)" + (f": {len(tiny)} runs under 10pt, e.g. {tiny[:3]} -> 글자를 키우고 내용을 줄이거나 두 장으로" if tiny else "")))
+    results.append(("FAIL" if tiny else "PASS", "text large enough to project (>= 11pt)" + (f": {len(tiny)} runs under 11pt, e.g. {tiny[:3]} -> 글자를 키우고 내용을 줄이거나 두 장으로" if tiny else "")))
     if small:
-        results.append(("NOTE", f"{len(small)} text runs are 10-12pt (e.g. {small[:2]}): 뒷자리에서는 읽기 어려워요. 꼭 필요한 주석이 아니면 14pt 이상으로"))
+        results.append(("NOTE", f"{len(small)} text runs are 11-14pt (e.g. {small[:2]}): 뒷자리에서는 읽기 어려워요. 꼭 필요한 주석이 아니면 14pt 이상으로"))
     if body_n >= 6 and plain_n / body_n > 0.6:
         results.append(("NOTE", f"본문 {body_n}장 가운데 {plain_n}장이 글만 있어요 (표·그래프·그림·카드 없음) -> 내용 모양에 맞는 장으로 바꾸면 덜 단조로워요"))
     try:  # visual weight: a body slide that is mostly empty (or stops above the middle) reads as unfinished on a projector

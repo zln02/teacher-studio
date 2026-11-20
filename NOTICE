@@ -30,7 +30,8 @@ This product includes third-party components:
 
 7. Lucide icons (lucide-static sprite) 1.75.0 — Copyright (c) 2026 Lucide Icons and Contributors — ISC License
    (icons derived from Feather: Copyright (c) 2013-present Cole Bemis — MIT License; both texts are in the LICENSE file)
-   Location: shared/vendor/lucide/. Unmodified; a page receives only the icons it uses.
+   Location: shared/vendor/lucide/. Unmodified; a page receives only the icons it uses. A PowerPoint file made by teacher-slides
+   receives the outlines of the icons it uses as editable shapes (path data converted to DrawingML by scripts/deck_icons.py).
 
 8. Phaser 4.2.1 — Copyright (c) 2026 Richard Davey, Phaser Studio Inc. — MIT License
    Location: shared/vendor/phaser/. Unmodified. Inlined into a page only when a spec asks for it.

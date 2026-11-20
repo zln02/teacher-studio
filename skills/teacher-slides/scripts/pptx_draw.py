@@ -467,10 +467,13 @@ def geom_path(prst: str, w: float, h: float, adj: dict) -> str | None:
     return None
 
 
-def cust_path(cg, w: float, h: float) -> str:
-    """<a:custGeom> -> SVG path scaled to the w x h box."""
+def cust_path(cg, w: float, h: float, filled: bool | None = None) -> str:
+    """<a:custGeom> -> SVG path scaled to the w x h box. filled=True / False: only the sub-paths that take / refuse the shape's fill
+    (<a:path fill="none">: an outline icon); None = all of them."""
     out = []
     for path in X(cg, "./a:pathLst/a:path"):
+        if filled is not None and (path.get("fill") != "none") != filled:
+            continue
         pw, ph = float(path.get("w") or 0) or None, float(path.get("h") or 0) or None
         sx = (w / pw) if pw else None
         sy = (h / ph) if ph else None
@@ -608,6 +611,13 @@ def draw_shape(dr: Draw, sp, part, tf=None, master_layer=False) -> str:
                 body = '<div class="g" style="inset:0;background:%s;clip-path:url(#%s);%s"></div>' % (fill, cid, ("transform:%s;" % flip) if flip else "")
                 svg_fill = "none"
             stroke = ' stroke="%s" stroke-width="%.2f"%s' % (ln[0], ln[1], ' stroke-dasharray="%s"' % ln[2] if ln[2] else "") if ln else ""
+            if cg is not None and X(cg, "./a:pathLst/a:path[@fill='none']"):  # an outline drawing: open strokes with round ends, never filled
+                open_ = cust_path(cg, pw, ph_, False)
+                path = cust_path(cg, pw, ph_, True)
+                if stroke and (X(spPr, "./a:ln/@cap") or [""])[0] == "rnd":
+                    stroke += ' stroke-linecap="round"'
+                body += ('<svg class="g" width="%.1f" height="%.1f" style="overflow:visible;%s"><path d="%s" fill="none"%s stroke-linejoin="round"/></svg>'
+                         % (max(pw, 1), max(ph_, 1), ("transform:%s;" % flip) if flip else "", open_, stroke))
             body += ('<svg class="g" width="%.1f" height="%.1f" style="overflow:visible;%s"><path d="%s" fill="%s"%s stroke-linejoin="round"/></svg>'
                      % (max(pw, 1), max(ph_, 1), ("transform:%s;" % flip) if flip else "", path, svg_fill, stroke))
         else:

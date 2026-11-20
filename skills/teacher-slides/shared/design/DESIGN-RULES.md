@@ -28,6 +28,8 @@ and the checks stay silent (`palette_from`, `--template`, `data-user-design`).
 14. Text contrast ≥ 4.5:1 (large display ≥ 3:1). `design.py --validate` must print "all palettes valid".
 15. Right = light teal-blue, wrong = deeper orange-red: apart in hue AND lightness (colour-blind safe), and always also said in words or a mark (O / X).
 16. **No fluorescent colour** (`system.is_neon`: OKLCH C > 0.165 with L > 0.7). An accent covers ≤ 5% of the screen: one word, one rule, one icon.
+    Slides (.pptx): the primary may carry structure (a cover field, a header band, a card head). The support colour and one third tone
+    (`deck_style.third_tone`, far in hue from both) are markers only: badges, icon tiles, a second head, chart series. Never a fourth hue.
 17. Greys carry a little of the brand hue (`system.neutral_ramp`), never pure #808080. No cream paper + serif headline (the "AI company" look).
 
 ## 4. Surfaces and ornaments
@@ -36,7 +38,7 @@ and the checks stay silent (`palette_from`, `--template`, `data-user-design`).
 20. No gradient through two different hues. A background is one colour, or two lightness steps of the same colour.
 21. The ornament vocabulary is closed (`system.ORNAMENTS`): **rule · kicker · frame · edge · corner · numeral · grain**. A style uses at most TWO of them (`STYLES[id]["orn"]`); a screen shows at most three ornament elements.
 22. No scattered confetti, sparkles, blobs, light beams, perspective grids, emoji as decoration. A heading has no emoji.
-23. Icons: one line weight (Tabler 1.6 to 2px), on a matte tile. Photos are real and licensed, or absent. Living things are never faked in 3D.
+23. Icons: one line weight (Tabler 1.6 to 2px; Lucide 2px in decks), on a matte tile, picked by what the line names (`deck_icons.pick`): no icon is better than a vague one. Photos are real and licensed, or absent. Living things are never faked in 3D.
 
 ## 5. Motion
 24. Durations: instant 90 · fast 160 · base 240 · slow 420 · scene 700 ms. Eases: `standard` (.2,0,0,1) · `enter` (.16,1,.3,1) · `exit` (.4,0,1,1). Stagger 60ms.

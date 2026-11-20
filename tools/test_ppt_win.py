@@ -156,6 +156,8 @@ class PanelPptx(unittest.TestCase):
                 for sh in s.shapes:
                     if sh.name in ("takeaway", "decor") or sh.top is None or sh.top < 914400 * 1.5 or sh.top >= band[0].top:
                         continue
+                    if sh.left + sh.width <= band[0].left or sh.left >= band[0].left + band[0].width:
+                        continue  # beside the band (a title field at the left), not under it
                     self.assertLessEqual(sh.top + sh.height, band[0].top + 9144, sh.name)
 
     def test_cover_ornament_is_behind_the_title(self):
@@ -248,12 +250,12 @@ class PanelPptx(unittest.TestCase):
                 tb = s.shapes.add_textbox(Inches(1), Inches(1), Inches(8), Inches(4))
                 r = tb.text_frame.paragraphs[0].add_run()
                 r.text = "본문 글자가 들어 있는 장입니다 " * 3
-                r.font.size = Pt(8 if i == 3 else (11 if i == 4 else 20))
+                r.font.size = Pt(8 if i == 3 else (12 if i == 4 else 20))
             p = Path(td) / "x.pptx"
             prs.save(str(p))
             res = pptx_check.check_pptx(p)["results"]
             self.assertTrue(any(lv == "FAIL" and "large enough" in m for lv, m in res), res)
-            self.assertTrue(any(lv == "NOTE" and "10-12pt" in m for lv, m in res), res)
+            self.assertTrue(any(lv == "NOTE" and "11-14pt" in m for lv, m in res), res)
             self.assertTrue(any(lv == "NOTE" and "글만" in m for lv, m in res), res)
 
     def test_web_deck_builds_a_panel(self):
