@@ -1,0 +1,10 @@
+FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(7, '(예시)')]
+FAIL text fits its box (estimate): [(2, '1년 한눈에 보기', 24.3), (3, '월별 매출 추이', 24.3), (4, '인기 메뉴 TOP 5', 24.3), (5, '잘한 점', 24.3), (6, '아쉬운 점 / 어려웠던 점', 24.3), (7, '고객과 직원의 목소리', 24.3)]
+PASS every shape inside the slide
+PASS no empty placeholder
+PASS text large enough to project (>= 10pt)
+NOTE 1 text runs are 10-12pt (e.g. [(1, '※ 예시 수치 – 실제 수', 10.0)]): 뒷자리에서는 읽기 어려워요. 꼭 필요한 주석이 아니면 14pt 이상으로
+PASS no empty-looking slide (visual weight)
+
+RESULT: FAIL (2 fail)
+NOT DONE: 위 FAIL을 고치고 이 점검을 다시 돌리세요. PASS가 될 때까지는 「다 됐어요」라고 하지 않아요. (모르는 값은 「우리 학교」·오늘 날짜처럼 그럴듯한 값으로 채우고 마지막에 한 줄로 알리기. 양식을 원한 경우만 --allow-blanks)

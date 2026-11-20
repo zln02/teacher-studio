@@ -1,0 +1,9 @@
+FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(4, '○○'), (6, '000'), (6, '0000')]
+PASS text fits its box (estimate)
+PASS every shape inside the slide
+PASS no empty placeholder
+PASS text large enough to project (>= 10pt)
+PASS no empty-looking slide (visual weight)
+
+RESULT: FAIL (1 fail)
+NOT DONE: 위 FAIL을 고치고 이 점검을 다시 돌리세요. PASS가 될 때까지는 「다 됐어요」라고 하지 않아요. (모르는 값은 「우리 학교」·오늘 날짜처럼 그럴듯한 값으로 채우고 마지막에 한 줄로 알리기. 양식을 원한 경우만 --allow-blanks)

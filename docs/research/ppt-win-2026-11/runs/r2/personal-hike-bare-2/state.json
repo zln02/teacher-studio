@@ -1,0 +1,13 @@
+{
+ "name": "personal-hike-bare-2",
+ "topic": "personal-hike",
+ "cond": "bare",
+ "run": 2,
+ "secs": 1235,
+ "timed_out": false,
+ "cost": 0.6046729,
+ "turns": 1,
+ "file": "올해_산행_돌아보기.pptx",
+ "last": "PPT 제작 에이전트는 이미 끝났고, 결과는 위에서 보고드렸습니다.\n\n파일은 현재 폴더의 `올해_산행_돌아보기.pptx`입니다. 렌더링 검수는 못 했으니 PowerPoint에서 한 번 열어 보세요. 5·6번 슬라이드의 한글 줄바꿈과 표지의 산 모양 도형을 특히 봐 주세요.\n\n실제 일정과 인원 데이터를 주시면 예시 값을 바꿔 드리겠습니다.",
+ "is_error": false
+}

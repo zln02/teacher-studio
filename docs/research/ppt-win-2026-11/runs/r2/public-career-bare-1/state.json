@@ -1,0 +1,13 @@
+{
+ "name": "public-career-bare-1",
+ "topic": "public-career",
+ "cond": "bare",
+ "run": 1,
+ "secs": 615,
+ "timed_out": false,
+ "cost": 0.5335948,
+ "turns": 2,
+ "file": "2026_청소년_진로체험_프로그램_운영결과.pptx",
+ "last": "에이전트가 PPT를 제작하는 중입니다. 완료되면 결과를 알려드리겠습니다.",
+ "is_error": false
+}

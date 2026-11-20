@@ -1,0 +1,26 @@
+{
+ "topic": "public-resident",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "bare",
+  "B": "harness"
+ },
+ "judge": {
+  "A": {
+   "content": 5,
+   "design": 5,
+   "readability": 4,
+   "fit": 5
+  },
+  "B": {
+   "content": 4,
+   "design": 3,
+   "readability": 4,
+   "fit": 4
+  },
+  "winner": "A"
+ },
+ "cost": 0.28703080000000003,
+ "raw": "{\"A\":{\"content\":5,\"design\":5,\"readability\":4,\"fit\":5},\"B\":{\"content\":4,\"design\":3,\"readability\":4,\"fit\":4},\"winner\":\"A\"}\n\n{\"A\":{\"content\":5,\"design\":5,\"readability\":4,\"fit\":5,\"note\":\"14장에 걸쳐 KPI, 분야별·분기별·연령대별 차트, 예산 집행표, 우수 사례, 개선과제, 로드맵, 소요 예산, 구청 요청사항까지 구청 보고에 필요한 흐름과 수치가 빠짐없이 들어 있고 디자인도 다양하고 세련됐습니다. 다만 예산표와 2027 비교표 같은 일부 표·차트의 글자가 작아 발표 화면에서 읽기 어렵습니다.\"},\"B\":{\"content\":4,\"design\":3,\"readability\":4,\"fit\":4,\"note\":\"목차, 추진 체계, 성과, 과제, 2027 계획, 건의사항으로 이어지는 공문서식 구성이 깔끔하고 글자가 커서 잘 읽힙니다. 다만 예산 집행이나 사례 같은 구체 자료가 적고, 차트가 작고 단순하며(도넛에 수치 표시 없음) 같은 레이아웃이 반복돼 단조롭습니다.\"},\"winner\":\"A\"}"
+}

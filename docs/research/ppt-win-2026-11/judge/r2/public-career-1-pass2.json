@@ -1,0 +1,28 @@
+{
+ "topic": "public-career",
+ "run": 1,
+ "pass_": 2,
+ "mapping": {
+  "A": "bare",
+  "B": "harness"
+ },
+ "judge": {
+  "A": {
+   "content": 5,
+   "design": 5,
+   "readability": 3,
+   "fit": 4,
+   "note": "Strong points: 12 slides with concrete numbers that agree across slides, including participation, satisfaction, budget execution, before/after comparisons, student quotes, a standout example and the 2027 plan, shown with varied charts, KPI cards and an org chart. Weak points: the tables on slides 6, 9 and 10 use very small text that is hard to read on screen, and slide 10 is a small table above a mostly empty area."
+  },
+  "B": {
+   "content": 3,
+   "design": 3,
+   "readability": 5,
+   "fit": 4,
+   "note": "Strong points: it follows the familiar city-hall report format, with a table of contents and numbered sections, and the large text with clear key-message bars reads easily. Weak points: it has less data and depth, with only one chart and fewer details than A. The design is a single navy colour throughout and feels plain, slide 8 leaves a lot of empty space, and the thank-you slide adds no information."
+  },
+  "winner": "A"
+ },
+ "cost": 0.2685808,
+ "raw": "{\"A\":{\"content\":5,\"design\":5,\"readability\":3,\"fit\":4,\"note\":\"Strong points: 12 slides with concrete numbers that agree across slides, including participation, satisfaction, budget execution, before/after comparisons, student quotes, a standout example and the 2027 plan, shown with varied charts, KPI cards and an org chart. Weak points: the tables on slides 6, 9 and 10 use very small text that is hard to read on screen, and slide 10 is a small table above a mostly empty area.\"},\"B\":{\"content\":3,\"design\":3,\"readability\":5,\"fit\":4,\"note\":\"Strong points: it follows the familiar city-hall report format, with a table of contents and numbered sections, and the large text with clear key-message bars reads easily. Weak points: it has less data and depth, with only one chart and fewer details than A. The design is a single navy colour throughout and feels plain, slide 8 leaves a lot of empty space, and the thank-you slide adds no information.\"},\"winner\":\"A\"}"
+}

@@ -1,0 +1,28 @@
+{
+ "topic": "public-resident",
+ "run": 2,
+ "pass_": 2,
+ "mapping": {
+  "A": "harness",
+  "B": "bare"
+ },
+ "judge": {
+  "A": {
+   "content": 4,
+   "design": 4,
+   "readability": 4,
+   "fit": 4,
+   "note": "A covers the full flow (organization, results, issues, 2027 plan, requests to the district office), and its numbers add up: the program totals come to 1,420 and the quarterly figures match. It is short on budget detail, and the deck uses a single tone and repeats the same layout, which makes it feel somewhat bland."
+  },
+  "B": {
+   "content": 5,
+   "design": 5,
+   "readability": 4,
+   "fit": 5,
+   "note": "B is very thorough for a district office report. It includes budget spending, three standout examples, issues to fix, a quarterly roadmap, the required budget, and requests for help, and the totals are consistent (for example, 405 + 135 = 540). The charts, icons and cards are varied and well organized. Some tables and chart labels are small enough to be hard to read on screen."
+  },
+  "winner": "B"
+ },
+ "cost": 0.2844428,
+ "raw": "{\"A\":{\"content\":4,\"design\":4,\"readability\":4,\"fit\":4,\"note\":\"A covers the full flow (organization, results, issues, 2027 plan, requests to the district office), and its numbers add up: the program totals come to 1,420 and the quarterly figures match. It is short on budget detail, and the deck uses a single tone and repeats the same layout, which makes it feel somewhat bland.\"},\"B\":{\"content\":5,\"design\":5,\"readability\":4,\"fit\":5,\"note\":\"B is very thorough for a district office report. It includes budget spending, three standout examples, issues to fix, a quarterly roadmap, the required budget, and requests for help, and the totals are consistent (for example, 405 + 135 = 540). The charts, icons and cards are varied and well organized. Some tables and chart labels are small enough to be hard to read on screen.\"},\"winner\":\"B\"}"
+}
