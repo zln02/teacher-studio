@@ -38,9 +38,10 @@ import specs  # noqa: E402
 import layout_auto  # noqa: E402
 import theme_auto  # noqa: E402
 
-for _sub in ("fonts", "vendor", "tools"):
+for _sub in ("fonts", "vendor", "tools", "design"):
     sys.path.insert(0, str(SKILL / "shared" / _sub))
 import embed  # noqa: E402  (shared/fonts/embed.py)
+import system as ds  # noqa: E402  (shared/design/system.py: type, motion, polish layer)
 import inline  # noqa: E402  (shared/vendor/inline.py)
 from build_game import build  # noqa: E402
 
@@ -73,7 +74,7 @@ def sanitize_css(css: str) -> str:
 JUICE = SKILL / "shared" / "juice" if (SKILL / "shared" / "juice" / "juice.js").exists() else SKILL.parent.parent / "shared" / "juice"
 USE_JUICE = True  # --no-juice builds the same spec without the kit (before/after comparison)
 PORTRAIT_MECHS = ("quiz",)  # mechanics that have a real portrait layout (assets/layouts/portrait.css); other mechanics on a phone ask to turn it
-FONT_CHOICES = ("sans", "serif", "rounded", "system")  # design.font: sans/serif/rounded use the embedded Noto KR; system = no embedded font at all
+FONT_CHOICES = ("sans", "serif", "rounded", "system")  # design.font: sans/rounded = the embedded studio face (TS Sans), serif = Noto Serif KR; system = no embedded font at all
 HEAD_META_NAMES = ("robots", "description", "theme-color", "author")
 COMP = SKILL / "assets" / "components"
 THEMES = SKILL / "assets" / "themes"
@@ -139,7 +140,7 @@ def make_tokens(spec: dict) -> dict:
         if au.get("baseTheme"):
             tk["baseTheme"] = au["baseTheme"]
         if au.get("fonts"):
-            tk["fonts"] = {**au["fonts"], "embeddable": au["fonts"]["display"].startswith("Noto")}
+            tk["fonts"] = {**au["fonts"], "embeddable": au["fonts"]["display"] in ("TS Sans", "Noto Sans KR", "Noto Serif KR")}
         if au.get("motion") and tk["motion"] != "calm":
             tk["motion"] = au["motion"]
         meta = {"host": True, "music": au.get("music")}
@@ -151,7 +152,7 @@ def make_tokens(spec: dict) -> dict:
         design.apply_palette_from(tk, d["palette_from"])
     font = d.get("font") or spec.get("font")
     if font in FONT_CHOICES:  # design.font beats the theme's font (the font files for the unused family are then not embedded either)
-        fam = "Noto Serif KR" if font == "serif" else "Noto Sans KR"
+        fam = "Noto Serif KR" if font == "serif" else "TS Sans"
         tk["fonts"] = {"display": fam, "body": fam, "embeddable": font != "system"}
         tk["fontChoice"] = font
     return tk
@@ -167,8 +168,8 @@ def tokens_css(tk: dict) -> str:
     t = tk["type"]
     f = tk["fonts"]
     serif = {"Gowun Batang", "Noto Serif KR", "Nanum Myeongjo", "Song Myung"}
-    body_fb = '"Noto Serif KR","Noto Sans KR"' if f["body"] in serif else '"Noto Sans KR"'
-    disp_fb = '"Noto Serif KR"' if f["display"] in serif else '"Noto Sans KR"'
+    body_fb = '"Noto Serif KR","TS Sans","Noto Sans KR"' if f["body"] in serif else '"TS Sans","Pretendard","Noto Sans KR"'
+    disp_fb = '"Noto Serif KR"' if f["display"] in serif else '"TS Sans","Pretendard","Noto Sans KR"'
     sys_fb = '"Apple SD Gothic Neo","Malgun Gothic",sans-serif'
     colors = tk["colors"]
     dark = sum(int(colors["bg1"][i:i + 2], 16) for i in (1, 3, 5)) < 330
@@ -250,6 +251,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
         parts.append((COMP / "juice-game.js").read_text(encoding="utf-8"))
     logic = "/* TS:BUILD v1 */\n/* TS:COMPONENTS BEGIN */\n" + pre + HEAD + "\n".join(parts) + FOOT + "/* TS:COMPONENTS END */\n"
     css = tokens_css(tokens) + (COMP / "components.css").read_text(encoding="utf-8")
+    css += "\n" + ds.polish_css("game")  # shared finishing layer: before the layout/style packs, the theme and the user's custom_css (those win)
     css += "\n" + (LAYOUTS / "layouts.css").read_text(encoding="utf-8")
     if data["portrait"]:
         css += "\n" + (LAYOUTS / "portrait.css").read_text(encoding="utf-8")
@@ -336,7 +338,7 @@ def main() -> int:
     online = spec.get("online") is True
     fchoice = (d0.get("font") or spec.get("font") or "")
     if not a.no_fonts and fchoice != "system":
-        fams = ["Noto Sans KR"] + (["Noto Serif KR"] if fchoice in ("", "serif") and "Noto Serif KR" in html else [])
+        fams = ["TS Sans" if "TS Sans" in html else "Noto Sans KR"] + (["Noto Serif KR"] if fchoice in ("", "serif") and "Noto Serif KR" in html else [])
         html, frep = embed.embed(html, families=fams, consent=a.yes)
         if frep.get("embedded"):
             note += f", fonts embedded ({frep['before_bytes'] // 1024} KB -> {frep['after_bytes'] // 1024} KB)"

@@ -73,7 +73,7 @@ COMP.themes["joseon-war-room"] = (function(){
     c.fillStyle = "#c9a24a"; c.fillRect(0, TABLE - 4, 1920, 8); c.fillStyle = "#6b4423"; c.fillRect(0, TABLE + 4, 1920, 6);
     c.fillStyle = "rgba(255,230,160,.12)"; c.fillRect(0, TABLE + 10, 1920, 3);
     /* the map on the table */
-    c.save(); c.shadowColor = "rgba(0,0,0,.5)"; c.shadowBlur = 18; c.fillStyle = "#e3cf9a";
+    c.save(); c.shadowColor = "rgba(0,0,0,.5)"; c.shadowBlur = 0; c.fillStyle = "#e3cf9a";
     c.beginPath(); c.moveTo(352, 940); c.lineTo(1216, 940); c.lineTo(1250, 1066); c.lineTo(318, 1066); c.closePath(); c.fill(); c.restore();
     c.fillStyle = "#cfe0d2"; c.beginPath(); c.moveTo(362, 944); c.lineTo(1206, 944); c.lineTo(1236, 1062); c.lineTo(332, 1062); c.closePath(); c.fill();
     c.fillStyle = "#a8bf90"; c.beginPath(); c.moveTo(362, 944); c.lineTo(470, 944); c.quadraticCurveTo(450, 990, 410, 1010); c.quadraticCurveTo(360, 1030, 340, 1060); c.lineTo(332, 1062); c.closePath(); c.fill();

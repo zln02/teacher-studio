@@ -2,7 +2,7 @@
   "title": "물질 분류 로봇 공장",
   "subtitle": "중학 과학 · 순물질과 혼합물",
   "theme": "space",
-  "themeOverride": {"skin": "dd", "bg1": "#13293a", "bg2": "#24485a", "text": "#e9fffb", "muted": "rgba(233,255,251,.85)", "card": "#f4f8fb", "cardBorder": "#3ecbb8", "cardText": "#13293a", "primary": "#ff9f43", "accent": "#7cf7c8", "good": "#38e08a", "bad": "#ff6a5f", "btnText": "#2a1405", "font": "\"Do Hyeon\"", "bgType": "custom", "mood": "upbeat", "glow": "0 0 24px rgba(124,247,200,.5)"},
+  "themeOverride": {"skin": "dd", "bg1": "#13293a", "bg2": "#24485a", "text": "#e9fffb", "muted": "rgba(233,255,251,.85)", "card": "#f4f8fb", "cardBorder": "#3ecbb8", "cardText": "#13293a", "primary": "#eda86d", "accent": "#7cf7c8", "good": "#7ad69d", "bad": "#e28278", "btnText": "#2a1405", "font": "\"TS Sans\"", "bgType": "custom", "mood": "upbeat", "glow": "0 0 24px rgba(124,247,200,.5)"},
   "teams": 2,
   "teamChoice": true,
   "timer": 30,

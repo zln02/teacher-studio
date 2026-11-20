@@ -5,8 +5,8 @@
   "keywords": ["세포", "몸", "생물", "과학", "영양", "먹이", "기관", "핵"],
   "subject": ["과학", "생물", "보건"],
   "mood": ["포근", "즐거움", "밝음", "자연"],
-  "palette": {"bg1": "#fff4e6", "bg2": "#ffe0ec", "text": "#3b2a4a", "card": "#fffaf0", "cardText": "#3b2a4a", "cardBorder": "#5cc98a", "primary": "#cf2f73", "btnText": "#ffffff", "accent": "#5cc98a", "good": "#2a9d5e", "bad": "#e24a56"},
-  "fonts": {"display": "Jua"},
+  "palette": {"bg1": "#fff4e6", "bg2": "#ffe0ec", "text": "#3b2a4a", "card": "#fffaf0", "cardText": "#3b2a4a", "cardBorder": "#5cc98a", "primary": "#cf2f73", "btnText": "#ffffff", "accent": "#5cc98a", "good": "#005c75", "bad": "#cb4a2a"},
+  "fonts": {"display": "TS Sans"},
   "host": true,
   "motion": "normal"
 }

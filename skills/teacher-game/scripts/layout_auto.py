@@ -15,6 +15,8 @@ Choices (all deterministic from the spec + design.seed; build.py draws a fresh s
   score    scoreboard: default | led | chalk | sticker | banner
   title    title treatment: default | outline | stack3d | stamp | underline (+ scale sm|md|lg, position center|left|top)
   transition  iris | wipe | fade
+The CONTENT steers the layout too (content_features / layout_weights: OX share, answer and question length, pictures), so the composition follows
+the material and the same request with another seed gets another skeleton.
 Mood steers the weights (긴장감 -> dark split/news + neon; 귀엽게/따뜻하게 -> rounded bento; 고급스럽게 -> poster/news + ticket ...).
 Spec overrides: design.layout, design.choice, design.card, design.score, design.title_style (also accepted: design.title).
 Usage: python3 layout_auto.py --mechanic quiz --mood 긴장감 --seed 3
@@ -87,6 +89,49 @@ def family_for(text: str) -> tuple[str, dict]:
     return "", DEFAULT_FAMILY
 
 
+def content_features(spec: dict) -> dict:
+    """What the CONTENT looks like (so the composition follows the material, not one default skeleton): share of OX items, longest answer,
+    longest question, how many answers a question usually has, whether pictures are used."""
+    items = [it for it in (spec.get("items") or []) if isinstance(it, dict)]
+    n = max(1, len(items))
+    counts = [len(it.get("choices") or []) for it in items]
+    multi = [c for c in counts if c >= 3]
+    return {"ox": sum(1 for c in counts if c == 0) / n,
+            "longest": max([len(str(c)) for it in items if len(it.get("choices") or []) >= 3 for c in it["choices"]] or [0]),
+            "qlen": max([len(str(it.get("q") or it.get("question") or "")) for it in items] or [0]),
+            "choices": round(sum(multi) / len(multi)) if multi else 0,
+            "media": any(it.get("image") or it.get("svg") or it.get("img") for it in items)}
+
+
+def layout_weights(style_w: dict, feat: dict) -> dict:
+    """Layout weights = the style's preference (flattened, so one favourite does not win every time) x what the content can carry.
+
+    - side-by-side layouts (bento / news / poster) are dropped when an answer is long (it would wrap to one-syllable lines)
+    - mostly-OX sets want the big two-button layouts (poster / split); long questions want a wide question card (stack / split)
+    - every layout the content allows stays possible, so the same request with another seed gets another skeleton."""
+    w = {k: 0.7 for k in LAYOUTS}
+    for k, v in style_w.items():
+        w[k] = max(w.get(k, 0.7), float(v) ** 0.6)
+    if feat["longest"] > 12:
+        for k in ("bento", "news", "poster"):
+            w[k] = 0
+    if feat["ox"] >= 0.5:
+        w["poster"] *= 1.8
+        w["split"] *= 1.5
+        w["bento"] *= 0.5
+    if feat["qlen"] > 44:
+        w["stack"] *= 1.7
+        w["split"] *= 1.4
+        w["poster"] *= 0.5
+    if feat["choices"] == 3:
+        w["stack"] *= 1.4
+    if feat["media"]:
+        w["split"] *= 1.6
+        w["news"] *= 1.3
+    out = {k: int(round(v * 10)) for k, v in w.items() if v > 0}
+    return out or {"split": 1}
+
+
 def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str = "") -> dict:
     """The layout config stored in the page (SPEC.layoutCfg). Deterministic for (spec words, design.seed)."""
     d = spec.get("design") or {}
@@ -100,11 +145,7 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
     key = f"{mech}|{fname}|{seed}"
     colors = (tokens or {}).get("colors") or {}
     dark = sum(int(colors.get("bg1", "#ffffff")[i:i + 2], 16) for i in (1, 3, 5)) < 330
-    layout = d.get("layout") if d.get("layout") in LAYOUTS else _pick(fam["layout"], key + "L")
-    if d.get("layout") not in LAYOUTS and layout in ("bento", "news", "poster"):  # these put 3-4 answers side by side: long answers would wrap to one-syllable lines
-        longest = max([len(str(c)) for it in (spec.get("items") or []) if isinstance(it, dict) and len(it.get("choices") or []) >= 3 for c in it["choices"]] or [0])
-        if longest > 12:
-            layout = "split"
+    layout = d.get("layout") if d.get("layout") in LAYOUTS else _pick(layout_weights(fam["layout"], content_features(spec)), key + "L")
     choice_opts = dict(fam["choice"])
     if not dark:
         choice_opts.pop("neon", None)  # neon glow needs a dark scene

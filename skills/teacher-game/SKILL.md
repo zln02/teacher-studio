@@ -95,3 +95,5 @@ Change only what was said, in the spec, then rebuild with the same `design.seed`
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = the question table (step 2); 콘티 = screen flow sheet: `python3 ../teacher-studio/scripts/storyboard.py spec.json --html sheet.html --open`, shown before the build only when the router's checkpoint is `storyboard`. Skip both stops for 「알아서」「바로」. Deliver with `deliver.py game.html`.
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

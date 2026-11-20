@@ -10,9 +10,9 @@
     "bg1": "#0b1426", "bg2": "#1b2a3f", "text": "#f6edd6",
     "card": "#f6ecd0", "cardText": "#2a1a0e", "cardBorder": "#6b4423",
     "primary": "#c9a24a", "btnText": "#2a1a0e", "accent": "#c8402f",
-    "good": "#2f6b2f", "bad": "#a3281c"
+    "good": "#005c75", "bad": "#cb4a2a"
   },
-  "fonts": { "display": "Song Myung", "body": "Gowun Batang" },
+  "fonts": { "display": "Noto Serif KR", "body": "TS Sans" },
   "host": true,
   "motion": "high"
 }

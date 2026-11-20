@@ -39,6 +39,20 @@ DATA_RE = re.compile(r"window\.GAME = \{.*?\n\};", re.S)
 LOGIC_RE = re.compile(r"(/\* ===================== GAME LOGIC.*?\*/\n).*?(\n</script>\n<script>NG\.boot)", re.S)
 
 
+def _polish() -> str:
+    """shared/design/system.py polish_css("game"); empty when the design folder is missing (the page still builds)."""
+    for d in (SKILL / "shared" / "design", SKILL.parent.parent / "shared" / "design"):
+        if (d / "system.py").exists():
+            if str(d) not in sys.path:
+                sys.path.insert(0, str(d))
+            try:
+                import system as _ds
+                return _ds.polish_css("game")
+            except Exception:  # noqa: BLE001
+                return ""
+    return ""
+
+
 def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | None = None, online: bool = False) -> int:
     """Inject data, logic, optional CSS and asset packs into the engine; return output size in bytes.
     online=False (default): the engine's Google Fonts links are removed, so the page makes no outside request (opt in with spec "online": true)."""
@@ -51,8 +65,11 @@ def build(data_path: Path, logic_path: Path, out_path: Path, css_path: Path | No
     logic = logic_path.read_text(encoding="utf-8").rstrip()
     html = DATA_RE.sub(lambda _: game_js, engine, count=1)
     html = LOGIC_RE.sub(lambda m: m.group(1) + logic + m.group(2), html, count=1)
-    if css_path:
-        html = html.replace("</style>", css_path.read_text(encoding="utf-8").rstrip() + "\n</style>", 1)
+    css = css_path.read_text(encoding="utf-8").rstrip() if css_path else ""
+    if "design system polish" not in css:  # the shared finishing layer (shared/design/system.py) goes right after the engine styles, before the
+        css = _polish() + "\n" + css       # missile / theme / custom CSS: the fire path and the spec path get the same matte, typeset base
+    if css.strip():
+        html = html.replace("</style>", css.rstrip() + "\n</style>", 1)
     if packs:
         pack_js = "".join(
             "<script>\n" + (SKILL / "assets" / "packs" / f"{name}.js").read_text(encoding="utf-8") + "</script>\n"

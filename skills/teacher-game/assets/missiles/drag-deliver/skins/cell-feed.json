@@ -2,7 +2,7 @@
   "title": "몽글이의 몸속 마을",
   "subtitle": "중1 과학 · 생물의 구성 단계와 세포",
   "theme": "forest",
-  "themeOverride": {"skin": "dd", "primary": "#d93f7e", "accent": "#5cc98a", "bg1": "#fff4e6", "bg2": "#ffe0ec", "text": "#3b2a4a", "muted": "#6a3a5a", "card": "#fffaf0", "cardBorder": "#5cc98a", "cardText": "#3b2a4a", "btnText": "#ffffff", "good": "#1f8f4f", "bad": "#c93a55", "font": "\"Jua\"", "bgType": "custom", "mood": "cute", "glow": "0 0 20px rgba(217,63,126,.35)"},
+  "themeOverride": {"skin": "dd", "primary": "#d93f7e", "accent": "#5cc98a", "bg1": "#fff4e6", "bg2": "#ffe0ec", "text": "#3b2a4a", "muted": "#6a3a5a", "card": "#fffaf0", "cardBorder": "#5cc98a", "cardText": "#3b2a4a", "btnText": "#ffffff", "good": "#1f8f4f", "bad": "#c93a55", "font": "\"TS Sans\"", "bgType": "custom", "mood": "cute", "glow": "0 0 20px rgba(217,63,126,.35)"},
   "teams": 0,
   "teamChoice": false,
   "timer": 0,

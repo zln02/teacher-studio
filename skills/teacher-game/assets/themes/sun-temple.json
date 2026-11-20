@@ -9,10 +9,10 @@
   "palette": {
     "bg1": "#1a1009", "bg2": "#3c2817", "text": "#fff1cc",
     "card": "#f6e8c4", "cardText": "#2a1c10", "cardBorder": "#7a5530",
-    "primary": "#35c2ad", "btnText": "#06241f", "accent": "#e2a93a",
-    "good": "#2f6b2f", "bad": "#a3281c"
+    "primary": "#5cbdac", "btnText": "#06241f", "accent": "#e2a93a",
+    "good": "#005c75", "bad": "#cb4a2a"
   },
-  "fonts": { "display": "Black Han Sans", "body": "Noto Sans KR" },
+  "fonts": { "display": "TS Sans", "body": "TS Sans" },
   "host": true,
   "motion": "high"
 }

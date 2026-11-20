@@ -18,11 +18,11 @@
 -->
 <style>
 :root{
-  --bg1:#0b1026;--bg2:#1b2a6b;--primary:#ffd23f;--accent:#3ee6ff;--good:#2ee59d;--bad:#ff5a5f;
+  --bg1:#0b1026;--bg2:#1b2a6b;--primary:#eece73;--accent:#7be0f2;--good:#76dca9;--bad:#ff5a5f;
   --text:#ffffff;--muted:rgba(255,255,255,.72);--card:rgba(255,255,255,.10);--cardBorder:rgba(255,255,255,.28);
-  --cardText:#ffffff;--btnText:#1a1a1a;--glow:0 0 28px rgba(62,230,255,.55);
-  --font-display:"Black Han Sans","Do Hyeon","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
-  --font-body:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Noto Sans CJK KR",sans-serif;
+  --cardText:#ffffff;--btnText:#1a1a1a;--glow:none;
+  --font-display:"TS Sans","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-body:"TS Sans","Pretendard","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕","Noto Sans CJK KR",sans-serif;
   --radius:28px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -119,12 +119,12 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 /* hanok: hanji paper, ink borders, brush title, seal-stamp badges, dancheong bands */
 [data-skin="hanok"] #app{background:#efe2c4}
 [data-skin="hanok"] .card,[data-skin="hanok"] .choice{border-radius:10px;border:5px solid #2b2118;box-shadow:6px 6px 0 rgba(43,33,24,.25);background-image:radial-gradient(rgba(139,107,62,.10) 1px,transparent 1.5px),linear-gradient(#fffaf0,#fbf1dc);background-size:9px 9px,100% 100%}
-[data-skin="hanok"] .choice .mark{border-radius:8px;background:#c8372d;color:#fff8e7;font-family:"Song Myung",serif}
-[data-skin="hanok"] .title{font-family:"Song Myung","Gowun Batang",serif;color:#2b2118;text-shadow:none;letter-spacing:12px}
-[data-skin="hanok"] .h1,[data-skin="hanok"] .h2{font-family:"Song Myung","Gowun Batang",serif}
+[data-skin="hanok"] .choice .mark{border-radius:8px;background:#c8372d;color:#fff8e7;font-family:"Noto Serif KR",serif}
+[data-skin="hanok"] .title{font-family:"Noto Serif KR","Noto Serif KR",serif;color:#2b2118;text-shadow:none;letter-spacing:12px}
+[data-skin="hanok"] .h1,[data-skin="hanok"] .h2{font-family:"Noto Serif KR","Noto Serif KR",serif}
 [data-skin="hanok"] .btn{border-radius:12px;background:#c8372d;color:#fff8e7;box-shadow:0 8px 0 #7d1f18}
 [data-skin="hanok"] .btn.secondary{background:#fffaf0;color:#2b2118;box-shadow:0 8px 0 #8b6b3e,inset 0 0 0 4px #2b2118}
-[data-skin="hanok"] .badge{border-radius:14px;transform-origin:center;border:8px double #fff8e7;font-family:"Song Myung",serif}
+[data-skin="hanok"] .badge{border-radius:14px;transform-origin:center;border:8px double #fff8e7;font-family:"Noto Serif KR",serif}
 [data-skin="hanok"] .badge.good{background:#c8372d;color:#fff8e7;box-shadow:none}
 [data-skin="hanok"] .badge.bad{background:#2b2118;box-shadow:none}
 [data-skin="hanok"] .team{background:rgba(43,33,24,.85);color:#fff8e7}
@@ -138,7 +138,7 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 /* detective: case-file manila cards, typewriter type, stamp badges */
 [data-skin="detective"] .card,[data-skin="detective"] .choice{border-radius:4px;border:none;background:linear-gradient(#e9d7a8,#dcc48a);color:#2a2017;box-shadow:6px 8px 0 rgba(0,0,0,.45)}
 [data-skin="detective"] .choice .mark{border-radius:50%;background:#8b1e1e;color:#f3e6c4}
-[data-skin="detective"] .title{font-family:"Nanum Myeongjo","Gowun Batang",serif;color:#e8b04a;text-shadow:0 4px 0 #000;letter-spacing:6px}
+[data-skin="detective"] .title{font-family:"Nanum Myeongjo","Noto Serif KR",serif;color:#e8b04a;text-shadow:0 4px 0 #000;letter-spacing:6px}
 [data-skin="detective"] .badge{border-radius:6px;border:8px solid currentColor;background:transparent!important;box-shadow:none!important;transform-origin:center}
 [data-skin="detective"] .badge.good{color:#69e3a0}[data-skin="detective"] .badge.bad{color:#ff6a5f}
 /* fairytale: storybook — puffy rounded, dashed stitch borders */
@@ -146,7 +146,7 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 [data-skin="fairytale"] .btn{border-radius:999px;box-shadow:0 10px 0 #e05e98}
 /* sports: LED scoreboard digits, jersey stripes */
 [data-skin="sports"] .card,[data-skin="sports"] .choice{border-radius:16px;border:6px solid #fff;box-shadow:0 8px 0 #073d1d}
-[data-skin="sports"] .team .tscore{font-family:"Do Hyeon",monospace;color:#ffd400;text-shadow:0 0 12px #ffd400}
+[data-skin="sports"] .team .tscore{font-family:"TS Sans",monospace;color:#ffd400;text-shadow:0 0 12px #ffd400}
 [data-skin] .choice.correct{background:var(--good)!important;border-color:#fff!important;color:#08301f!important}
 [data-skin] .choice.wrong{background:var(--bad)!important;border-color:#fff!important;color:#fff!important}
 @keyframes chIn{from{transform:translateY(-120px) scale(.4);opacity:0}to{transform:none;opacity:1}}
@@ -612,15 +612,15 @@ BG._update = function(dt){
 
 /* ---------- themes (mood sets: colors, fonts, background, music) ---------- */
 var THEMES = NG.THEMES = {
-  arcade:    {card:"#2c1660", cardBorder:"#6a46c0", bg1:"#120022", bg2:"#2b0a5c", primary:"#ffe14d", accent:"#ff3ea5", good:"#3dffa8", bad:"#ff4d6d", font:'"Black Han Sans"', bgType:"grid", mood:"upbeat", glow:"0 0 30px rgba(255,62,165,.7)"},
-  space:     {card:"#14224f", cardBorder:"#3a5ca8", bg1:"#02030f", bg2:"#0e1a4a", primary:"#7cf7ff", accent:"#b48cff", good:"#4dffb8", bad:"#ff6b8b", font:'"Black Han Sans"', bgType:"stars", mood:"space", glow:"0 0 30px rgba(124,247,255,.6)"},
-  fairytale: {bg1:"#ffd6e8", bg2:"#c9e7ff", primary:"#ff7eb6", accent:"#7cc8ff", good:"#3ccf91", bad:"#ff6f6f", text:"#4a2c5a", muted:"rgba(74,44,90,.75)", card:"#ffffff", cardBorder:"#ffc2dc", cardText:"#4a2c5a", btnText:"#ffffff", font:'"Jua"', bgType:"clouds", mood:"cute", glow:"0 0 24px rgba(255,126,182,.5)"},
-  hanok:     {bg1:"#f6ecd6", bg2:"#e8d2a8", primary:"#c8372d", accent:"#1f5f8b", good:"#2e8b57", bad:"#c8372d", text:"#2b2118", muted:"rgba(43,33,24,.75)", card:"#fffaf0", cardBorder:"#8b6b3e", cardText:"#2b2118", btnText:"#fff8e7", font:'"Do Hyeon"', bgType:"petals", mood:"korean", glow:"0 0 0 rgba(0,0,0,0)"},
-  sports:    {card:"#0f6e37", cardBorder:"#5cc285", bg1:"#0d5c2e", bg2:"#13883f", primary:"#ffffff", accent:"#ffd400", good:"#00e0ff", bad:"#ff3b3b", btnText:"#0d5c2e", font:'"Black Han Sans"', bgType:"pitch", mood:"sports", glow:"0 0 26px rgba(255,212,0,.6)"},
-  detective: {card:"#24212e", cardBorder:"#5b5170", bg1:"#0e0f14", bg2:"#2a2333", primary:"#e8b04a", accent:"#9fb4ff", good:"#69e3a0", bad:"#ff6a5f", font:'"Do Hyeon"', bgType:"fog", mood:"mystery", glow:"0 0 26px rgba(232,176,74,.5)"},
-  forest:    {card:"#1d5a3e", cardBorder:"#5aa877", bg1:"#0f3b2e", bg2:"#2f7d4f", primary:"#ffe066", accent:"#a8f07a", good:"#7dffb0", bad:"#ff7a59", font:'"Jua"', bgType:"leaves", mood:"nature", glow:"0 0 26px rgba(168,240,122,.5)"},
-  ocean:     {bg1:"#0a4f86", bg2:"#41b8e6", primary:"#ff7a3d", accent:"#bff3ff", good:"#1fcf86", bad:"#ff5a5f", cardText:"#0b3a5b", btnText:"#ffffff", font:'"Jua"', bgType:"sea", mood:"nature", glow:"0 0 26px rgba(191,243,255,.6)"},
-  gameshow:  {card:"#3a1266", cardBorder:"#8a4ad0", bg1:"#1a0533", bg2:"#5a0f8a", primary:"#ffcc00", accent:"#00d4ff", good:"#2bff88", bad:"#ff3366", font:'"Black Han Sans"', bgType:"spot", mood:"upbeat", glow:"0 0 34px rgba(255,204,0,.7)"}
+  arcade:    {card:"#2c1660", cardBorder:"#6a46c0", bg1:"#120022", bg2:"#2b0a5c", primary:"#e6d273", accent:"#d1789f", good:"#88e9b3", bad:"#ff4d6d", font:'"TS Sans"', bgType:"grid", mood:"upbeat", glow:"none"},
+  space:     {card:"#14224f", cardBorder:"#3a5ca8", bg1:"#02030f", bg2:"#0e1a4a", primary:"#90e1e6", accent:"#b095e7", good:"#82eab9", bad:"#e48394", font:'"TS Sans"', bgType:"stars", mood:"space", glow:"none"},
+  fairytale: {bg1:"#ffd6e8", bg2:"#c9e7ff", primary:"#eb8fb4", accent:"#7cc8ff", good:"#3ccf91", bad:"#e58481", text:"#4a2c5a", muted:"rgba(74,44,90,.75)", card:"#ffffff", cardBorder:"#ffc2dc", cardText:"#4a2c5a", btnText:"#ffffff", font:'"TS Sans"', bgType:"clouds", mood:"cute", glow:"none"},
+  hanok:     {bg1:"#f6ecd6", bg2:"#e8d2a8", primary:"#c8372d", accent:"#1f5f8b", good:"#2e8b57", bad:"#c8372d", text:"#2b2118", muted:"rgba(43,33,24,.75)", card:"#fffaf0", cardBorder:"#8b6b3e", cardText:"#2b2118", btnText:"#fff8e7", font:'"TS Sans"', bgType:"petals", mood:"korean", glow:"0 0 0 rgba(0,0,0,0)"},
+  sports:    {card:"#0f6e37", cardBorder:"#5cc285", bg1:"#0d5c2e", bg2:"#13883f", primary:"#ffffff", accent:"#ebd070", good:"#6ddaf0", bad:"#d07269", btnText:"#0d5c2e", font:'"TS Sans"', bgType:"pitch", mood:"sports", glow:"none"},
+  detective: {card:"#24212e", cardBorder:"#5b5170", bg1:"#0e0f14", bg2:"#2a2333", primary:"#e8b04a", accent:"#9fb4ff", good:"#69e3a0", bad:"#e28278", font:'"TS Sans"', bgType:"fog", mood:"mystery", glow:"none"},
+  forest:    {card:"#1d5a3e", cardBorder:"#5aa877", bg1:"#0f3b2e", bg2:"#2f7d4f", primary:"#e6d180", accent:"#b0e392", good:"#91e8af", bad:"#e88b73", font:'"TS Sans"', bgType:"leaves", mood:"nature", glow:"none"},
+  ocean:     {bg1:"#0a4f86", bg2:"#41b8e6", primary:"#e58c67", accent:"#bff3ff", good:"#65c793", bad:"#ff5a5f", cardText:"#0b3a5b", btnText:"#ffffff", font:'"TS Sans"', bgType:"sea", mood:"nature", glow:"none"},
+  gameshow:  {card:"#3a1266", cardBorder:"#8a4ad0", bg1:"#1a0533", bg2:"#5a0f8a", primary:"#efce6f", accent:"#67cfed", good:"#93e8aa", bad:"#cf707c", font:'"TS Sans"', bgType:"spot", mood:"upbeat", glow:"none"}
 };
 NG.setTheme = function(name, override){
   var th = {}; var base = THEMES[name] || THEMES.arcade; var k;
@@ -631,7 +631,7 @@ NG.setTheme = function(name, override){
   r.setProperty("--text", th.text || "#ffffff"); r.setProperty("--muted", th.muted || "rgba(255,255,255,.72)");
   r.setProperty("--card", th.card || "rgba(255,255,255,.10)"); r.setProperty("--cardBorder", th.cardBorder || "rgba(255,255,255,.28)");
   r.setProperty("--cardText", th.cardText || th.text || "#ffffff"); r.setProperty("--btnText", th.btnText || "#1a1a1a");
-  r.setProperty("--font-display", th.font + ',"Do Hyeon","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif');
+  r.setProperty("--font-display", th.font + ',"TS Sans","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif');
   BG.set(th.bgType); NG.theme = th; NG.themeName = name; document.body.setAttribute("data-skin", th.skin || name);
 };
 

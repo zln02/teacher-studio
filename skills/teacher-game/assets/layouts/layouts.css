@@ -19,17 +19,17 @@ body[data-layout=split] .ts-ask .ts-choice{flex:1 1 0;min-height:var(--btn-h)}
 body[data-layout=split] .ts-ask .ts-oxrow{position:absolute;left:calc(var(--lx) + var(--lw)*.49);top:var(--ty);width:calc(var(--lw)*.51);height:calc(880px - var(--ty));flex-direction:column;gap:20px;justify-content:center}
 body[data-layout=split] .ts-ask .ts-ox{width:100%;height:calc((880px - var(--ty) - 20px)/2)}
 /* bento: wide question tile + info tile + tall answer tiles in one row */
-body[data-layout=bento] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:14px;justify-content:flex-start}
+body[data-layout=bento] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:16px;justify-content:flex-start}
 body[data-layout=bento] .ts-ask .ts-chip{text-align:center}
 body[data-layout=bento] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.46);min-height:0}
 body[data-mech=escape][data-layout=bento] .ts-ask .ts-q{width:var(--lw)}
-body[data-layout=bento] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);display:grid;grid-gap:18px}
+body[data-layout=bento] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);display:grid;grid-gap:16px}
 body[data-layout=bento] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
 body[data-layout=bento] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
 body[data-layout=bento] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
 body[data-layout=bento] .ts-ask .ts-choice{flex-direction:column;justify-content:center;text-align:center;height:100%;min-height:0}
 body[data-layout=bento] .ts-ask .ts-choice .mark{margin-bottom:8px}
-body[data-layout=bento] .ts-ask .ts-sym{padding:0;margin:6px 0 0}
+body[data-layout=bento] .ts-ask .ts-sym{padding:0;margin:8px 0 0}
 body[data-layout=bento] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);gap:40px}
 body[data-layout=bento] .ts-ask .ts-ox{width:48%;height:100%}
 /* news: answers on top, question as a lower-third banner */
@@ -41,48 +41,49 @@ body[data-layout=news] .ts-ask .ts-q{position:absolute;left:var(--lx);top:calc(v
 body[data-layout=news] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:var(--ty);width:var(--lw);height:calc((880px - var(--ty))*.52);gap:40px}
 body[data-layout=news] .ts-ask .ts-ox{width:48%;height:100%;font-size:150px}
 /* poster: giant question on the paper, answers as a pill row */
-body[data-layout=poster] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;gap:14px;align-items:stretch}
+body[data-layout=poster] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;gap:16px;align-items:stretch}
 body[data-layout=poster] .ts-ask .ts-chip{text-align:center}
 body[data-layout=poster] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.5);min-height:0;text-align:left;justify-content:flex-start;background:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;color:var(--text)!important;border-bottom:14px solid var(--primary)!important;border-radius:0!important;padding-left:8px}
 body[data-mech=escape][data-layout=poster] .ts-ask .ts-q{width:var(--lw)}
-body[data-layout=poster] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);display:grid;grid-gap:18px}
+body[data-layout=poster] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);display:grid;grid-gap:16px}
 body[data-layout=poster] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
 body[data-layout=poster] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
 body[data-layout=poster] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
-body[data-layout=poster] .ts-ask .ts-choice{border-radius:72px;justify-content:center;text-align:center;height:100%;min-height:0;padding:10px 20px}
+body[data-layout=poster] .ts-ask .ts-choice{border-radius:72px;justify-content:center;text-align:center;height:100%;min-height:0;padding:8px 20px}
 body[data-layout=poster] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);gap:40px}
 body[data-layout=poster] .ts-ask .ts-ox{width:48%;height:100%;font-size:140px}
 /* ---- answer button styles ---- */
-body[data-choice=pill] .choice{border-radius:72px;padding-left:34px;padding-right:34px}
-body[data-choice=tile] .choice{border-radius:10px;border-bottom-width:14px}
-body[data-choice=stamp] .choice{border-style:dashed;border-width:6px;border-radius:14px;transform:rotate(-.8deg)}
-body[data-choice=stamp] .choice:nth-child(even){transform:rotate(.9deg)}
-body[data-choice=neon] .choice{border-color:var(--accent);box-shadow:0 0 0 3px var(--primary) inset,0 0 26px var(--accent);border-radius:20px}
-body[data-choice=note] .choice{border-radius:6px 6px 6px 46px;border-width:3px;transform:rotate(-.7deg);box-shadow:0 12px 0 rgba(0,0,0,.2)}
-body[data-choice=note] .choice:nth-child(even){transform:rotate(.8deg)}
+body[data-choice=pill] .choice{border-radius:72px;padding-left:32px;padding-right:32px}
+body[data-choice=tile] .choice{border-radius:10px;border-bottom-width:10px}
+body[data-choice=stamp] .choice{border:4px solid var(--cardText);border-radius:14px;box-shadow:8px 8px 0 var(--cardText)!important}
+/* "neon" = a matte hairline tile with an accent edge (the glowing version was retired) */
+body[data-choice=neon] .choice{border:2px solid var(--cardBorder);border-left:8px solid var(--primary);border-radius:8px;box-shadow:none!important}
+body[data-choice=note] .choice{border-radius:6px 6px 6px 40px;border-width:3px}
 body[data-choice] .choice.correct,body[data-choice] .choice.wrong{transform:none}
 /* ---- card styles (question card, match/bingo tiles, sort bins) ---- */
 body[data-card=round] .ts-q,body[data-card=round] .ts-tile{border-radius:40px}
 body[data-card=ticket] .ts-q,body[data-card=ticket] .ts-tile{border-radius:12px;clip-path:polygon(0 0,100% 0,100% 38%,99% 50%,100% 62%,100% 100%,0 100%,0 62%,1% 50%,0 38%)}
-body[data-card=polaroid] .ts-q,body[data-card=polaroid] .ts-tile{border:12px solid #fffdf5;border-bottom-width:40px;transform:rotate(-.6deg);box-shadow:0 10px 0 rgba(0,0,0,.25)}
+body[data-card=polaroid] .ts-q,body[data-card=polaroid] .ts-tile{border:12px solid #fbfbf8;border-bottom-width:40px}
 body[data-card=hex] .ts-tile{clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%)}
 body[data-card=hex] .ts-q{clip-path:polygon(2% 0,98% 0,100% 50%,98% 100%,2% 100%,0 50%)}
 /* ---- scoreboards (HUD) ---- */
-body[data-score=led] .team{border-radius:6px;background:#080808;border:3px solid #444}
-body[data-score=led] .team .tscore{color:#ffb000;font-family:"Courier New",monospace;text-shadow:0 0 12px #ffb000}
-body[data-score=led] .team .tname{color:#e8e8e8}
+/* "led" = a matte scoreboard panel: tabular figures in the primary colour, no glow, no mono face */
+body[data-score=led] .team{border-radius:6px;background:#0d0e10;border:2px solid #2c2f34}
+body[data-score=led] .team .tscore{color:var(--primary);letter-spacing:.02em}
+body[data-score=led] .team .tname{color:#e8e6e0}
 body[data-score=chalk] .team{border-radius:14px;background:rgba(255,255,255,.07);border:3px dashed rgba(255,255,255,.75)}
-body[data-score=sticker] .team{background:var(--primary);color:var(--btnText);border-radius:14px;transform:rotate(-2deg);box-shadow:0 6px 0 rgba(0,0,0,.35)}
-body[data-score=sticker] .team:nth-child(even){transform:rotate(2deg)}
+body[data-score=sticker] .team{background:var(--primary);color:var(--btnText);border-radius:14px;box-shadow:0 6px 0 rgba(0,0,0,.22)}
 body[data-score=banner] .team{border-radius:0 30px 30px 0;background:var(--card);color:var(--cardText);border-left:14px solid var(--primary)}
 /* ---- title treatments ---- */
-body[data-title=outline] .title{-webkit-text-stroke:3px var(--accent);text-shadow:none}
-body[data-title=stack3d] .title{text-shadow:0 4px 0 var(--accent),0 9px 0 rgba(0,0,0,.35),0 16px 26px rgba(0,0,0,.4)}
-body[data-title=stamp] .title{transform:rotate(-3deg);border:10px solid var(--primary);padding:6px 54px;border-radius:16px;background:rgba(0,0,0,.28)}
-body[data-title=underline] .title:after{content:"";display:block;height:16px;margin:10px auto 0;width:72%;background:var(--primary);border-radius:8px}
+/* "outline" = a filled title under a short accent rule (hollow outlined type was retired) */
+body[data-title=outline] .title:before{content:"";display:block;width:120px;height:8px;margin:0 auto 28px;background:var(--primary)}
+/* "stack3d" = ONE flat offset in a neutral tone (the three-layer 3D shadow was retired) */
+body[data-title=stack3d] .title{text-shadow:0 .05em 0 rgba(0,0,0,.22)}
+body[data-title=stamp] .title{display:inline-block;background:var(--primary);color:var(--btnText);padding:8px 48px 16px;border-radius:calc(var(--radius,16px)*.5)}
+body[data-title=underline] .title:after{content:"";display:block;height:8px;margin:24px auto 0;width:160px;background:var(--primary)}
 body[data-title-scale=lg] .title{font-size:calc(var(--t-title)*1.18)}
 body[data-title-scale=sm] .title{font-size:calc(var(--t-title)*.86)}
-body[data-scene=title][data-tpos=left] #scene .screen{align-items:flex-start;padding-left:230px;text-align:left}
+body[data-scene=title][data-tpos=left] #scene .screen{align-items:flex-start;padding-left:232px;text-align:left}
 body[data-scene=title][data-tpos=left] #scene .row{justify-content:flex-start}
 body[data-scene=title][data-tpos=top] #scene .screen{justify-content:flex-start;padding-top:200px}
 /* ---- survival team row variants ---- */
@@ -90,7 +91,7 @@ body[data-sv=bridge] .ts-teambox:nth-child(odd){transform:translateY(-30px)}
 body[data-sv=bridge] .ts-teambox:nth-child(even){transform:translateY(30px)}
 body[data-sv=stagger] .ts-teambox:nth-child(odd){transform:rotate(-2deg)}
 body[data-sv=stagger] .ts-teambox:nth-child(even){transform:rotate(2deg)}
-body[data-sv=arena] .ts-teamrow{background:rgba(0,0,0,.2);border:6px dashed var(--cardBorder);border-radius:150px;padding:26px 40px}
+body[data-sv=arena] .ts-teamrow{background:rgba(0,0,0,.2);border:6px dashed var(--cardBorder);border-radius:150px;padding:24px 40px}
 /* ---- shelves, belts ---- */
 .ts-plank{position:absolute;height:16px;border-radius:6px;background:linear-gradient(var(--cardBorder),rgba(0,0,0,.45));box-shadow:0 8px 0 rgba(0,0,0,.25)}
 .ts-belt{position:absolute;left:150px;top:190px;width:1300px;height:26px;border-radius:14px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.55) 0 40px,rgba(255,255,255,.22) 40px 80px);box-shadow:0 8px 0 rgba(0,0,0,.3);animation:tsbelt 1.4s linear infinite}
@@ -102,25 +103,43 @@ body[data-sortv=shelves] .ts-bin:before{display:none}
 .ts-custom{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
 .ts-custom svg{width:100%;height:100%}
 
-/* ---- style packs: one per entry of the general style taxonomy (scripts/style_auto.py) ---- */
-body[data-style=neon] .ts-q,body[data-style=neon] .ts-tile,body[data-style=neon] .ts-bin,body[data-style=neon] .choice{border-color:var(--primary)!important;box-shadow:0 0 0 2px rgba(0,229,255,.25),0 0 22px var(--primary)!important}
-body[data-style=neon] .title{text-shadow:0 0 22px var(--accent),0 0 56px var(--primary)}
-body[data-style=gold] .ts-q,body[data-style=gold] .ts-tile{border:5px double var(--primary)!important}
-body[data-style=gold] .title{letter-spacing:6px}
-body[data-style=pop] .card,body[data-style=pop] .ts-tile,body[data-style=pop] .choice,body[data-style=pop] .ts-bin{border:6px solid var(--cardBorder)!important;box-shadow:10px 10px 0 var(--cardBorder)!important}
-body[data-style=pop] .title{text-shadow:6px 6px 0 var(--primary),12px 12px 0 rgba(27,18,48,.35)}
-body[data-style=party] .ts-q,body[data-style=party] .ts-tile{border-style:dotted!important;border-width:8px!important}
-body[data-style=show] .ts-q{border:4px solid var(--primary)!important;box-shadow:0 0 0 8px rgba(0,0,0,.3),0 0 0 11px var(--primary)!important}
-body[data-style=glass] .card,body[data-style=glass] .ts-tile,body[data-style=glass] .choice,body[data-style=glass] .ts-bin,body[data-style=glass] .ts-explcard{background:rgba(255,255,255,.14)!important;background-image:none!important;border:2px solid rgba(255,255,255,.45)!important;box-shadow:0 12px 40px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.5)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-radius:36px}
+/* ---- style packs: one per entry of the style taxonomy (shared/design/styles.py). Each is a STRUCTURE (edge, radius, line, shadow rule),
+   not a recolour, and every surface is matte: one neutral falling or offset shadow at most, never a coloured glow (shared/design/DESIGN-RULES.md). ---- */
+/* 먹빛 테크: hairline tiles, 6px corners, an accent edge on the question, tracked small labels */
+body[data-style=neon] .card,body[data-style=neon] .ts-tile,body[data-style=neon] .choice,body[data-style=neon] .ts-bin{border:2px solid var(--cardBorder)!important;border-radius:6px!important;box-shadow:none!important;background-image:none!important}
+body[data-style=neon] .ts-q{border-left:8px solid var(--primary)!important}
+body[data-style=neon] .team .tname,body[data-style=neon] .ts-meta{letter-spacing:.06em}
+body[data-style=neon] .btn{border-radius:6px}
+/* 먹과 놋쇠: a brass line + an inset second line, square corners, lighter serif title */
+body[data-style=gold] .ts-q,body[data-style=gold] .ts-tile{border:2px solid var(--primary)!important;outline:1px solid rgba(215,172,104,.45);outline-offset:-12px;border-radius:2px!important;box-shadow:none!important}
+body[data-style=gold] .choice,body[data-style=gold] .ts-bin{border:2px solid var(--cardBorder)!important;border-radius:2px!important;box-shadow:none!important}
+body[data-style=gold] .title{font-weight:600;letter-spacing:-.02em}
+body[data-style=gold] .btn{border-radius:2px}
+/* 팝 블록: sticker cards, 4px ink line + one ink offset */
+body[data-style=pop] .card,body[data-style=pop] .ts-tile,body[data-style=pop] .choice,body[data-style=pop] .ts-bin{border:4px solid var(--cardText)!important;box-shadow:8px 8px 0 var(--cardText)!important;border-radius:20px}
+/* 축제 포스터: borderless paper cards with a coral top edge */
+body[data-style=party] .card,body[data-style=party] .ts-tile,body[data-style=party] .choice,body[data-style=party] .ts-bin{border:0!important;border-radius:28px}
+body[data-style=party] .ts-q{border-top:10px solid var(--primary)!important}
+/* 스튜디오 쇼: scoreboard panels, amber left edge on the question */
+body[data-style=show] .card,body[data-style=show] .ts-tile,body[data-style=show] .choice,body[data-style=show] .ts-bin{border:2px solid var(--cardBorder)!important;border-radius:10px!important}
+body[data-style=show] .ts-q{border-left:14px solid var(--primary)!important}
+/* 소프트 뎁스: matte panels lifted by one deep soft shadow (no blur, no translucent glass) */
+body[data-style=glass] .card,body[data-style=glass] .ts-tile,body[data-style=glass] .choice,body[data-style=glass] .ts-bin,body[data-style=glass] .ts-explcard{background-image:none!important;border:1px solid rgba(255,255,255,.09)!important;box-shadow:0 34px 60px -34px rgba(0,0,0,.8)!important;border-radius:28px}
 body[data-style=glass] .choice.correct,body[data-style=glass] .ts-tile.done{background:var(--good)!important;color:var(--on-good)}
 body[data-style=glass] .choice.wrong,body[data-style=glass] .ts-tile.bad{background:var(--bad)!important;color:var(--on-bad)}
-body[data-style=anime] .card,body[data-style=anime] .ts-tile,body[data-style=anime] .choice,body[data-style=anime] .ts-bin{border:7px solid #0b1b3a!important;box-shadow:8px 8px 0 #0b1b3a!important;border-radius:14px}
-body[data-style=anime] .title{-webkit-text-stroke:3px #0b1b3a;text-shadow:7px 7px 0 var(--primary)}
-body[data-style=pastel] .card,body[data-style=pastel] .ts-tile,body[data-style=pastel] .choice,body[data-style=pastel] .ts-bin{border-radius:44px!important;box-shadow:0 10px 0 rgba(166,61,143,.18)!important}
-body[data-style=pixel] .card,body[data-style=pixel] .ts-tile,body[data-style=pixel] .choice,body[data-style=pixel] .ts-bin,body[data-style=pixel] .btn{border-radius:0!important;border-width:6px!important;box-shadow:8px 8px 0 #000!important;clip-path:none}
-body[data-style=pixel] .title{letter-spacing:3px;text-shadow:6px 6px 0 #000}
+/* 만화 컷: comic panels, 4px ink line + ink offset, flat title offset */
+body[data-style=anime] .card,body[data-style=anime] .ts-tile,body[data-style=anime] .choice,body[data-style=anime] .ts-bin{border:4px solid var(--cardText)!important;box-shadow:6px 6px 0 var(--cardText)!important;border-radius:12px}
+body[data-style=anime] .title{text-shadow:.045em .045em 0 var(--primary)}
+/* 파스텔: fully rounded, a soft tonal step under each card */
+body[data-style=pastel] .card,body[data-style=pastel] .ts-tile,body[data-style=pastel] .choice,body[data-style=pastel] .ts-bin{border-radius:40px!important;box-shadow:0 8px 0 rgba(149,64,116,.16)!important}
+/* 픽셀: square, hard one-step shadow, open tracking */
+body[data-style=pixel] .card,body[data-style=pixel] .ts-tile,body[data-style=pixel] .choice,body[data-style=pixel] .ts-bin,body[data-style=pixel] .btn{border-radius:0!important;border-width:4px!important;box-shadow:6px 6px 0 #000!important;clip-path:none}
+body[data-style=pixel] .title{letter-spacing:.02em;text-shadow:.05em .05em 0 #000}
+/* 에디토리얼: 2px ink line, no shadow, tight title */
 body[data-style=minimal] .card,body[data-style=minimal] .ts-tile,body[data-style=minimal] .choice,body[data-style=minimal] .ts-bin{border-width:2px!important;box-shadow:none!important;border-radius:2px!important}
-body[data-style=minimal] .title{letter-spacing:5px;font-weight:700;text-shadow:none}
-body[data-style=minimal] .btn{box-shadow:none;border-radius:2px}
-body[data-style=chalk] .card,body[data-style=chalk] .ts-tile,body[data-style=chalk] .choice,body[data-style=chalk] .ts-bin{border:4px dashed rgba(245,245,239,.85)!important;border-radius:18px;box-shadow:none!important;background-image:none!important}
-body[data-style=nature] .card,body[data-style=nature] .ts-tile,body[data-style=nature] .choice,body[data-style=nature] .ts-bin{border-radius:34px!important;box-shadow:0 8px 0 rgba(35,122,67,.2)!important}
+body[data-style=minimal] .title{font-weight:700;letter-spacing:-.04em}
+body[data-style=minimal] .btn{box-shadow:none!important;border-radius:2px}
+/* 칠판: dashed chalk frames */
+body[data-style=chalk] .card,body[data-style=chalk] .ts-tile,body[data-style=chalk] .choice,body[data-style=chalk] .ts-bin{border:3px dashed rgba(233,243,238,.8)!important;border-radius:14px;box-shadow:none!important;background-image:none!important}
+/* 자연: quiet 2px line, soft corners, no shadow */
+body[data-style=nature] .card,body[data-style=nature] .ts-tile,body[data-style=nature] .choice,body[data-style=nature] .ts-bin{border:2px solid var(--cardBorder)!important;border-radius:20px!important;box-shadow:none!important}

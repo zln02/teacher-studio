@@ -10,4 +10,4 @@ body[data-world="joseon-war-room"] .ts-pill{border-color:#c9a24a;box-shadow:0 4p
 body[data-world="joseon-war-room"] .ts-next,
 body[data-world="joseon-war-room"] .btn{border:5px solid #7b5a14;box-shadow:0 6px 0 #5d440c}
 body[data-world="joseon-war-room"] .ts-chip{box-shadow:0 4px 0 rgba(0,0,0,.4)}
-body[data-world="joseon-war-room"] .title{color:#f6edd6;text-shadow:0 6px 0 #5a1a10,0 0 36px rgba(0,0,0,.85);letter-spacing:8px}
+body[data-world="joseon-war-room"] .title{color:#f6edd6;text-shadow:0 6px 0 #5a1a10;letter-spacing:8px}

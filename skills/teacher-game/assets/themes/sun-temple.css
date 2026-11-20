@@ -9,4 +9,4 @@ body[data-world="sun-temple"] .ts-lock:not(.open){background-image:linear-gradie
 body[data-world="sun-temple"] .ts-pill{border-color:#c99a3e;box-shadow:0 4px 0 rgba(0,0,0,.45)}
 body[data-world="sun-temple"] .ts-next,
 body[data-world="sun-temple"] .btn{border:5px solid #0f6a5d;box-shadow:0 6px 0 #0a4a41}
-body[data-world="sun-temple"] .title{color:#ffe9a8;text-shadow:0 6px 0 #5a3a10,0 0 40px rgba(255,170,60,.55)}
+body[data-world="sun-temple"] .title{color:#ffe9a8;text-shadow:0 6px 0 #5a3a10}

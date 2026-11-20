@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: Apache-2.0 · Copyright 2026 박진영 (zln02) */
 /* THEME auto — runtime of scripts/theme_auto.py. Draws a designed scene from SPEC.autoTheme (background generator + pattern +
    floating icon props + celebration particles) and hosts a DiceBear (CC0) character. Colors come from the tokens.
-   bg kinds: aurora waves hills city bokeh sunburst ink pitch geometric mesh. All procedural (no image files). */
+   bg kinds: dotgrid frame blocks papercut panels planes halftone bands hills pixel minimal chalk (+ aurora waves city ink pitch for named worlds).
+   All procedural (no image files), all matte: see shared/design/DESIGN-RULES.md. */
 COMP.themes.auto = (function(){
   var A = SPEC.autoTheme || { bg: "mesh", pattern: "dots", cel: "confetti", seed: 1, icons: {}, props: [], host: null };
   var CV = {}, imgs = {}, parts = [], prevCheer = 0, seedv = A.seed || 1, ready = false;
@@ -39,7 +40,6 @@ COMP.themes.auto = (function(){
       if (kind === "hills"){
         c.fillStyle = rgba("#ffffff", 0.55); c.beginPath(); c.arc(1560, 220, 110, 0, 6.283); c.fill();
         hillLayer(c, 780, 40, mix(C.bg2, C.accent, 0.25), 0.004, 1); hillLayer(c, 860, 36, mix(C.bg2, C.primary, 0.35), 0.006, 3); hillLayer(c, 950, 28, mix(C.bg2, C.accent, 0.5), 0.009, 5);
-        for (var i = 0; i < 26; i++){ var fx = rnd() * 1920, fy = 900 + rnd() * 150; c.fillStyle = i % 2 ? C.primary : "#ffffff"; c.beginPath(); c.arc(fx, fy, 6 + rnd() * 6, 0, 6.283); c.fill(); }
       } else if (kind === "ink"){
         c.fillStyle = rgba(C.primary, 0.85); c.beginPath(); c.arc(1480, 250, 96, 0, 6.283); c.fill();
         hillLayer(c, 620, 90, rgba(C.text, 0.12), 0.003, 2); hillLayer(c, 740, 80, rgba(C.text, 0.2), 0.004, 4); hillLayer(c, 880, 60, rgba(C.text, 0.32), 0.006, 6);
@@ -55,48 +55,54 @@ COMP.themes.auto = (function(){
       } else if (kind === "waves"){
         c.fillStyle = rgba("#ffffff", 0.8); c.beginPath(); c.arc(1600, 200, 90, 0, 6.283); c.fill();
       }
-      if (kind === "neongrid"){
-        var hz = 640, gg = c.createLinearGradient(0, hz - 260, 0, hz); gg.addColorStop(0, rgba(C.accent, 0)); gg.addColorStop(1, rgba(C.accent, 0.38)); c.fillStyle = gg; c.fillRect(0, hz - 260, 1920, 260);
-        c.fillStyle = rgba(C.bg1, 0.9); c.fillRect(0, hz, 1920, 440);
-        c.strokeStyle = rgba(C.primary, 0.55); c.lineWidth = 2;
-        for (var gi = -24; gi <= 24; gi++){ c.beginPath(); c.moveTo(960 + gi * 40, hz); c.lineTo(960 + gi * 300, 1080); c.stroke(); }
-        for (var gj = 0; gj < 12; gj++){ var gy = hz + Math.pow(gj / 11, 2.2) * 440; c.beginPath(); c.moveTo(0, gy); c.lineTo(1920, gy); c.stroke(); }
-        c.fillStyle = rgba(C.accent, 0.9); c.beginPath(); c.arc(960, hz - 40, 150, Math.PI, 0); c.fill();
-        c.fillStyle = rgba(C.bg1, 0.55); for (var sl = 0; sl < 7; sl++) c.fillRect(810, hz - 190 + sl * 24 + sl * sl * 2, 300, 4 + sl);
+      /* ---- matte backdrops (shared/design/DESIGN-RULES.md): tonal planes, hairlines, fine grain, at most ONE accent shape. No glow, no beams, no confetti.
+         Each one also varies its composition with the seed (which corner, how many panels, where the rule sits), so two builds do not share a skeleton. */
+      var v = Math.floor(rnd() * 4), tone = function(t){ return mix(C.bg1, dark ? "#ffffff" : "#000000", t); };
+      if (kind === "dotgrid"){
+        c.fillStyle = rgba(C.text, 0.07); for (var gy = 24; gy < 1080; gy += 48) for (var gx = 24; gx < 1920; gx += 48) c.fillRect(gx, gy, 3, 3);
+        c.fillStyle = rgba(C.text, 0.16); c.fillRect(96, v % 2 ? 132 : 948, 1728, 2);
+        c.fillStyle = C.primary; c.fillRect(v < 2 ? 96 : 1704, v % 2 ? 124 : 940, 120, 8);
       }
-      if (kind === "memphis"){
-        var mc = [C.primary, C.accent, "#ffffff", mix(C.primary, "#ffe14a", 0.5), mix(C.accent, "#ffffff", 0.4)];
-        for (var mi = 0; mi < 40; mi++){
-          var mx = rnd() * 1920, my = rnd() * 1080, ms = 28 + rnd() * 70, mt = mi % 4;
-          for (var tryn = 0; tryn < 14 && !clear(mx, my, ms * 0.8); tryn++){ mx = rnd() * 1920; my = rnd() * 1080; }   /* never behind the title / question / answers */
-          if (!clear(mx, my, ms * 0.8)) continue; c.save(); c.translate(mx, my); c.rotate(rnd() * 6.28); c.fillStyle = mc[mi % mc.length]; c.strokeStyle = C.text; c.lineWidth = 5;
-          if (mt === 0){ c.beginPath(); c.arc(0, 0, ms * 0.5, 0, 6.283); c.fill(); c.stroke(); }
-          else if (mt === 1){ c.beginPath(); c.moveTo(0, -ms * 0.6); c.lineTo(ms * 0.55, ms * 0.4); c.lineTo(-ms * 0.55, ms * 0.4); c.closePath(); c.fill(); c.stroke(); }
-          else if (mt === 2){ c.beginPath(); for (var zz = -3; zz <= 3; zz++) c.lineTo(zz * ms * 0.2, (zz % 2 ? -1 : 1) * ms * 0.18); c.lineWidth = 9; c.stroke(); }
-          else { c.fillRect(-ms * 0.12, -ms * 0.5, ms * 0.24, ms); c.fillRect(-ms * 0.5, -ms * 0.12, ms, ms * 0.24); }
-          c.restore();
-        }
+      if (kind === "frame"){
+        var fi = 34 + v * 6; c.strokeStyle = rgba(C.primary, 0.6); c.lineWidth = 2; c.strokeRect(fi, fi, 1920 - fi * 2, 1080 - fi * 2);
+        c.strokeStyle = rgba(C.primary, 0.28); c.lineWidth = 1; c.strokeRect(fi + 12, fi + 12, 1920 - fi * 2 - 24, 1080 - fi * 2 - 24);
+        c.fillStyle = C.primary; var fx = [fi + 22, 1920 - fi - 30], fy = [fi + 22, 1080 - fi - 30];
+        for (var fa = 0; fa < 2; fa++) for (var fb = 0; fb < 2; fb++) c.fillRect(fx[fa], fy[fb], 8, 8);
       }
-      if (kind === "bunting"){
-        var bc = [C.primary, C.accent, "#5cc8ff", "#7dff9a", "#ffffff"];
-        for (var bi = 0; bi < 2; bi++){
-          var by0 = 120 + bi * 120; c.strokeStyle = rgba("#ffffff", 0.7); c.lineWidth = 4; c.beginPath(); c.moveTo(0, by0); c.quadraticCurveTo(960, by0 + 150, 1920, by0); c.stroke();
-          for (var fi = 0; fi < 22; fi++){ var ft = (fi + 0.5) / 22, fx = ft * 1920, fy = (1 - ft) * (1 - ft) * by0 + 2 * ft * (1 - ft) * (by0 + 150) + ft * ft * by0; c.fillStyle = bc[(fi + bi) % bc.length]; c.beginPath(); c.moveTo(fx - 30, fy); c.lineTo(fx + 30, fy); c.lineTo(fx, fy + 62); c.closePath(); c.fill(); }
-        }
-        var bl = [[110, 860, C.primary], [1800, 840, C.accent], [260, 720, "#5cc8ff"], [1690, 700, "#7dff9a"]];
-        for (var li = 0; li < bl.length; li++){ c.fillStyle = bl[li][2]; c.beginPath(); c.ellipse(bl[li][0], bl[li][1], 56, 70, 0, 0, 6.283); c.fill(); c.strokeStyle = rgba("#ffffff", 0.7); c.lineWidth = 4; c.beginPath(); c.moveTo(bl[li][0], bl[li][1] + 70); c.quadraticCurveTo(bl[li][0] + 24, bl[li][1] + 150, bl[li][0], bl[li][1] + 220); c.stroke(); }
+      if (kind === "blocks"){
+        var right = v % 2 === 0, top = v < 2;
+        c.fillStyle = C.accent; c.beginPath(); c.arc(right ? 1920 : 0, top ? 0 : 1080, 190 + v * 8, 0, 6.283); c.fill();   /* stays inside the stage margin: never behind the text band (KEEP) */
+        c.fillStyle = C.primary; c.fillRect(right ? 0 : 1920 - 420, top ? 1080 - 150 : 0, 420, 150);
+        c.fillStyle = rgba(C.text, 0.9); c.fillRect(right ? 420 : 1920 - 420 - 150, top ? 1080 - 150 : 0, 150, 150);
       }
-      if (kind === "stage"){
-        c.fillStyle = rgba("#000000", 0.35); c.fillRect(0, 118, 1920, 18);
-        for (var sr = 0; sr < 9; sr++) for (var sc = 0; sc < 30; sc++){ c.fillStyle = rgba(sc % 2 ? C.accent : C.primary, 0.1 + ((sr + sc) % 5) * 0.03); c.fillRect(46 + sc * 62, 160 + sr * 62, 40, 40); }
-        var fg = c.createLinearGradient(0, 860, 0, 1080); fg.addColorStop(0, rgba(C.primary, 0.3)); fg.addColorStop(1, rgba("#000000", 0.7)); c.fillStyle = fg; c.fillRect(0, 860, 1920, 220);
-        c.fillStyle = rgba(C.primary, 0.9); c.fillRect(0, 856, 1920, 6);
+      if (kind === "papercut"){
+        var cut = [C.primary, C.accent, mix(C.primary, C.bg1, 0.55), mix(C.accent, C.bg1, 0.5)];
+        for (var ci = 0; ci < 10; ci++){ c.fillStyle = cut[(ci + v) % 4]; var cx = 96 + ci * 192, sh = (ci + v) % 3;
+          if (sh === 0){ c.beginPath(); c.arc(cx, 0, 78, 0, Math.PI); c.fill(); }
+          else if (sh === 1){ c.beginPath(); c.moveTo(cx - 78, 0); c.lineTo(cx + 78, 0); c.lineTo(cx, 96); c.closePath(); c.fill(); }
+          else c.fillRect(cx - 60, 0, 120, 72); }
+        c.fillStyle = tone(0.06); c.fillRect(0, 1008, 1920, 72); c.fillStyle = C.primary; c.fillRect(0, 1000, 1920, 8);
       }
-      if (kind === "speed"){
-        c.save(); c.translate(960, 500);
-        for (var sp = 0; sp < 64; sp++){ var sa = sp * 0.0982 + rnd() * 0.04, w0 = 0.02 + rnd() * 0.03; c.fillStyle = rgba(sp % 3 ? "#ffffff" : C.primary, 0.22); c.beginPath(); c.moveTo(Math.cos(sa) * 360, Math.sin(sa) * 360); c.lineTo(Math.cos(sa - w0) * 1700, Math.sin(sa - w0) * 1700); c.lineTo(Math.cos(sa + w0) * 1700, Math.sin(sa + w0) * 1700); c.closePath(); c.fill(); }
-        c.restore();
-        c.fillStyle = rgba(C.accent, 0.35); for (var hy = 0; hy < 14; hy++) for (var hx = 0; hx < 12; hx++){ var hr = Math.max(0, 14 - hx * 1.3 - hy * 0.6); if (hr > 1){ c.beginPath(); c.arc(40 + hx * 36, 1040 - hy * 36, hr * 0.8, 0, 6.283); c.fill(); c.beginPath(); c.arc(1880 - hx * 36, 1040 - hy * 36, hr * 0.8, 0, 6.283); c.fill(); } }
+      if (kind === "panels"){
+        var pn = [6, 8, 10, 12][v], pw = 1920 / pn;
+        for (var pi = 0; pi < pn; pi++){ c.fillStyle = pi % 2 ? mix(C.bg1, C.bg2, 1) : tone(0.0); c.fillRect(pi * pw, 0, pw + 1, 1080); c.fillStyle = rgba("#000000", 0.18); c.fillRect(pi * pw, 0, 2, 1080); }
+        c.fillStyle = tone(dark ? 0.05 : 0.08); c.fillRect(0, 900, 1920, 180); c.fillStyle = C.primary; c.fillRect(0, 896, 1920, 6);
+      }
+      if (kind === "planes"){
+        var px0 = [1040, 1180, 860, 1300][v];
+        c.fillStyle = mix(C.bg1, C.bg2, 1); c.beginPath(); c.moveTo(px0, 0); c.lineTo(1920, 0); c.lineTo(1920, 1080); c.lineTo(px0 - 520, 1080); c.closePath(); c.fill();
+        c.fillStyle = tone(dark ? 0.07 : 0.06); c.beginPath(); c.moveTo(px0 + 420, 0); c.lineTo(1920, 0); c.lineTo(1920, 1080); c.lineTo(px0 - 100, 1080); c.closePath(); c.fill();
+        c.fillStyle = rgba(C.primary, 0.85); c.fillRect(96, 980, 120, 6);
+      }
+      if (kind === "halftone"){
+        var hr0 = v % 2 === 0, cxh = hr0 ? 1920 : 0;
+        c.fillStyle = rgba(C.text, 0.2); for (var hy = 0; hy < 26; hy++) for (var hx2 = 0; hx2 < 34; hx2++){ var dd = Math.sqrt(hx2 * hx2 + hy * hy), hr = Math.max(0, 9 - dd * 0.6); if (hr > 0.6){ c.beginPath(); c.arc(hr0 ? 1900 - hx2 * 26 : 20 + hx2 * 26, 20 + hy * 26, hr, 0, 6.283); c.fill(); } }
+        c.fillStyle = C.primary; c.beginPath(); c.moveTo(1920 - cxh, 1080); c.lineTo(1920 - cxh + (hr0 ? 360 : -360), 1080); c.lineTo(1920 - cxh, 1080 - 170); c.closePath(); c.fill();
+        c.fillStyle = C.text; c.fillRect(0, 1060, 1920, 20);
+      }
+      if (kind === "bands"){
+        var bn = 3 + (v % 2), by = 1080 - bn * 44 - 8;
+        for (var bi = 0; bi < bn; bi++){ c.fillStyle = mix(C.bg1, C.primary, 0.1 + bi * 0.11); hillLayer(c, by + bi * 46, 8 + bi * 2, c.fillStyle, 0.0018 + bi * 0.0006, v + bi * 2); }
       }
       if (kind === "pixel"){
         var pc2 = document.createElement("canvas"); pc2.width = 80; pc2.height = 45; var pg = pc2.getContext("2d");
@@ -117,7 +123,6 @@ COMP.themes.auto = (function(){
         c.fillStyle = rgba("#ffffff", 0.05); for (var ck = 0; ck < 12; ck++){ c.beginPath(); c.ellipse(rnd() * 1920, rnd() * 1000, 160 + rnd() * 260, 40 + rnd() * 80, rnd() * 3, 0, 6.283); c.fill(); }
         c.strokeStyle = "#8a5a2b"; c.lineWidth = 30; c.strokeRect(15, 15, 1890, 1050); c.strokeStyle = "#5a3818"; c.lineWidth = 6; c.strokeRect(30, 30, 1860, 1020);
         c.fillStyle = "#6e4420"; c.fillRect(15, 1040, 1890, 40);
-        c.fillStyle = "#f5f5ef"; c.fillRect(1500, 1022, 70, 14); c.fillStyle = "#ffe066"; c.fillRect(1600, 1022, 60, 14); c.fillStyle = "#ff9e9e"; c.fillRect(1690, 1022, 50, 14);
       }
       pattern(c, A.pattern, pc);
     });
@@ -195,25 +200,8 @@ COMP.themes.auto = (function(){
       ctx.lineWidth = 3;
       for (i = 0; i < CV.geo.length; i++){ var q = CV.geo[i]; q[3] += q[5] * dt; q[1] -= 6 * dt; if (q[1] < -100) q[1] = 1180; ctx.strokeStyle = rgba(i % 2 ? C.accent : C.primary, 0.3); ctx.beginPath();
         for (var v = 0; v <= q[4]; v++){ var an = q[3] + v * 6.283 / q[4]; ctx.lineTo(q[0] + Math.cos(an) * q[2], q[1] + Math.sin(an) * q[2]); } ctx.stroke(); }
-    } else if (kind === "neongrid"){
-      ctx.globalCompositeOperation = "lighter"; var sy2 = 640 + ((t * 80) % 440); ctx.fillStyle = rgba(C.primary, 0.12); ctx.fillRect(0, sy2, 1920, 6);
-      if (!CV.sp) { CV.sp = []; for (i = 0; i < 60; i++) CV.sp.push([rnd() * 1920, rnd() * 560, rnd(), rnd() * 6.28]); }
-      for (i = 0; i < CV.sp.length; i++){ var s2 = CV.sp[i]; ctx.fillStyle = rgba("#ffffff", 0.2 + 0.6 * s2[2] * (0.5 + 0.5 * Math.sin(t * 2 + s2[3]))); ctx.fillRect(s2[0], s2[1], 3, 3); }
-      ctx.globalCompositeOperation = "source-over";
-    } else if (kind === "bunting" || kind === "memphis"){
-      if (!CV.cf) { CV.cf = []; for (i = 0; i < (kind === "bunting" ? 46 : 18); i++) CV.cf.push([rnd() * 1920, rnd() * 1080, 14 + rnd() * 26, 30 + rnd() * 50, rnd() * 6.28, i % 3]); }
-      for (i = 0; i < CV.cf.length; i++){ var f2 = CV.cf[i]; f2[1] += f2[3] * dt; f2[4] += dt * 2; if (f2[1] > 1120){ f2[1] = -40; f2[0] = rnd() * 1920; } ctx.save(); ctx.translate(f2[0] + Math.sin(t + i) * 18, f2[1]); ctx.rotate(f2[4]); ctx.fillStyle = f2[5] === 0 ? C.primary : (f2[5] === 1 ? C.accent : "#ffffff"); ctx.globalAlpha = clear(f2[0], f2[1], f2[2]) ? 0.85 : 0.22; ctx.fillRect(-f2[2] / 2, -f2[2] / 4, f2[2], f2[2] / 2); ctx.restore(); }
-    } else if (kind === "stage"){
-      ctx.globalCompositeOperation = "lighter";
-      for (i = 0; i < 3; i++){ var an2 = Math.sin(t * 0.6 + i * 2.1) * 0.5, x3 = 400 + i * 560; ctx.fillStyle = rgba(i % 2 ? C.accent : C.primary, 0.09); ctx.beginPath(); ctx.moveTo(x3 - 18, 120); ctx.lineTo(x3 + 18, 120); ctx.lineTo(x3 + 230 + Math.sin(an2) * 420, 900); ctx.lineTo(x3 - 230 + Math.sin(an2) * 420, 900); ctx.closePath(); ctx.fill(); }
-      for (i = 0; i < 24; i++){ ctx.fillStyle = rgba(i % 2 ? C.accent : C.primary, 0.06 + 0.12 * Math.max(0, Math.sin(t * 3 + i * 1.7))); ctx.fillRect(46 + ((i * 7) % 30) * 62, 160 + ((i * 5) % 9) * 62, 40, 40); }
-      ctx.globalCompositeOperation = "source-over";
-    } else if (kind === "glassblobs"){
-      if (!CV.gb){ CV.gb = []; var gc = [C.primary, C.accent, "#6a7bff", "#ff9a6b", "#7cf2e6", "#c06bff"]; for (i = 0; i < 6; i++) CV.gb.push([rnd() * 1920, rnd() * 1080, 240 + rnd() * 260, rnd() * 6.28, gc[i]]); }
-      for (i = 0; i < CV.gb.length; i++){ var b2 = CV.gb[i], bx2 = b2[0] + Math.sin(t * 0.25 + b2[3]) * 160, by2 = b2[1] + Math.cos(t * 0.2 + b2[3]) * 110; g = ctx.createRadialGradient(bx2 - b2[2] * 0.3, by2 - b2[2] * 0.3, 10, bx2, by2, b2[2]); g.addColorStop(0, rgba(b2[4], 0.55)); g.addColorStop(1, rgba(b2[4], 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx2, by2, b2[2], 0, 6.283); ctx.fill();
-        ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(bx2, by2, b2[2] * 0.62, 0.3, 2.2); ctx.stroke(); }
-    } else if (kind === "speed"){
-      ctx.fillStyle = rgba("#ffffff", 0.06 + 0.05 * Math.sin(t * 6)); ctx.fillRect(0, 0, 1920, 1080);
+    } else if (kind === "dotgrid" || kind === "frame" || kind === "blocks" || kind === "papercut" || kind === "panels" || kind === "planes" || kind === "halftone" || kind === "bands"){
+      /* static by design: the backdrop is a set, not a show */
     } else if (kind === "pixel"){
       if (!CV.px) { CV.px = []; for (i = 0; i < 22; i++) CV.px.push([Math.floor(rnd() * 120) * 16, Math.floor(rnd() * 40) * 16, rnd() * 6.28]); }
       for (i = 0; i < CV.px.length; i++){ var q2 = CV.px[i]; ctx.fillStyle = rgba("#ffffff", 0.2 + 0.7 * Math.max(0, Math.sin(t * 3 + q2[2]))); ctx.fillRect(q2[0], q2[1], 8, 8); }

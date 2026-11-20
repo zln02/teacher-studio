@@ -1,5 +1,5 @@
 /* cell-feeding: soft membrane-like rounded cards in cell green and pink (decoration only) */
-body[data-world="cell-feeding"] .ts-q,body[data-world="cell-feeding"] .ts-explcard,body[data-world="cell-feeding"] .ts-clue{border:7px solid #5cc98a;border-radius:46px;box-shadow:0 8px 0 #2f8a57,0 0 30px rgba(255,150,190,.4)}
+body[data-world="cell-feeding"] .ts-q,body[data-world="cell-feeding"] .ts-explcard,body[data-world="cell-feeding"] .ts-clue{border:7px solid #5cc98a;border-radius:46px;box-shadow:0 8px 0 #2f8a57}
 body[data-world="cell-feeding"] .choice,body[data-world="cell-feeding"] .ts-tile,body[data-world="cell-feeding"] .ts-lock,body[data-world="cell-feeding"] .ts-teambox{border:6px solid #5cc98a;border-radius:36px;box-shadow:0 6px 0 #2f8a57}
 body[data-world="cell-feeding"] .ts-pill,body[data-world="cell-feeding"] .ts-chip{border-color:#e0709a;box-shadow:0 4px 0 #a8426b}
 body[data-world="cell-feeding"] .ts-next,body[data-world="cell-feeding"] .ts-oxbtns button{border:5px solid #a8426b;border-radius:34px;box-shadow:0 6px 0 #a8426b}

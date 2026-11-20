@@ -3,14 +3,14 @@
  "subtitle": "중2 국어 · 문법 — 마지막 한 명까지 종을 울려요",
  "theme": "gameshow",
  "themeOverride": {
-  "primary": "#ffcf3a",
+  "primary": "#efce72",
   "accent": "#c8372d",
   "bg1": "#2a140a",
   "bg2": "#5a2f17",
   "card": "#3b2412",
   "cardBorder": "#e0a84a",
   "text": "#fff7e6",
-  "good": "#3ddc84",
+  "good": "#79d298",
   "bad": "#ff5a5a",
   "mood": "cute"
  },
@@ -89,7 +89,7 @@
   "colors": {
    "outline": "#2b1a0e",
    "skin": "#ffdcbc",
-   "cheek": "#ff8fa3",
+   "cheek": "#ed9ca8",
    "hostMain": "#3f8f5a",
    "hostSub": "#2c6a41",
    "hair": "#5a3420",
@@ -98,7 +98,7 @@
    "glasses": "#7a3b1e",
    "ink": "#1d3c8f",
    "uniform": "#2f4f8f",
-   "bell": "#ffd54a",
+   "bell": "#eccf76",
    "bellDeep": "#c98a12",
    "bellLine": "#6b3f05",
    "bellGlow": "rgba(255,230,120,.95)",
@@ -119,7 +119,7 @@
    "explBg2": "#1b3624",
    "explText": "#f4f1e6",
    "explLine": "#8a5a2b",
-   "ansColor": "#ffe36b",
+   "ansColor": "#e4d181",
    "oColor": "#1f6fd1",
    "xColor": "#d23a2a",
    "wallTop": "#2a140a",
@@ -131,7 +131,7 @@
    "curtainDark": "#5e0d14",
    "glow": "rgba(255,215,90,.7)",
    "finText": "#fff4c2",
-   "plateText": "#ffe36b"
+   "plateText": "#e4d181"
   }
  },
  "items": [

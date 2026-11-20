@@ -9,23 +9,23 @@ COMP.themes["tv-studio"] = (function(){
   function build(){
     bgLayer = layer(function(c){
       var g = c.createLinearGradient(0, 0, 0, 1080), r, k;
-      g.addColorStop(0, "#0a0620"); g.addColorStop(0.72, "#26093f"); g.addColorStop(1, "#08030f");
+      g.addColorStop(0, "#000d16"); g.addColorStop(0.72, "#011f2d"); g.addColorStop(1, "#00070d");
       c.fillStyle = g; c.fillRect(0, 0, 1920, 1080);
       c.fillStyle = "rgba(255,255,255,.05)";
       for (r = 0; r < 13; r++) for (k = 0; k < 32; k++) c.fillRect(22 + k * 60, 142 + r * 58, 22, 22);
-      c.fillStyle = "#14102a"; c.fillRect(0, 112, 1920, 16);
-      c.fillStyle = "#0d0820"; c.fillRect(0, 0, 1920, 112);
+      c.fillStyle = "#001824"; c.fillRect(0, 112, 1920, 16);
+      c.fillStyle = "#000f19"; c.fillRect(0, 0, 1920, 112);
       c.fillStyle = "rgba(255,255,255,.04)"; c.fillRect(0, 110, 1920, 3);
       var fg = c.createLinearGradient(0, 900, 0, 1080);
-      fg.addColorStop(0, "#2a1450"); fg.addColorStop(1, "#05020c");
+      fg.addColorStop(0, "#082837"); fg.addColorStop(1, "#000509");
       c.fillStyle = fg; c.fillRect(0, 900, 1920, 180);
       c.strokeStyle = "rgba(255,255,255,.09)"; c.lineWidth = 2;
       for (k = -8; k <= 8; k++){ c.beginPath(); c.moveTo(960 + k * 60, 900); c.lineTo(960 + k * 260, 1080); c.stroke(); }
       /* podium row (front edge of the stage): the lamp bulbs are drawn per frame */
       for (k = 0; k < 6; k++){
         var px = 250 + k * 280;
-        c.fillStyle = "#3a2a66"; c.beginPath(); c.moveTo(px, 1010); c.lineTo(px + 250, 1010); c.lineTo(px + 262, 1080); c.lineTo(px - 12, 1080); c.closePath(); c.fill();
-        c.fillStyle = "#120a24"; c.fillRect(px - 4, 1004, 258, 10);
+        c.fillStyle = "#1d3b4b"; c.beginPath(); c.moveTo(px, 1010); c.lineTo(px + 250, 1010); c.lineTo(px + 262, 1080); c.lineTo(px - 12, 1080); c.closePath(); c.fill();
+        c.fillStyle = "#00121d"; c.fillRect(px - 4, 1004, 258, 10);
         c.fillStyle = "rgba(255,255,255,.08)"; c.fillRect(px, 1014, 250, 6);
       }
     });
@@ -81,8 +81,8 @@ COMP.themes["tv-studio"] = (function(){
     for (i = 0; i < LAMPS; i++){
       var pod = Math.floor(i / 6), bi = i % 6, lx = 250 + pod * 280 + 28 + bi * 38, lit1 = i < on;
       var fl = lit1 && ch > 0.3 && ((Math.floor(t * 10) + i) % 2 === 0);
-      ctx.fillStyle = lit1 ? (fl ? "#ffffff" : (pod % 2 ? L2 : BULB)) : "#2d2440";
-      if (lit1){ ctx.shadowColor = pod % 2 ? L2 : BULB; ctx.shadowBlur = 14; }
+      ctx.fillStyle = lit1 ? (fl ? "#ffffff" : (pod % 2 ? L2 : BULB)) : "#0f2e3c";
+      if (lit1){ ctx.shadowColor = pod % 2 ? L2 : BULB; ctx.shadowBlur = 0; }
       ctx.fillRect(lx, 1036, 26, 14);
       ctx.shadowBlur = 0;
     }
@@ -92,11 +92,11 @@ COMP.themes["tv-studio"] = (function(){
     ctx.restore();
   }
 
-  var K = { o: "#1a0f2e", sk: "#ffd6b0", suit: "#e8344e", suit2: "#a81a35", hair: "#2a1a14", bow: "#ffd23f", ch: "#ff8fa3" };
+  var K = { o: "#001a26", sk: "#ffd6b0", suit: "#e8344e", suit2: "#a81a35", hair: "#2a1a14", bow: "#ffd23f", ch: "#ff8fa3" };
   function faces(o){
     function eye(x, r, pr, dy){
       return '<ellipse cx="' + x + '" cy="' + (140 + dy) + '" rx="' + r + '" ry="' + (r * 1.2) + '" fill="#fff" stroke="' + o + '" stroke-width="4"/>' +
-        '<circle cx="' + (x + 2) + '" cy="' + (143 + dy) + '" r="' + pr + '" fill="#1b1b2f"/><circle cx="' + (x + 5) + '" cy="' + (137 + dy) + '" r="3.2" fill="#fff"/>';
+        '<circle cx="' + (x + 2) + '" cy="' + (143 + dy) + '" r="' + pr + '" fill="#07212c"/><circle cx="' + (x + 5) + '" cy="' + (137 + dy) + '" r="3.2" fill="#fff"/>';
     }
     return '<g class="f f-idle">' + eye(114, 13, 7, 0) + eye(186, 13, 7, 0) + '<path d="M96 112 L128 108 M172 108 L204 112" stroke="' + o + '" stroke-width="6" stroke-linecap="round"/><path d="M126 184 Q150 204 174 184" fill="none" stroke="' + o + '" stroke-width="6" stroke-linecap="round"/></g>' +
       '<g class="f f-happy"><path d="M98 146 Q114 124 130 146 M170 146 Q186 124 202 146" fill="none" stroke="' + o + '" stroke-width="7" stroke-linecap="round"/><path d="M120 176 Q150 224 180 176 Z" fill="#8a1f33" stroke="' + o + '" stroke-width="5" stroke-linejoin="round"/><path d="M134 198 Q150 188 166 198 Q150 214 134 198Z" fill="#ff7a8a"/></g>' +
@@ -108,7 +108,7 @@ COMP.themes["tv-studio"] = (function(){
     var o = K.o, sk = K.sk, suit = K.suit, suit2 = K.suit2, hair = K.hair, bow = K.bow, ch = K.ch;
     return '<svg viewBox="0 0 300 440" width="300" height="440">' +
       '<ellipse cx="150" cy="430" rx="92" ry="11" fill="rgba(0,0,0,.35)"/>' +
-      '<rect x="112" y="352" width="32" height="66" rx="10" fill="#26243a" stroke="' + o + '" stroke-width="6"/><rect x="156" y="352" width="32" height="66" rx="10" fill="#26243a" stroke="' + o + '" stroke-width="6"/>' +
+      '<rect x="112" y="352" width="32" height="66" rx="10" fill="#102b38" stroke="' + o + '" stroke-width="6"/><rect x="156" y="352" width="32" height="66" rx="10" fill="#102b38" stroke="' + o + '" stroke-width="6"/>' +
       '<ellipse cx="122" cy="422" rx="28" ry="11" fill="#141414" stroke="' + o + '" stroke-width="4"/><ellipse cx="178" cy="422" rx="28" ry="11" fill="#141414" stroke="' + o + '" stroke-width="4"/>' +
       arm("M92 270 Q50 300 60 348", suit, o) + '<circle cx="60" cy="352" r="18" fill="' + sk + '" stroke="' + o + '" stroke-width="5"/>' +
       '<path d="M78 254 Q150 226 222 254 L236 362 Q150 384 64 362 Z" fill="' + suit + '" stroke="' + o + '" stroke-width="7" stroke-linejoin="round"/>' +
@@ -133,8 +133,8 @@ COMP.themes["tv-studio"] = (function(){
     return '<style>' +
       '#ts-deco .tv-sign{position:absolute;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;text-orientation:upright;font-family:var(--font-display);font-size:34px;line-height:1.05;letter-spacing:3px;padding:18px 8px;border-radius:14px;transition:all .2s}' +
       '#ts-deco .tv-applause{left:36px;top:150px;color:rgba(255,255,255,.35);background:#2a0d18;border:5px dotted #6b3a20}' +
-      '#ts-deco .tv-applause.on{color:#fff;background:#ff2d55;border-color:#ffd23f;text-shadow:0 0 16px #fff;box-shadow:0 0 40px #ff2d55,0 0 90px #ff2d55;animation:tvBlink .35s steps(2) infinite}' +
-      '#ts-deco .tv-onair{right:34px;top:150px;color:#fff;background:#e8243c;border:4px solid #fff;box-shadow:0 0 24px #e8243c,0 5px 0 rgba(0,0,0,.4);animation:tvOnAir 1.6s ease-in-out infinite}' +
+      '#ts-deco .tv-applause.on{color:#fff;background:#ff2d55;border-color:#ffd23f;text-shadow:none;box-shadow:0 5px 0 rgba(0,0,0,.4);animation:tvBlink .35s steps(2) infinite}' +
+      '#ts-deco .tv-onair{right:34px;top:150px;color:#fff;background:#e8243c;border:4px solid #fff;box-shadow:0 5px 0 rgba(0,0,0,.4);animation:tvOnAir 1.6s ease-in-out infinite}' +
       '@keyframes tvBlink{0%{filter:brightness(1.25)}100%{filter:brightness(.85)}}' +
       '@keyframes tvOnAir{0%,100%{opacity:1}50%{opacity:.72}}' +
       '#ts-deco[data-scene=title] .tv-applause,#ts-deco[data-scene=result] .tv-applause{left:200px;top:300px;transform:scale(1.25);transform-origin:0 0}' +

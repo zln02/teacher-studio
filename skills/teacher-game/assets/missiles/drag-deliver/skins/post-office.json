@@ -2,7 +2,7 @@
   "title": "단어 우체국",
   "subtitle": "중1 영어 · 소포를 알맞은 집으로 배달해요!",
   "theme": "fairytale",
-  "themeOverride": {"skin": "dd", "bg1": "#1d1450", "bg2": "#7a2f7d", "text": "#ffffff", "muted": "rgba(255,255,255,.85)", "card": "#fff4dc", "cardBorder": "#8a5a2b", "cardText": "#3b2412", "primary": "#ffd23f", "accent": "#7cf0ff", "good": "#2ecf8f", "bad": "#ff5a5f", "btnText": "#3b2412", "font": "\"Jua\"", "bgType": "custom", "mood": "cute", "glow": "0 0 24px rgba(255,210,63,.6)"},
+  "themeOverride": {"skin": "dd", "bg1": "#1d1450", "bg2": "#7a2f7d", "text": "#ffffff", "muted": "rgba(255,255,255,.85)", "card": "#fff4dc", "cardBorder": "#8a5a2b", "cardText": "#3b2412", "primary": "#eece73", "accent": "#7cf0ff", "good": "#62c898", "bad": "#ff5a5f", "btnText": "#3b2412", "font": "\"TS Sans\"", "bgType": "custom", "mood": "cute", "glow": "0 0 24px rgba(255,210,63,.6)"},
   "teams": 4,
   "teamChoice": true,
   "timer": 25,

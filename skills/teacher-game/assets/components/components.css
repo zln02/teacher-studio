@@ -1,45 +1,45 @@
 /* components.css — layout for spec-built games. Sizes come from tokens (--t-*, --btn-h). */
 .ts-wrap{position:absolute;left:160px;width:1600px;display:flex;flex-direction:column;align-items:center}
-.ts-chips{display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
-.ts-chip{padding:8px 32px;font-size:var(--t-s);font-weight:900;line-height:1.3}
+.ts-chips{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.ts-chip{padding:8px 32px;font-size:var(--t-s);font-weight:800;line-height:1.3}
 .ts-bonus{background:var(--primary);color:var(--btnText)}
-.ts-q{margin-top:22px;width:1600px;min-height:190px;padding:26px 56px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;line-height:1.3;background:var(--card);color:var(--cardText)}
-.ts-grid{margin-top:26px;width:1600px;display:grid;grid-gap:22px 36px}
+.ts-q{margin-top:24px;width:1600px;min-height:190px;padding:24px 56px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;line-height:1.3;background:var(--card);color:var(--cardText)}
+.ts-grid{margin-top:24px;width:1600px;display:grid;grid-gap:24px 36px}
 .ts-grid.c2,.ts-grid.c4{grid-template-columns:1fr 1fr}
 .ts-grid.c3{grid-template-columns:1fr 1fr 1fr}
 .ts-choice{font-size:var(--t-c);min-height:var(--btn-h);position:relative}
-.ts-sym{margin-left:auto;padding-left:16px;font-size:var(--t-c);font-weight:900}
+.ts-sym{margin-left:auto;padding-left:16px;font-size:var(--t-c);font-weight:800}
 .ts-oxrow{margin-top:28px;display:flex;gap:60px;justify-content:center}
 .ts-ox{width:520px;height:270px;justify-content:center;font-size:210px;font-family:var(--font-display)}
 .ts-expl{position:absolute;left:0;bottom:0;width:1600px}
-.ts-explcard{display:flex;align-items:center;justify-content:space-between;padding:18px 34px;background:var(--card);color:var(--cardText)}
+.ts-explcard{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;background:var(--card);color:var(--cardText)}
 .ts-expltext{font-size:var(--t-b);font-weight:700;line-height:1.35;flex:1;margin-right:28px}
 .ts-next{min-height:var(--btn-h);font-size:var(--t-b)}
 .choice.correct{background:var(--good);color:var(--on-good);border-color:var(--text)}
 .choice.wrong{background:var(--bad);color:var(--on-bad);border-color:var(--text)}
 .choice.dim{opacity:.45}
 .ts-center{position:absolute;left:0;top:0;width:100%;height:100%}
-.ts-tile{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;border:5px solid var(--cardBorder);background:var(--card);color:var(--cardText);border-radius:20px;box-shadow:0 8px 0 rgba(0,0,0,.25);font-family:var(--font-body);cursor:pointer}
+.ts-tile{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;border:5px solid var(--cardBorder);background:var(--card);color:var(--cardText);border-radius:20px;box-shadow:0 8px 0 rgba(0,0,0,.25);font-family:var(--font-body);cursor:pointer}
 .ts-tile.done{background:var(--good);color:var(--on-good);border-color:var(--text)}
 .ts-tile.sel{outline:8px solid var(--primary)}
 .ts-tile.bad{background:var(--bad);color:var(--on-bad)}
 .ts-note{font-size:var(--t-s);font-weight:700;color:var(--text);text-align:center;line-height:1.35}
-.ts-pill{display:inline-flex;align-items:center;gap:10px;padding:6px 26px;border-radius:999px;background:var(--card);color:var(--cardText);border:4px solid var(--cardBorder);font-size:var(--t-s);font-weight:900}
-.ts-lock{width:230px;height:230px;border-radius:28px;border:6px solid var(--cardBorder);background:var(--card);color:var(--cardText);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:var(--t-s);font-weight:900;box-shadow:0 8px 0 rgba(0,0,0,.25)}
+.ts-pill{display:inline-flex;align-items:center;gap:8px;padding:8px 24px;border-radius:999px;background:var(--card);color:var(--cardText);border:4px solid var(--cardBorder);font-size:var(--t-s);font-weight:800}
+.ts-lock{width:230px;height:230px;border-radius:28px;border:6px solid var(--cardBorder);background:var(--card);color:var(--cardText);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:var(--t-s);font-weight:800;box-shadow:0 8px 0 rgba(0,0,0,.25)}
 .ts-lock .ico{font-size:96px;line-height:1.1}
 .ts-lock.open{background:var(--good);color:var(--on-good);border-color:var(--text)}
 .ts-lock.now{outline:8px solid var(--primary)}
-.ts-clue{padding:18px 36px;font-size:var(--t-b);font-weight:800;background:var(--card);color:var(--cardText);border-radius:20px;border:4px solid var(--cardBorder);line-height:1.35}
+.ts-clue{padding:16px 36px;font-size:var(--t-b);font-weight:800;background:var(--card);color:var(--cardText);border-radius:20px;border:4px solid var(--cardBorder);line-height:1.35}
 .ts-life{font-size:var(--t-s);letter-spacing:4px}
-.ts-teamrow{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:26px;width:1600px}
+.ts-teamrow{display:flex;gap:28px;justify-content:center;flex-wrap:wrap;margin-top:24px;width:1600px}
 .ts-teambox{flex:1 1 360px;max-width:520px;padding:16px 20px;display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--card);color:var(--cardText);border:5px solid var(--cardBorder);border-radius:24px}
 .ts-teambox.out{opacity:.4;filter:grayscale(1)}
-.ts-teambox .nm{font-size:var(--t-s);font-weight:900}
+.ts-teambox .nm{font-size:var(--t-s);font-weight:800}
 .ts-oxbtns{display:flex;gap:20px}
-.ts-oxbtns button{min-width:150px;min-height:var(--btn-h);font-size:var(--t-b);border-radius:20px;border:5px solid var(--cardBorder);background:var(--bg1);color:var(--text);font-weight:900;cursor:pointer;font-family:var(--font-display)}
+.ts-oxbtns button{min-width:150px;min-height:var(--btn-h);font-size:var(--t-b);border-radius:20px;border:5px solid var(--cardBorder);background:var(--bg1);color:var(--text);font-weight:800;cursor:pointer;font-family:var(--font-display)}
 .ts-oxbtns button.pick{background:var(--primary);color:var(--btnText);border-color:var(--text)}
 .ts-big{font-family:var(--font-display);font-size:var(--t-q);text-align:center;line-height:1.2}
-.ts-lockstrip{position:absolute;left:160px;top:180px;width:1600px;display:flex;gap:14px;justify-content:center}
+.ts-lockstrip{position:absolute;left:160px;top:180px;width:1600px;display:flex;gap:16px;justify-content:center}
 .ts-lockstrip .ts-lock{width:200px;height:130px;flex-direction:row;gap:12px;border-radius:22px;border-width:5px}
 .ts-lockstrip .ts-lock .ico{font-size:64px}
 /* ---- theme layer: host character, bubble, side decoration (behind the scene, never blocks input) ---- */
@@ -54,7 +54,7 @@
 @keyframes tshop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(-46px) scale(.96,1.05)}55%{transform:translateY(0) scale(1.06,.94)}100%{transform:translateY(0) scale(1,1)}}
 #ts-deco[data-scene=title] .ts-host,#ts-deco[data-scene=countdown] .ts-host{left:1400px;bottom:20px;transform:scale(1.02)}
 #ts-deco[data-scene=result] .ts-host{left:70px;bottom:10px;transform:scale(.9)}
-#ts-bubble{position:absolute;left:2px;bottom:318px;width:176px;max-width:176px;z-index:22;padding:10px 12px;border-radius:26px 26px 26px 6px;background:#fff;color:#1a1a1a;border:4px solid #1a1a1a;font-size:var(--t-s);font-weight:900;line-height:1.25;pointer-events:none;box-shadow:0 6px 0 rgba(0,0,0,.25);font-family:var(--font-body);text-align:center}
+#ts-bubble{position:absolute;left:2px;bottom:318px;width:176px;max-width:176px;z-index:22;padding:8px 12px;border-radius:26px 26px 26px 6px;background:#fff;color:#1a1a1a;border:4px solid #1a1a1a;font-size:var(--t-s);font-weight:800;line-height:1.25;pointer-events:none;box-shadow:0 6px 0 rgba(0,0,0,.25);font-family:var(--font-body);text-align:center}
 #ts-bubble.empty{display:none}
 #ts-deco[data-scene=title]~#ts-bubble{display:none}
 #ts-deco[data-scene=countdown]~#ts-bubble{left:1180px;bottom:480px;width:auto;max-width:480px}
@@ -70,15 +70,15 @@ body[data-auto] .choice.correct,body[data-auto] .choice.wrong,body[data-auto] .t
 /* ---- sort: big bins with a coloured lid, counters and a dragging cue ---- */
 .ts-bin{position:relative;border-radius:14px 14px 44px 44px!important;border-style:solid!important;border-color:var(--bc,var(--cardBorder))!important;border-top-width:40px!important;border-bottom-width:12px!important;box-shadow:0 10px 0 rgba(0,0,0,.28);transition:transform .2s}
 .ts-bin:before{content:"";position:absolute;left:50%;top:-58px;width:90px;height:14px;margin-left:-45px;border-radius:8px;background:var(--bc,var(--cardBorder))}
-.ts-bin .ts-bin-n{position:absolute;right:62px;bottom:62px;font-size:var(--t-s);font-weight:900;opacity:.85}
+.ts-bin .ts-bin-n{position:absolute;right:62px;bottom:62px;font-size:var(--t-s);font-weight:800;opacity:.85}
 .ts-bin.done{transform:scale(1.04)}
 .ts-hand{position:absolute;left:50%;margin-left:340px;top:100px;font-size:var(--t-c);animation:tsdrag 1.6s ease-in-out infinite;pointer-events:none}
 @keyframes tsdrag{0%,100%{transform:translate(0,0)}50%{transform:translate(-60px,50px)}}
 /* ---- TV parts: team podium row (bottom band) and wide host column (quiz/survival/escape on a board) ---- */
 .ts-podiums{position:absolute;left:330px;bottom:0;width:1300px;height:56px;display:flex;gap:16px;justify-content:center}
-.ts-pod{flex:1;max-width:340px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px;border-radius:14px 14px 0 0;background:rgba(10,6,32,.82);border:3px solid var(--tc);border-bottom:0;color:#fff;font-size:var(--t-s);font-weight:900;line-height:1;overflow:hidden;white-space:nowrap}
+.ts-pod{flex:1;max-width:340px;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 16px;border-radius:14px 14px 0 0;background:rgba(10,6,32,.82);border:3px solid var(--tc);border-bottom:0;color:#fff;font-size:var(--t-s);font-weight:800;line-height:1;overflow:hidden;white-space:nowrap}
 .ts-pod.on{box-shadow:0 0 24px var(--tc);background:rgba(40,20,70,.95)}
-.ts-lamps{display:flex;gap:5px}
+.ts-lamps{display:flex;gap:4px}
 .ts-lamps i{display:block;width:12px;height:18px;border-radius:3px;background:#2d2440}
 .ts-lamps i.lit{background:var(--tc);box-shadow:0 0 10px var(--tc)}
 #ts-deco[data-scene=title] .ts-podiums,#ts-deco[data-scene=countdown] .ts-podiums,#ts-deco[data-scene=result] .ts-podiums{display:none}

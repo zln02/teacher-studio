@@ -10,4 +10,4 @@ body[data-world="antidote-lab"] .ts-lock:not(.open){border-color:#2d6f7f;border-
 body[data-world="antidote-lab"] .ts-pill{border-color:#19b38a;box-shadow:0 4px 0 rgba(0,0,0,.4)}
 body[data-world="antidote-lab"] .ts-next,
 body[data-world="antidote-lab"] .btn{border:5px solid #064d3b;border-radius:18px;box-shadow:0 6px 0 #053a2c}
-body[data-world="antidote-lab"] .title{color:#e8fbff;font-style:normal;text-shadow:0 6px 0 #0a5a48,0 0 36px rgba(25,179,138,.7)}
+body[data-world="antidote-lab"] .title{color:#e8fbff;font-style:normal;text-shadow:0 6px 0 #0a5a48}

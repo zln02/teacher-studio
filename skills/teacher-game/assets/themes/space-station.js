@@ -101,7 +101,7 @@ COMP.themes["space-station"] = (function(){
     ctx.lineWidth = 16; ctx.strokeStyle = "#24324a"; ctx.fillStyle = "#0b1530";
     ctx.beginPath(); ctx.arc(gx, gy, gr, 0, 6.2832); ctx.fill(); ctx.stroke();
     if (pp > 0.002){
-      ctx.strokeStyle = ms > 0.3 ? "#ff6b8b" : CY; ctx.lineCap = "round"; ctx.shadowColor = CY; ctx.shadowBlur = 10 + ch * 14;
+      ctx.strokeStyle = ms > 0.3 ? "#ff6b8b" : CY; ctx.lineCap = "round"; ctx.shadowColor = CY; ctx.shadowBlur = 0 + ch * 14;
       ctx.beginPath(); ctx.arc(gx, gy, gr, -Math.PI / 2, -Math.PI / 2 + pp * 6.2832); ctx.stroke();
       ctx.shadowBlur = 0; ctx.lineCap = "butt";
     }
@@ -121,7 +121,7 @@ COMP.themes["space-station"] = (function(){
       var mx2 = 380 + i * 140, my2 = 1026, onm = i < k, f = flash[i] || 0;
       if (f > 0) flash[i] = Math.max(0, f - dt * 1.4);
       ctx.save();
-      if (onm){ ctx.shadowColor = CY; ctx.shadowBlur = 18 + f * 30 + ch * 12; }
+      if (onm){ ctx.shadowColor = CY; ctx.shadowBlur = 0 + f * 30 + ch * 12; }
       ctx.fillStyle = onm ? "#1b8fa8" : "#2a3550"; ctx.strokeStyle = onm ? CY : (i === k ? "#ffffff" : "#8fa3c0"); ctx.lineWidth = 5;
       rr(ctx, mx2, my2, 100, 48, 16); ctx.fill(); ctx.stroke();
       ctx.restore();

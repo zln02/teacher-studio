@@ -5,8 +5,8 @@
   "keywords": ["우체국", "편지", "단어", "영어", "밤", "달", "마을", "배달"],
   "subject": ["영어", "국어", "사회"],
   "mood": ["포근", "감성", "즐거움", "축하"],
-  "palette": {"bg1": "#1d1450", "bg2": "#7a2f7d", "text": "#ffffff", "card": "#fff4dc", "cardText": "#3b2412", "cardBorder": "#8a5a2b", "primary": "#ffd23f", "btnText": "#3b2412", "accent": "#7cf0ff", "good": "#1f9a5a", "bad": "#e0483f"},
-  "fonts": {"display": "Jua"},
+  "palette": {"bg1": "#1d1450", "bg2": "#7a2f7d", "text": "#ffffff", "card": "#fff4dc", "cardText": "#3b2412", "cardBorder": "#8a5a2b", "primary": "#eece73", "btnText": "#3b2412", "accent": "#7cf0ff", "good": "#005c75", "bad": "#cb4a2a"},
+  "fonts": {"display": "TS Sans"},
   "host": true,
   "motion": "normal"
 }

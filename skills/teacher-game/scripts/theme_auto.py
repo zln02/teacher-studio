@@ -296,7 +296,7 @@ def compose(spec: dict, tokens: dict | None = None) -> dict:
            "parts": {"style": sid, "background": st["bg"] + "+" + st["pattern"], "host": host_id if not dice else f"dicebear-{dstyle}/{letter}", "stage": "-",
                      "props": shown or "(none: minimal)", "signature": sig or "-", "celebration": r["cel"], "font": st["font"], "music": st["music"]},
            "config": cfg, "recipe": rid or "generic", "matched": matched, "character": host_id if not dice else f"dicebear-{dstyle}/{letter}", "props": shown,
-           "palette": st["pal"], "fonts": {"display": st["font"], "body": "Noto Serif KR" if st["font"] in ("Song Myung", "Noto Serif KR") else "Noto Sans KR"},
+           "palette": st["pal"], "fonts": {"display": st["font"], "body": "TS Sans"},
            "motion": st["motion"], "music": st["music"], "baseTheme": "arcade" if st["dark"] else "fairytale"}
     return out
 

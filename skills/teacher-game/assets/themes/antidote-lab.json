@@ -9,10 +9,10 @@
   "palette": {
     "bg1": "#071820", "bg2": "#15404b", "text": "#e8fbff",
     "card": "#eef7fa", "cardText": "#10242c", "cardBorder": "#2d6f7f",
-    "primary": "#19b38a", "btnText": "#04241c", "accent": "#ffc21a",
-    "good": "#1f7a4a", "bad": "#b3261e"
+    "primary": "#19b38a", "btnText": "#04241c", "accent": "#f1c66b",
+    "good": "#005c75", "bad": "#cb4a2a"
   },
-  "fonts": { "display": "Do Hyeon", "body": "Noto Sans KR" },
+  "fonts": { "display": "TS Sans", "body": "TS Sans" },
   "host": true,
   "motion": "high"
 }
