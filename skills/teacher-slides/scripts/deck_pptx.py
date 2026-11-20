@@ -362,7 +362,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     cell.fill.fore_color.rgb = rgb(C["pr"] if r == 0 else ("#ffffff" if r % 2 else C["bg2"]))
                     tf = cell.text_frame
                     tf.paragraphs[0].text = ""
-                    num_ = bool(re.match(r"^[\s+\-]?[\d,.]+\s*\S{0,2}$", txt))
+                    # a number with an optional unit is right-aligned; a label that starts with a digit (1학년, 3분기, 2026년) is not
+                    num_ = c_ > 0 and bool(re.match(r"^[\s+\-−]?[\d,.]+\s*(?:%p?|명|개|원|건|회|점|교|학급|시간|차시|만 ?원|억 ?원|천 ?원|권|대|곳|가구|세대)?$", txt))
                     tf.paragraphs[0].alignment = PP_ALIGN.CENTER if r == 0 else (PP_ALIGN.RIGHT if num_ else PP_ALIGN.LEFT)
                     fill_runs(tf.paragraphs[0], txt, 18 if len(rows) <= 6 else 16, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
                     cell.vertical_anchor = MSO_ANCHOR.MIDDLE
