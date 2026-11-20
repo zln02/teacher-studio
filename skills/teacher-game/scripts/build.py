@@ -299,6 +299,11 @@ def main() -> int:
     if not isinstance(spec, dict):
         print("SPEC FIX NEEDED:\n - the spec must be one JSON object {...}")
         return 2
+    try:  # a shipped fixture built as itself is stamped, so the likeness check reports it as a test build
+        import example_likeness
+        is_fixture = bool(example_likeness.is_fixture(spec, [SKILL / "assets" / "spec-examples"]))
+    except ImportError:
+        is_fixture = False
     d0 = spec.setdefault("design", {})
     if a.seed is not None:
         d0["seed"] = a.seed
@@ -349,6 +354,8 @@ def main() -> int:
     if not online:
         html = embed.go_offline(html)
     metas = f'<meta name="ts-seed" content="{d0["seed"]}">\n<meta name="ts-look" content="{info["look"][6:]}">'
+    if is_fixture:
+        metas += '\n<meta name="ts-fixture" content="1">'
     for hm in spec.get("head_meta") or []:
         if isinstance(hm, dict) and hm.get("name") in HEAD_META_NAMES:
             metas += '\n<meta name="%s" content="%s">' % (hm["name"], str(hm.get("content", "")).replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;"))

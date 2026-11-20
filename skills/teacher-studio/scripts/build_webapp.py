@@ -32,6 +32,11 @@ for _s in (sys.stdout, sys.stderr):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent / "shared" / "tools"))
+try:
+    import example_likeness  # noqa: E402
+except ImportError:
+    example_likeness = None
 SKILL = HERE.parent
 SHARED = SKILL / "shared" if (SKILL / "shared" / "shell" / "shell.py").exists() else SKILL.parent.parent / "shared"
 for _sub in ("design", "shell", "fonts", "tools"):
@@ -269,7 +274,7 @@ def build(spec: dict, fonts: bool = True) -> tuple[str, dict]:
     cols = " " + layout
     cfg = {"title": title, "ai": spec.get("ai", "none"), "style": t["picked"], "layout": layout, "head": head,
            "parts": [{k: v for k, v in p.items() if k not in ("html", "css", "js")} for p in parts]}
-    page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8">' + ('<meta name="ts-fixture" content="1">' if spec.get("_fixture") else "") + '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
+    page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8">' + ('<meta name="ts-fixture" content="1">' if example_likeness and example_likeness.is_fixture(spec, [HERE.parent / "assets" / "webapp" / "examples"]) else "") + '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
             f'<title>{esc(title)}</title>\n<style>:root{{{root_vars}}}\n{shell.css()}\n{ds_css}\n{css}\n{custom_css}</style></head>\n<body data-wa-layout="{layout}" data-wa-head="{head}">'
             '<a class="wa-skip" href="#wa-main">본문으로 건너뛰기</a>'
             f'<header class="wa-top"><div class="wa-brand">{shell.spot(brand_icon if brand_icon in shell.icon_names() else "sparkles", t, 60)}'

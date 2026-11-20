@@ -310,7 +310,7 @@ def main() -> int:
         return 1
     print(f"built {out} ({rep['size'] // 1024} KB) slides={rep['slides']} style={rep['style']} palette={rep['palette']} context={rep.get('context') or '-'} seed={rep['seed']} (같은 모양을 다시 만들려면 --seed {rep['seed']})")
     code = 0
-    if spec.get("_fixture"):  # a shipped fixture built as itself: the page says so, the likeness check then passes it
+    if example_likeness and example_likeness.is_fixture(spec, [SKILL / "assets" / "spec-examples"]):  # a shipped fixture built as itself: the page says so
         out.write_text(out.read_text(encoding="utf-8").replace("<head>", '<head><meta name="ts-fixture" content="1">', 1), encoding="utf-8")
     if example_likeness:  # same slide sequence + the example's headings (copied sentences are caught by the page checker)
         for lv, msg in example_likeness.check_spec(spec, [SKILL / "assets" / "spec-examples"], skeleton_only=True):
@@ -325,7 +325,8 @@ def main() -> int:
         if spec.get("template_blanks") is True:
             print("NOTE 양식 모드: 빈칸을 일부러 남겼어요. 사용하기 전에 위 곳을 채워 주세요.")
     if not a.no_check and not only:
-        code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode or code
+        # the page is opened once in a headless browser (a few seconds): without it the result is PARTIAL, never PASS
+        code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out)]).returncode or code
     if a.review and not only:
         code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review)]).returncode or code
     if a.pptx:
@@ -360,6 +361,9 @@ def main() -> int:
             code = code or 1
             print("FIX pptx:", "; ".join(pr_["errors"]))
     if only:
+        return code
+    if code == 2:  # nothing failed, but a check could not run (no browser on this computer): say so, do not send the author hunting for a FAIL
+        print(f"PARTIAL {out}: 실패한 점검은 없지만 위 SKIP 줄의 점검을 하지 못했어요 (어떤 점검이 빠졌는지 함께 알려 주세요)")
         return code
     print(f"READY {out}" if not code else f"NOT DONE {out}: 위 FAIL을 고치고 다시 실행하세요 (PASS가 될 때까지 완료 보고 금지)")
     return code

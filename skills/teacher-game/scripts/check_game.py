@@ -461,7 +461,9 @@ def main(path: Path, play: bool = True, consent: bool = False) -> int:
         return 1
     html = path.read_text(encoding="utf-8", errors="replace")
     syntax_results = syntax_checks(html, consent=consent, allow_modern="ts-allow-modern" in html)
-    likeness = example_likeness.check_text(html, [HERE.parent / "assets" / "spec-examples"]) if example_likeness else []
+    # only pages built from a spec (game build.py, deck.py); an old skin fired with its own sample content is a demo, not a copy
+    spec_built = "TS:BUILD" in html or 'name="ts-deck"' in html
+    likeness = example_likeness.check_text(html, [HERE.parent / "assets" / "spec-examples"]) if example_likeness and spec_built else []
     html = re.sub(r"<!--.*?-->", "", html, flags=re.S)  # ignore HTML comments
     results: list[tuple[str, str]] = list(likeness)
 

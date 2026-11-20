@@ -13,7 +13,8 @@ Rules (WARN, never FAIL: the user may really want the example):
   - text    >= 60 % of the example's content sentences appear in the output, word for word
   - skeleton the part sequence (slide types, sections ...) is the same AND > 60 % of the headings are the example's headings
   - shape   a long, varied part sequence (>= 6 parts, >= 3 kinds) repeats an example part for part, down to how much each part holds
-An unchanged fixture built as itself (it carries "_fixture") is reported as PASS, so the fixtures can still be test-built.
+An unchanged fixture built as itself is reported as PASS (the builder stamps the page), so the fixtures can still be test-built.
+A copy that kept the "_fixture" key but changed the content is reported like any other copy.
 
 Usage: python3 example_likeness.py spec.json examples_dir [more_dirs]
 """
@@ -124,6 +125,17 @@ def load_examples(folders) -> dict[str, dict]:
     return out
 
 
+def is_fixture(spec: dict, folders) -> str:
+    """Name of the shipped fixture this spec IS (same content sentences, and it carries "_fixture"), else ''. Builders call this and,
+    only then, stamp the page with <meta name="ts-fixture">, so a changed copy that kept the key is still reported."""
+    if not isinstance(spec, dict) or not spec.get("_fixture"):
+        return ""
+    for name, ex in load_examples(folders).items():
+        if compare(spec, ex)["identical"]:
+            return name
+    return ""
+
+
 def judge(c: dict) -> str:
     """Why this pair is too alike ('' = it is not)."""
     if c["text"] >= TEXT_SHARE:
@@ -174,7 +186,7 @@ def check_text(page: str, folders, fixture_ok: bool = True) -> list[tuple[str, s
     if not examples:
         return []
     hay = text_of(page)
-    marked = "_fixture" in page or 'name="ts-fixture"' in page
+    marked = 'name="ts-fixture"' in page  # written by the builder only when the spec is a shipped fixture, unchanged
     worst = None
     for name, ex in examples.items():
         ss = strings(ex)
@@ -183,10 +195,10 @@ def check_text(page: str, folders, fixture_ok: bool = True) -> list[tuple[str, s
         share = sum(1 for s in ss if s in hay) / len(ss)
         if share >= TEXT_SHARE and (worst is None or share > worst[1]):
             worst = (name, share)
-    if worst and worst[1] >= 0.999 and marked and fixture_ok:
+    if worst and marked and fixture_ok:
         return [("PASS", f"example-likeness: this is the shipped fixture {worst[0]} itself (test build)")]
     if worst:
-        left = " 예시 표시(_fixture)도 남아 있어요." if marked else ""
+        left = " 예시 표시(_fixture)도 남아 있어요." if '"_fixture"' in page else ""
         return [("WARN", f"{MSG}: {worst[0]} (예시 문장의 {round(worst[1] * 100)}%가 그대로 들어 있어요).{left} {FIX}")]
     return [("PASS", f"example-likeness: not a copy of a shipped example ({len(examples)} compared)")]
 
