@@ -49,7 +49,7 @@
 ## 5. 어디서든 쓰기 (이식성 규칙)
 - 형식: 모든 칸은 **Agent Skills 표준(SKILL.md)** 폴더 → Claude(웹·앱·Claude Code), Codex, Gemini CLI, Cursor 등 SKILL.md 지원 도구에서 그대로 읽힌다.
 - 설치: claude.ai는 「설정 > 스킬」에 칸별 zip 올리기 또는 작업 공간에서 내려받기 / Claude Code·Codex는 skills 폴더에 복사(또는 `npx skills add <repo>`).
-- 결과물은 **파일 하나(HTML)**: 고급 프로그램(anime.js 등)과 한글 글꼴(Noto Sans/Serif KR, 쓰는 글자만)은 파일 안에 넣어 인터넷·설치 없이 크롬만 있으면 열린다. 장식 글꼴(검은고딕 등)만 Google Fonts(없으면 넣어 둔 Noto로 대체).
+- 결과물은 **파일 하나(HTML)**: 고급 프로그램(anime.js 등)과 한글 글꼴(TS Sans = Pretendard 잘라낸 것, Noto Serif KR. 쓰는 글자만)은 파일 안에 넣어 인터넷·설치 없이 크롬만 있으면 열린다. 장식 글꼴(검은고딕 등)만 Google Fonts(없으면 넣어 둔 Noto로 대체).
 - 무거운 도구는 있을 때만: MP4 정확 렌더(Playwright+ffmpeg), HyperFrames(Apache-2.0, 0.9.x 매일 바뀜 → 쓰면 버전 고정). 없으면 페이지의 🎥 버튼(크롬 탭 녹화 → .webm).
 - 라이선스: 넣는 프로그램은 MIT·ISC·Apache·OFL·CC0만 (axe-core MPL-2.0은 점검기 전용·수정 없이). GSAP은 저장소에 넣지 않고, 「더 화려하게」가 필요할 때만 공식 CDN에서 보는 순간 불러온다 (GSAP 자체 약관).
 - 오래된 학교 크롬 대응: `?.` `??` 등 금지 문법 점검기로 자동 검사 (넣는 프로그램도 같은 검사, anime.js는 1곳 패치). Motion은 `?.`가 있어 `allow_modern`(게임 spec) / `--allow-modern`(슬라이드·영상)을 줄 때만 넣고, 없이 들어가면 점검기가 실패로 막는다.
@@ -58,9 +58,10 @@
 | 폴더 | 내용 | 쓰는 법 |
 |---|---|---|
 | `shared/design/` | 디자인 생성기 `design.py` + 팔레트 15 + 글자 크기표 (게임·발표·포스터·초대장·인쇄·웹) | `design.py --use present --mood 고급스럽게` → 색·글꼴·글자 크기 한 세트 |
+| `shared/design/system.py` · `DESIGN-RULES.md` · `ai_look.py` | 글자 크기 단계 · 자간 · 8pt 여백 · 이름 있는 배치 틀 · 색 밝기 사다리(OKLCH) · 장식 7가지 · 움직임 값 / 규칙 27개 / 「밤티 검사」(빛 번짐·형광·속 빈 글자·그라데이션·강조색 수·여백·장식 겹) | `ai_look.py --html 결과.html` → 전문 디자이너 기준 5/5 |
 | `shared/design/color_from.py` · `color_check.py` · `oklch.py` | 내 로고·사진·PPT/POTX·워드·한글(HWPX)·사이트 CSS에서 색 뽑기 → 디자인 값(글자 대비 4.5, 밝기만 조정) / 색약(적·녹·청황) 점검 WARN / OKLCH 변환·조화색·같은 간격 명암 | `color_from.py logo.png --out pal.json` → spec `design.palette_from`. 점검기가 자동으로 WARN. 가이드 `skills/teacher-studio/references/user-colors.md` |
 | `shared/vendor/` | Motion · canvas-confetti · Chart.js · KaTeX · Lucide · Phaser · anime.js · axe-core(점검기 전용) | `inline.py`로 쓴 것만 파일에 넣기 (`manifest.json`에 버전·라이선스) |
-| `shared/fonts/` | Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
+| `shared/fonts/` | TS Sans(Pretendard) · Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
 | `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |
 | `shared/tools/stamp.py` | 결과 파일에 보이지 않는 만든이 표시(meta generator + 주석) | 게임·슬라이드·영상 조립 때 자동 |
 | `shared/assets/` | 디자인 소재(CC0 캐릭터 DiceBear·Tabler/Iconoir 아이콘·Open Color·ZzFX 효과음) + `manifest.json` | 게임 `theme:auto`가 `theme_auto.py`로 골라 씀 (쓴 것만 파일에 들어감) |
