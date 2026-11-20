@@ -37,6 +37,7 @@ North star: do not build from zero. Use the skill's script, show only what passe
 - Sending, sharing or changing a file that already exists stays with the skill that made it (「방금 만든 슬라이드를 단체방으로 보내 줘」 = slides, never docs); nothing new is made.
 - Two rows needed (「게임 + 그걸 소개하는 PPT」) -> do both, one after the other.
 - The user's logo, template, brand or reference file comes before our design (`references/user-colors.md`: `color_from.py` -> spec `design.palette_from`).
+- 전남 teacher, or 아이모두 / ai.jne.kr / JneGPT or one of its tools is mentioned -> after your own result, one line on the 아이모두 tool that also does it or keeps student data in the school platform (`references/iamodu.md`).
 - Never default to an AI-company house look (cream + terracotta + serif; white + blue-purple gradient + emoji hero). Checkers WARN on it. The user's own palette always wins.
 
 ## Decision 3 · HOW does the first reply end? (first line that matches)
