@@ -1,0 +1,13 @@
+{
+ "name": "class-goryeo-bare-1",
+ "topic": "class-goryeo",
+ "cond": "bare",
+ "run": 1,
+ "secs": 120,
+ "timed_out": false,
+ "cost": 0.413643,
+ "turns": 1,
+ "file": "고려의_건국과_후삼국_통일.pptx",
+ "last": " 넘치는 곳은 없을 것으로 봅니다. 도형이 겹치거나 글자가 읽기 어려운지는 PowerPoint에서 한 번 열어 훑어봐 주세요. 스킬이 권하는 validate.py 검증도 실행하지 못했습니다.\n\n- **파일:** `C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\pptwin\\runs-d1\\class-goryeo-bare-1\\work\\고려의_건국과_후삼국_통일.pptx`\n- **슬라이드 구성:** 제목, 학습 목표와 복습, 신라 말 혼란과 호족, 후삼국 성립, 왕건의 등장, 통일 과정 연표, 통일 전략, 민생·북진 정책, 퀴즈, 마무리와 다음 시간 예고 순서입니다.\n- **서식:** 맑은 고딕, 제목 32pt 이상, 본문 20pt 이상이고 청록·남색 테마로 통일했습니다. 연표와 화살표는 도형으로 그렸습니다. 슬라이드마다 교사용 발표자 노트가 있습니다.\n- **제작 도구:** pptxgenjs가 없어 python-pptx로 만들었습니다. 생성 스크립트는 `...\\class-goryeo-bare-1\\build.py`에 있습니다.",
+ "is_error": false
+}

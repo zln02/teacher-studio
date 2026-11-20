@@ -1,0 +1,28 @@
+{
+ "topic": "public-afterschool",
+ "run": 2,
+ "pass_": 2,
+ "mapping": {
+  "A": "harness",
+  "B": "bare"
+ },
+ "judge": {
+  "A": {
+   "content": 3,
+   "design": 3,
+   "readability": 4,
+   "fit": 3,
+   "note": "The deck is clean and well organised. It has a table of contents, a governance chart, an enrollment-by-area table, a timeline and requests to the education office, and the overall flow holds together. However, it has no budget results, which are central to this report, and only a few figures. The '우리 학교' placeholder and the '가상 수치' labels show the numbers are made up, and the chart slides are left fairly empty."
+  },
+  "B": {
+   "content": 5,
+   "design": 4,
+   "readability": 3,
+   "fit": 4,
+   "note": "Over 13 slides it covers participation, results by area and grade, monthly trends, budget spending, satisfaction, best practices, problems and 2027 plans, with charts and real-looking figures, so it is very complete. However, every slide carries a red 'replace with real figures' warning. The headline titles are small and pushed to the top-left, and the budget table and chart labels are small, so some text is hard to read."
+  },
+  "winner": "B"
+ },
+ "cost": 0.2829262,
+ "raw": "{\"A\":{\"content\":3,\"design\":3,\"readability\":4,\"fit\":3,\"note\":\"The deck is clean and well organised. It has a table of contents, a governance chart, an enrollment-by-area table, a timeline and requests to the education office, and the overall flow holds together. However, it has no budget results, which are central to this report, and only a few figures. The '우리 학교' placeholder and the '가상 수치' labels show the numbers are made up, and the chart slides are left fairly empty.\"},\"B\":{\"content\":5,\"design\":4,\"readability\":3,\"fit\":4,\"note\":\"Over 13 slides it covers participation, results by area and grade, monthly trends, budget spending, satisfaction, best practices, problems and 2027 plans, with charts and real-looking figures, so it is very complete. However, every slide carries a red 'replace with real figures' warning. The headline titles are small and pushed to the top-left, and the budget table and chart labels are small, so some text is hard to read.\"},\"winner\":\"B\"}"
+}
