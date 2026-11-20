@@ -38,6 +38,14 @@ import deck_layouts as lay  # noqa: E402
 import deck_spec as dspec  # noqa: E402
 import deck_style as dstyle  # noqa: E402
 from deck_kit import Ctx, esc  # noqa: E402
+for _folder in (SKILL / "shared" / "tools", HERE.parents[2] / "shared" / "tools"):
+    if (_folder / "example_likeness.py").is_file():
+        sys.path.insert(0, str(_folder))
+        break
+try:
+    import example_likeness  # noqa: E402
+except ImportError:
+    example_likeness = None
 
 ASSETS = SKILL / "assets" / "deck"
 PURPOSE_ICON = {"학부모 설명회": "heart-handshake", "수업": "graduation-cap", "연수": "lightbulb", "발표": "megaphone", "동아리": "rocket", "개인": "sparkles"}
@@ -302,6 +310,12 @@ def main() -> int:
         return 1
     print(f"built {out} ({rep['size'] // 1024} KB) slides={rep['slides']} style={rep['style']} palette={rep['palette']} context={rep.get('context') or '-'} seed={rep['seed']} (같은 모양을 다시 만들려면 --seed {rep['seed']})")
     code = 0
+    if spec.get("_fixture"):  # a shipped fixture built as itself: the page says so, the likeness check then passes it
+        out.write_text(out.read_text(encoding="utf-8").replace("<head>", '<head><meta name="ts-fixture" content="1">', 1), encoding="utf-8")
+    if example_likeness:  # same slide sequence + the example's headings (copied sentences are caught by the page checker)
+        for lv, msg in example_likeness.check_spec(spec, [SKILL / "assets" / "spec-examples"], skeleton_only=True):
+            if lv == "WARN":
+                print(lv, msg)
     left, listed = placeholder_gate(spec)  # blanks must never ship: FAIL unless the spec lists them as "fillins"
     if left:
         code = 1

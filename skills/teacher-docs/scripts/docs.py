@@ -165,6 +165,12 @@ def finish(out: Path, kind: str, spec: dict, max_pages=None, min_font=None) -> i
     """Gate + look + the READY / NOT DONE line (shared by make and append)."""
     res = doc_check.run(out, "gongmun" if kind == "gongmun" else "", spec.get("fillins") or [], spec.get("template_blanks") is True,
                         max_pages or spec.get("max_pages") or spec.get("fit_pages"), min_font or spec.get("min_font"))
+    try:  # 「예시를 그대로 따라간 것 같아요」: copied sentences, or the same section order with the example's headings
+        sys.path.insert(0, str(HERE.parent / "shared" / "tools"))
+        import example_likeness
+        res = list(res) + example_likeness.check_spec(spec, [HERE.parent / "assets" / "examples"])
+    except ImportError:
+        pass
     for lv, msg in res:
         print(f"{lv:4} {msg}")
     if out.suffix.lower() == ".hwpx":

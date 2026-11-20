@@ -269,7 +269,7 @@ def build(spec: dict, fonts: bool = True) -> tuple[str, dict]:
     cols = " " + layout
     cfg = {"title": title, "ai": spec.get("ai", "none"), "style": t["picked"], "layout": layout, "head": head,
            "parts": [{k: v for k, v in p.items() if k not in ("html", "css", "js")} for p in parts]}
-    page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
+    page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8">' + ('<meta name="ts-fixture" content="1">' if spec.get("_fixture") else "") + '<meta name="viewport" content="width=device-width,initial-scale=1">\n'
             f'<title>{esc(title)}</title>\n<style>:root{{{root_vars}}}\n{shell.css()}\n{ds_css}\n{css}\n{custom_css}</style></head>\n<body data-wa-layout="{layout}" data-wa-head="{head}">'
             '<a class="wa-skip" href="#wa-main">본문으로 건너뛰기</a>'
             f'<header class="wa-top"><div class="wa-brand">{shell.spot(brand_icon if brand_icon in shell.icon_names() else "sparkles", t, 60)}'

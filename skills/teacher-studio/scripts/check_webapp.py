@@ -22,6 +22,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
 from syntax_check import checks as syntax_checks  # noqa: E402
+try:
+    import example_likeness  # noqa: E402
+except ImportError:
+    example_likeness = None
+EXAMPLES = Path(__file__).resolve().parent.parent / "assets" / "webapp" / "examples"
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -75,6 +80,8 @@ def static_checks(html: str) -> list[tuple[str, str]]:
         out.append(("FAIL", "<form action=...> would send typed text somewhere"))
     kb = len(html.encode("utf-8")) // 1024
     out.append(("WARN", f"file is {kb} KB (big for a school PC)") if kb > 3000 else ("PASS", f"file size {kb} KB"))
+    if example_likeness:
+        out += example_likeness.check_text(html, [EXAMPLES])
     return out
 
 
