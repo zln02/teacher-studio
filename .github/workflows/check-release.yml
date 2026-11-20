@@ -1,0 +1,23 @@
+name: Check release bundle
+
+on:
+  pull_request:
+    paths:
+      - 'dist/**'
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 tools/sync_shared.py --check

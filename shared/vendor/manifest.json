@@ -10,11 +10,11 @@
    "global": "anime",
    "es": "es2017",
    "use": "글자·도형 움직임 (슬라이드·영상 기본)",
-   "notes": "one optional-chaining expression replaced for old Chrome (see NOTICE)",
+   "notes": "Optional chaining, object spread and optional catch bindings adjusted for ES2017 (see NOTICE)",
    "source": "npm:animejs@4.5.0",
    "license_file": "animejs/LICENSE",
-   "bytes": 118042,
-   "sha256": "717d1cb286d4bf486bfba765d72b82d3f21ca7c354fe0c2dd578028f867c6863"
+   "bytes": 118395,
+   "sha256": "a9e481b868428a57c4a5355c500290d8d55387946e9550624ec1494a31722181"
   },
   "motion": {
    "name": "Motion (motion.dev, vanilla)",
@@ -205,6 +205,16 @@
    "bytes": 7490,
    "sha256": "c91fb77a9933a3e5645a25778e2d2b99e98137ed99572a5d1dd29ef0c0fd4c98",
    "path": "skills/teacher-docs/assets/hwpx/Skeleton.hwpx"
+  }
+ },
+ "on_demand_tools": {
+  "acorn": {
+   "version": "8.15.0",
+   "source": "npm:acorn@8.15.0",
+   "license": "MIT",
+   "license_file": "acorn-LICENSE.txt",
+   "sha256": "fdb08546776ec6228b03e8d02b40d4ab3255bae5f401adba7ff5dad927ac5c9c",
+   "use": "ES2017 syntax check only; never inlined"
   }
  }
 }

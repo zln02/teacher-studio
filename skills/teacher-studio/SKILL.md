@@ -1,6 +1,6 @@
 ---
 name: teacher-studio
-description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, 영상, 보고서. Use it first, even when told 「알아서」「묻지 말고」 (that skips questions, not this skill). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
+description: "교사 스튜디오 시작, 5분 타이머, 수업 시작 화면, 수업용 게임·퀴즈·PPT·영상·자료 분석을 부탁할 때 씁니다. Use for new classroom materials, offline classroom web tools (프로그램·앱·웹페이지·도우미·계산기·시뮬레이션), and school-focused plans. Requests with 알아서 or 묻지 말고 also use the matching generator and checker. Existing code edits, server apps and an explicitly named tool follow their own workflow."
 license: Apache-2.0
 ---
 
@@ -8,7 +8,8 @@ license: Apache-2.0
 
 The user (often a teacher who cannot code; also anyone: club, family, shop) asks in plain words. You make it, or plan it with them, fast and at commercial quality.
 Answer in the user's language (Korean by default), plain words, no dev terms (`teacher-game/references/teacher-language.md`). Non-class requests are fine: swap grade/subject for purpose, mood, audience, screen.
-North star: do not build from zero. Use the skill's script, show only what passed its checker.
+Use a matching generator and its checker. Say which checks ran, what could not be checked and whether the requested file was produced.
+Run scripts with `py` on Windows (or a working `python`) and `python3` on macOS/Linux. Use a writable working folder for results. Use the host's active skill list to choose external tools. If the shell cannot run, use the available tools to make and check what you can.
 
 **Make three decisions, in this order. In each list take the FIRST line that matches and stop reading that list.**
 
@@ -21,8 +22,8 @@ North star: do not build from zero. Use the skill's script, show only what passe
 ## Decision 2 · WHERE? (route; first row that matches)
 | # | The request is | Route |
 |---|---|---|
-| 1 | a greeting or first message with no request | greet: read `~/.teacher-studio/env.json` (else `scripts/studio.py doctor`), show the ready card (`references/studio-details.md` A). Nothing else |
-| 2 | 「하네스 없이」「그냥 네 방식대로」 | bare: your own way, no tools, no questions. Decision 1 still holds |
+| 1 | a greeting or first message with no request | greet: run `scripts/studio.py doctor` for the current session; confirm host features separately, show the ready card (`references/studio-details.md` A). Nothing else |
+| 2 | 「하네스 없이」「그냥 네 방식대로」 | bare: use your usual search, creation and checking tools without Teacher Studio's production workflow. Decision 1 still holds |
 | 3 | VR·3D 체험, 앱스토어에 올리는 앱, 서버·로그인·회원·DB가 필요한 것, 영상 편집(자르기·자막) | scout: no tool of ours fits. Go straight to row 13; never webapp or game, even if it says 「앱」 |
 | 4 | 엑셀·CSV·설문·성적·가계부·매출 **파일** 분석, 그래프 | `teacher-data`. Never open or print raw rows yourself; its script reads the file |
 | 5 | **thinking, not a file**: 기획·계획·커리큘럼·운영안·아이디어·전략·「같이 짜 줘」, 조사·정리·리서치, 글쓰기·SNS 글·이름 짓기 | `references/co-plan.md`. A plan is not a video: 「유튜브 채널 기획」 never goes to teacher-motion |
@@ -32,7 +33,7 @@ North star: do not build from zero. Use the skill's script, show only what passe
 | 9 | 퀴즈·종 울리기·OX · 방탈출·미션·협동 · 단어·분류·짝·끌어서 · 빙고·보드게임·그 밖의 게임 (**모든 새 게임 요청**) | `teacher-game`: `studio.py build game --spec` (spec -> build -> check). Never `fire` for a new request |
 | 10 | **옛 완제품 스킨을 이름으로 지목** (「tv-studio 퀴즈쇼」「같은 스킨 다시」) | only then `studio.py fire game/<quiz-show·escape-room·drag-deliver>/<skin>` |
 | 11 | 발표·슬라이드·PPT·연수·회사·모임·학부모 설명회·학부모 상담 자료·총회 자료·홍보 PPT·기관 보고·업무 보고 발표 | `teacher-slides`: `studio.py build slides --spec deck.json` with `"context"`: 수업 -> class, 홍보·모집 -> promo, 기관·업무 보고 -> public, 가족·자기소개 -> personal. 「PPT·파워포인트·.pptx」 or 「나중에 고칠 거예요」 -> also the editable .pptx (`deck.py --pptx`; the user's .pptx 양식 -> `--template`) |
-| 12 | 공문·기안문·가정통신문·동의서·안내문·보고서·계획서 **문서**, 한글·hwp·hwpx·워드·docx·PDF 파일 (만들기·양식 채우기·고치기·합치기·나누기) | `teacher-docs`: `docs.py make --spec doc.json --out x.hwpx|.docx|.pdf`, `fill`, `patch`, `pdf ...` (공문 format + gate built in). 보고·발표 **자료**·PPT·슬라이드 is row 11, not here. 엑셀 **파일 만들기** only -> docfile: an installed document skill (`doctor` -> `official_doc_skills`); none -> row 13 |
+| 12 | 공문·기안문·가정통신문·동의서·안내문·보고서·계획서 **문서**, 한글·hwp·hwpx·워드·docx·PDF 파일 (만들기·양식 채우기·고치기·합치기·나누기) | `teacher-docs`: `docs.py make --spec doc.json --out x.hwpx|.docx|.pdf`, `fill`, `patch`, `pdf ...` (공문 format + gate built in). 보고·발표 **자료**·PPT·슬라이드 is row 11, not here. 엑셀 **파일 만들기** only -> docfile: an installed document skill (from the host’s active skill list); none -> row 13 |
 | 13 | nothing above fits, or row 3 sent you here | scout, then bare. Do NOT stretch the nearest row. In order: (a) an installed skill that fits, (b) `references/skill-scout.md` + `scripts/skill_scout.py "<english keywords>"` (read-only; ask before installing), (c) bare: your own ability. Say in one line which one |
 - Sending, sharing or changing a file that already exists stays with the skill that made it (「방금 만든 슬라이드를 단체방으로 보내 줘」 = slides, never docs); nothing new is made.
 - Two rows needed (「게임 + 그걸 소개하는 PPT」) -> do both, one after the other.
@@ -41,19 +42,17 @@ North star: do not build from zero. Use the skill's script, show only what passe
 - Never default to an AI-company house look (cream + terracotta + serif; white + blue-purple gradient + emoji hero). Checkers WARN on it. The user's own palette always wins.
 
 ## Decision 3 · HOW does the first reply end? (first line that matches)
-Before anything else, scan the whole message for 「알아서」「바로」「그냥 해 줘」「묻지 말고」. Found -> line 1, whatever else the message says (「느낌 있게 수업 시작 영상 알아서 해 줘」 is line 1, not vague: pick the look yourself).
 | # | The message | Do | Questions |
 |---|---|---|---|
-| 1 | has 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere (any route, even if the rest is vague), or route = bare | `none` = no stop at all: run straight through to the finished file in this reply. One line of assumptions, the result, then 2 tweaks written as statements (「글자 크기나 분위기는 말씀만 하시면 바꿔요」). No options, no pitches, no 콘티 stop, no 「이대로 쓸까요?」. It skips the questions, not the tools: still the skill's script and checker | 0: your reply contains no question mark |
-| 2 | changes a file that already exists (「글씨 크게」「색 바꿔」) | `build`: change it, show it, 2 tweaks | 0 |
-| 3 | send / share / post / publish | `deliver`: show the privacy check first, build nothing | 1 |
-| 4 | one-screen tool (timer, picker, team maker, scoreboard, bracket) | `none`: build, show | 0 |
-| 5 | route = law, data or greet | follow that skill; answer or build now, no options | as that skill says |
-| 6 | route = co-plan | 기획·계획·커리큘럼·운영안 -> 3 one-line directions with one 추천 FIRST, then the draft. 조사·정리 -> answer now with sources | <= 5, one round |
-| 7 | **vague**: it does not name BOTH what to make AND its topic or purpose (「발표자료 만들어 줘」「보드게임 만들어 줘」 = no topic; 「수업 시작용 뭐 재밌는 거」 = no thing; 「느낌 있게 ○○」「○○ 자료 좀」). A page count or length alone is not what makes it clear; a named topic is (「생성형 AI 활용 연수 슬라이드 10장」 is clear). Unsure -> vague | `plan`: 3 different pitches, one 추천, mood cards, then one question round (`references/direction-step.md`, `scripts/direction.py "<request>"`) | <= 5, each with a recommended answer; 「네」 accepts all |
-| 8 | clear game, video, 10+ slide deck or report (「중2 과학 빛과 파동 방탈출」「30초 우리 반 소개 영상」) | `storyboard`: no pitches. Show the 콘티 (game: question table + screen flow; video: shot list with seconds; deck: slide list) and STOP there. A game or video is never built in the first reply unless line 1 matched | <= 1 |
-| 9 | anything else clear (web app, short deck, document) | `build`: first working file, then 「이대로 쓸까요, 한 군데만 고칠까요?」 | <= 1 |
-Always ask mid-way, even on 「알아서」: before anything irreversible or outward (send, post, publish, delete), on a legal/privacy issue, when the user's own material is needed, after the checker failed twice. Stages and artifacts: `references/pipeline.md`.
+| 1 | send / share / post / publish | `deliver`: show the privacy check and confirm the outward action first | 1 |
+| 2 | explicitly asks to review a storyboard before production | `storyboard`: show the requested draft and wait for feedback | <= 1 |
+| 3 | 「알아서」「바로」「그냥 해 줘」「묻지 말고」, or route = bare | `none`: make the requested result with stated assumptions and the available tools | 0 (no question mark) |
+| 4 | changes to an existing file, one-screen tools, or any other clear creation request | `none`: make and check the file in this turn; give two ways it could be adjusted | 0 |
+| 5 | route = law, data or greet | follow that skill | as that skill says |
+| 6 | route = co-plan | for a plan, show three one-line directions with a recommendation, then a draft; for research, answer with sources | <= 5, one round |
+| 7 | vague and the unresolved choice would change the outcome substantially | `plan`: offer three short directions with one recommendation and ask one round (`references/direction-step.md`) | <= 5 |
+
+For irreversible or outward steps and necessary user-owned material, follow `references/pipeline.md` even when the user says 「알아서」. If the production tool still fails after two fixes, proceed with the plain path and apply the same required checks.
 
 ## While building (no-regret: never worse than the plain model)
 - **Yourself, here**: one file = one conversation. No helper agent, no background task, no planning step the user did not ask for. The skill's one build command is the shortcut.
@@ -64,7 +63,7 @@ Always ask mid-way, even on 「알아서」: before anything irreversible or out
 - **Variety**: a fresh look per job; legacy skins are used only when the user names one.
 - **Vague complaints** (「별로야」「이상해」「아까가 나았어」): diagnose yourself, do not interrogate (`references/vague-fix.md`, `scripts/diagnose.py`); 2 fix loops, then options.
 - **Other skills and documents**: use them when they beat our path; log (`scripts/skill_scout.py log`) and end with 「출처: <이름> (<만든 곳>, <라이선스>)」.
-- **Last message = an answer, never a status**: full path of the file · how to open it · check result in one line · 2 tweaks. No blanks (`[학교명]`, `20XX`, `OO`) in the result: fill with a stated assumption or list them as 「바꿔 넣을 곳」.
+- **Last message = an answer, never a status**: full path of the file · how to open it · check result in one line · 2 tweaks. List unknown school names, dates and amounts as 「바꿔 넣을 곳」.
 
 ## User wins (a shortcut, not a cage)
 Checks exist so YOU fix things before showing them. Defaults are safe; when the user says otherwise, set the switch, add ONE caution line, go on. No lecture, no second ask.
@@ -83,8 +82,8 @@ Full list: `docs/research/rules-audit-2026-11.md`.
 1. No place to enter or store student names, 학번, photos, grades.
 2. Unsure facts -> mark 「확인 필요」. Never invent figures, quotes or links.
 3. Law/copyright: inform, do not block (`teacher-law`). No lyrics, famous characters, real shows, brands or logos; use originals or the user's files.
-4. Output is one offline HTML file (or the asked document file) that opens on old school Chrome; the checker verifies.
-5. AI services are 18+: no flow where students use AI directly. Evaluation/생기부 text is never finalized by AI.
+4. Output is one offline HTML file (or the asked document file) targeting Chrome 90 and later. Its JavaScript stays within ES2017 by default. Report the browsers actually checked.
+5. Teacher Studio follows a teacher-operated workflow. Use the legal route for current service-specific age rules and student use. The teacher decides the final evaluation/생기부 wording.
 6. Cannot do -> say what to do instead (`references/studio-details.md` C), never just 「안 돼요」.
 
 ## First-time setup

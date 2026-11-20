@@ -5,15 +5,12 @@
 
 Usage: python3 check_game.py game.html [--no-play]
 Games built by build.py (spec path) also get spec/token/text-size/bias checks and a headless autoplay (needs Playwright; --no-play skips it).
-Prints PASS/WARN/FAIL lines and exits 1 if any FAIL.
+Exit 0 = PASS, 1 = FAIL, 2 = PARTIAL (one or more checks could not run).
 """
 from __future__ import annotations
 
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 import json
 from pathlib import Path
 
@@ -23,6 +20,11 @@ SILENT_JS = ("(function(){try{if(window.speechSynthesis){window.speechSynthesis.
 MUTE = ["--mute-audio"]
 sys.path.insert(0, str(HERE))
 from clipcheck import CLIP_JS  # noqa: E402
+for folder in (HERE.parent / "shared" / "tools", HERE.parent / "tools"):
+    if (folder / "syntax_check.py").is_file():
+        sys.path.insert(0, str(folder))
+        break
+from syntax_check import checks as syntax_checks  # noqa: E402
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
@@ -204,11 +206,12 @@ def spec_checks(html: str, path: Path, play: bool) -> list[tuple[str, str]]:
         if spec.get("device") == "phone":  # 390x844 upright + 844x390 sideways: readable, nothing outside, buttons >= 44px
             try:
                 import phone_check
-                out += phone_check.checks(path, spec)
+                out += [(("SKIP" if lv == "WARN" and "skipped" in msg else lv), msg)
+                        for lv, msg in phone_check.checks(path, spec)]
             except ImportError:
-                pass
+                out.append(("SKIP", "phone checks unavailable"))
     else:
-        out.append(("WARN", "autoplay skipped (--no-play)"))
+        out.append(("SKIP", "autoplay skipped (--no-play)"))
     return apply_waive(out, spec.get("waive"))
 
 
@@ -250,17 +253,18 @@ def wow_checks(path: Path, tokens: dict, html: str) -> list[tuple[str, str]]:
     """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, fps, response time)."""
     jl = _juice_lint()
     if jl is None:
-        return [("WARN", "wow lint skipped: shared/juice not found")]
+        return [("SKIP", "wow lint skipped: shared/juice not found")]
     out = list(jl.static_checks(html, tokens.get("use", "class")))
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return out + [("WARN", "Playwright not installed: wow runtime lint skipped")]
+        return out + [("SKIP", "Playwright not installed: wow runtime lint skipped")]
     try:
         with sync_playwright() as p:
-            out += jl.runtime(p, path.resolve().as_uri(), _wow_drive, tokens.get("use", "class"))
+            out += [("SKIP" if lv == "WARN" and "skipped" in msg else lv, msg)
+                    for lv, msg in jl.runtime(p, path.resolve().as_uri(), _wow_drive, tokens.get("use", "class"))]
     except Exception as exc:
-        out.append(("WARN", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
+        out.append(("SKIP", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
     return out
 
 
@@ -284,15 +288,55 @@ HUD_JS = r"""(function(){
 })()"""
 
 
+def quiz_interactions(pg) -> list[tuple[str, str]]:
+    """Exercise the quiz paths users can reach from the title and keyboard."""
+    state = lambda: json.loads(pg.evaluate("render_game_to_text()"))
+    pg.keyboard.press("r")
+    restarted = state()
+    results = [("PASS" if restarted["scene"] == "title" and not (restarted["correct"] or restarted["wrong"])
+                else "FAIL", "R restarts the quiz and clears the score")]
+    try:
+        # Keep question order predictable for the deliberate wrong answer.
+        pg.evaluate("GAME.spec.shuffle = false")
+        pg.locator("#t-start").click(timeout=4000)
+        pg.evaluate("advanceTime(4000)")
+        pg.locator(".choice[data-i]").first.wait_for(timeout=4000)
+        question_count = state()["game"]["total"]
+        wrong = pg.evaluate("(Number(GAME.items[0].answer) + 1) % document.querySelectorAll('.choice[data-i]').length")
+        pg.locator(f'.choice[data-i="{wrong}"]').click(timeout=3000)
+        pg.evaluate("advanceTime(700)")
+        pg.locator(".choice.wrong").first.wait_for(timeout=3000)
+        results.append(("PASS" if state()["wrong"] == 1 else "FAIL", "a wrong answer is visibly marked and counted"))
+        pg.keyboard.press("ArrowRight")
+        if question_count == 1:
+            pg.wait_for_function("NG.sceneName === 'result'", timeout=3000)
+        else:
+            pg.wait_for_function("(function(){ var game = JSON.parse(render_game_to_text()).game; return game.index === 1 && !game.locked; })()", timeout=3000)
+        results.append(("PASS", "Right Arrow advances the quiz"))
+        if question_count > 1 and pg.evaluate("GAME.spec.timer > 0"):
+            remaining = state()["timer"]
+            if remaining is None:
+                return results + [("FAIL", "the next question did not start its timer")]
+            pg.evaluate("seconds => advanceTime((seconds + 1) * 1000)", remaining)
+            pg.wait_for_function("JSON.parse(render_game_to_text()).game.locked", timeout=3000)
+            pg.evaluate("advanceTime(700)")
+            pg.wait_for_function("JSON.parse(render_game_to_text()).wrong === 2", timeout=3000)
+            results.append(("PASS", "time expiry marks an unanswered question as missed"))
+    except Exception as exc:
+        results.append(("FAIL", f"quiz interaction did not complete: {str(exc).splitlines()[0][:100]}"))
+    return results
+
+
 def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     """Play the game headlessly through GAME_LOGIC.auto(); report stalls, JS errors, overflow, small text."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return [("WARN", "Playwright not installed: autoplay skipped (static checks only)")]
+        return [("SKIP", "Playwright not installed: autoplay skipped (static checks only)")]
     problems: dict[str, str] = {}
     errors: list[str] = []
     final, steps, idle = "", 0, 0
+    interactions = []
     floor = int(tokens["type"]["floor"]["small"])
     try:
         with sync_playwright() as p:
@@ -304,7 +348,7 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                 except Exception:
                     continue
             if b is None:
-                return [("WARN", "no headless browser found (playwright chromium / Chrome / Edge): autoplay skipped, static checks only")]
+                return [("SKIP", "no headless browser found (playwright chromium / Chrome / Edge): autoplay skipped, static checks only")]
             pg = b.new_page(viewport={"width": 1920, "height": 1080})
             pg.add_init_script(SILENT_JS)
             pg.add_init_script(CLIP_JS)
@@ -335,9 +379,13 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                     for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()") + pg.evaluate(HUD_JS):
                         problems.setdefault(f"{kind}:{tag}:{txt}", f"{kind} in scene {final}: <{tag}> '{txt}'")
                 steps += 1
+            if final == "result" and st.get("game", {}).get("mechanic") == "quiz":
+                interactions = quiz_interactions(pg)
             b.close()
     except Exception as exc:  # browser missing etc.
-        return [("WARN", f"autoplay could not run ({str(exc).splitlines()[0][:100]}): static checks only")]
+        if errors:
+            return [("FAIL", f"JavaScript errors while playing: {errors[:2]}")]
+        return [("SKIP", f"autoplay could not run ({str(exc).splitlines()[0][:100]}): static checks only")]
     out: list[tuple[str, str]] = []
     out.append(("PASS" if final == "result" else "FAIL", f"autoplay reaches the result screen ({steps} steps)" + ("" if final == "result" else f": stuck at scene '{final}' -> check item counts/answers in the spec")))
     out.append(("FAIL" if errors else "PASS", "no JavaScript errors while playing" + (f": {errors[:2]}" if errors else "")))
@@ -351,7 +399,41 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     orph = [v for k, v in problems.items() if k.startswith("orphan")]
     out.append(("WARN" if orph else "PASS", "no one-syllable last line" + (f": {orph[:3]} -> shorten the text, or use fewer/shorter answers (design.layout split|stack)" if orph else "")))
     out.append(("FAIL" if sm else "PASS", f"all in-game text >= {floor}px" + (f": {sm[:3]}" if sm else "")))
-    return out
+    return out + interactions
+
+
+def smoke_check(path: Path, stage: bool) -> tuple[str, str]:
+    """Verify that a legacy game or a stage page boots in a real browser."""
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return "SKIP", "browser opening check: Playwright unavailable"
+    errors = []
+    try:
+        with sync_playwright() as pw:
+            browser = None
+            for candidate in ({}, {"channel": "chrome"}, {"channel": "msedge"}):
+                try:
+                    browser = pw.chromium.launch(timeout=5000, args=MUTE, **candidate)
+                    break
+                except Exception:
+                    continue
+            if browser is None:
+                return "SKIP", "browser opening check: no browser could launch"
+            try:
+                page = browser.new_page()
+                page.on("pageerror", lambda exc: errors.append(str(exc)[:160]))
+                page.goto(path.resolve().as_uri(), timeout=5000)
+                expression = ("window.__stage && window.__stage.ready" if stage
+                              else "window.NG && NG.sceneName === 'title' && document.querySelector('#scene').children.length")
+                page.wait_for_function(expression, timeout=5000)
+            finally:
+                browser.close()
+    except Exception as exc:
+        if errors:
+            return "FAIL", f"browser opening check: {errors[:2]}"
+        return "SKIP", f"browser opening check could not finish: {str(exc).splitlines()[0][:100]}"
+    return ("FAIL", f"browser opening check: {errors[:2]}") if errors else ("PASS", "page opens in a browser")
 
 
 def color_blind_results(html: str) -> list[tuple[str, str]]:
@@ -364,16 +446,17 @@ def color_blind_results(html: str) -> list[tuple[str, str]]:
                 import color_check
                 return color_check.html_results(html)
             except Exception as exc:  # a colour hint must never break a check
-                return [("WARN", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
+                return [("SKIP", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
     return []
 
 
-def main(path: Path, play: bool = True) -> int:
+def main(path: Path, play: bool = True, consent: bool = False) -> int:
     """Run all checks and print a report. Returns process exit code."""
     if not path.exists():
         print(f"FAIL file not found: {path}")
         return 1
     html = path.read_text(encoding="utf-8", errors="replace")
+    syntax_results = syntax_checks(html, consent=consent, allow_modern="ts-allow-modern" in html)
     html = re.sub(r"<!--.*?-->", "", html, flags=re.S)  # ignore HTML comments
     results: list[tuple[str, str]] = []
 
@@ -443,18 +526,14 @@ def main(path: Path, play: bool = True) -> int:
     count = _top_level_objects(_bracket_body(html, m.end() - 1)) if m else 0
     add("PASS" if count or not m else "WARN", f"GAME.items has {count} entries")
 
-    node = shutil.which("node")
-    if node:
-        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as tmp:
-            tmp.write(js)
-        proc = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True, encoding="utf-8", errors="replace")
-        add("PASS" if proc.returncode == 0 else "FAIL", "JavaScript syntax" + ("" if proc.returncode == 0 else ": " + proc.stderr.strip().splitlines()[-1][:160]))
-    else:
-        add("WARN", "node not found; JavaScript syntax not checked")
+    for level, message in syntax_results:
+        add(level, message)
 
     if "TS:BUILD" in html:
         for level, msg in spec_checks(html, path, play):
             add(level, msg)
+    else:
+        add(*(smoke_check(path, is_stage) if play else ("SKIP", "browser opening check disabled")))
 
     for level, msg in color_blind_results(html):
         add(level, msg)
@@ -462,12 +541,14 @@ def main(path: Path, play: bool = True) -> int:
     for level, msg in results:
         print(f"{level:4} {msg}")
     fails = sum(1 for lv, _ in results if lv == "FAIL")
-    print(f"\nRESULT: {'FAIL' if fails else 'PASS'} ({fails} fail, {sum(1 for lv, _ in results if lv == 'WARN')} warn)")
-    return 1 if fails else 0
+    skipped = sum(lv == "SKIP" for lv, _ in results)
+    status = "FAIL" if fails else "PARTIAL" if skipped else "PASS"
+    print(f"\nRESULT: {status} ({fails} fail, {skipped} unchecked, {sum(lv == 'WARN' for lv, _ in results)} warn)")
+    return 1 if fails else 2 if skipped else 0
 
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
         raise SystemExit(__doc__)
-    sys.exit(main(Path(args[0]), play="--no-play" not in sys.argv))
+    sys.exit(main(Path(args[0]), play="--no-play" not in sys.argv, consent="--yes" in sys.argv))

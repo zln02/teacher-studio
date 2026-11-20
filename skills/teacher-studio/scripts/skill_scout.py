@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
 """skill_scout.py - read-only shortlist of existing Agent Skills / plugins.
 
-Usage:  python3 skill_scout.py "pptx presentation" [--no-npx] [--limit 6] [--json]
-        python3 skill_scout.py verify owner/repo [--json]      # before recommending: exists? license? fresh? no curl|sh?
+Usage:  python3 skill_scout.py "pptx presentation" [--limit 6] [--json]
+        python3 skill_scout.py verify owner/repo [--path PATH] [--ref REF] [--json]
         python3 skill_scout.py log --name pptx --source https://github.com/anthropics/skills --license Apache-2.0 [--kind skill|doc|asset]
         python3 skill_scout.py log --list                      # local provenance file ~/.teacher-studio/used.json (no personal data)
 
 Queries (all keyless, read-only):
   1. curated list  references/recommended-skills.json (local file)
-  2. `npx --yes skills find <kw>`  (vercel-labs/skills CLI; only if node/npx exist; 20s cap)
-  3. GitHub search API /search/repositories (10 req/min unauthenticated)
-  4. npm registry /-/v1/search
+  2. GitHub search API /search/repositories (10 req/min unauthenticated)
+  3. npm registry /-/v1/search
 It never installs anything and never runs code it finds. Hard total cap ~25s.
 Output is a shortlist for the AI to vet with references/skill-scout.md.
 """
-import argparse, datetime, json, os, re, shutil, subprocess, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, datetime, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CURATED = os.path.join(HERE, "..", "references", "recommended-skills.json")
@@ -55,29 +54,6 @@ def curated(words):
                         "updated": s.get("checked", "?"), "url": s["url"],
                         "note": s.get("for", ""), "install": s.get("install", "")})
     return out
-
-
-def npx_find(q):
-    exe = shutil.which("npx")
-    if not exe or not shutil.which("node"):
-        return [], "node/npx not found (skipped)"
-    try:
-        p = subprocess.run([exe, "--yes", "skills", "find"] + q.split(), capture_output=True, text=True,
-                           timeout=min(20, left()), stdin=subprocess.DEVNULL, encoding="utf-8", errors="replace")
-    except subprocess.TimeoutExpired:
-        return [], "npx skills find timed out (skipped)"
-    except Exception as e:
-        return [], "npx failed: " + type(e).__name__
-    txt = re.sub(r"\x1b\[[0-9;]*m", "", p.stdout or "")
-    res = []
-    for m in re.finditer(r"^\s*(\S+/\S+@\S+)\s+([\d.,]+[KMkm]?)\s+installs", txt, re.M):
-        ident, n = m.group(1), m.group(2)
-        owner, rest = ident.split("/", 1)
-        res.append({"src": "skills.sh", "name": rest, "publisher": owner, "signal": n + " installs",
-                    "license": "check in repo", "updated": "?",
-                    "url": "https://skills.sh/" + owner + "/" + rest.replace("@", "/", 1),
-                    "install": "npx skills add " + ident})
-    return res, (None if res else "no results")
 
 
 def github(q):
@@ -160,39 +136,89 @@ def evaluate(repo, texts=None, today=None):
     risks = []
     for t in (texts or []):
         risks += check_text(t)
-    checks.append({"name": "no risky install text", "ok": not risks,
+    checks.append({"name": "no risky install text", "ok": not risks if texts else None,
                    "detail": "; ".join(sorted(set(risks))) or ("checked %d file(s)" % len(texts or []))})
     if risks:
         verdict = "reject"
     elif not lic_ok:
         verdict = "guide-only"
+    elif not texts:
+        verdict = "unverified"
     else:
         verdict = "ok" if fresh else "ok-but-stale"
     return {"verdict": verdict, "license": spdx, "pushed": pushed, "checks": checks}
 
 
 def _raw(url):
+    if time.time() >= DEADLINE:
+        return None
     try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=8) as r:
-            return r.read(200000).decode("utf-8", "replace")
+        with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=min(8, left())) as r:
+            data = r.read(200001)
+            return data.decode("utf-8") if len(data) <= 200000 else None
     except Exception:
         return None
 
 
-def verify(ref):
-    """Network wrapper: ref = owner/repo or a github.com URL. Reads repo metadata, README and root SKILL.md. Installs nothing."""
-    m = re.search(r"(?:github\.com/)?([\w.-]+)/([\w.-]+?)(?:\.git)?(?:/|$)", ref.strip())
-    if not m:
-        return {"verdict": "unverified", "checks": [{"name": "ref", "ok": False, "detail": "not an owner/repo"}]}
-    owner, name = m.group(1), m.group(2)
-    d, err = get_json("https://api.github.com/repos/%s/%s" % (owner, name))
-    if d is None:
-        r = evaluate(None if err == "HTTP 404" else {})
-        r["error"] = err
-        return r
-    base = "https://raw.githubusercontent.com/%s/%s/%s/" % (owner, name, d.get("default_branch", "main"))
-    texts = [t for t in (_raw(base + f) for f in ("SKILL.md", "README.md")) if t]
-    return evaluate(d, texts)
+def verify(repo: str, path: str = "", ref: str = ""):
+    """Record which files were actually inspected at one immutable GitHub commit."""
+    m = re.fullmatch(r"(?:https://github\.com/)?([\w.-]+)/([\w.-]+?)(?:\.git)?/?", repo.strip())
+    path = path.strip("/")
+    if not m or any(part in (".", "..") for part in path.split("/")) or "\\" in path:
+        return {"verdict": "unverified", "checks": [{"name": "ref", "ok": False, "detail": "expected owner/repo and a relative skill path"}]}
+    slug = "/".join(m.groups())
+    api = f"https://api.github.com/repos/{slug}"
+    data, err = get_json(api)
+    if not data:
+        result = evaluate(None if err == "HTTP 404" else {})
+        return {**result, "error": err}
+    revision = urllib.parse.quote(ref or data.get("default_branch", "main"), safe="")
+    commit, _ = get_json(f"{api}/commits/{revision}")
+    sha = (commit or {}).get("sha", "")
+    result = {"repo": slug, "commit": sha, "path": path, "files_checked": [], "files_unchecked": []}
+    if not re.fullmatch(r"[a-f0-9]{40}", sha):
+        return {**result, **evaluate(data)}
+    tree_sha = commit.get("commit", {}).get("tree", {}).get("sha", "")
+    if not re.fullmatch(r"[a-f0-9]{40}", tree_sha):
+        return {**result, **evaluate(data)}
+    tree, _ = get_json(f"{api}/git/trees/{tree_sha}?recursive=1")
+    if not tree:
+        return {**result, **evaluate(data)}
+
+    prefix = path + "/" if path else ""
+    files = {item["path"]: item for item in tree.get("tree", []) if item["type"] != "tree"}
+    selected = [name for name in files if name.startswith(prefix)]
+    marker = prefix + "SKILL.md"
+    # Prefer the selected skill's license. Report a repository license as a separate source.
+    own_licenses = [name for name in selected if "/" not in name[len(prefix):]
+                    and name[len(prefix):].lower().startswith(("license", "copying"))]
+    root_licenses = [name for name in files if "/" not in name and name.lower().startswith(("license", "copying"))]
+    result["license_files"] = own_licenses or root_licenses
+    ordered = dict.fromkeys([marker, *result["license_files"], *sorted(selected)])
+    texts = []
+    for i, name in enumerate(ordered):
+        item = files.get(name, {})
+        if i >= 24 or item.get("mode") not in ("100644", "100755"):
+            result["files_unchecked"].append(name)
+            continue
+        url = f"https://raw.githubusercontent.com/{slug}/{sha}/{urllib.parse.quote(name)}"
+        text = _raw(url)
+        if not text:
+            result["files_unchecked"].append(name)
+            continue
+        texts.append(text)
+        result["files_checked"].append(name)
+    result.update(evaluate(data, texts))
+    license_read = any(name in result["files_checked"] for name in result["license_files"])
+    result["checks"].append({"name": "license source read", "ok": license_read,
+                             "detail": ", ".join(result["license_files"]) or "license file unavailable"})
+    if tree.get("truncated"):
+        result["files_unchecked"].append("(GitHub tree truncated)")
+    if result["verdict"].startswith("ok") and (
+        marker not in result["files_checked"] or not license_read or result["files_unchecked"]
+    ):
+        result["verdict"] = "unverified"
+    return result
 
 
 # ---------------------------------------------------------------- provenance log
@@ -230,17 +256,23 @@ def credit_line(rec):
 
 def cli_verify(argv):
     ap = argparse.ArgumentParser(prog="skill_scout.py verify")
-    ap.add_argument("ref")
+    ap.add_argument("repo")
+    ap.add_argument("--path", default="")
+    ap.add_argument("--ref", default="")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args(argv)
-    r = verify(a.ref)
+    r = verify(a.repo, a.path, a.ref)
     if a.json:
         print(json.dumps(r, ensure_ascii=False, indent=1))
     else:
-        print("verify %s -> %s" % (a.ref, r["verdict"].upper()))
+        print("verify %s -> %s" % (a.repo, r["verdict"].upper()))
         for c in r["checks"]:
             print("  [%s] %s: %s" % ({True: "ok", False: "NO", None: "?"}[c["ok"]], c["name"], c["detail"]))
-        print("ok = may recommend (still ask before install); guide-only = describe, do not install; reject/missing = do not use; unverified = say so.")
+        if r.get("commit"):
+            print("  commit:", r["commit"])
+        print("  read:", ", ".join(r.get("files_checked", [])) or "none")
+        print("  unchecked:", ", ".join(r.get("files_unchecked", [])) or "none listed")
+        print("  Review the reported license and scripts manually before installation.")
     return 0 if r["verdict"].startswith("ok") else 1
 
 
@@ -276,12 +308,12 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("query")
     ap.add_argument("--limit", type=int, default=8)
-    ap.add_argument("--no-npx", action="store_true")
+    ap.add_argument("--no-npx", action="store_true", help=argparse.SUPPRESS)
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
     words = [w for w in re.split(r"\W+", a.query.lower()) if len(w) > 1]
     rows, notes = curated(words), []
-    steps = [("github", github)] + ([] if a.no_npx else [("skills.sh", npx_find)]) + [("npm", npm)]
+    steps = [("github", github), ("npm", npm)]
     for name, fn in steps:
         if time.time() > DEADLINE:
             notes.append(name + ": skipped (time cap)")

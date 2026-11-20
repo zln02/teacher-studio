@@ -10,7 +10,7 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 2. Copy the closest example from `../assets/webapp/examples/` into the working folder as `app.json` and change only the content:
    - `coding-helper.json`: question helper + JavaScript practice pad (코딩 도우미, 개념 튜터)
    - `speed-sim.json`: custom part with sliders and a live result (계산기, 시뮬레이션, 연습기, 대시보드)
-3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds, then checks; wait for `READY`.
+3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds and checks. Report `PARTIAL` when checks could not run and `NOT READY` when a check failed.
 4. FAIL -> fix the spec (shorter labels, a missing `<label>`, `?.`), rebuild. Max 2 fixes, then the plain way (no-regret rule).
 5. Final message: full path, 「더블클릭하면 브라우저에서 열려요」, the check line, the honest-AI line below, 2 tweak offers (예: 「질문 더 넣기」「파이썬 예시로」).
 
@@ -49,3 +49,5 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 ## Check (`check_webapp.py`, run by the build)
 Static: outside addresses, `?.`/`??`, network/storage APIs, keys/secrets, student-identity fields, title/lang/viewport.
 Browser (one headless Chromium, ~10 s): 1600x900, projector mode, 390 phone; JS errors, outside requests, sideways scroll, cut or vertically broken button text, overlapping controls, unnamed buttons, unlabeled inputs, small text, contrast; one click per part, then 「처음으로」 must clear it. `--deep` also proves the endless-loop stop. No Playwright -> static only (say so).
+
+For custom calculations, include representative browser checks in `cases`. Each case maps input element IDs to values in `inputs` and gives the result element ID in `output` and its expected text in `expected`. See `speed-sim.json`.

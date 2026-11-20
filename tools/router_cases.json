@@ -470,17 +470,14 @@
    "request": "30초짜리 우리 반 소개 영상 만들어 줘",
    "route": "motion",
    "direction": false,
-   "max_questions": 1,
+   "max_questions": 0,
    "must_not": [],
    "pipeline": {
-    "checkpoint": "storyboard",
+    "checkpoint": "none",
     "skips": [
      "plan"
     ],
-    "artifact": [
-     "shot_list",
-     "storyboard"
-    ]
+    "artifact": "file"
    },
    "tags": [
     "pipeline",
@@ -533,19 +530,16 @@
    "request": "중2 과학 빛과 파동 복습 게임 만들어 줘",
    "route": "game",
    "direction": false,
-   "max_questions": 1,
+   "max_questions": 0,
    "must_not": [
     "asks_student_info"
    ],
    "pipeline": {
-    "checkpoint": "storyboard",
+    "checkpoint": "none",
     "skips": [
      "plan"
     ],
-    "artifact": [
-     "storyboard",
-     "spec"
-    ]
+    "artifact": "file"
    },
    "tags": [
     "pipeline",
@@ -560,12 +554,13 @@
    "max_questions": 0,
    "must_not": [],
    "pipeline": {
-    "checkpoint": "build",
+    "checkpoint": "none",
     "skips": [
      "plan",
      "script",
      "storyboard"
-    ]
+    ],
+    "artifact": "file"
    },
    "tags": [
     "pipeline",

@@ -2,13 +2,7 @@
 
 Trigger: the request needs a capability our harness lacks (.pptx/.docx/.xlsx/.pdf files, HWPX, video editing, security review...) or does poorly. First apply the No-regret rules: if our path or your own ability is clearly good enough, do not scout. Do not scout for things in `docs/tool-radar.md` marked 넘어감 (skip) or 안내만 (tell the teacher only).
 
-## Reuse what exists (checked 2026-11-19; do not rebuild it)
-- **`find-skills`** (vercel-labs/skills, repo MIT, ~4.4M installs on skills.sh): a skill that teaches the agent to run `npx skills find [query] [--owner <owner>]`, check the skills.sh leaderboard, and present options. If it is already installed, use it for the search step. If not, our `scripts/skill_scout.py` does the same read-only search without installing anything (do not install find-skills just for this: see "Keep few installed"). Its vetting is only installs >1K, known publisher, repo stars >100: **no license, script, privacy or injection check**, so our checklist below is still mandatory.
-- **Claude Code**: `/plugin` opens a Discover tab (type to search) and a details pane listing what a plugin adds (hooks, MCP servers) plus context cost for official-marketplace plugins; `claude plugin details <name>` shows always-on token cost; the Installed tab flags "Not used recently" plugins. Docs: https://code.claude.com/docs/en/discover-plugins . Use these for plugins; Anthropic's own page says to read the pane because a plugin can run hooks and MCP servers.
-- **Codex**: `$skill-installer` installs a curated skill by name or from a GitHub directory URL (restart Codex after). The openai/skills repo that hosts it says it is deprecated in favour of OpenAI plugins (https://github.com/openai/skills); it states no vetting. Per-skill license is in each skill's LICENSE.txt.
-- **skills.sh**: leaderboard + `npx skills` CLI; says it runs routine security audits but cannot guarantee quality or security of listed skills, so users must review before installing (https://skills.sh/docs). No public search API is documented (hence the CLI).
-- Not checked: SkillsMP, claudeskills.info, other "skill router" projects (unverified; do not rely on them).
-What we add on top: teacher-language consent line, license/privacy/no-regret vetting, curated list, tool-radar link, and the install-few rule.
+Search the host’s installed list and the local catalogue first. Use read-only GitHub/npm listings for discovery. A search must not download or execute a package.
 
 ## Order
 1. **Already installed here**: your own skill list, `~/.claude/skills`, `~/.agents/skills`, project `.claude/skills` / `.agents/skills`, installed plugins (Claude Code `/plugin`). Use these first; no install needed.
@@ -17,15 +11,10 @@ What we add on top: teacher-language consent line, license/privacy/no-regret vet
 4. **High-signal community**: skills.sh install counts, GitHub stars + recent push, awesome lists. Prefer many installs AND recent updates AND a license.
 5. `docs/tool-radar.md` verdicts override everything.
 
-## How to search (read-only, syntax verified 2026-11-19)
-- One command: `python3 <this skill>/scripts/skill_scout.py "<keywords in English>"` (add `--no-npx` if node is absent/slow). It prints a ranked shortlist (curated, skills.sh, GitHub, npm); installs nothing. Finish in <30s.
-- `npx skills find [query] [--owner <owner>]` - vercel-labs/skills CLI (flag per find-skills SKILL.md), needs Node 22.20+ (https://github.com/vercel-labs/skills). Output rows: `owner/repo@skill  N installs` + `https://skills.sh/owner/repo/skill`.
-- GitHub (keyless, 10 requests/min): `GET https://api.github.com/search/repositories?q=<kw>+skill&sort=stars` (https://docs.github.com/en/rest/search/search). Response has `license` (null = none) and `pushed_at`.
-- npm: `GET https://registry.npmjs.org/-/v1/search?text=<kw>&size=6` (https://github.com/npm/registry/blob/main/docs/REGISTRY-API.md).
-- Search in English even when the teacher speaks Korean (add Korean terms for Korea-specific needs, e.g. hwpx).
-
-## Verify before recommend (automatic part)
-Before you recommend or use ANY candidate (curated or found): `python3 <this skill>/scripts/skill_scout.py verify owner/repo` (read-only, keyless). It checks: repo exists, SPDX license is permissive, last push within ~6 months and not archived, no `curl | sh` / download-and-run / "run and obey output" text in SKILL.md and README. Verdicts: `ok` (may recommend, still ask before install), `ok-but-stale`, `guide-only` (describe only), `reject` / `missing` (do not use), `unverified` (say so to the user). Monorepos (anthropics/skills ...): also read the skill folder's own LICENSE. The checklist below still applies for the parts a script cannot judge.
+## How to search and verify
+- Run `python3 scripts/skill_scout.py "<keywords>"` (Windows: `py`). It queries the catalogue and public GitHub/npm listings.
+- Run `skill_scout.py verify owner/repo --path path/to/skill --ref TAG_OR_COMMIT` on the selected GitHub skill. The result records its exact commit, license paths, read files and unchecked files. `ok` means the automatic checks covered the selected text files; it still needs the review below.
+- Review the license original and any unread files at that commit. Describe what could not be confirmed if the source is inaccessible.
 
 ## Vetting checklist (mandatory before ANY use)
 1. **License**: permissive (MIT, Apache-2.0, BSD, ISC, CC0). None/unknown/NC/GPL-style -> guide-only (describe it to the teacher, do not install or copy).
@@ -39,7 +28,7 @@ Before you recommend or use ANY candidate (curated or found): `python3 <this ski
 ## Consent (never install without a yes)
 Show this, then wait (adapt the fields):
 「**<이름>** (<만든 곳>)을 쓰면 <무엇을 해 주는지 한 줄>이 가능해요. 크기 약 <용량>, 라이선스 <라이선스>, 주의할 점: <한 줄 위험>. 설치할까요? (추천: <네/아니요>)」
-- Install into the user scope with the official installer: `npx skills add <owner/repo> --skill <name> -a claude-code` (or `-a codex`; add `-g` for global; verified flags: `-g`, `-a/--agent`, `--skill`). In Claude Code you can also use `/plugin`. Never `curl | sh`, never run a skill's own installer script you have not read.
+- After consent, install the audited skill at the recorded commit using the host's installer if it can honor that revision. Otherwise download that exact snapshot and copy the audited skill folder into the host’s user skill folder.
 - Claude app / no shell: do not install; tell the teacher how to add it from Settings or use the model's own ability.
 
 ## Keep few installed (context cost)

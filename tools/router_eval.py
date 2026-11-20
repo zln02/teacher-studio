@@ -47,7 +47,7 @@ ROUTES = {
     "docs": "makes or edits documents: 한글 HWPX / Word / PDF (공문, 가정통신문, 안내문, 보고서; fill a form; fix a file; merge/split PDF)",
     "docfile": "an Excel or other office FILE made through an outside document skill",
     "scout": "look for another existing skill first",
-    "bare": "answer on your own ability, no tool",
+    "bare": "answer using the host’s usual workflow and available tools",
     "greet": "show the welcome card (no request yet)",
 }
 SCHEMA = (
@@ -56,11 +56,11 @@ SCHEMA = (
     '"question_count": <number of questions in your first reply>, "reads_raw_data": <true if you would open or print raw spreadsheet rows>, '
     '"asks_student_info": <true if you would ask for real student names/scores/data>, "refuses": <true if you decline the whole request>, '
     '"privacy_note": <true if your reply mentions a privacy/law/student-info caution>, '
-    '"checkpoint": "<where your first reply stops for the user to react in the production pipeline: plan = after the plan/options; storyboard = after the storyboard sheet, before building; build = you built and now ask ok-or-tweak after the first build; deliver = before sharing/sending; none = no stop at all, you run straight through>", '
+    '"checkpoint": "<where your first reply stops for the user to react in the production pipeline: plan = after the plan/options; storyboard = after the storyboard sheet, before building; build = you stop for a requested first-file review; deliver = before sharing/sending; none = no stop at all, you run straight through>", '
     '"skipped_stages": [<production stages you skip or merge, from: plan, script, storyboard>], '
     '"artifact": "<what your first reply shows: options | outline | storyboard | shot_list | slide_list | spec | privacy_check | file | none>", '
     '"first_reply": "<your first reply to the user, max 4 short lines>"}\n'
-    "Route meanings: " + "; ".join(f"{k} = {v}" for k, v in ROUTES.items()) + ". Do not run anything; decide what you would do for this first message."
+    "Route meanings: " + "; ".join(f"{k} = {v}" for k, v in ROUTES.items()) + ". This is a prediction-only evaluation. Do not run anything; decide what you would do for this first message."
 )
 
 
@@ -81,13 +81,13 @@ def frontmatter(path: Path) -> tuple[str, str]:
     return (name.group(1).strip() if name else path.parent.name, desc.group(1).strip() if desc else "")
 
 
-# Trigger eval: before any routing, does the model pick teacher-studio at all? Only the skill list is shown (as Claude Code shows it).
+# Trigger eval: predict which skill would be selected from its metadata. It does not observe activation.
 DISTRACTORS = {  # generic skills often installed next to ours (short paraphrases); used with --distractors
     "web-artifacts-builder": "Suite of tools for creating elaborate, multi-component HTML artifacts using React, Tailwind CSS, shadcn/ui.",
     "frontend-design": "Create distinctive, production-grade frontend interfaces with high design quality.",
     "canvas-design": "Create beautiful visual art in .png and .pdf documents using design philosophy.",
 }
-TRIGGER_SCHEMA = ('Output ONLY one JSON object: {"skill": "<the name of the ONE skill you would invoke first with the Skill tool for this request, '
+TRIGGER_SCHEMA = ('Output ONLY one JSON object: {"skill": "<the name of the ONE skill you would invoke first for this request, '
                   'or none if you would just do it yourself>", "why": "<max 12 words>"}')
 
 
@@ -98,12 +98,14 @@ def trigger_context(distractors: bool = False) -> str:
         lines.append(f"- {n}: {d}")
     if distractors:
         lines += [f"- {k}: {v}" for k, v in DISTRACTORS.items()]
-    return ("You are Claude Code, working in an empty folder for a user. The following skills are available via the Skill tool. "
-            "When a request matches a skill, invoke it before doing anything else.\n" + "\n".join(lines))
+    return ("You are an assistant working in an empty folder. The following skills are available. "
+            "Choose the first skill you would use, without running it.\n" + "\n".join(lines))
 
 
 def score_trigger(case: dict, out: dict | None) -> dict:
     want = case["trigger"] if isinstance(case["trigger"], list) else [case["trigger"]]
+    if not isinstance((out or {}).get("skill"), str) or not out["skill"].strip():
+        return {"score": 0.0, "parts": {"trigger": 0.0}, "notes": ["missing skill selection"]}
     got = str((out or {}).get("skill", "none")).split(":")[-1].strip()
     ok = got in want
     return {"score": 1.0 if ok else 0.0, "parts": {"trigger": 1.0 if ok else 0.0}, "notes": [] if ok else [f"skill {got} not in {want}"]}
@@ -120,7 +122,7 @@ def skill_context(skill_file: Path) -> str:
             "\n\nThe request below activates teacher-studio. Its instructions:\n\n" + body)
 
 
-BARE_CONTEXT = "You are a helpful AI assistant for a user who may be a teacher. You have no special skills installed."
+BARE_CONTEXT = "You are a helpful AI assistant for a user who may be a teacher. For this comparison, assume Teacher Studio is absent, and describe your normal workflow."
 
 
 def load_cases(ids: str | None = None, subset: int | None = None) -> list[dict]:
@@ -220,24 +222,25 @@ def ask_claude(model: str, system: str, request: str, timeout: int = 360, schema
         return p.stdout or p.stderr, 0.0
 
 
-def ask_codex(system: str, request: str, timeout: int = 240) -> tuple[str, float]:
+def ask_codex(system: str, request: str, timeout: int = 240, schema: str = SCHEMA) -> tuple[str, float]:
     exe = shutil.which("codex")
     if not exe:
         raise RuntimeError("codex CLI not found")
-    prompt = f"{system}\n\nUser request: 「{request}」\n\n{SCHEMA}"
+    prompt = f"{system}\n\nUser request: 「{request}」\n\n{schema}"
     p = subprocess.run([exe, "exec", "--skip-git-repo-check", "--sandbox", "read-only", "-"], input=prompt, capture_output=True, text=True,
                        encoding="utf-8", errors="replace", timeout=timeout, cwd=tempfile.mkdtemp(prefix="router-eval-"))
-    if not p.stdout.strip():
-        raise RuntimeError("codex returned nothing: " + (p.stderr or "")[-100:].replace(chr(10), " "))
+    if p.returncode or not p.stdout.strip():
+        raise RuntimeError("codex exec failed: " + (p.stderr or "")[-100:].replace(chr(10), " "))
     return p.stdout, 0.0
 
 
 def run_one(model: str, case: dict, system: str, trigger: bool = False) -> dict:
+    schema = TRIGGER_SCHEMA if trigger else SCHEMA
     try:
         if model == "codex":
-            text, cost = ask_codex(system, case["request"])
+            text, cost = ask_codex(system, case["request"], schema=schema)
         else:
-            text, cost = ask_claude(model, system, case["request"], schema=TRIGGER_SCHEMA if trigger else SCHEMA)
+            text, cost = ask_claude(model, system, case["request"], schema=schema)
     except Exception as e:  # noqa: BLE001 - report, never crash the batch
         return {"id": case["id"], "error": str(e)[:120], "score": 0.0, "notes": ["call failed"], "cost": 0.0}
     out = parse_json(text)
@@ -315,6 +318,8 @@ def main() -> int:
         system = trigger_context(a.distractors)
     else:
         system = BARE_CONTEXT if a.bare else skill_context(Path(a.skill_file))
+    if not cases:
+        ap.error("no cases match the selected filters")
     result = {}
     for model in a.models.split(","):
         runs = []
@@ -324,7 +329,7 @@ def main() -> int:
             runs.append(rows)
         s = summarize(runs)
         s["cost_usd"] = round(sum(r.get("cost", 0) for run in runs for r in run), 3)
-        result[model] = {"summary": s, "runs": runs}
+        result[model] = {"mode": "predicted-trigger" if a.trigger else "predicted-routing", "summary": s, "runs": runs}
         print(f"{model}{' (bare)' if a.bare else ''}: floor {s['floor']} mean {s['mean']} worst-case {s['worst_case']} perfect {s['perfect_cases']}/{s['n']} cost ${s['cost_usd']}")
         for r in runs[0]:
             if r["score"] < 0.999:

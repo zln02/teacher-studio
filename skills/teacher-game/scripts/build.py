@@ -360,25 +360,36 @@ def main() -> int:
     for line in advice:  # built anyway on --ok-content: keep the advice visible
         print("CONTENT (kept as is) " + line)
     if a.no_check:
+        print(f"PARTIAL {a.out.resolve()} (checks disabled)")
         return 0
     r = subprocess.run([sys.executable, str(HERE / "check_game.py"), str(a.out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     lines = r.stdout.strip().splitlines()
     if a.verbose:
         print("\n".join(lines))
     else:  # short by default: the lines to act on + the verdict
-        shown = [ln for ln in lines if ln.startswith(("FAIL", "WARN", "RESULT"))]
+        shown = [ln for ln in lines if ln.startswith(("FAIL", "WARN", "SKIP", "RESULT"))]
         passed = sum(1 for ln in lines if ln.startswith("PASS"))
         print("\n".join(shown) if shown else "\n".join(lines[-3:]))
         print(f"({passed} checks passed; --verbose lists them)")
-    if a.review is not None:
+    codes = [r.returncode]
+    if a.review is not None and r.returncode in (0, 2):
         rdir = Path(a.review) if a.review else a.out.resolve().parent / "review"
-        rv = subprocess.run([sys.executable, str(HERE / "design_review.py"), str(a.out), "--out", str(rdir)], capture_output=True, text=True, encoding="utf-8", errors="replace")
-        print((rv.stdout or rv.stderr).strip())
-    if r.returncode == 0:
-        print(f"READY {a.out.resolve()}")
-    else:
-        print("NOT READY: change the spec for each FAIL line above and run the same command again (2 tries at most, then tell the user plainly).")
-    return r.returncode
+        try:
+            rv = subprocess.run([sys.executable, str(HERE / "design_review.py"), str(a.out), "--out", str(rdir)],
+                                capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=120)
+            print((rv.stdout or rv.stderr).strip())
+            codes.append(rv.returncode)
+        except subprocess.TimeoutExpired:
+            print("SKIP 화면 점검을 정해진 시간 안에 끝내지 못했어요.")
+            codes.append(2)
+    if any(code not in (0, 2) for code in codes):
+        print(f"NOT READY {a.out.resolve()}")
+        return 1
+    if 2 in codes:
+        print(f"PARTIAL {a.out.resolve()}")
+        return 2
+    print(f"READY {a.out.resolve()}")
+    return 0
 
 
 if __name__ == "__main__":

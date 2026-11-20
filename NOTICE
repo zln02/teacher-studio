@@ -7,7 +7,7 @@ This product includes third-party components:
 
 1. anime.js 4.5.0 — Copyright (c) 2026 Julian Garnier — MIT License
    Location: skills/teacher-slides/assets/vendor/, skills/teacher-motion/assets/vendor/, shared/stage/vendor/
-   Modification: one optional-chaining expression replaced for older Chrome compatibility.
+   Modification: optional chaining, object spread and optional catch bindings replaced for ES2017 compatibility.
    License text: ANIME-LICENSE.md in the same folders.
 
 2. Kenney asset packs (sprites and sounds) — by Kenney (kenney.nl) — CC0 1.0 Universal (public domain)
@@ -100,3 +100,7 @@ user's own computer, with pip (shared/tools/ensure.py). They are not redistribut
 
 Teacher Studio is an unofficial open-source project. It is not affiliated with, endorsed by, or sponsored by
 Anthropic or OpenAI. "Claude" and "Codex" are trademarks of their respective owners.
+
+Acorn 8.15.0 — Copyright (C) 2012–2022 by various contributors — MIT License.
+   Fetched on demand for syntax checking. Never bundled into an output page.
+   Source: npm:acorn@8.15.0. License text: shared/vendor/acorn-LICENSE.txt.

@@ -116,7 +116,7 @@ class RouterTests(unittest.TestCase):
     def test_skill_routes_web_apps_and_keeps_tools_on_quick_requests(self):
         body = (TS / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("references/webapp.md", body)
-        self.assertIn("not the tools", body)
+        self.assertIn("with stated assumptions and the available tools", body)
         self.assertNotIn("mobile apps, websites", body)
         self.assertTrue((TS / "references" / "webapp.md").exists())
 

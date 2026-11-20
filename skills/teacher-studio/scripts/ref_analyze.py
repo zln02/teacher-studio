@@ -3,7 +3,7 @@
 """ref_analyze: learn design PATTERNS from one public page the user points to. Never copies.
 
 Usage:  python ref_analyze.py URL|local.html [--out DIR] [--scroll-video] [--ignore-robots-local]
-Outputs (default DIR = ~/TeacherStudio/ref/<host-or-name>/):
+Outputs (default DIR = ./TeacherStudio/ref/<host-or-name>/):
     analysis.json, analysis.html (one-page contact sheet), tokens-suggestion.json,
     shot-mobile-full.png, shot-mobile-fold.png, shot-desktop-full.png, shot-desktop-fold.png
 Rules (enforced here):
@@ -411,7 +411,7 @@ def scroll_video(url, out):
 def main():
     ap = argparse.ArgumentParser(description="learn design patterns from one public page (never copies)")
     ap.add_argument("target", help="http(s) URL or local .html file")
-    ap.add_argument("--out", help="output dir (default ~/TeacherStudio/ref/<name>)")
+    ap.add_argument("--out", help="output dir (default ./TeacherStudio/ref/<name>)")
     ap.add_argument("--scroll-video", action="store_true", help="also record a 5s scroll and make a contact sheet via video_eyes")
     a = ap.parse_args()
 
@@ -432,7 +432,7 @@ def main():
             return 2
         url = p.as_uri()
         name = p.parent.name or p.stem
-    out = Path(a.out) if a.out else Path.home() / "TeacherStudio" / "ref" / name
+    out = Path(a.out) if a.out else Path.cwd() / "TeacherStudio" / "ref" / name
     out.mkdir(parents=True, exist_ok=True)
 
     from playwright.sync_api import sync_playwright

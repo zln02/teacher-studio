@@ -30,12 +30,15 @@ MAX_SENT = {"초등": 42, "학부모": 58, "선생님": 75, "전문가": 95}
 HARD = ["표준편차", "유의", "가설", "분산", "중앙값", "귀무", "상관계수", "인과", "신뢰구간", "회귀", "효과크기", "p값", "p ="]
 HARD_RATIO_MAX = {"초등": 0.0, "학부모": 0.0, "선생님": 0.04, "전문가": 0.15}
 FAILS = 0
+UNCHECKED = 0
 
 
 def say(level: str, msg: str) -> None:
-    global FAILS
+    global FAILS, UNCHECKED
     if level == "FAIL":
         FAILS += 1
+    elif level == "SKIP":
+        UNCHECKED += 1
     print(f"{level} {msg}")
 
 
@@ -75,7 +78,7 @@ def allowed_numbers(agg: dict) -> set[float]:
         elif isinstance(o, str):
             for n, _ in numbers_in(o):
                 vals.add(n)
-    walk(agg)
+    walk({k: v for k, v in agg.items() if k != "narrative"})
     for r in agg["results"]:
         for s in r["series"]:
             xs = [v for v in s["values"] if v is not None]
@@ -155,8 +158,23 @@ def static_checks(src: str, agg: dict | None, source_path: str | None, yes: bool
     if agg:
         ok = len(data["charts"]) == len(agg["results"])
         for c, r in zip(data["charts"], agg["results"]):
-            ok = ok and c["labels"] == r["labels"] and [s["values"] for s in c["series"]] == [s["values"] for s in r["series"]]
-        say("PASS" if ok else "FAIL", "그래프 숫자 = 집계 숫자")
+            ok = ok and c["labels"] == r["labels"] and c["series"] == r["series"]
+            ok = ok and c["unit"] == r.get("unit", "") and c["xlabel"] == r.get("xlabel", "")
+        say("PASS" if ok else "FAIL", "그래프의 모둠·자료 이름·숫자·단위가 집계와 일치")
+        from report import build_story
+        shown = [head_t, *[strip_tags(line) for line in lines]]
+        expected = build_story(agg, aud)
+        standard = build_story({**agg, "narrative": {}}, aud)
+        if shown != [expected["headline"], *expected["summary"]]:
+            say("FAIL", "결론이나 요약이 집계에서 만든 문장과 달라요")
+        else:
+            verified = {standard["headline"], *standard["summary"]}
+            for item in standard["tx"]:
+                verified.update([item["headline"], *item["bullets"]])
+            if any(numbers_in(line) and line not in verified for line in shown):
+                say("SKIP", "직접 쓴 문장의 숫자는 어느 모둠과 단위에 해당하는지 확인이 필요해요")
+            else:
+                say("PASS", "결론과 요약의 숫자가 집계에서 만든 문장과 일치해요")
     for f in figs:
         texts += [strip_tags(x) for x in re.findall(r"<li>(.*?)</li>", f, flags=re.S)]
         texts += [strip_tags(x) for x in re.findall(r"<p class='(?:how|note)'>(.*?)</p>", f, flags=re.S)]
@@ -267,8 +285,8 @@ def main() -> int:
         pass
     if not a.no_play:
         play_checks(a.report)
-    print("결과:", "FAIL" if FAILS else "PASS")
-    return 1 if FAILS else 0
+    print("결과:", "FAIL" if FAILS else "PARTIAL" if UNCHECKED else "PASS")
+    return 1 if FAILS else 2 if UNCHECKED else 0
 
 
 if __name__ == "__main__":

