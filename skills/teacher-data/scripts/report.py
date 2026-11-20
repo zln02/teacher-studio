@@ -277,7 +277,7 @@ CSS = """
 :root{--bg:%(bg)s;--card:%(card)s;--ink:%(ink)s;--muted:%(muted)s;--brand:%(brand)s;--on-brand:%(on_brand)s;--line:%(line)s;--base:%(px)dpx}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;font-size:var(--base);line-height:1.65;word-break:keep-all;overflow-wrap:break-word}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"TS Sans","Pretendard","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;font-synthesis:none;font-size:var(--base);line-height:1.65;word-break:keep-all;overflow-wrap:break-word}
 .wrap{max-width:980px;margin:0 auto;padding:24px 16px 56px}
 header.top{padding:8px 4px 20px}
 h1{font-size:calc(var(--base)*1.55);line-height:1.3;margin:0 0 6px;font-weight:800}
@@ -312,7 +312,7 @@ JS = r"""
 var D=JSON.parse(document.getElementById('ts-data').textContent);
 var css=getComputedStyle(document.documentElement);
 var INK=css.getPropertyValue('--ink').trim(),LINE=css.getPropertyValue('--line').trim();
-var FAM='"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif';
+var FAM='"TS Sans","Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif';
 var FS=D.fontSize;
 var reduce=false;try{reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;}catch(e){}
 function fmt(v){if(v===null||v===undefined)return '';var a=Math.abs(v);var d=(a>=1000||Math.round(v)===v)?0:(a>=1?1:2);return v.toLocaleString('ko-KR',{maximumFractionDigits:d});}
@@ -365,7 +365,7 @@ function draw(){
  document.documentElement.setAttribute('data-charts-ready','1');
 }
 var done=false;function go(){if(done)return;done=true;draw();}
-try{Promise.all([document.fonts.load('400 16px "Noto Sans KR"'),document.fonts.load('700 16px "Noto Sans KR"')]).then(go,go);setTimeout(go,1500);}catch(e){go();}
+try{Promise.all([document.fonts.load('400 16px "TS Sans"'),document.fonts.load('700 16px "TS Sans"')]).then(go,go);setTimeout(go,1500);}catch(e){go();}
 })();
 """
 

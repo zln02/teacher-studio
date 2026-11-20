@@ -96,3 +96,4 @@ Full list: `docs/research/rules-audit-2026-11.md`.
 | `scripts/diagnose.py` · `references/vague-fix.md` · `learn-from-reference.md` · `user-colors.md` | complaints, references, the user's colours |
 | `scripts/prefs.py` · `doctor.py` · `references/studio-details.md` | prefs, environment check, ready card, cannot-do table |
 | 옆 스킬 | teacher-game · teacher-slides · teacher-motion · teacher-law · teacher-class-tools · teacher-data · teacher-docs |
+Look rules: `shared/design/DESIGN-RULES.md`

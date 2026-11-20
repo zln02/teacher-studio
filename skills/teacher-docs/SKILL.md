@@ -49,7 +49,7 @@ Official vs practice and the sources: `references/gongmun-format.md`. Examples: 
 blanks (`(학교명 입력)`, `○○학교`, `OOO`, `(예시)` too) · PDF: page count (`max_pages` FAIL), a nearly empty last page (WARN), smallest text (WARN under 9 pt, FAIL under `min_font`) · privacy (주민번호 FAIL; 휴대전화·전자우편·「성명: 홍길동」·학년반번호 WARN) · 공문 format (수신/제목, mark order, single-item mark, `끝` two spaces, `붙임` no colon) · dates `2026. 11. 19.` / 24-hour time · simple 띄어쓰기 (WARN, never auto-fix) · file reopens (HWPX: mimetype first+stored, XML, every charPr/paraPr/borderFill reference) · fonts (common Korean fonts; PDF fonts embedded). FAIL -> fix and rebuild; WARN -> tell the teacher in one line each.
 
 ## Design (automatic)
-A4, 20/20/20/15 mm, 함초롬바탕 12.5 pt body (house default; 한글 always has it; `design.font_size` rescales everything), title 20 pt on a quiet colour band for 안내문·가정통신문·신청서 (PDF), headings 14 pt with an accent bar, tables with a light header fill and right-aligned numbers, hanging indents so wrapped lines align after the mark. 공문 stays black; notices/guides take one accent from the house tokens (`shared/design/design.py --use print`). The user's own template comes first: fill or patch their `.hwpx`/`.docx` instead of making a new one; for Word pass `--template`.
+A4, 20/20/20/15 mm, 함초롬바탕 12.5 pt body (house default; 한글 always has it; `design.font_size` rescales everything), title 20 pt in the sans face under one accent rule for 안내문·가정통신문·신청서 (PDF), headings 14 pt with an accent bar, tables with a light header fill and right-aligned numbers, hanging indents so wrapped lines align after the mark. 공문 stays black; notices/guides take one accent from the house tokens (`shared/design/design.py --use print`). The user's own template comes first: fill or patch their `.hwpx`/`.docx` instead of making a new one; for Word pass `--template`.
 
 ## Other skills (never copy their files - point to them)
 - `docs.py where` lists what this computer has: **hwp-docs** (kordoc: reads .hwp/.hwpx/.pdf to Markdown, `validate`), the official **docx** / **pdf** skills, 한글, a browser. If `hwp-docs` is installed, use it for reading old `.hwp` text and for `npx kordoc validate out.hwpx` as a second opinion; use the official `docx` skill for tracked changes, comments, complex layouts. We keep the Korean format, the house design and the gate.
@@ -64,3 +64,5 @@ A4, 20/20/20/15 mm, 함초롬바탕 12.5 pt body (house default; 한글 always h
 | `scripts/docx_tools.py` · `pdf_tools.py` · `doc_html.py` | Word · PDF · A4 HTML (fonts embedded) |
 | `scripts/doc_check.py` · `doc_look.py` | the gate · PDF page count / fill / smallest text + the one preview picture |
 | `references/gongmun-format.md` | rules + sources (official vs practice) |
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

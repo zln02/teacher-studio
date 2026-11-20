@@ -63,3 +63,5 @@ PASS required: no external request, no storage/network APIs, no `<form>`, inputs
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 Small, clear tools skip 콘티 and checkpoints: the spec list is the 대본; build, show, offer 2 tweaks. Deliver: `deliver.py tool.html` (pin on the TV, works offline).
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

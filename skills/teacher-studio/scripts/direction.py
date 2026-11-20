@@ -55,17 +55,17 @@ LENGTH = ["분", "장", "문제", "개", "쪽", "초", "시간"]
 
 # ko name, one-line feel for each style id (fallback copy when styles.py gives only ids)
 FEEL = {
-    "neon-cyber": ("네온 사이버", "어두운 배경에 빛나는 선, 긴장감"), "gold-luxury": ("골드 럭셔리", "검정과 금색, 품격 있는 시상식 느낌"),
-    "pop-colorful": ("팝 컬러풀", "밝고 굵은 도형, 신나는 분위기"), "festival-party": ("축제 파티", "깃발과 색종이, 들뜬 잔치 느낌"),
-    "tv-gameshow": ("TV 게임쇼", "무대 조명과 큰 전광판"), "glass-3d": ("글래스 3D", "투명한 유리 패널, 세련된 느낌"),
-    "anime-cartoon": ("애니 카툰", "굵은 외곽선과 속도선"), "pastel-cute": ("파스텔 귀여움", "연한 색과 둥근 모양, 포근함"),
-    "retro-pixel": ("레트로 픽셀", "도트 그래픽, 오락실 느낌"), "minimal-premium": ("미니멀 프리미엄", "여백 많고 깔끔, 딱 한 가지 강조색"),
-    "chalk-paper": ("칠판 분필", "초록 칠판에 분필 글씨, 교실 느낌"), "nature-calm": ("자연 차분", "초록과 잎사귀, 마음이 편한 느낌"),
+    "neon-cyber": ("먹빛 테크", "먹빛 바탕에 상아색 글씨, 하늘빛 한 줄. 차분한 긴장감"), "gold-luxury": ("먹과 놋쇠", "먹빛과 놋쇠색, 명조 제목. 품격 있는 시상식 느낌"),
+    "pop-colorful": ("팝 블록", "흰 바탕에 큰 색 덩어리 둘, 굵은 글씨. 신나는 분위기"), "festival-party": ("축제 포스터", "오려 붙인 색종이 모양이 줄지어 선 포스터 느낌"),
+    "tv-gameshow": ("스튜디오 쇼", "짙은 청록 무대에 호박색 한 줄, 점수판"), "glass-3d": ("소프트 뎁스", "짙은 남회색 판이 겹겹이, 차분하고 세련된 느낌"),
+    "anime-cartoon": ("만화 컷", "굵은 먹선 칸과 망점, 빨강 하나"), "pastel-cute": ("파스텔", "연한 분홍과 둥근 모양, 포근함"),
+    "retro-pixel": ("픽셀", "네모난 도트 화면, 오락실 느낌"), "minimal-premium": ("에디토리얼", "여백 많고 깔끔, 가는 선과 딱 한 가지 강조색"),
+    "chalk-paper": ("칠판", "초록 칠판에 분필 글씨, 교실 느낌"), "nature-calm": ("자연", "연한 풀빛 종이에 짙은 초록, 마음이 편한 느낌"),
 }
-BUILTIN = {  # used only when styles.py cannot be found
-    "minimal-premium": {"dark": False, "font": "Noto Serif KR", "pal": {"bg1": "#f6f4ef", "text": "#1a1a1a", "primary": "#1a1a1a", "accent": "#b08d3c", "card": "#ffffff"}, "layout": {"poster": 4}, "keys": ["미니멀", "깔끔"]},
-    "pastel-cute": {"dark": False, "font": "Jua", "pal": {"bg1": "#ffe8f1", "text": "#4a2f5e", "primary": "#a63d8f", "accent": "#5fbfa8", "card": "#ffffff"}, "layout": {"bento": 4}, "keys": ["귀여", "파스텔"]},
-    "neon-cyber": {"dark": True, "font": "Black Han Sans", "pal": {"bg1": "#05070f", "text": "#ffffff", "primary": "#00e5ff", "accent": "#ff2bd6", "card": "#0d1230"}, "layout": {"split": 4}, "keys": ["네온", "긴장"]},
+BUILTIN = {  # used only when styles.py cannot be found (same three looks as shared/design/styles.py)
+    "minimal-premium": {"dark": False, "font": "TS Sans", "pal": {"bg1": "#f4f6f8", "text": "#161b20", "primary": "#1a2026", "accent": "#a38043", "card": "#fcfdff"}, "layout": {"poster": 4}, "keys": ["미니멀", "깔끔"]},
+    "pastel-cute": {"dark": False, "font": "TS Sans", "pal": {"bg1": "#fdedf4", "text": "#1f181b", "primary": "#954074", "accent": "#65af9c", "card": "#fff6fa"}, "layout": {"bento": 4}, "keys": ["귀여", "파스텔"]},
+    "neon-cyber": {"dark": True, "font": "TS Sans", "pal": {"bg1": "#11100f", "text": "#f4f0e7", "primary": "#8ac6d5", "accent": "#d7ac68", "card": "#1e1d1b"}, "layout": {"split": 4}, "keys": ["네온", "긴장"]},
 }
 AVOID = {"slides": {"tv-gameshow", "retro-pixel", "festival-party", "anime-cartoon"}, "data": {"tv-gameshow", "retro-pixel", "festival-party", "anime-cartoon", "neon-cyber"},
          "tools": {"gold-luxury", "glass-3d"}}  # looks that rarely suit that kind of output
@@ -258,7 +258,7 @@ def user_card(cols: dict, title: str) -> dict:
         except Exception:
             pass
     pr = cols.get("primary") or cols.get("pr") or tx
-    return {"id": "A", "style": "own-palette", "name": "내 색", "feel": "가지고 계신 로고·양식의 색 그대로", "dark": False, "font": "Noto Sans KR", "serif": False,
+    return {"id": "A", "style": "own-palette", "name": "내 색", "feel": "가지고 계신 로고·양식의 색 그대로", "dark": False, "font": "TS Sans", "serif": False,
             "layout": "poster", "sample_title": title,
             "colors": {"bg1": bg, "text": tx, "primary": pr, "accent": cols.get("accent") or cols.get("ac") or pr, "card": cols.get("card") or bg}}
 
@@ -332,14 +332,14 @@ def render_html(cs: list[dict], request: str, plan_line: str = "", pitches: dict
             '<div class="stage">%s</div><p class="pitch">%s</p><div class="sw">%s</div></section>' % (
                 e(t["bg"]), e(t["primary"]), e(t["ink"]), e(c["id"]), e(c["name"]), e(("명조" if t["serif"] else "고딕") + " 제목"), e("어둡게" if t["dark"] else "밝게"),
                 e(KIND_SAMPLE.get(kind or "", "첫 화면")), screen, e(pitch), sw))
-    css = ("*{box-sizing:border-box}body{margin:0;padding:28px 24px 36px;background:radial-gradient(#d3d9e4 1px,transparent 1.4px) 0 0/18px 18px,#eef1f6;color:#151b28;"
-           "font:16px/1.5 'Noto Sans KR','Malgun Gothic',sans-serif}h1{font-size:26px;margin:0 0 4px;font-weight:900;letter-spacing:-.02em}.sub{margin:0 0 22px;color:#4a5365}"
-           ".row{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:22px}"
-           ".card{background:#fff;border-radius:18px;padding:16px 16px 18px;box-shadow:0 1px 0 rgba(20,30,50,.04),0 14px 30px -16px rgba(20,30,50,.4);border-top:6px solid var(--c-pr)}"
-           ".card header{display:flex;gap:12px;align-items:center;margin-bottom:14px}.id{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:22px;"
-           "background:var(--c-bg);color:var(--c-ink);box-shadow:inset 0 0 0 2px var(--c-pr)}h2{font-size:19px;margin:0;line-height:1.25}.meta{font-size:13px;color:#566079}"
-           ".stage{padding:14px 6px 6px;border-radius:14px;background:linear-gradient(180deg,#f4f6fa,#e9edf3)}.pitch{margin:14px 2px 10px;font-size:16px;font-weight:700;line-height:1.45}"
-           ".sw{display:flex;gap:6px}.sw i{width:22px;height:22px;border-radius:50%%;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}")
+    css = ("*{box-sizing:border-box}body{margin:0;padding:32px 24px 40px;background:#f2f4f7;color:#161b22;font-synthesis:none;word-break:keep-all;"
+           "font:16px/1.5 'TS Sans','Pretendard','TS Sans','Pretendard','Noto Sans KR','Malgun Gothic',sans-serif}h1{font-size:28px;margin:0 0 4px;font-weight:760;letter-spacing:-.035em;line-height:1.2}.sub{margin:0 0 24px;color:#4a5365}"
+           ".row{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}"
+           ".card{background:#fff;border-radius:12px;padding:16px;border:1px solid #e1e5ea}"
+           ".card header{display:flex;gap:12px;align-items:center;margin-bottom:16px}.id{flex:none;width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-size:20px;font-weight:700;"
+           "background:var(--c-bg);color:var(--c-ink);box-shadow:inset 0 0 0 1.5px var(--c-pr)}h2{font-size:19px;margin:0;line-height:1.25;font-weight:700;letter-spacing:-.022em}.meta{font-size:13px;color:#566079}"
+           ".stage{padding:16px 8px 8px;border-radius:8px;background:#f2f4f7}.pitch{margin:16px 0 12px;font-size:16px;font-weight:600;line-height:1.5;letter-spacing:-.012em;text-wrap:pretty}"
+           ".sw{display:flex;gap:0}.sw i{width:32px;height:12px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.12)}")
     body = ('<h1>어떤 느낌이 마음에 드세요?</h1><p class="sub">%s완성되면 첫 화면이 이렇게 보여요. 번호(A/B/C)만 말씀해 주세요. 섞어도 돼요.</p><div class="row">%s</div>'
             % (e(plan_line + " ") if plan_line else "", "".join(parts)))
     return sh.page("분위기 미리보기", body, css.replace("%%", "%") + sb.MOCK_CSS, embed=embed)
@@ -357,7 +357,7 @@ def _render_swatches(cs: list[dict], request: str, plan_line: str = "") -> str:
     parts = []
     for c in cs:
         k = c["colors"]
-        ff = ("'Noto Serif KR','Batang',serif" if c["serif"] else "'Noto Sans KR','Malgun Gothic',sans-serif")
+        ff = ("'Noto Serif KR','Batang',serif" if c["serif"] else "'TS Sans','Pretendard','Noto Sans KR','Malgun Gothic',sans-serif")
         boxes = "".join('<rect x="%d" y="%d" width="%d" height="%d" rx="3" fill="%s" opacity="%s"/>' % (x, y, w, h, e(k["primary"] if i == 0 else k["card"]), "0.9" if i == 0 else "0.75")
                         for i, (x, y, w, h) in enumerate(SKETCH.get(c["layout"], SKETCH["stack"])))
         parts.append(
@@ -368,11 +368,11 @@ def _render_swatches(cs: list[dict], request: str, plan_line: str = "") -> str:
                 e(k["bg1"]), e(k["text"]), e(c["id"]), ff, e(k["text"]), e(c["sample_title"]), e(c["name"] + " · " + c["feel"]), e(c["name"]), e(k["bg1"]), e(k["text"]), boxes,
                 "".join('<i style="background:%s"></i>' % e(v) for v in (k["bg1"], k["primary"], k["accent"], k["card"])), e(c["font"]), e("어둡게" if c["dark"] else "밝게")))
     return ("<!doctype html><html lang=\"ko\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
-            "<title>분위기 미리보기</title><style>body{margin:0;padding:24px;background:#f4f4f4;color:#111;font:16px 'Noto Sans KR','Malgun Gothic',sans-serif}"
+            "<title>분위기 미리보기</title><style>body{margin:0;padding:24px;background:#f4f4f4;color:#111;font:16px 'TS Sans','Pretendard','Noto Sans KR','Malgun Gothic',sans-serif}"
             "h1{font-size:20px;margin:0 0 4px}.sub{margin:0 0 16px;color:#444}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}"
-            ".card{border-radius:14px;padding:18px;position:relative;box-shadow:0 2px 8px #0003}.id{position:absolute;top:12px;right:16px;font-size:28px;opacity:.7}"
-            "h2{font-size:26px;margin:6px 0 4px;line-height:1.25}.feel{margin:0 0 10px;font-size:15px;opacity:.9}svg{width:100%%;height:auto;display:block}"
-            ".sw{display:flex;gap:6px;margin-top:10px}.sw i{width:26px;height:26px;border-radius:50%%;border:1px solid #8886}.meta{font-size:13px;opacity:.8;margin:8px 0 0}"
+            ".card{border-radius:14px;padding:16px;position:relative;box-shadow:0 2px 8px #0003}.id{position:absolute;top:12px;right:16px;font-size:28px;opacity:.7}"
+            "h2{font-size:26px;margin:8px 0 4px;line-height:1.25}.feel{margin:0 0 8px;font-size:15px;opacity:.9}svg{width:100%%;height:auto;display:block}"
+            ".sw{display:flex;gap:8px;margin-top:8px}.sw i{width:26px;height:26px;border-radius:50%%;border:1px solid #8886}.meta{font-size:13px;opacity:.8;margin:8px 0 0}"
             "</style><h1>어떤 느낌이 마음에 드세요?</h1><p class=\"sub\">%s번호(A/B/C)만 말씀해 주세요. 섞어도 돼요.</p><div class=\"row\">%s</div></html>" % (
                 e(plan_line + " ") if plan_line else "", "".join(parts)))
 

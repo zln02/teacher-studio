@@ -57,3 +57,5 @@ Audience: 초등 = short friendly sentences, no stats words; 학부모 = polite 
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = the analysis questions (what do you want to know?); 콘티 = chart plan, one chart per question (ask before running; never read raw rows). Checkpoint: the question list/chart plan, then the first report; deliver: print/PDF, names hidden (`deliver.py`).
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

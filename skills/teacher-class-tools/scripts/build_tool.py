@@ -111,7 +111,7 @@ def make_tokens(spec: dict) -> dict:
     d = spec.get("design") or {}
     tk = design.generate(d.get("subject", ""), int(d.get("grade", 5)), d.get("mood", ""), spec.get("use", "class"),
                          int(d.get("seed", 0)), bool(d.get("large", False)), "default")
-    tk["fonts"].update(display="Noto Sans KR", body="Noto Sans KR", embeddable=True)  # one embeddable family: offline-safe
+    tk["fonts"].update(display="TS Sans", body="TS Sans", embeddable=True)  # one embeddable family: offline-safe
     if d.get("palette_from"):  # the user's own colours (design.palette_from: file | "saved")
         design.apply_palette_from(tk, d["palette_from"])
     return tk

@@ -12,7 +12,8 @@ spec (references/webapp.md):
      "parts": [ {"type": "helper", "name", "greeting", "fallback", "placeholder", "chips": [...], "intents": [{"keys": [...], "answer": "...", "code": "..."}]},
                 {"type": "runner", "name", "starter", "examples": [{"name", "code"}], "timeout_ms": 3000},
                 {"type": "custom", "name", "icon", "html": "...", "css": "...", "js": "..."} ]}
-Design = shared design system (styles.py style + shell kit tokens, icons, spot illustration, Noto Sans KR embedded).
+Design = shared design system (styles.py style + system.py type/spacing + shell kit tokens, icons, TS Sans embedded).
+Layout = picked from the content and a seed (pick_layout): focus | aside | wide, cols2 | lead2 | stack, cols3 | lead3 | stack; header bar | hero | rail.
 The page has: 가-/가+, projector mode (P), reset (처음으로), an honest 「이 프로그램은?」 panel, keyboard support, no storage, no network.
 Then check_webapp.py runs (static + one headless browser, fast settings).
 """
@@ -121,6 +122,68 @@ def make_tokens(spec: dict) -> dict:
     return t
 
 
+LAYOUTS = {1: ("focus", "aside", "wide"), 2: ("cols2", "lead2", "stack"), 3: ("cols3", "lead3", "stack")}
+HEADS = ("bar", "hero", "rail")
+
+
+def _pick(opts: dict, key: str) -> str:
+    import hashlib
+    items = sorted((k, w) for k, w in opts.items() if w > 0)
+    r = int(hashlib.sha256(key.encode("utf-8")).hexdigest()[:10], 16) % sum(w for _, w in items)
+    for k, w in items:
+        if r < w:
+            return k
+        r -= w
+    return items[0][0]
+
+
+def pick_layout(spec: dict) -> tuple[str, str]:
+    """(body layout, header treatment) chosen from the CONTENT and a seed, so two programs do not share one skeleton.
+
+    Content: how many parts, what they are (a helper wants a tall column; one custom tool wants the stage to itself), whether the spec explains
+    what the program can / cannot do (then that gets its own side panel). Seed: spec.seed walks the options best-fit first (seed 1, 2, 3 = three
+    different skeletons); without a seed the title decides (same request -> same page).
+    spec.layout / spec.head name a choice directly."""
+    parts = spec["parts"]
+    n = len(parts)
+    types = [p["type"] for p in parts]
+    seed = spec.get("seed")
+    key = ("s%s" % seed) if seed not in (None, "", 0) else ("t" + str(spec.get("title", "")))
+    explained = bool(spec.get("can") or spec.get("cannot") or spec.get("about"))
+    if n == 1:
+        w = {"focus": 3, "aside": 4 if explained else 2, "wide": 3 if types[0] == "runner" else 1}
+    elif n == 2:
+        w = {"cols2": 3, "lead2": 4 if types[0] != types[1] else 2, "stack": 2 if "runner" in types else 1}
+    else:
+        w = {"cols3": 3 if len(set(types)) == 1 else 2, "lead3": 4, "stack": 1}
+    hw = {"bar": 3, "hero": 3 if n <= 2 else 2, "rail": 3 if "helper" in types else 1}
+    if isinstance(seed, int) and seed > 0:
+        # an explicit seed walks the options in order of fit (best first): seeds 1, 2, 3 are three different skeletons, 1..9 all nine pairs
+        lo = sorted(w, key=lambda k: (-w[k], k))
+        ho = sorted(hw, key=lambda k: (-hw[k], k))
+        lay_pick, head_pick = lo[(seed - 1) % len(lo)], ho[((seed - 1) + (seed - 1) // len(lo)) % len(ho)]
+    else:
+        lay_pick, head_pick = _pick(w, key + "|L"), _pick(hw, key + "|H")
+    lay = spec.get("layout") if spec.get("layout") in LAYOUTS[n] else lay_pick
+    head = spec.get("head") if spec.get("head") in HEADS else head_pick
+    return lay, head
+
+
+def note_html(spec: dict) -> str:
+    """The side panel of the "aside" layout: what the program does and does not do, in the spec's own words (never invented)."""
+    li = lambda xs: "".join(f"<li>{esc(x)}</li>" for x in xs)  # noqa: E731
+    out = '<aside class="wa-card wa-note" aria-label="이 프로그램 안내">'
+    if spec.get("about"):
+        out += f'<p class="wa-lede">{esc(spec["about"])}</p>'
+    if spec.get("can"):
+        out += f'<h3>할 수 있는 것</h3><ul>{li(spec["can"][:4])}</ul>'
+    if spec.get("cannot"):
+        out += f'<h3>못 하는 것</h3><ul>{li(spec["cannot"][:4])}</ul>'
+    if not (spec.get("about") or spec.get("can") or spec.get("cannot")):
+        out += "<h3>쓰는 법</h3><ul><li>P = 프로젝터 모드</li><li>+ / − = 글자 크게 / 작게</li><li>? = 안내</li></ul>"
+    return out + "</aside>"
+
+
 def _icon(name: str, size: int = 22) -> str:
     return shell.icon(name if name in shell.icon_names() else "sparkles", size)
 
@@ -190,6 +253,11 @@ def build(spec: dict, fonts: bool = True) -> tuple[str, dict]:
     root_vars = shell.vars_style(t) + ";--app-bg:%s;--app-top:%s;--app-tint:%s" % (
         shell.pattern(t), shell.rgba(t["bg"], 0.86), shell.mix(t["surface"], t["primary"], 0.1))
     css = (ASSETS / "app.css").read_text(encoding="utf-8")
+    try:
+        import system as _ds  # shared/design/system.py (next to styles.py)
+        ds_css = _ds.css_vars("web") + "\n" + _ds.polish_css("web")
+    except Exception:  # noqa: BLE001
+        ds_css = ""
     custom_css = "\n".join(str(p.get("css") or "") for p in parts if p["type"] == "custom")
     custom_js = "\n".join(";(function(){\n%s\n})();" % p["js"] for p in parts if p["type"] == "custom" and p.get("js"))
     tb = lambda id_, ic, lab, extra="": (f'<button type="button" class="wa-tb" id="{id_}" aria-label="{esc(lab)}" title="{esc(lab)}"{extra}>'  # noqa: E731
@@ -197,16 +265,17 @@ def build(spec: dict, fonts: bool = True) -> tuple[str, dict]:
     tools = (tb("wa-smaller", "minus", "글자 작게") + tb("wa-bigger", "plus", "글자 크게") + tb("wa-proj", "eye", "프로젝터", ' aria-pressed="false"')
              + tb("wa-reset", "refresh", "처음으로") + tb("wa-about-btn", "info-circle", "이 프로그램은?"))
     brand_icon = str(spec.get("icon") or shell.icon_for(title + " " + sub))
-    cols = {1: "", 2: " cols2", 3: " cols3"}[len(parts)]
-    cfg = {"title": title, "ai": spec.get("ai", "none"), "style": t["picked"],
+    layout, head = pick_layout(spec)
+    cols = " " + layout
+    cfg = {"title": title, "ai": spec.get("ai", "none"), "style": t["picked"], "layout": layout, "head": head,
            "parts": [{k: v for k, v in p.items() if k not in ("html", "css", "js")} for p in parts]}
     page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
-            f'<title>{esc(title)}</title>\n<style>:root{{{root_vars}}}\n{shell.css()}\n{css}\n{custom_css}</style></head>\n<body>'
+            f'<title>{esc(title)}</title>\n<style>:root{{{root_vars}}}\n{shell.css()}\n{ds_css}\n{css}\n{custom_css}</style></head>\n<body data-wa-layout="{layout}" data-wa-head="{head}">'
             '<a class="wa-skip" href="#wa-main">본문으로 건너뛰기</a>'
             f'<header class="wa-top"><div class="wa-brand">{shell.spot(brand_icon if brand_icon in shell.icon_names() else "sparkles", t, 60)}'
             f'<div><h1 class="wa-title">{esc(title)}</h1>' + (f'<p class="wa-sub">{esc(sub)}</p>' if sub else "") + "</div></div>"
             f'<div class="wa-tools" role="toolbar" aria-label="화면 도구">{tools}</div></header>\n'
-            f'<main id="wa-main" class="wa-main{cols}">' + "".join(part_html(i, p) for i, p in enumerate(parts)) + "</main>\n"
+            f'<main id="wa-main" class="wa-main{cols}">' + "".join(part_html(i, p) for i, p in enumerate(parts)) + (note_html(spec) if layout == "aside" else "") + "</main>\n"
             '<footer class="wa-foot">인터넷 없이 동작해요 · 입력한 내용은 저장되거나 전송되지 않아요 · 단축키 P 프로젝터 · +/− 글자 · ? 안내</footer>\n'
             + about_html(spec) + '<div id="wa-live" class="wa-sr" aria-live="polite"></div>\n'
             f"<script>window.WEBAPP = {js_json(cfg)};</script>\n<script>{(ASSETS / 'app.js').read_text(encoding='utf-8')}</script>\n"

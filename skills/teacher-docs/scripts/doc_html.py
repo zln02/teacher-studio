@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Block model -> one A4 print-ready HTML page (Noto Serif/Sans KR embedded, only the glyphs used). Used for the PDF
+"""Block model -> one A4 print-ready HTML page (TS Sans / Noto Serif KR embedded, only the glyphs used). Used for the PDF
 (headless browser print, see pdf_tools.html_to_pdf) and as a quick look. Colours from the house design tokens
 (shared/design/design.py, use=print); official documents (공문) stay black.
 """
@@ -73,7 +73,14 @@ def render(model: dict, mood: str = "단정", embed_fonts: bool = True, base: Pa
     c = _tokens(mood)
     accent = "#111111" if kind == "gongmun" else c.get("primary", "#1f5fbf")
     serif = model["meta"].get("font", "batang") == "batang"
-    fam = "'Noto Serif KR','함초롬바탕','Batang',serif" if serif else "'Noto Sans KR','맑은 고딕','Malgun Gothic',sans-serif"
+    sans = "'TS Sans','Pretendard','Noto Sans KR','맑은 고딕','Malgun Gothic',sans-serif"   # the studio face (shared/design/system.py)
+    fam = "'Noto Serif KR','함초롬바탕','Batang',serif" if serif else sans
+    head_fam = sans if dressed else fam   # 안내문·통신문·신청서: sans headings over the body face (editorial pairing); 공문·보고서 keep one face
+    try:
+        import system as _ds
+        polish = _ds.polish_css("print")
+    except Exception:  # noqa: BLE001
+        polish = ""
     parts = []
     for bl in model["blocks"]:
         t = bl["t"]
@@ -143,19 +150,22 @@ html,body{{margin:0;background:#fff;color:#111}}
 body{{font-family:{fam};font-size:{pt(12.5)}pt;line-height:{lh};word-break:keep-all;overflow-wrap:break-word}}
 .pb{{break-before:page;page-break-before:always;height:0}}
 figure{{margin:6pt 0 8pt;display:flex;flex-direction:column;gap:3pt;break-inside:avoid}} figcaption{{color:#333}}
-.band{{background:{accent};color:#fff!important;padding:{pt(9)}pt {pt(12)}pt;border-radius:4pt;margin:{pt(4)}pt 0 {pt(8)}pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-.hd{{border-left:{pt(4)}pt solid {accent};padding-left:{pt(7)}pt;margin-bottom:{pt(3)}pt;break-after:avoid}}
+.band{{font-family:{head_fam};color:#111!important;font-weight:700;letter-spacing:-.03em;line-height:1.25;text-align:left!important;padding:{pt(10)}pt 0 {pt(9)}pt;margin:{pt(2)}pt 0 {pt(10)}pt;border-top:{pt(3)}pt solid {accent};border-bottom:.6pt solid #9aa1aa;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.hd{{font-family:{head_fam};letter-spacing:-.02em;border-left:{pt(3)}pt solid {accent};padding-left:{pt(7)}pt;margin-bottom:{pt(3)}pt;break-after:avoid}}
 .t-form.tall th,.t-form.tall td{{padding:{pt(9)}pt {pt(8)}pt}}
 .doc{{max-width:170mm;margin:0 auto}}
 p{{margin:0 0 2pt;white-space:pre-wrap}} p.sp{{line-height:.8}}
 hr{{border:0;border-top:1.6pt solid #222;margin:4pt 0 8pt}}
 .cut{{text-align:center;font-size:{pt(10)}pt;color:#555;margin:14pt 0 8pt}}
 table{{width:100%;border-collapse:collapse;margin:6pt 0 8pt;font-size:{pt(11)}pt;page-break-inside:avoid}}
-th,td{{border:.8pt solid #333;padding:4pt 7pt;vertical-align:middle;word-break:keep-all;white-space:pre-wrap}}
-th{{background:#e8edf4;font-weight:700;text-align:center}}
+th,td{{border:{'.8pt solid #333' if not dressed else '.6pt solid #6b7280'};padding:4pt 7pt;vertical-align:middle;word-break:keep-all;white-space:pre-wrap}}
+th{{background:{'#e8edf4' if not dressed else '#f0f2f5'};font-weight:700;text-align:center{';font-family:' + head_fam if dressed else ''}}}
+thead th{{border-bottom-width:1.2pt}}
 td.n{{text-align:right;font-variant-numeric:tabular-nums}}
 .t-titlebox td{{border:2pt solid #222;text-align:center;font-size:{pt(20)}pt;font-weight:700;padding:10pt}}
 .t-box th{{background:{'#e8edf4' if kind == 'gongmun' else c.get('bg2', '#eef2f7')};text-align:left}}
+{polish}
+p{{white-space:pre-wrap;text-wrap:initial}}
 @media screen{{body{{background:#e9ecef}} .doc{{background:#fff;padding:20mm;margin:16px auto;box-shadow:0 2px 10px rgba(0,0,0,.15);max-width:170mm}}}}
 """
     page = (f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
