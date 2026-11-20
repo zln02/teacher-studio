@@ -41,3 +41,4 @@
 | HeyGen hyperframes | HTML 기반 모션그래픽 스킬 | 미확인 | 검토 예정 | 우리 HTML 움직임 엔진과 방향이 같음 |
 
 모션 효과 20선(출처 미확인)은 일반 기법이라 직접 구현한다. 우선 10개: Impact frame, Letter dive, Layer explode, Rack focus, Dolly zoom, Paper tear, Blade slice, Sketch words, Orbit ring, Day dial. GPU 없는 PC를 위해 큰 blur·filter는 줄인다.
+| Sophon-Realtime (adventists-ai) | 실시간 음성 대화(speech-to-speech)·목소리 복제 | Apache-2.0(코드·가중치), 32B는 80GB GPU·4B도 24GB+ | 넘어감 (2026-11-20) | 한국어 미지원, 일반 PC 불가, 복제 오남용 위험. 한국어·소형판 나오면 재검토 |
