@@ -7,51 +7,68 @@ body[data-lockpos=side] .ts-wrap{left:340px;width:1460px}
 body[data-lockpos=side] .ts-q,body[data-lockpos=side] .ts-grid,body[data-lockpos=side] .ts-expl{width:1460px}
 body[data-lockpos=side] .ts-lockstrip{left:50px;top:150px;width:250px;flex-direction:column;gap:8px;align-items:flex-start}
 body[data-lockpos=side] .ts-lockstrip .ts-lock{width:200px;height:128px}
-/* ---- quiz-like screens (quiz, escape, board question): five compositions ---- */
-body[data-layout=split] .ts-wrap.ts-ask,body[data-layout=bento] .ts-wrap.ts-ask,body[data-layout=news] .ts-wrap.ts-ask,body[data-layout=poster] .ts-wrap.ts-ask{left:0!important;top:0!important;width:1920px!important;height:1080px!important;margin:0!important;display:block}
-body[data-layout=split] .ts-ask>*,body[data-layout=bento] .ts-ask>*,body[data-layout=news] .ts-ask>*,body[data-layout=poster] .ts-ask>*{margin:0!important}
+/* ---- quiz-like screens (quiz, escape, board question): ten compositions with DIFFERENT footprints ----
+   Every layout places the question box (--q*) and the answer box (--a*) as fractions of the content area (x --lx.., y --ty..880), so the
+   occupied cells really differ: full (stack, split) · upper band (poster) · lower third (news) · centre column · left / right column ·
+   headline + rail · stair (two blocks on the diagonal) · bento. The free part of the stage is left to the scene and the host on purpose.
+   Answer arrangement: row = one row of tiles · list = one column of bars · two = 2 x 2. */
+body{--lh:calc(880px - var(--ty))}
+body[data-layout] .ts-wrap.ts-ask{left:0!important;top:0!important;width:1920px!important;height:1080px!important;margin:0!important;display:block}
+body[data-layout] .ts-ask>*{margin:0!important}
 body[data-layout] .ts-ask .ts-expl{left:var(--lx)!important;bottom:60px!important;width:var(--lw)!important}
-/* split: tall question left, answers stacked right */
-body[data-layout=split] .ts-ask .ts-chips{position:absolute;left:var(--lx);top:calc(var(--ty) - 62px)}
-body[data-layout=split] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.46);height:calc(880px - var(--ty));min-height:0;text-align:left}
-body[data-layout=split] .ts-ask .ts-grid{position:absolute;left:calc(var(--lx) + var(--lw)*.49);top:var(--ty);width:calc(var(--lw)*.51);height:calc(880px - var(--ty));display:flex;flex-direction:column;gap:16px}
-body[data-layout=split] .ts-ask .ts-choice{flex:1 1 0;min-height:var(--btn-h)}
-body[data-layout=split] .ts-ask .ts-oxrow{position:absolute;left:calc(var(--lx) + var(--lw)*.49);top:var(--ty);width:calc(var(--lw)*.51);height:calc(880px - var(--ty));flex-direction:column;gap:20px;justify-content:center}
-body[data-layout=split] .ts-ask .ts-ox{width:100%;height:calc((880px - var(--ty) - 20px)/2)}
-/* bento: wide question tile + info tile + tall answer tiles in one row */
-body[data-layout=bento] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:16px;justify-content:flex-start}
+body[data-layout] .ts-ask .ts-q{position:absolute;left:calc(var(--lx) + var(--lw)*var(--qx));top:calc(var(--ty) + var(--lh)*var(--qy));width:calc(var(--lw)*var(--qw));height:calc(var(--lh)*var(--qh));min-height:0}
+body[data-layout] .ts-ask .ts-grid,body[data-layout] .ts-ask .ts-oxrow{position:absolute;left:calc(var(--lx) + var(--lw)*var(--ax));top:calc(var(--ty) + var(--lh)*var(--ay));width:calc(var(--lw)*var(--aw));height:calc(var(--lh)*var(--ah))}
+body[data-layout] .ts-ask .ts-grid{display:grid;grid-gap:16px}
+body[data-layout] .ts-ask .ts-choice{height:100%;min-height:0}
+body[data-layout] .ts-ask .ts-oxrow{gap:32px}
+body[data-layout] .ts-ask .ts-ox{width:48%;height:100%;font-size:150px}
+body[data-layout] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*var(--qx));top:calc(var(--ty) + var(--lh)*var(--qy) - 62px);justify-content:flex-start}
+body[data-layout=split]{--qx:0;--qy:0;--qw:.46;--qh:1;--ax:.49;--ay:0;--aw:.51;--ah:1}
+body[data-layout=bento]{--qx:0;--qy:0;--qw:.64;--qh:.46;--ax:0;--ay:.5;--aw:1;--ah:.5}
+body[data-layout=news]{--qx:0;--qy:.72;--qw:1;--qh:.28;--ax:0;--ay:.4;--aw:1;--ah:.28}
+body[data-layout=poster]{--qx:0;--qy:0;--qw:1;--qh:.38;--ax:0;--ay:.44;--aw:1;--ah:.32}
+body[data-layout=column]{--qx:.19;--qy:0;--qw:.62;--qh:.3;--ax:.19;--ay:.33;--aw:.62;--ah:.67}
+body[data-layout=left]{--qx:0;--qy:0;--qw:.58;--qh:.32;--ax:0;--ay:.35;--aw:.58;--ah:.65}
+body[data-layout=right]{--qx:.42;--qy:0;--qw:.58;--qh:.32;--ax:.42;--ay:.35;--aw:.58;--ah:.65}
+body[data-layout=rail]{--qx:0;--qy:0;--qw:.62;--qh:.56;--ax:.68;--ay:0;--aw:.32;--ah:1}
+body[data-layout=stair]{--qx:0;--qy:0;--qw:.58;--qh:.44;--ax:.42;--ay:.52;--aw:.58;--ah:.48}
+/* list: one column of answer bars (split, column, left, right, rail) */
+body[data-layout=split] .ts-ask .ts-grid,body[data-layout=column] .ts-ask .ts-grid,body[data-layout=left] .ts-ask .ts-grid,body[data-layout=right] .ts-ask .ts-grid,body[data-layout=rail] .ts-ask .ts-grid{grid-template-columns:1fr!important;grid-auto-rows:1fr}
+body[data-layout=split] .ts-ask .ts-q,body[data-layout=left] .ts-ask .ts-q,body[data-layout=right] .ts-ask .ts-q,body[data-layout=rail] .ts-ask .ts-q,body[data-layout=stair] .ts-ask .ts-q{text-align:left;justify-content:flex-start}
+/* tall narrow answer boxes stack O over X */
+body[data-layout=split] .ts-ask .ts-oxrow,body[data-layout=rail] .ts-ask .ts-oxrow{flex-direction:column;gap:20px;justify-content:center}
+body[data-layout=split] .ts-ask .ts-ox,body[data-layout=rail] .ts-ask .ts-ox{width:100%;height:calc(50% - 10px)}
+/* row: one row of centred tiles (bento, news, poster) */
+body[data-layout=bento] .ts-ask .ts-grid.c2,body[data-layout=news] .ts-ask .ts-grid.c2,body[data-layout=poster] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
+body[data-layout=bento] .ts-ask .ts-grid.c3,body[data-layout=news] .ts-ask .ts-grid.c3,body[data-layout=poster] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
+body[data-layout=bento] .ts-ask .ts-grid.c4,body[data-layout=news] .ts-ask .ts-grid.c4,body[data-layout=poster] .ts-ask .ts-grid.c4,body[data-layout=bento] .ts-ask .ts-grid.c5,body[data-layout=news] .ts-ask .ts-grid.c5,body[data-layout=poster] .ts-ask .ts-grid.c5{grid-template-columns:repeat(4,1fr)}
+body[data-layout=bento] .ts-ask .ts-choice,body[data-layout=news] .ts-ask .ts-choice{flex-direction:column;justify-content:center;text-align:center}
+body[data-layout=bento] .ts-ask .ts-choice .mark,body[data-layout=news] .ts-ask .ts-choice .mark{margin-bottom:8px}
+/* the right / wrong mark sits in the tile's corner, so a marked tile is exactly as tall as an unmarked one */
+body[data-layout=bento] .ts-ask .ts-sym,body[data-layout=news] .ts-ask .ts-sym{position:absolute;right:16px;top:12px;padding:0;margin:0}
+body[data-layout=news] .ts-ask .ts-choice .mark{width:64px;height:64px;font-size:42px}
+/* two: 2 x 2 (stair always; column / left / right when the four answers are short: body[data-ans=two], decided from the content by layout_auto) */
+body[data-layout=stair] .ts-ask .ts-grid,body[data-ans=two] .ts-ask .ts-grid.c4{grid-template-columns:1fr 1fr!important;grid-auto-rows:1fr}
+/* four answer bars in one column need the height: the question card gives up a little */
+body[data-ans=list][data-layout=column],body[data-ans=list][data-layout=left],body[data-ans=list][data-layout=right]{--qh:.26;--ay:.29;--ah:.71}
+body[data-ans=list] .ts-ask .ts-grid{grid-gap:12px}
+/* bento: the info chips become a tile beside the question */
+body[data-layout=bento] .ts-ask .ts-chips{left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;align-items:stretch;gap:16px}
 body[data-layout=bento] .ts-ask .ts-chip{text-align:center}
-body[data-layout=bento] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.46);min-height:0}
 body[data-mech=escape][data-layout=bento] .ts-ask .ts-q{width:var(--lw)}
-body[data-layout=bento] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);display:grid;grid-gap:16px}
-body[data-layout=bento] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
-body[data-layout=bento] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
-body[data-layout=bento] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
-body[data-layout=bento] .ts-ask .ts-choice{flex-direction:column;justify-content:center;text-align:center;height:100%;min-height:0}
-body[data-layout=bento] .ts-ask .ts-choice .mark{margin-bottom:8px}
-body[data-layout=bento] .ts-ask .ts-sym{padding:0;margin:8px 0 0}
-body[data-layout=bento] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.5);width:var(--lw);height:calc((880px - var(--ty))*.5);gap:40px}
-body[data-layout=bento] .ts-ask .ts-ox{width:48%;height:100%}
-/* news: answers on top, question as a lower-third banner */
-body[data-layout=news] .ts-ask .ts-chips{position:absolute;left:var(--lx);top:calc(var(--ty) - 62px)}
-body[data-layout=news] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:var(--ty);width:var(--lw);height:calc((880px - var(--ty))*.52);display:grid;grid-gap:16px 24px;grid-template-columns:1fr 1fr}
-body[data-layout=news] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
-body[data-layout=news] .ts-ask .ts-choice{height:100%;min-height:0}
-body[data-layout=news] .ts-ask .ts-q{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);min-height:0;text-align:left;justify-content:flex-start;border-radius:8px;border-left:30px solid var(--primary)}
-body[data-layout=news] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:var(--ty);width:var(--lw);height:calc((880px - var(--ty))*.52);gap:40px}
-body[data-layout=news] .ts-ask .ts-ox{width:48%;height:100%;font-size:150px}
-/* poster: giant question on the paper, answers as a pill row */
-body[data-layout=poster] .ts-ask .ts-chips{position:absolute;left:calc(var(--lx) + var(--lw)*.66);top:var(--ty);width:calc(var(--lw)*.34);flex-direction:column;gap:16px;align-items:stretch}
-body[data-layout=poster] .ts-ask .ts-chip{text-align:center}
-body[data-layout=poster] .ts-ask .ts-q{position:absolute;left:var(--lx);top:var(--ty);width:calc(var(--lw)*.64);height:calc((880px - var(--ty))*.5);min-height:0;text-align:left;justify-content:flex-start;background:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;color:var(--text)!important;border-bottom:14px solid var(--primary)!important;border-radius:0!important;padding-left:8px}
-body[data-mech=escape][data-layout=poster] .ts-ask .ts-q{width:var(--lw)}
-body[data-layout=poster] .ts-ask .ts-grid{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);display:grid;grid-gap:16px}
-body[data-layout=poster] .ts-ask .ts-grid.c2{grid-template-columns:1fr 1fr}
-body[data-layout=poster] .ts-ask .ts-grid.c3{grid-template-columns:repeat(3,1fr)}
-body[data-layout=poster] .ts-ask .ts-grid.c4{grid-template-columns:repeat(4,1fr)}
-body[data-layout=poster] .ts-ask .ts-choice{border-radius:72px;justify-content:center;text-align:center;height:100%;min-height:0;padding:8px 20px}
-body[data-layout=poster] .ts-ask .ts-oxrow{position:absolute;left:var(--lx);top:calc(var(--ty) + (880px - var(--ty))*.56);width:var(--lw);height:calc((880px - var(--ty))*.44);gap:40px}
-body[data-layout=poster] .ts-ask .ts-ox{width:48%;height:100%;font-size:140px}
+/* news: a lower third. The upper part of the stage stays open; the question is the banner under the answers */
+body[data-layout=news] .ts-ask .ts-chips{top:calc(var(--ty) + var(--lh)*.4 - 62px)}
+body[data-layout=news] .ts-ask .ts-q{text-align:left;justify-content:flex-start;border-radius:8px;border-left:30px solid var(--primary)}
+/* poster: the question is type on the paper across the top, answers a pill row under it, the foot stays open */
+body[data-layout=poster] .ts-ask .ts-q{text-align:left;justify-content:flex-start;background:transparent!important;background-image:none!important;border:none!important;box-shadow:none!important;color:var(--text)!important;border-bottom:14px solid var(--primary)!important;border-radius:0!important;padding-left:8px}
+body[data-layout=poster] .ts-ask .ts-choice{border-radius:40px;justify-content:center;text-align:center;padding:8px 24px}
+body[data-layout=poster] .ts-ask .ts-choice .mark{width:64px;height:64px;font-size:42px;margin-right:16px}
+/* column: everything on the centre axis */
+body[data-layout=column] .ts-ask .ts-chips{width:calc(var(--lw)*.62);justify-content:center}
+/* rail: the question is a headline block, the answers a rail down the right edge */
+body[data-layout=rail] .ts-ask .ts-q{border-left:14px solid var(--primary)}
+/* stair: question up left, answers down right */
+body[data-layout=stair] .ts-ask .ts-choice{justify-content:flex-start}
 /* ---- answer button styles ---- */
 body[data-choice=pill] .choice{border-radius:72px;padding-left:32px;padding-right:32px}
 body[data-choice=tile] .choice{border-radius:10px;border-bottom-width:10px}

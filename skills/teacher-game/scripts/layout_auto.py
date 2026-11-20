@@ -7,7 +7,8 @@ Principle: tools guarantee the quality floor (every layout declares its zones in
 the AI adds request-specific creativity on top (design.words, custom_css, custom_svg, design.layout ...).
 
 Choices (all deterministic from the spec + design.seed; build.py draws a fresh seed when the spec has none and prints/stores it):
-  layout   quiz/escape/board question screens: stack | split | bento | news | poster
+  layout   quiz/escape/board question screens, ten footprints: stack | split (full) · bento · news (lower third) · poster (upper band) ·
+           column (centre) · left | right (one side, the other left to the scene) · rail (headline + answer rail) · stair (diagonal)
   mech     per mechanic: match grid|scatter|shelf|brick - bingo grid|tilt|shelf - sort bins|shelves|conveyor - board snake|wave|stair
            survival row|bridge|stagger|arena - escape lockpos top|side
   choice   answer buttons: default | pill | tile | stamp | neon | note
@@ -36,7 +37,12 @@ for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
 
-LAYOUTS = ["stack", "split", "bento", "news", "poster"]
+LAYOUTS = ["stack", "split", "bento", "news", "poster", "column", "left", "right", "rail", "stair"]
+# the five newer footprints take their taste from the two older layouts they are closest to (styles only name the older five)
+KIN = {"column": ("stack", "poster"), "left": ("split", "stack"), "right": ("split", "news"), "rail": ("news", "split"), "stair": ("bento", "poster")}
+ROW_LAYOUTS = ("bento", "news", "poster", "rail", "stair")   # answers sit side by side or in a narrow rail: short answers only
+SIDE_LAYOUTS = ("left", "right", "column")                   # answer bars about 60 % wide: fine up to a medium-long answer (18 characters)
+ESCAPE_OUT = ("news", "column", "left", "right")              # the lock strip takes 150px of height: these would squeeze four answer bars
 MECH_VARIANTS = {"match": ["grid", "scatter", "shelf", "brick"], "bingo": ["grid", "tilt", "shelf"], "sort": ["bins", "shelves", "conveyor"],
                  "board": ["snake", "wave", "stair"], "survival": ["row", "bridge", "stagger", "arena"], "escape": ["top", "side"], "quiz": [""]}
 CHOICES = ["default", "pill", "tile", "stamp", "neon", "note"]
@@ -103,33 +109,69 @@ def content_features(spec: dict) -> dict:
             "media": any(it.get("image") or it.get("svg") or it.get("img") for it in items)}
 
 
-def layout_weights(style_w: dict, feat: dict) -> dict:
+def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     """Layout weights = the style's preference (flattened, so one favourite does not win every time) x what the content can carry.
 
-    - side-by-side layouts (bento / news / poster) are dropped when an answer is long (it would wrap to one-syllable lines)
-    - mostly-OX sets want the big two-button layouts (poster / split); long questions want a wide question card (stack / split)
+    - row / rail layouts (bento / news / poster / rail / stair) are dropped when an answer is long (it would wrap to one-syllable lines);
+      the 60 %-wide columns (left / right / column) are dropped when it is very long; news (6), poster and rail (8), stair (10) need shorter ones still
+    - mostly-OX sets want the big two-button layouts (poster / split / stair); long questions want a wide question card (stack / split / column)
+    - the two full-stage layouts (stack, split) are held back a little whenever the content fits a layout with open space,
+      so different requests do not all fill the same rectangle
     - every layout the content allows stays possible, so the same request with another seed gets another skeleton."""
     w = {k: 0.7 for k in LAYOUTS}
     for k, v in style_w.items():
         w[k] = max(w.get(k, 0.7), float(v) ** 0.6)
+    for k, (a, b) in KIN.items():
+        w[k] = max(1.0, (w[a] + w[b]) / 2)
     if feat["longest"] > 12:
-        for k in ("bento", "news", "poster"):
+        for k in ROW_LAYOUTS:
+            w[k] = 0
+    else:  # one row of four tiles is narrow: the lower third holds one line under the mark, the pill row and the rail two short lines
+        if feat["longest"] > 6:
+            w["news"] = 0
+        if feat["longest"] > 8:
+            w["rail"] = w["poster"] = 0
+        if feat["longest"] > 10:
+            w["stair"] = 0
+    if feat["longest"] > 18:
+        for k in SIDE_LAYOUTS:
+            w[k] = 0
+    else:
+        w["stack"] *= 0.6
+        w["split"] *= 0.6
+    if mech == "escape":
+        for k in ESCAPE_OUT:
             w[k] = 0
     if feat["ox"] >= 0.5:
         w["poster"] *= 1.8
         w["split"] *= 1.5
+        w["stair"] *= 1.3
         w["bento"] *= 0.5
     if feat["qlen"] > 44:
         w["stack"] *= 1.7
         w["split"] *= 1.4
+        w["column"] *= 1.2
         w["poster"] *= 0.5
+        w["rail"] *= 0.5
     if feat["choices"] == 3:
         w["stack"] *= 1.4
+        w["column"] *= 1.3
+    if feat["choices"] >= 5:
+        for k in ("column", "left", "right", "rail", "stair"):
+            w[k] = 0
     if feat["media"]:
         w["split"] *= 1.6
         w["news"] *= 1.3
     out = {k: int(round(v * 10)) for k, v in w.items() if v > 0}
     return out or {"split": 1}
+
+
+def request_signature(spec: dict) -> str:
+    """A short fingerprint of WHAT was asked (title + the questions). It is mixed into every pick, so two different requests do not land on
+    the same composition just because they share a mood word and a seed. The same spec + the same seed still gives the same game."""
+    items = [it for it in (spec.get("items") or []) if isinstance(it, dict)]
+    text = str(spec.get("title", "")) + "|" + "|".join(str(it.get("q") or it.get("question") or "") for it in items[:12])
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()[:8]
 
 
 def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str = "") -> dict:
@@ -142,10 +184,10 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
     if style in style_auto.STYLES:  # the general style taxonomy decides (each style = its own composition language)
         fname, fam = style, style_auto.STYLES[style]
     seed = int(d.get("seed", 0))
-    key = f"{mech}|{fname}|{seed}"
+    key = f"{mech}|{fname}|{seed}|{request_signature(spec)}"
     colors = (tokens or {}).get("colors") or {}
     dark = sum(int(colors.get("bg1", "#ffffff")[i:i + 2], 16) for i in (1, 3, 5)) < 330
-    layout = d.get("layout") if d.get("layout") in LAYOUTS else _pick(layout_weights(fam["layout"], content_features(spec)), key + "L")
+    layout = d.get("layout") if d.get("layout") in LAYOUTS else _pick(layout_weights(fam["layout"], content_features(spec), mech), key + "L")
     choice_opts = dict(fam["choice"])
     if not dark:
         choice_opts.pop("neon", None)  # neon glow needs a dark scene
@@ -160,6 +202,9 @@ def compose(spec: dict, tokens: dict | None = None, recipe: str = "", style: str
         "titleScale": ["sm", "md", "lg"][_h(key + "Z") % 3], "tpos": ["center", "left", "top", "center"][_h(key + "P") % 4],
         "transition": _pick(fam["transition"], key + "X"),
     }
+    feat = content_features(spec)
+    # column / left / right: four short answers sit 2 x 2, anything longer (or three answers) becomes a column of bars
+    cfg["ans"] = ("two" if feat["longest"] <= 10 and feat["choices"] == 4 else "list") if layout in SIDE_LAYOUTS else ""
     if mech == "escape" and cfg["mech"] == "side":
         cfg["mech"] = "side"
     return cfg

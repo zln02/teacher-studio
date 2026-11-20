@@ -429,7 +429,7 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
     close = [(n, v) for n, v in same if v >= 0.86]
     if close:
         verdict = "WARN" if verdict == "PASS" else verdict
-        hints.append("배치가 " + ", ".join(f"{n}({v})" for n, v in close[:3]) + " 와 거의 같아요 → 다른 배치로 다시: design.seed를 바꾸거나 design.layout(split·bento·news·poster)을 지정하세요")
+        hints.append("배치가 " + ", ".join(f"{n}({v})" for n, v in close[:3]) + " 와 거의 같아요 → 다른 배치로 다시: design.seed를 바꾸거나 design.layout(column·left·right·rail·stair·news·poster …)을 지정하세요")
     plain = max((m.get("plain_cards", 0) for k, m in metrics.items() if k != "title"), default=0)
     summ["plain_cards"] = plain
     if plain >= 3:

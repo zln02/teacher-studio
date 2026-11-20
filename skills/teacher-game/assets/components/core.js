@@ -192,7 +192,7 @@ H.lay = function(){ return SPEC.layoutCfg || {}; };
 H.applyLayout = function(){
   var c = H.lay(), b = document.body; if (!b) return;
   function set(k, v){ if (v && v !== "default" && v !== "center" && v !== "md") b.setAttribute(k, v); else b.removeAttribute(k); }
-  set("data-layout", c.layout === "stack" ? "" : c.layout); set("data-choice", c.choice); set("data-card", c.card); set("data-score", c.score);
+  set("data-layout", c.layout === "stack" ? "" : c.layout); set("data-ans", c.ans); set("data-choice", c.choice); set("data-card", c.card); set("data-score", c.score);
   set("data-title", c.title); set("data-title-scale", c.titleScale); set("data-tpos", c.tpos);
   b.setAttribute("data-mech", SPEC.mechanic); set("data-style", c.css);
   set("data-lockpos", SPEC.mechanic === "escape" && c.mech === "side" && b.getAttribute("data-hostcol") !== "1" ? "side" : "");

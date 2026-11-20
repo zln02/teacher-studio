@@ -1,7 +1,7 @@
 # Advanced (read only the part you need)
 
 ## A. How the look is chosen
-- Default `design.theme` is `auto`: every build draws a fresh combination from 12 styles (`neon-cyber` · `gold-luxury` · `pop-colorful` · `festival-party` · `tv-gameshow` · `glass-3d` · `anime-cartoon` · `pastel-cute` · `retro-pixel` · `minimal-premium` · `chalk-paper` · `nature-calm`), 5 question layouts and button / card / scoreboard / title variants. The build prints `design.seed=N`; the same seed gives the same look.
+- Default `design.theme` is `auto`: every build draws a fresh combination from 12 styles (`neon-cyber` · `gold-luxury` · `pop-colorful` · `festival-party` · `tv-gameshow` · `glass-3d` · `anime-cartoon` · `pastel-cute` · `retro-pixel` · `minimal-premium` · `chalk-paper` · `nature-calm`), 10 question layouts (footprints that differ: full, upper band, lower third, centre, left, right, rail, stair, bento) and button / card / scoreboard / title variants. The build prints `design.seed=N`; the same seed gives the same look.
 - `design.words` (우주·바다·동화·숲·역사·긴장감·따뜻하게·고급스럽게·송년·스포츠·과학 …) and `mood` pick the backdrop, helper character, props, celebration, title font and music (`scripts/theme_auto.py`; same words -> same result).
 - The nine ported worlds are used only when the request names that world: 「방송국 퀴즈쇼」 `tv-studio` · 「강당 종 울리기」 `auditorium-bell` · `space-station` · 「거북선」 `joseon-war-room` · `antidote-lab` · `sun-temple` · `post-office-night` · `cell-feeding` · 「분리배출」 `recycle-robot`.
 - Preview without building: `python3 scripts/style_auto.py --spec spec.json`, `python3 scripts/layout_auto.py --spec spec.json`.
