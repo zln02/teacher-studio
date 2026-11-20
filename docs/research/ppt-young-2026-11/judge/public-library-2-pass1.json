@@ -1,0 +1,28 @@
+{
+ "topic": "public-library",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "bare",
+  "B": "harness"
+ },
+ "judge": {
+  "A": {
+   "content": 3,
+   "design": 3,
+   "readability": 2,
+   "fit": 3,
+   "note": "A's card-and-chart layout uses a green palette that varies from slide to slide, and it covers budget, programmes and next year's plan. However, the bar charts on slides 4, 5 and 7 have no labels for genre, month or survey item, so the data can't be interpreted. The titles on the cover and the final slide are dark text on a dark green background and are almost impossible to read."
+  },
+  "B": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 5,
+   "note": "B follows a report structure suited to the education office: table of contents, summary, results, budget execution, satisfaction, problems with causes and fixes, and next year's plan. It is specific throughout, with year-on-year comparisons, an execution-rate table and a quarterly plan. The design is consistent but leans heavily on tables and dark navy, and the chart text is small in places."
+  },
+  "winner": "B"
+ },
+ "cost": 0.2685402,
+ "raw": "{\"A\":{\"content\":3,\"design\":3,\"readability\":2,\"fit\":3,\"note\":\"A's card-and-chart layout uses a green palette that varies from slide to slide, and it covers budget, programmes and next year's plan. However, the bar charts on slides 4, 5 and 7 have no labels for genre, month or survey item, so the data can't be interpreted. The titles on the cover and the final slide are dark text on a dark green background and are almost impossible to read.\"},\"B\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":5,\"note\":\"B follows a report structure suited to the education office: table of contents, summary, results, budget execution, satisfaction, problems with causes and fixes, and next year's plan. It is specific throughout, with year-on-year comparisons, an execution-rate table and a quarterly plan. The design is consistent but leans heavily on tables and dark navy, and the chart text is small in places.\"},\"winner\":\"B\"}"
+}
