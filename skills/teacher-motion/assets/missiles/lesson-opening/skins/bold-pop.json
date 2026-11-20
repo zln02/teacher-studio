@@ -2,15 +2,15 @@
   "title": "수업 시작 화면",
   "skin": "bold-pop",
   "vars": {
-    "bg1": "#ffd23a",
-    "bg2": "#ff6b3d",
+    "bg1": "#eece71",
+    "bg2": "#e08469",
     "ink": "#141414",
     "text": "#141414",
     "primary": "#2f4bff",
-    "accent": "#ff3d8b",
-    "mint": "#19d39e",
-    "font-display": "\"Black Han Sans\",\"Do Hyeon\",\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif",
-    "font-body": "\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif"
+    "accent": "#d27590",
+    "mint": "#62cca4",
+    "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
+    "font-body": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif"
   },
   "count": 5,
   "label": "오늘의 주제",

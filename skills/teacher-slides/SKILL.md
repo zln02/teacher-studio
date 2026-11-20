@@ -119,3 +119,5 @@ Old `fire slides/lesson-deck/<skin>` (3 skins) still works but is the **lowest p
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = per-slide message + `note`; 콘티 = the Outline table in Flow step 2, or the thumbnail sheet: `py ../teacher-studio/scripts/storyboard.py deck.json --html sheet.html --open` (reads deck.json as is). Checkpoint: outline/콘티 before building, then the first deck; deliver with `deliver.py deck.html` (PDF, QR, privacy check for parent decks). Skip for 「바로/알아서」.
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

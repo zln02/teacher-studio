@@ -69,92 +69,107 @@ CORNERS = [(1920, 0), (0, 1080), (1920, 1080), (0, 0)]
 
 
 def background(dz: dict, idx: int, role: str) -> str:
-    """Slide background SVG: soft gradient + ONE quiet motif. role: cover | section | content."""
+    """Slide background SVG: a flat tonal field + ONE quiet structural motif. role: cover | section | content.
+
+    Matte by rule (shared/design/DESIGN-RULES.md): tonal planes, hairlines, fine grain, at most one accent shape. No radial glow, no blur filter,
+    no light beams, no scattered confetti. The motif moves with the seed and the slide index, so decks do not share a skeleton.
+    Motifs: dotgrid frame blocks papercut panels planes halftone bands hills pixel minimal chalk."""
     c, gen, seed = dz["colors"], dz["lang"]["bg"], dz["seed"]
+    gen = {"neongrid": "dotgrid", "bokeh": "frame", "memphis": "blocks", "bunting": "papercut", "stage": "panels", "glassblobs": "planes", "speed": "halftone",
+           "leaves": "bands"}.get(gen, gen)
     r = random.Random(seed * 7919 + idx * 31)
     s = {"cover": 1.0, "section": 0.9, "content": 0.5}.get(role, 0.5)
     cx, cy = CORNERS[(idx + seed) % 4]
-    if gen in ("bokeh", "neongrid", "glassblobs", "stage"):
-        cx, cy = 1920, (0 if idx % 2 == 0 else 1080)  # glows sit on the right edge, away from left-aligned text
-    ang = (idx * 37 + seed * 13) % 360
+    right, top = cx > 0, cy == 0
     uid = f"g{idx}"
-    defs = (f'<linearGradient id="{uid}" gradientTransform="rotate({ang} .5 .5)"><stop offset="0" stop-color="{c["bg1"]}"/><stop offset="1" stop-color="{c["bg2"]}"/></linearGradient>'
-            f'<radialGradient id="{uid}r"><stop offset="0" stop-color="{c["pr"]}" stop-opacity=".34"/><stop offset="1" stop-color="{c["pr"]}" stop-opacity="0"/></radialGradient>'
-            f'<radialGradient id="{uid}w"><stop offset="0" stop-color="{c["tx"]}" stop-opacity=".14"/><stop offset="1" stop-color="{c["tx"]}" stop-opacity="0"/></radialGradient>')
+    defs = (f'<linearGradient id="{uid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="{c["bg1"]}"/><stop offset="1" stop-color="{c["bg2"]}"/></linearGradient>')
     body = [f'<rect width="1920" height="1080" fill="url(#{uid})"/>']
-    pr, ac, tx = c["pr"], c["ac"], c["tx"]
-    if gen == "neongrid":
-        horizon = 700 if role != "content" else 840
-        lines = []
-        for k in range(1, 9):
-            y = horizon + (1080 - horizon) * (k / 8) ** 1.7
-            lines.append(f'<line x1="0" x2="1920" y1="{y:.0f}" y2="{y:.0f}"/>')
-        for k in range(-12, 13):
-            lines.append(f'<line x1="960" y1="{horizon}" x2="{960 + k * 190}" y2="1080"/>')
-        body.append(f'<g stroke="{pr}" stroke-opacity="{_op(.22 * s)}" stroke-width="2">{"".join(lines)}</g>')
-        body.append(f'<circle cx="{cx}" cy="{cy}" r="{520 * (0.6 + s * .4):.0f}" fill="url(#{uid}r)" opacity="{_op(.45 * s + .1)}"/>')
-    elif gen == "bokeh":
-        body.append(f'<circle cx="{cx}" cy="{cy}" r="{620 * (0.7 + s * .3):.0f}" fill="url(#{uid}r)" opacity="{_op(.2 * s + .03)}"/>')
-        body.append(f'<circle cx="{cx}" cy="{cy}" r="{360}" fill="none" stroke="{pr}" stroke-opacity="{_op(.25 * s)}" stroke-width="2"/>')
-    elif gen == "memphis":
-        rad = 420 if role != "content" else 230
-        body.append(f'<circle cx="{cx}" cy="{cy}" r="{rad}" fill="{pr}" fill-opacity="{_op(.95 if role == "cover" else .85 if role == "section" else .18)}"/>')
-        body.append(f'<circle cx="{cx}" cy="{cy}" r="{rad + 70}" fill="none" stroke="{ac}" stroke-opacity="{_op(.8 if role != "content" else .3)}" stroke-width="6"/>')
-    elif gen == "bunting":
-        n, y0 = 9, 0
-        fl = []
+    pr, ac, tx, line = c["pr"], c["ac"], c["tx"], c["line"]
+    big = role != "content"
+    if gen == "dotgrid":
+        dots = "".join(f'<circle cx="{x}" cy="{y}" r="1.6"/>' for y in range(36, 1080, 72) for x in range(36, 1920, 72))
+        body.append(f'<g fill="{tx}" fill-opacity="{_op(.10 if big else .06)}">{dots}</g>')
+        y = 150 if top else 930
+        body.append(f'<rect x="96" y="{y}" width="1728" height="2" fill="{tx}" fill-opacity=".14"/><rect x="{96 if not right else 1704}" y="{y - 6}" width="120" height="8" fill="{pr}"/>')
+    elif gen == "frame":
+        m = 44 if big else 36
+        body.append(f'<rect x="{m}" y="{m}" width="{1920 - 2 * m}" height="{1080 - 2 * m}" fill="none" stroke="{pr}" stroke-opacity="{_op(.6 if big else .3)}" stroke-width="2"/>')
+        if big:
+            body.append(f'<rect x="{m + 12}" y="{m + 12}" width="{1920 - 2 * m - 24}" height="{1080 - 2 * m - 24}" fill="none" stroke="{pr}" stroke-opacity=".28" stroke-width="1"/>')
+    elif gen == "blocks":
+        # the corner block always sits on the RIGHT edge (text starts on the left), top or bottom by seed: it never runs under a title or kicker
+        rad = 300 if big else 190
+        body.append(f'<circle cx="1920" cy="{cy}" r="{rad}" fill="{pr}" fill-opacity="{_op(1 if big else .14)}"/>')
+        if big:
+            by = 1080 - 96 if top else 0
+            body.append(f'<rect x="1344" y="{by}" width="384" height="96" fill="{ac}"/><rect x="1248" y="{by}" width="96" height="96" fill="{tx}"/>')
+    elif gen == "papercut":
+        n, hgt = 10, (88 if big else 46)
+        sh = []
         for k in range(n):
-            x = 60 + k * (1800 / (n - 1))
-            sag = 38 * math.sin(math.pi * k / (n - 1))
-            col = pr if k % 2 == 0 else ac
-            fl.append(f'<path d="M{x - 34:.0f} {y0 + sag:.0f}h68l-34 {44 if role != "content" else 30}z" fill="{col}" fill-opacity="{_op(.8 if role != "content" else .35)}"/>')
-        body.append("".join(fl))
-    elif gen == "stage":
-        x0 = 480 + (idx % 3) * 480
-        body.append(f'<path d="M{x0 - 40} 0L{x0 + 40} 0L{x0 + 420} 1080L{x0 - 420} 1080z" fill="url(#{uid}w)" opacity="{_op(.5 * s + .15)}"/>')
-        body.append(f'<ellipse cx="{x0}" cy="1040" rx="520" ry="70" fill="{pr}" fill-opacity="{_op(.18 * s)}"/>')
-    elif gen == "glassblobs":
-        body.append(f'<filter id="{uid}f" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="90"/></filter>')
-        ox, oy = 1920 - cx, 1080 - cy
-        body.append(f'<g filter="url(#{uid}f)"><circle cx="{cx}" cy="{cy}" r="{420 * (0.7 + s * .3):.0f}" fill="{pr}" fill-opacity="{_op(.26 * s + .04)}"/>'
-                    f'<circle cx="{ox}" cy="{oy}" r="{300 * (0.7 + s * .3):.0f}" fill="{pr}" fill-opacity="{_op(.16 * s + .03)}"/></g>')
-    elif gen == "speed":
-        fx, fy = (cx, cy)
-        ls = []
-        for k in range(36):
-            a = 2 * math.pi * k / 36 + r.uniform(-.03, .03)
-            ls.append(f'<line x1="{fx + 520 * math.cos(a):.0f}" y1="{fy + 520 * math.sin(a):.0f}" x2="{fx + 2600 * math.cos(a):.0f}" y2="{fy + 2600 * math.sin(a):.0f}"/>')
-        body.append(f'<g stroke="{tx}" stroke-opacity="{_op(.10 * s + .03)}" stroke-width="{4 if role != "content" else 2}">{"".join(ls)}</g>')
+            x = 96 + k * 192
+            col = (pr, ac)[(k + seed) % 2]
+            op = _op(1 if big else .35)
+            kind = (k + seed + idx) % 3
+            if kind == 0:
+                sh.append(f'<path d="M{x - hgt} 0a{hgt} {hgt} 0 0 0 {2 * hgt} 0z" fill="{col}" fill-opacity="{op}"/>')
+            elif kind == 1:
+                sh.append(f'<path d="M{x - hgt} 0h{2 * hgt}l{-hgt} {hgt * 1.1:.0f}z" fill="{col}" fill-opacity="{op}"/>')
+            else:
+                sh.append(f'<rect x="{x - hgt * .7:.0f}" y="0" width="{hgt * 1.4:.0f}" height="{hgt * .8:.0f}" fill="{col}" fill-opacity="{op}"/>')
+        body.append("".join(sh))
+    elif gen == "panels":
+        n = (6, 8, 10)[(seed + idx) % 3]
+        w = 1920 / n
+        body.append("".join(f'<rect x="{k * w:.0f}" y="0" width="{w + 1:.0f}" height="1080" fill="{tx}" fill-opacity="{_op(.035 if big else .02)}"/>' for k in range(0, n, 2)))
+        body.append(f'<rect x="0" y="{918 if big else 1000}" width="1920" height="{6 if big else 3}" fill="{pr}" fill-opacity="{_op(1 if big else .5)}"/>')
+    elif gen == "planes":
+        x0 = (1040, 1200, 880, 1320)[(seed + idx) % 4] if right else (880, 720, 1040, 600)[(seed + idx) % 4]
+        if right:
+            body.append(f'<path d="M{x0} 0H1920V1080H{x0 - 480}z" fill="{tx}" fill-opacity="{_op(.045 * s + .01)}"/><path d="M{x0 + 420} 0H1920V1080H{x0 - 60}z" fill="{tx}" fill-opacity="{_op(.045 * s + .01)}"/>')
+        else:
+            body.append(f'<path d="M0 0H{x0}L{x0 - 480} 1080H0z" fill="{tx}" fill-opacity="{_op(.045 * s + .01)}"/><path d="M0 0H{x0 - 420}L{x0 - 900} 1080H0z" fill="{tx}" fill-opacity="{_op(.045 * s + .01)}"/>')
+    elif gen == "halftone":
+        dots = []
+        for j in range(22):
+            for k in range(30):
+                rr = 8 - (k * k + j * j) ** 0.5 * 0.3
+                if rr > 0.7:
+                    dots.append(f'<circle cx="{(1896 - k * 26) if right else (24 + k * 26)}" cy="{(24 + j * 26) if top else (1056 - j * 26)}" r="{rr:.1f}"/>')
+        body.append(f'<g fill="{tx}" fill-opacity="{_op(.2 if big else .1)}">{"".join(dots)}</g>')
+        if big:
+            body.append(f'<rect x="0" y="1056" width="1920" height="24" fill="{tx}"/>')
+    elif gen == "bands":
+        n = 3 if big else 2
+        hgt = 62 if big else 34
+        for k in range(n):
+            y = 1080 - (n - k) * hgt
+            amp = 14 + 4 * k
+            ph = (seed + idx + k * 2) % 5 * 120
+            d = f"M0 {y}C{480 + ph % 200} {y - amp} {900 + ph % 300} {y + amp} 1320 {y - amp / 2:.0f}S1800 {y + amp} 1920 {y}V1080H0z"
+            body.append(f'<path d="{d}" fill="{pr}" fill-opacity="{_op(.10 + .09 * k)}"/>')
     elif gen == "hills":
-        h = 230 if role != "content" else 120
+        h = 230 if big else 120
         p1 = f"M0 {1080 - h}C400 {1080 - h - 90} 800 {1080 - h + 40} 1200 {1080 - h - 30}S1700 {1080 - h - 80} 1920 {1080 - h - 20}V1080H0z"
         p2 = f"M0 {1080 - h * .55:.0f}C500 {1080 - h * .9:.0f} 900 {1080 - h * .3:.0f} 1400 {1080 - h * .7:.0f}S1800 {1080 - h * .5:.0f} 1920 {1080 - h * .6:.0f}V1080H0z"
-        body.append(f'<path d="{p1}" fill="{pr}" fill-opacity="{_op(.14 + .05 * s)}"/><path d="{p2}" fill="{ac}" fill-opacity="{_op(.16 + .05 * s)}"/>')
+        body.append(f'<path d="{p1}" fill="{pr}" fill-opacity="{_op(.12 + .05 * s)}"/><path d="{p2}" fill="{ac}" fill-opacity="{_op(.18 + .05 * s)}"/>')
     elif gen == "pixel":
-        u = 48 if role != "content" else 32
+        u = 48 if big else 32
         sq = []
-        for k in range(7 if role != "content" else 4):
+        for k in range(7 if big else 4):
             for j in range(k + 1):
                 x = (1920 - (k + 1) * u) if cx else k * u
                 y = 1080 - (j + 1) * u
                 sq.append(f'<rect x="{x}" y="{y}" width="{u}" height="{u}"/>')
         body.append(f'<g fill="{pr}" fill-opacity="{_op(.22 * s + .06)}">{"".join(sq)}</g>')
     elif gen == "minimal":
-        body.append(f'<rect x="56" y="56" width="1808" height="968" fill="none" stroke="{tx}" stroke-opacity=".14" stroke-width="2"/>')
-        if role != "content":
-            body.append(f'<circle cx="{cx}" cy="{cy}" r="440" fill="none" stroke="{pr}" stroke-opacity=".22" stroke-width="2"/>')
+        body.append(f'<rect x="96" y="{96 if top else 982}" width="1728" height="2" fill="{tx}" fill-opacity=".14"/>')
+        if big:
+            body.append(f'<rect x="{96 if not right else 1704}" y="{90 if top else 976}" width="120" height="8" fill="{pr}"/>')
     elif gen == "chalk":
-        body.append(f'<rect x="48" y="48" width="1824" height="984" rx="18" fill="none" stroke="{tx}" stroke-opacity=".4" stroke-width="3" stroke-dasharray="26 14"/>')
-        dots = "".join(f'<circle cx="{r.randint(60, 1860)}" cy="{r.randint(60, 1020)}" r="{r.choice((1.5, 2, 3))}"/>' for _ in range(46))
-        body.append(f'<g fill="{tx}" fill-opacity=".13">{dots}</g>')
-    elif gen == "leaves":
-        lv = []
-        for k in range(3 if role != "content" else 2):
-            a = (k - 1) * 32 + (20 if cx else 160)
-            L = (520 - 90 * k) * (0.6 + s * .4)
-            col = pr if k % 2 == 0 else ac
-            lv.append(f'<g transform="translate({cx} {cy}) rotate({a + (180 if cy else 0)})"><path d="M0 0C{L * .25:.0f} {-L * .32:.0f} {L * .75:.0f} {-L * .22:.0f} {L:.0f} 0C{L * .75:.0f} {L * .22:.0f} {L * .25:.0f} {L * .32:.0f} 0 0z" fill="{col}" fill-opacity="{_op(.14 + .06 * s)}"/></g>')
-        body.append("".join(lv))
+        body.append(f'<rect x="48" y="48" width="1824" height="984" rx="14" fill="none" stroke="{tx}" stroke-opacity=".4" stroke-width="3" stroke-dasharray="26 14"/>')
+        dots = "".join(f'<circle cx="{r.randint(60, 1860)}" cy="{r.randint(60, 1020)}" r="{r.choice((1.5, 2, 3))}"/>' for _ in range(40))
+        body.append(f'<g fill="{tx}" fill-opacity=".10">{dots}</g>')
     return f'<svg class="bgart" viewBox="0 0 1920 1080" preserveAspectRatio="none" aria-hidden="true"><defs>{defs}</defs>{"".join(body)}</svg>'
 
 

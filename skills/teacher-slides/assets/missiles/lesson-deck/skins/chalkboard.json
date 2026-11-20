@@ -6,7 +6,7 @@
   "bg2": "#17342a",
   "text": "#f3f0e6",
   "muted": "rgba(243,240,230,.86)",
-  "primary": "#ffe27a",
+  "primary": "#e5d18a",
   "accent": "#9fd8ff",
   "pink": "#ffa9bb",
   "card": "rgba(255,255,255,.04)",
@@ -14,7 +14,7 @@
   "chalk-line": "rgba(243,240,230,.82)",
   "ic-fill": "rgba(159,216,255,.22)",
   "ic-fill2": "rgba(255,226,122,.2)",
-  "font-display": "\"Jua\",\"Do Hyeon\",\"Noto Sans KR\",sans-serif",
+  "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
   "font-body": "\"Gowun Batang\",\"Nanum Myeongjo\",serif",
   "font-serif": "\"Gowun Batang\",serif"
  },

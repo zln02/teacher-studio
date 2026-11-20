@@ -138,3 +138,5 @@ python3 scripts/check_page.py page.html
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = narration/captions; 콘티 = shot list with seconds (sum = target length): write `{"shots":[{"title","seconds","narration","motion"}]}` and run `py ../teacher-studio/scripts/storyboard.py shots.json --html sheet.html --open`. Checkpoint: the shot list before `fire`, then the first render; deliver (mp4/webm, TV) with `deliver.py`. One-screen countdowns/openings: skip the sheet.
+
+Design rules (type, spacing, colour, ornaments, the 5-point 「밤티 검사」 gate): [`shared/design/DESIGN-RULES.md`](shared/design/DESIGN-RULES.md)

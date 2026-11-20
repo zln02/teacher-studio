@@ -8,12 +8,12 @@
     "text": "#ffffff",
     "muted": "rgba(255,255,255,.78)",
     "primary": "#e3121b",
-    "accent": "#ffc21a",
+    "accent": "#f1c66b",
     "card": "#0b1f4d",
     "line": "rgba(255,255,255,.2)",
-    "font-display": "\"Black Han Sans\",\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif",
-    "font-body": "\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
-    "font-en": "\"Anton\",\"Oswald\",\"Impact\",\"Arial Narrow\",\"Black Han Sans\",\"Noto Sans CJK KR\",sans-serif"
+    "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
+    "font-body": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
+    "font-en": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif"
   },
   "hook": { "kicker": "오늘의 질문", "text": "영어 한 문장으로 세계와 연결될 수 있을까?" },
   "subject": { "name": "영어", "en": "ENGLISH", "sub": "2학년 영어 시간" },

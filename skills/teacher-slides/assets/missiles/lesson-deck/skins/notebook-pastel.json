@@ -6,7 +6,7 @@
   "bg2": "#efe9db",
   "text": "#3b3a4a",
   "muted": "#6d6a7c",
-  "primary": "#ff7a9c",
+  "primary": "#ea8ba0",
   "primary-ink": "#e2557b",
   "accent": "#6cb8f0",
   "pc1": "#fff0a6",
@@ -22,8 +22,8 @@
   "ic-fill": "rgba(255,255,255,.75)",
   "line": "rgba(60,60,80,.25)",
   "card": "#ffffff",
-  "font-display": "\"Gaegu\",\"Jua\",\"Noto Sans KR\",sans-serif",
-  "font-body": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
+  "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
+  "font-body": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
   "font-serif": "\"Gaegu\",serif"
  },
  "world": {

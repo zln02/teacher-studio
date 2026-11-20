@@ -28,6 +28,8 @@ for _s in (sys.stdout, sys.stderr):
 HERE = Path(__file__).resolve().parent
 SKILL = HERE.parent
 sys.path.insert(0, str(HERE))
+sys.path.insert(0, str((HERE.parent / "shared" / "design") if (HERE.parent / "shared" / "design").exists() else (HERE.parents[2] / "shared" / "design")))
+import system as ds  # noqa: E402  (shared/design/system.py: type scale, tracking, motion, polish layer)
 import build_stage  # noqa: E402
 import deck_art as art  # noqa: E402
 import deck_context as dctx  # noqa: E402
@@ -48,41 +50,41 @@ def hex_rgba(h: str, a: float) -> str:
     return f"rgba({r},{g},{b},{a})"
 
 
+# Card, title and emphasis treatments. All matte: ONE neutral falling shadow at most, never a coloured glow, never a translucent blur
+# (shared/design/DESIGN-RULES.md). "glass" / "glow" / "stack3d" stay as accepted names and are drawn the new way.
 CARD_CSS = {
-    "round": ".cd{box-shadow:0 28px 56px -28px rgba(0,0,0,.28)}",
-    "flat": ".cd{box-shadow:0 20px 40px -24px rgba(0,0,0,.25)}",
-    "glass": ".cd{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.26);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}",
+    "round": ".cd{box-shadow:0 28px 56px -32px rgba(0,0,0,.3)}",
+    "flat": ".cd{border:1.5px solid var(--line);box-shadow:none}",
+    "soft": ".cd{border:1px solid var(--line);box-shadow:0 34px 60px -36px rgba(0,0,0,.6)}",
+    "glass": ".cd{border:1px solid var(--line);box-shadow:0 34px 60px -36px rgba(0,0,0,.6)}",
     "hair": ".cd{background:transparent;border:1.5px solid var(--line)}",
-    "sticker": ".cd{border:4px solid var(--tx);box-shadow:10px 10px 0 var(--pr)}.ch{border:3px solid var(--tx)}",
-    "ticket": ".cd{border-left:14px solid var(--pr);border-radius:calc(var(--rad)*.5)}",
-    "polaroid": ".cd{box-shadow:0 24px 48px -24px rgba(0,0,0,.45);border-radius:10px}",
-    "pixel": ".cd{border:6px solid var(--tx);box-shadow:8px 8px 0 var(--pr);border-radius:0}.ch,.tbtn,.vbtn,.chl{border-radius:0}.disc,.dot,.dotb,.chip{border-radius:0}",
+    "sticker": ".cd{border:3px solid var(--tx);box-shadow:8px 8px 0 var(--tx)}.ch{border:3px solid var(--tx)}",
+    "ticket": ".cd{border-left:12px solid var(--pr);border-radius:calc(var(--rad)*.5)}",
+    "polaroid": ".cd{box-shadow:0 24px 48px -28px rgba(0,0,0,.4);border-radius:8px}",
+    "pixel": ".cd{border:4px solid var(--tx);box-shadow:6px 6px 0 var(--tx);border-radius:0}.ch,.tbtn,.vbtn,.chl{border-radius:0}.disc,.dot,.dotb,.chip{border-radius:0}",
     "chalk": ".cd{background:transparent;border:3px dashed var(--line)}",
 }
 TITLE_CSS = {
-    "glow": ".h{text-shadow:0 0 36px var(--glow)}",
-    "stack3d": ".h{text-shadow:4px 4px 0 var(--pr)}.on-band,.on-b,.on-panel{text-shadow:none!important}",
-    "pixel": ".h{text-shadow:4px 4px 0 var(--pr)}.on-band,.on-b,.on-panel{text-shadow:none!important}",
-    "chalk": ".h{text-shadow:0 0 3px rgba(255,255,255,.35)}",
-    "plain": "", "serif": "", "underline": "", "stamp": "",
+    "rule": "", "glow": "", "stack3d": "", "chalk": "", "plain": "", "serif": "", "underline": "", "stamp": "",
+    "pixel": ".h{letter-spacing:.02em}",
 }
 EM_CSS = {
     "color": "em{color:var(--emc)}",
-    "marker": "em{background:linear-gradient(transparent 80%,var(--pr) 80%,var(--pr) 93%,transparent 93%);padding:0 .06em}",
-    "underline": "em{box-shadow:inset 0 -0.13em 0 var(--pr)}",
+    "marker": "em{background:linear-gradient(transparent 78%,var(--hl) 78%,var(--hl) 94%,transparent 94%);padding:0 .04em}",
+    "underline": "em{box-shadow:inset 0 -0.1em 0 var(--pr)}",
 }
 
 
 def style_css(dz: dict) -> str:
     c, lang, f = dz["colors"], dz["lang"], dz["fonts"]
     serif = lang["font"] == "serif"
-    fam = lambda n: f'"{n}",' + ('"Noto Serif KR",serif' if "Serif" in n else '"Apple SD Gothic Neo","Malgun Gothic",sans-serif')
+    fam = lambda n: (ds.STACK_SERIF if "Serif" in n else ds.STACK_SANS)  # the studio face first, then Noto, then system fonts
     v = (f":root{{--bg1:{c['bg1']};--bg2:{c['bg2']};--tx:{c['tx']};--mu:{c['mu']};--card:{c['card']};--ct:{c['ct']};--line:{c['line']};--pr:{c['pr']};--bt:{c['bt']};--ac:{c['ac']};"
          f"--emc:{c['emc']};--emcc:{c['emcc']};--hl:{c['hl']};--hlc:{c['hlc']};--glow:{hex_rgba(c['pr'], .55)};--good:{c['good']};--bad:{c['bad']};"
          f"--rad:{lang['rad']}px;--tw:{lang['tw']};--tls:{lang['ls']}em;--fd:{fam(f['display'])};--fb:{fam(f['body'])}}}")
     em = EM_CSS[lang["em"]] + (".ex em,.ch em{box-shadow:none}" if lang["em"] != "color" else "")
     extra = ".q,.lead{font-family:var(--fd)}" if serif else ""
-    return "\n".join([v, CARD_CSS[lang["card"]], TITLE_CSS.get(lang["title"], ""), em, extra, f"body{{background:{c['bg1']}}}"])
+    return "\n".join([v, CARD_CSS[lang["card"]], TITLE_CSS.get(lang["title"], ""), em, extra, f"body{{background:{c['bg1']}}}", ds.css_vars("stage"), ds.polish_css("deck")])
 
 
 def pick_layouts(dz: dict, slides: list[dict]) -> list[tuple[str, str, object]]:

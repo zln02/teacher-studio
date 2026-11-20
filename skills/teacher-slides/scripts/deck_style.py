@@ -29,38 +29,37 @@ STYLES = style_core.STYLES
 # ---- composition language per style --------------------------------------------------------------------------------
 # font: sans | serif   tw: title weight   ls: title letter-spacing(em)   title: treatment   card: card style   em: emphasis style
 # bg: background generator   trans: slide entrance   prefer: layout family weights   rad: radius px
+# The slide language follows the shared style table (shared/design/styles.py: grid, type weight/tracking, radius, ornaments). No glow, no 3D title,
+# no weight above 800 (system.MAX_WEIGHT); the backdrop names are the matte set drawn by deck_art.background.
 LANG: dict[str, dict] = {
-    "neon-cyber": dict(font="sans", tw=900, ls=-0.02, title="glow", card="glass", em="color", bg="neongrid", trans="wipe", rad=22,
-                       prefer={"split": 3, "bigtype": 3, "bento": 3, "editorial": 1, "stack": 1, "poster": 2}),
-    "gold-luxury": dict(font="serif", tw=700, ls=-0.01, title="serif", card="hair", em="color", bg="bokeh", trans="fade", rad=4,
-                        prefer={"editorial": 4, "poster": 3, "split": 3, "bigtype": 1, "bento": 1, "stack": 2}),
-    "pop-colorful": dict(font="sans", tw=900, ls=-0.03, title="stack3d", card="sticker", em="marker", bg="memphis", trans="iris", rad=28,
-                         prefer={"bento": 4, "poster": 3, "bigtype": 3, "split": 2, "stack": 2, "editorial": 1}),
-    "festival-party": dict(font="sans", tw=900, ls=-0.02, title="stamp", card="polaroid", em="marker", bg="bunting", trans="iris", rad=30,
-                           prefer={"bento": 3, "stack": 3, "poster": 2, "split": 2, "bigtype": 2, "editorial": 1}),
-    "tv-gameshow": dict(font="sans", tw=900, ls=-0.02, title="stack3d", card="ticket", em="color", bg="stage", trans="wipe", rad=14,
-                        prefer={"split": 4, "bigtype": 3, "bento": 2, "poster": 2, "stack": 1, "editorial": 1}),
-    "glass-3d": dict(font="sans", tw=800, ls=-0.02, title="plain", card="glass", em="color", bg="glassblobs", trans="fade", rad=36,
-                     prefer={"bento": 4, "split": 3, "poster": 2, "editorial": 2, "stack": 1, "bigtype": 2}),
-    "anime-cartoon": dict(font="sans", tw=900, ls=-0.03, title="stack3d", card="sticker", em="marker", bg="speed", trans="wipe", rad=20,
-                          prefer={"split": 4, "bigtype": 3, "bento": 2, "poster": 2, "stack": 1, "editorial": 1}),
-    "pastel-cute": dict(font="sans", tw=800, ls=-0.02, title="underline", card="round", em="marker", bg="hills", trans="iris", rad=44,
+    "neon-cyber": dict(font="sans", tw=700, ls=-0.04, title="rule", card="hair", em="color", bg="dotgrid", trans="fade", rad=6,
+                       prefer={"editorial": 4, "split": 3, "stack": 3, "bigtype": 2, "bento": 1, "poster": 1}),
+    "gold-luxury": dict(font="serif", tw=600, ls=-0.02, title="serif", card="hair", em="color", bg="frame", trans="fade", rad=2,
+                        prefer={"poster": 4, "editorial": 4, "split": 2, "bigtype": 1, "bento": 1, "stack": 1}),
+    "pop-colorful": dict(font="sans", tw=800, ls=-0.045, title="plain", card="sticker", em="marker", bg="blocks", trans="iris", rad=20,
+                         prefer={"bento": 4, "bigtype": 4, "poster": 2, "split": 2, "stack": 1, "editorial": 1}),
+    "festival-party": dict(font="sans", tw=800, ls=-0.04, title="plain", card="round", em="marker", bg="papercut", trans="iris", rad=28,
+                           prefer={"stack": 4, "poster": 3, "bento": 2, "bigtype": 2, "split": 1, "editorial": 1}),
+    "tv-gameshow": dict(font="sans", tw=800, ls=-0.035, title="rule", card="ticket", em="color", bg="panels", trans="wipe", rad=10,
+                        prefer={"split": 5, "bigtype": 3, "bento": 1, "poster": 1, "stack": 1, "editorial": 1}),
+    "glass-3d": dict(font="sans", tw=700, ls=-0.035, title="plain", card="soft", em="color", bg="planes", trans="fade", rad=28,
+                     prefer={"bento": 5, "split": 3, "poster": 1, "editorial": 1, "stack": 1, "bigtype": 2}),
+    "anime-cartoon": dict(font="sans", tw=800, ls=-0.045, title="plain", card="sticker", em="marker", bg="halftone", trans="wipe", rad=12,
+                          prefer={"split": 4, "bigtype": 4, "bento": 2, "poster": 1, "stack": 1, "editorial": 1}),
+    "pastel-cute": dict(font="sans", tw=760, ls=-0.035, title="underline", card="round", em="marker", bg="hills", trans="iris", rad=40,
                         prefer={"bento": 4, "stack": 3, "center": 2, "split": 2, "poster": 1, "editorial": 1, "bigtype": 1}),
-    "retro-pixel": dict(font="sans", tw=900, ls=0.0, title="pixel", card="pixel", em="color", bg="pixel", trans="wipe", rad=0,
+    "retro-pixel": dict(font="sans", tw=800, ls=0.02, title="pixel", card="pixel", em="color", bg="pixel", trans="wipe", rad=0,
                         prefer={"split": 3, "bento": 3, "bigtype": 2, "stack": 2, "poster": 1, "editorial": 1}),
-    "minimal-premium": dict(font="sans", tw=800, ls=-0.02, title="plain", card="hair", em="underline", bg="minimal", trans="fade", rad=2,
-                            prefer={"editorial": 4, "poster": 4, "split": 3, "bigtype": 2, "stack": 1, "bento": 1}),
-    "chalk-paper": dict(font="sans", tw=800, ls=-0.01, title="chalk", card="chalk", em="underline", bg="chalk", trans="fade", rad=18,
-                        prefer={"stack": 3, "split": 3, "editorial": 2, "bento": 2, "poster": 1, "bigtype": 1}),
-    "nature-calm": dict(font="sans", tw=800, ls=-0.02, title="underline", card="round", em="color", bg="leaves", trans="fade", rad=40,
-                        prefer={"stack": 3, "bento": 3, "split": 2, "editorial": 2, "poster": 1, "bigtype": 1}),
+    "minimal-premium": dict(font="sans", tw=700, ls=-0.04, title="plain", card="hair", em="underline", bg="minimal", trans="fade", rad=2,
+                            prefer={"editorial": 5, "poster": 3, "split": 2, "bigtype": 2, "stack": 1, "bento": 1}),
+    "chalk-paper": dict(font="sans", tw=700, ls=-0.02, title="chalk", card="chalk", em="underline", bg="chalk", trans="fade", rad=14,
+                        prefer={"stack": 4, "split": 3, "editorial": 2, "bento": 1, "poster": 1, "bigtype": 1}),
+    "nature-calm": dict(font="sans", tw=700, ls=-0.035, title="underline", card="flat", em="color", bg="bands", trans="fade", rad=20,
+                        prefer={"editorial": 3, "stack": 3, "split": 2, "poster": 2, "bento": 1, "bigtype": 1}),
 }
 
-SLIDE_PAL = {"anime-cartoon": {"bg1": "#fff7e0", "bg2": "#ffeec2", "text": "#0b1b3a", "card": "#ffffff", "cardText": "#0b1b3a", "cardBorder": "#0b1b3a", "primary": "#d7263d",
-                               "btnText": "#ffffff", "accent": "#1d4ed8", "good": "#0f8a4a", "bad": "#c4163a"},
-            "glass-3d": {"bg1": "#0d1633", "bg2": "#161f45", "text": "#f4f7ff", "card": "#1c2a6e", "cardText": "#f4f7ff", "cardBorder": "#9fb7ff", "primary": "#7cf2e6",
-                         "btnText": "#04201d", "accent": "#ff8bd1", "good": "#6bffb0", "bad": "#ff8a9a"},"festival-party": {"bg1": "#fff6e8", "bg2": "#ffe6c7", "text": "#3a1a0e", "card": "#ffffff", "cardText": "#3a1a0e", "cardBorder": "#3a1a0e", "primary": "#c2410c",
-                                "btnText": "#ffffff", "accent": "#f59f00", "good": "#2b8a3e", "bad": "#c92a2a"}}
+# slides use the style's own (already restrained) palette: the calmer slide-only copies were retired with the neon looks
+SLIDE_PAL: dict[str, dict] = {}
 
 # what each purpose naturally looks like (weights; a mood word or an explicit style beats these)
 PURPOSE_STYLE = {
@@ -282,7 +281,7 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
         "colors": {"bg1": bg1, "bg2": bg2, "tx": tx, "mu": mu, "card": card, "ct": ct, "cmu": cmu, "cb": mix(tx, bg1, 0.82), "line": mix(tx, bg1, 0.84), "pr": pr, "bt": pal["btnText"],
                    "ac": ac, "good": "#6ea8ff" if dark else "#1d4ed8", "bad": "#ffb454" if dark else "#c2410c", "emc": emc, "emcc": emcc, "emc2": emc2, "hl": hl, "hlc": hl_card,
                    "ink": "#1a1a1a" if not dark else "#f5f5f5"},
-        "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "Noto Sans KR", "body": "Noto Sans KR"},
+        "fonts": {"display": "Noto Serif KR" if lang["font"] == "serif" else "TS Sans", "body": "TS Sans"},
         "floor": purpose_floor, "motion": STYLES[style]["motion"],
         "context": context, "tscale": dict(rc.get("tscale") or {}), "allowed": dict(rc.get("allowed") or {}),
     }

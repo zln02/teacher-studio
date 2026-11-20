@@ -15,8 +15,8 @@
   "ic-fill": "#d9e7ff",
   "glow1": "rgba(10,102,255,.10)",
   "glow2": "rgba(0,169,157,.08)",
-  "font-display": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
-  "font-body": "\"Noto Sans KR\",\"Apple SD Gothic Neo\",\"Malgun Gothic\",sans-serif",
+  "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
+  "font-body": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
   "font-serif": "\"Nanum Myeongjo\",serif"
  },
  "world": {

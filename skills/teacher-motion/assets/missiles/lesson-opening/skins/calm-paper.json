@@ -12,9 +12,9 @@
     "accent": "#eaa384",
     "mint": "#bcd9c4",
     "sky": "#a9c6d8",
-    "font-display": "\"Jua\",\"Do Hyeon\",\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif",
+    "font-display": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif",
     "font-serif": "\"Gowun Batang\",\"Nanum Myeongjo\",\"Noto Serif CJK KR\",serif",
-    "font-body": "\"Noto Sans KR\",\"Noto Sans CJK KR\",sans-serif"
+    "font-body": "\"TS Sans\",\"Pretendard\",\"Noto Sans KR\",\"Noto Sans CJK KR\",\"Malgun Gothic\",sans-serif"
   },
   "count": 5,
   "label": "오늘의 주제",
