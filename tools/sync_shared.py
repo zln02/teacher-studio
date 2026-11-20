@@ -3,7 +3,7 @@
 """Copy shared runtime files into every skill that uses them, then zip each skill.
 
 shared/ is the source of truth. Each skill must stay self-contained when zipped, so its own copy lives in
-skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice, shell) and, for the stage skills, assets/ + scripts/.
+skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice, shell, content) and, for the stage skills, assets/ + scripts/.
 
 Usage:
     python3 tools/sync_shared.py            # copy shared -> skills, then rebuild dist/*.zip
@@ -69,7 +69,7 @@ def expected() -> dict[Path, bytes]:
             for f in _files(SHARED / "fonts"):
                 add(f, base / "fonts" / f.relative_to(SHARED / "fonts"))
         if cfg["tools"]:
-            for tool in ("ensure.py", "stamp.py"):
+            for tool in ("ensure.py", "stamp.py", "example_likeness.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
         if plan_skill in ("teacher-game", "teacher-motion", "teacher-studio", "teacher-class-tools", "teacher-slides"):
             add(SHARED / "tools" / "syntax_check.py", base / "tools" / "syntax_check.py")
@@ -87,6 +87,9 @@ def expected() -> dict[Path, bytes]:
         if cfg.get("shell", True):  # shell kit (껍데기 키트): device frames, patterns, icons for previews - every skill
             for f in _files(SHARED / "shell"):
                 add(f, base / "shell" / f.relative_to(SHARED / "shell"))
+        if cfg.get("content", True):  # content rules + expert gate (CONTENT-RULES.md): every skill's SKILL.md points at shared/content/
+            for f in _files(SHARED / "content"):
+                add(f, base / "content" / f.relative_to(SHARED / "content"))
         if cfg.get("voice"):
             add(SHARED / "voice" / "voice.js", base / "voice" / "voice.js")
         if cfg["vendor"]:

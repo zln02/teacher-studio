@@ -10,11 +10,13 @@ You write ONE short spec (content + mechanic + design direction). The scripts do
 Reply in the user's language (Korean by default), plain words, no dev terms (file, HTML, spec, script -> 「게임 파일」「설계」). The user's own template, colours or question sheet come first.
 Class use is the default; family, club and shop games are welcome with the same tool (`"use": "personal"`). Never refuse them or turn them into a lesson.
 
+Content quality first: before writing any content read references/content-items.md; pass the expert gate in shared/content/CONTENT-RULES.md.
+
 ## Recipe (do it yourself in this chat: 3-4 tool calls, about 2 minutes)
 Never hand the build to a helper agent or a background task. Never read `assets/engine.html`, `assets/components/` or `assets/themes/`.
 1. **Decide without asking** when the request names a topic or says 「알아서」「바로」: mechanic (table below), 10 questions (5-6 for a 5-minute opener), `teams` 2-4 for a class on the board, `timer` 20-30 with teams. Ask (one message, numbered, each with a default) only when the topic or unit is missing.
 2. **Show the question table first, unless told 「알아서」「바로」**: 번호 | 문제 | 정답 | 오답 보기 | 해설, then 「정답이 맞는지 확인해 주세요. '좋아'라고 하시면 만들게요.」 With 「알아서」「바로」 skip the wait and build in the same reply.
-3. **Write `spec.json`** from the exemplar below. Open `references/spec-schema.md` only for a field the exemplar does not show; copy `assets/spec-examples/<closest>.json` only for a non-quiz mechanic.
+3. **Write `spec.json`** from the content, with the fields below (other mechanics: the item shape in the table, `references/spec-schema.md`). `assets/spec-examples/` are test fixtures, not patterns: never copy one.
 4. **Say first** 「게임을 만들고 점검하는 데 2분쯤 걸려요」, then run ONE command (design + assemble + check + picture sheet):
    `python3 scripts/build.py --spec spec.json --out <이름>.html --review` (Windows: `py`)
 5. **Act on the output, in this order** (2 rebuilds at most, then say plainly what is left):
@@ -38,24 +40,23 @@ Never hand the build to a helper agent or a background task. Never read `assets/
 | anything else | closest mechanic; custom code only if the user insists (`references/advanced.md`) | |
 「복습 게임」 with no type = `quiz` with teams. Pick another mechanic when the content is pairs (용어-뜻 -> `match`) or groups (-> `sort`).
 
-## Spec exemplar (vary every value; do not copy the questions)
+## Spec fields (a shape, not a sample: every value comes from this request)
 ```json
-{"title": "중2 과학 · 빛과 파동 복습", "subtitle": "모둠 대항 10문제",
+{"title": "<학년·과목 · 단원 · 무엇을 하는 게임>", "subtitle": "<한 줄>",
  "mechanic": "quiz", "use": "class", "device": "board", "teams": 3, "timer": 25,
- "design": {"subject": "과학", "grade": 8, "mood": "신남", "words": ["빛", "무지개", "실험실"]},
+ "design": {"subject": "<과목>", "grade": 8, "mood": "<긴장감|신남|차분|따뜻함|밝음>", "words": ["<이 주제에서 나온 장면 낱말 2-3개>"]},
  "items": [
-  {"q": "물속 빨대가 꺾여 보이는 까닭은?", "choices": ["빛의 굴절", "빛의 반사", "빛의 분산", "빛의 합성"], "answer": 0,
-   "exp": "빛이 물에서 공기로 나올 때 진행 방향이 꺾여요"},
-  {"type": "ox", "q": "거울에 비친 상은 좌우가 바뀌어 보인다", "answer": 0, "exp": "평면거울은 좌우가 바뀐 상을 만들어요"}
+  {"q": "<문제>", "choices": ["<정답>", "<흔한 오개념>", "<같은 종류의 오답>", "<같은 종류의 오답>"], "answer": 0, "exp": "<까닭 한 문장>"},
+  {"type": "ox", "q": "<참·거짓이 분명한 문장>", "answer": 0, "exp": "<근거>"}
  ]}
 ```
-- Never write colours, fonts or sizes: the tool picks them (12 styles, new combination every build; the printed `design.seed` reproduces a look). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
+- Never write colours, fonts or sizes: the tool picks them (12 styles, 10 question layouts picked from the content; leave `design.seed` out: every build is a new look, the printed seed reproduces one). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
 - Family / club / shop: `"use": "personal"`; far screen or elders: `"design": {"large": true}`; student tablets: `"device": "tablet"`; phones: `"device": "phone"`.
 - The user's logo or template colours: `design.palette_from` (`../teacher-studio/references/user-colors.md`).
 
 ## Question quality bar (you are the only author of the content; the script checks the starred lines)
 1. Every question comes from the named unit at that grade's textbook level. Not sure of a fact -> leave it out (or mark 「확인 필요」 in the table). Numbers, years, units: check twice.
-2. Order easy -> hard. About 6 recall : 4 apply (a situation: 「물속 빨대가 꺾여 보이는 까닭은?」), not ten definitions.
+2. Order easy -> hard. About 6 recall : 4 apply (a situation the textbook did not word that way), not ten definitions.
 3. ★ One sentence, 25-40 characters; choices are a word or short phrase (<= 16 characters).
 4. ★ Wrong choices: same kind as the answer, about the same length, one common misconception. No 「모두 정답」「정답 없음」, at most one funny choice in the whole game.
 5. ★ `exp` on every question: one line saying WHY, not repeating the answer word (the screen already prints 「정답: …」).
@@ -83,7 +84,7 @@ Change only what was said, in the spec, then rebuild with the same `design.seed`
 | File | When |
 |---|---|
 | `references/spec-schema.md` | a spec field not in the exemplar (all options, defaults) |
-| `assets/spec-examples/*.json` | a working spec per mechanic |
+| `assets/spec-examples/*.json` | test fixtures, not patterns (one per mechanic) |
 | `references/content.md` | writing questions from the user's own material, word games, poems |
 | `references/design-rubric.md` | the look check in detail |
 | `references/teacher-language.md` | vague requests and complaints -> concrete changes |

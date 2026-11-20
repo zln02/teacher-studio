@@ -10,6 +10,8 @@ Respond in the user's language. If the user brings a template or reference, use 
 
 Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가계부 정리」「매출 추이」. Not for one-off arithmetic on a few typed numbers (do it inline), nor slides/games (-> teacher-slides / teacher-game; they can embed the chart numbers).
 
+Content quality first: before writing any content read references/content-data.md; pass the expert gate in shared/content/CONTENT-RULES.md.
+
 ## Hard rules
 1. **Never read the data file yourself** (no Read/cat/head on it). Run scripts; read only their aggregate output.
 2. Never put raw rows, names, phones or e-mails in chat, specs or output. The original file is never modified; nothing is sent anywhere.
@@ -21,7 +23,7 @@ Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가�
 ## Steps (do them yourself in this chat, 4 commands, about 1 minute; no helper agent)
 1. **Ask first (ask-first.md, 0-3 questions, each with a recommended answer; skip if clear or 「알아서」)**: who reads it? (추천: 학부모 / 초등 / 선생님 / 전문가) · what to compare (only if the columns do not make it obvious) · also want an Excel file? (추천: 아니요)
 2. `python3 scripts/profile_data.py FILE [--sheet S] --json` -> schema, types, missing, units, PII, suggestions. `.xlsx` needs openpyxl: if the output has `need_install`, show its `prompt` and rerun with `--yes` only after consent.
-3. Write a plan (copy from `assets/spec-examples/`): `python3 scripts/analyze.py --data FILE --plan plan.json --out agg.json`
+3. Write a plan from the overview's columns and the user's question (`assets/spec-examples/` = test fixtures, not patterns for the plan's shape): `python3 scripts/analyze.py --data FILE --plan plan.json --out agg.json`
    Types: `overview` (**wide table, one column per subject: use this first**; one plan line = stats of EVERY numeric column + score bands + top/bottom (pseudonyms, or groups with `group`) + which columns move together + 「다음에 해 볼 일」; the headline names all columns, never just the first), `groupby` (compare), `change` (before/after per group), `trend` (over time), `distribution` (counts/bins), `likert` (survey scale), `crosstab`, `correlation`. Filters, `top`, `test` (significance, only with n>=5 per group), `metric`, `unit` are optional.
 4. `python3 scripts/report.py --agg agg.json --out report.html --audience 초등|학부모|선생님|전문가 [--xlsx r.xlsx] [--csv a.csv]`. Wording and numbers come from the aggregates; override only via plan `narrative` (numbers still checked). If the user gave a logo/template, use its colours first: `--palette-from pal.json` (from `shared/design/color_from.py`, see `../teacher-studio/references/user-colors.md`; a means, not our design). `check_report.py` WARNs when chart colours look alike to colour-blind eyes.
 5. `python3 scripts/check_report.py report.html --agg agg.json --source FILE` must print PASS. Fix the plan (not the HTML) and rebuild, max 2 times.

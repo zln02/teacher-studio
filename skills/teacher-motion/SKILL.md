@@ -11,6 +11,8 @@ Respond in the user's language. If the user brings a template or reference, use 
 선생님(코딩 모름)이 말로 원하는 **수업용 영상·움직이는 화면**을 1920×1080 무대 위 단일 HTML로 만들고, 영상 파일(webm/MP4)로도 뽑아 준다.
 퀄리티는 무대(`assets/stage.html`)와 미사일(완제품)이 책임진다. **맞는 미사일이 있으면 무조건 미사일로 쏜다.**
 
+Content quality first: before writing any content read references/content-motion.md; pass the expert gate in shared/content/CONTENT-RULES.md.
+
 ## Recipe (do it yourself in this chat; 3-4 tool calls; no helper agent, no background task)
 1. Pick the missile and skin from the table below (first row that matches). No row fits -> 「미사일이 없을 때 직접 제작」 at the bottom, same quality bar.
 2. 「알아서」「바로」 -> write the words yourself and build now. Otherwise show the shot table (번호 | 장면 | 화면 글자 | 길이) once and wait for 「좋아」.

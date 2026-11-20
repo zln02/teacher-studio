@@ -17,7 +17,7 @@ Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", 
 
 ## Steps (yourself, in this chat: write spec, one command, answer; under a minute)
 1. Pick the tool. Do NOT ask when the request has the number it needs (「5분 타이머」「6모둠」) or says 「알아서」「바로」: use the defaults (numbers 1-30 for people, 4 teams, animal team names, sound on for the timer only) and say them in one line. Ask one numbered message only when the count of people or teams is unknowable.
-2. Write a spec (copy the closest file from `assets/spec-examples/`), then:
+2. Write a spec with the keys below from the request's own numbers and names (`assets/spec-examples/` = test fixtures, not patterns for each tool's shape), then:
    `python3 scripts/build_tool.py --spec spec.json --out tool.html`
    This builds and runs the checker. Fix and rebuild at most 2 times; then tell the teacher plainly what is off.
 3. Show the page. Last message: file path · 「더블클릭하면 열려요」 · keys (Space/Enter = main action, 「전체화면」 button) · 2 tweaks (예: 「10분으로」「모둠 이름 바꾸기」). No privacy line for a tool that holds no names.
@@ -58,7 +58,7 @@ Design uses the shared design system (palette from subject/grade/mood), one embe
 PASS required: no external request, no storage/network APIs, no `<form>`, inputs autocomplete off, keep-all, token contrast >= 4.5:1, text/button size floors, no overflow (landscape + portrait), tool logic (no duplicate draws, fair teams, bracket champion, timer end, count-up), reduced motion leaves nothing animating, no JS errors. Wow lint (`shared/juice/juice_lint.py`): flashes <= 3/s and none above 341x256 px, tap targets >= 44 px, class text >= 28 px, right/wrong never colour alone, 「효과 줄이기」+「소리 끄기」 present, the page's own work per frame <= 33 ms with the CPU throttled 4x (a low frame rate on a slow or busy test PC is a WARN, not a failure), click -> next frame <= 100 ms. Needs Playwright for the headless part (system Chrome is used; audio muted); without it only static checks run.
 
 ## Files
-`scripts/build_tool.py` build · `scripts/check_tool.py` check · `scripts/shots.py` contact sheet for review · `assets/tools.js|css` runtime (copied as is) · `assets/spec-examples/` 5 specs.
+`scripts/build_tool.py` build · `scripts/check_tool.py` check · `scripts/shots.py` contact sheet for review · `assets/tools.js|css` runtime (copied as is) · `assets/spec-examples/` 5 fixtures.
 `shared/` (design, fonts, tools) is used from the skill folder when installed, else from the repo root.
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)

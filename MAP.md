@@ -64,6 +64,8 @@
 | `shared/fonts/` | TS Sans(Pretendard) · Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
 | `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |
 | `shared/tools/stamp.py` | 결과 파일에 보이지 않는 만든이 표시(meta generator + 주석) | 게임·슬라이드·영상 조립 때 자동 |
+| `shared/tools/example_likeness.py` | 결과가 넣어 둔 예시 파일(시험용 fixture)을 그대로 따라갔는지 검사: 문장 60% 이상 같음 · 차례와 제목이 같음 · 뼈대가 장마다 같음 → WARN 「예시를 그대로 따라간 것 같아요」 | 게임·발표·프로그램 점검기와 발표·문서 조립기가 자동으로 부름 |
+| `shared/content/CONTENT-RULES.md` | 내용 규칙과 전문가 관문(G1~G10). 무기별 레시피는 각 스킬 `references/content-*.md` | 각 SKILL.md의 「Content quality first」 줄이 가리킴. 스킬 안 `shared/content/`로 복사됨 |
 | `shared/assets/` | 디자인 소재(CC0 캐릭터 DiceBear·Tabler/Iconoir 아이콘·Open Color·ZzFX 효과음) + `manifest.json` | 게임 `theme:auto`가 `theme_auto.py`로 골라 씀 (쓴 것만 파일에 들어감) |
 | `shared/voice/voice.js` | 브라우저에서 가장 자연스러운 목소리를 골라 읽어 주기 (문장 나눔·15초 끊김 대책·iOS 대응) | 게임 조립 때 자동 포함 (`TSVoice.speak`) |
 | `shared/stage/` | 슬라이드·영상 공통 무대 | 기존대로 |

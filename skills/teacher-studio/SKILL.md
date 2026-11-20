@@ -13,7 +13,7 @@ Run scripts with whichever of `python3` / `python` / `py` exists, or the path `d
 
 **Make three decisions, in this order. In each list take the FIRST line that matches and stop reading that list.**
 
-## Decision 1 · SAFE? (do not over-trigger)
+## Decision 1 · SAFE?
 1. Real student data is pasted or asked for (names, 학번, 성적, 상담 내용, photos) -> do not take it in; ask for 가명/placeholders, or let `teacher-data` hide the names. Add one privacy line.
 2. A QUESTION about law, copyright, privacy, AI rules, 생기부 / student-evaluation wording, posting others' works or student photos, real people or characters (「써도 돼요?」「올려도 돼요?」) -> `teacher-law/SKILL.md`. Stop here.
 3. Students would use an AI service themselves, or AI would finalize an evaluation -> route law (not a plan): decline that part, offer the safe version (the teacher writes and decides). Stop here.
@@ -29,7 +29,7 @@ Run scripts with whichever of `python3` / `python` / `py` exists, or the path `d
 | 5 | **thinking, not a file**: 기획·계획·커리큘럼·운영안·아이디어·전략·「같이 짜 줘」, 조사·정리·리서치, 글쓰기·SNS 글·이름 짓기 | `references/co-plan.md`. A plan is not a video: 「유튜브 채널 기획」 never goes to teacher-motion |
 | 6 | 타이머(「5분」)·뽑기·모둠 나누기·대진표·점수판 | `teacher-class-tools` (spec -> `build_tool.py`) |
 | 7 | 영상·소개 영상·홍보 영상·**수업 시작 화면·카운트다운 화면**·오프닝·오늘의 주제 화면 | `teacher-motion` (a screen that plays by itself; a countdown SCREEN is here, a minutes timer is row 6) |
-| 8 | 프로그램·앱·웹페이지·사이트·도우미·챗봇·튜터·**계산기**·시뮬레이션·연습장·연습 도구·대시보드, 「AI ○○ 도우미」 (a screen you operate, no score) | `references/webapp.md`: copy an example spec -> `scripts/build_webapp.py --spec app.json --out app.html --shot app.png`. A subject or grade in the request does not make it a game: 「속력 계산기」 is this row |
+| 8 | 프로그램·앱·웹페이지·사이트·도우미·챗봇·튜터·**계산기**·시뮬레이션·연습장·연습 도구·대시보드, 「AI ○○ 도우미」 (a screen you operate, no score) | `references/webapp.md`: own spec -> `scripts/build_webapp.py --spec app.json --out app.html --shot app.png`. A subject or grade in the request does not make it a game: 「속력 계산기」 is this row |
 | 9 | 퀴즈·종 울리기·OX · 방탈출·미션·협동 · 단어·분류·짝·끌어서 · 빙고·보드게임·그 밖의 게임 (**모든 새 게임 요청**) | `teacher-game`: `studio.py build game --spec` (spec -> build -> check). Never `fire` for a new request |
 | 10 | **옛 완제품 스킨을 이름으로 지목** (「tv-studio 퀴즈쇼」「같은 스킨 다시」) | only then `studio.py fire game/<quiz-show·escape-room·drag-deliver>/<skin>` |
 | 11 | 발표·슬라이드·PPT·연수·회사·모임·학부모 설명회·학부모 상담 자료·총회 자료·홍보 PPT·기관 보고·업무 보고 발표 | `teacher-slides`: `studio.py build slides --spec deck.json` with `"context"`: 수업 -> class, 홍보·모집 -> promo, 기관·업무 보고 -> public, 가족·자기소개 -> personal. 「PPT·파워포인트·.pptx」 or 「나중에 고칠 거예요」 -> also the editable .pptx (`deck.py --pptx`; the user's .pptx 양식 -> `--template`) |
@@ -56,7 +56,9 @@ Run scripts with whichever of `python3` / `python` / `py` exists, or the path `d
 Always ask mid-way, even on 「알아서」: before anything irreversible or outward (send, post, publish, delete), on a legal/privacy issue, when the user's own material is needed, after the checker failed twice. Stages and artifacts: `references/pipeline.md`.
 End of every making job = 활용·전달 단계 (teachers: 「수업 활용」): `references/classroom-use.md` + `scripts/deliver.py FILE --use <use>`. Use already said (「TV로 띄울 거야」「단톡방에 올릴 거야」) -> make it, no question; 「알아서」 -> TV/screen + PDF, no question; else ONE use question with 추천 at the very end.
 
-## While building (no-regret: never worse than the plain model)
+Content quality first: before writing any content read references/content-writing.md and the matching recipe — lesson references/content-lesson.md · promo references/content-promo.md · plan/research references/content-plan.md · web app references/content-webapp.md; pass the expert gate in shared/content/CONTENT-RULES.md.
+
+## While building
 - **Yourself, here**: one file = one conversation. No helper agent, no background task, no planning step the user did not ask for. The skill's one build command is the shortcut.
 - **Say the time first** for anything over ~1 minute (「게임 만들고 점검하는 데 2분쯤 걸려요」).
 - **Read little**: the routed skill's SKILL.md, then only the file it names. Never engine or stage sources.
@@ -71,7 +73,6 @@ End of every making job = 활용·전달 단계 (teachers: 「수업 활용」):
 Checks exist so YOU fix things before showing them. Defaults are safe; when the user says otherwise, set the switch, add ONE caution line, go on. No lecture, no second ask.
 - **HARD (never off)**: sending student personal data outside · illegal acts · impersonating real people/brands or copying others' works · irreversible outward actions without a yes · reading raw data rows yourself. Say what you can do instead, in one line.
 Switch table (what the user says -> what you set -> the one caution line): `references/user-wins.md`.
-Full list: `docs/research/rules-audit-2026-11.md`.
 
 ## Absolute rules (every skill)
 1. No place to enter or store student names, 학번, photos, grades.
@@ -87,13 +88,11 @@ Full list: `docs/research/rules-audit-2026-11.md`.
 ## Files
 | File | What |
 |---|---|
-| `scripts/studio.py` | list / fire / build / check / render / doctor |
-| `scripts/build_webapp.py` · `check_webapp.py` | web app from a spec + its check (`references/webapp.md`, `assets/webapp/examples/`) |
+| `scripts/build_webapp.py` · `check_webapp.py` | web app from a spec + its check (`references/webapp.md`) |
 | `scripts/direction.py` · `references/direction-step.md` · `ask-first.md` | vague requests: 3 pitches, mood cards, one question round |
 | `scripts/coplan.py` · `references/co-plan.md` | one-page plan / research draft |
 | `scripts/storyboard.py` · `deliver.py` · `env_programs.py` · `references/pipeline.md` · `pipeline-types.md` · `classroom-use.md` | 콘티 sheet, 배포·활용 꾸러미 (`--use`), programs on this PC, the 6 stages per type |
 | `scripts/skill_scout.py` · `references/skill-scout.md` · `recommended-skills.json` | other skills: find, verify, log |
 | `scripts/diagnose.py` · `references/vague-fix.md` · `learn-from-reference.md` · `user-colors.md` | complaints, references, the user's colours |
 | `scripts/prefs.py` · `doctor.py` · `references/studio-details.md` | prefs, environment check, ready card, cannot-do table |
-| 옆 스킬 | teacher-game · teacher-slides · teacher-motion · teacher-law · teacher-class-tools · teacher-data · teacher-docs |
 Look rules: `shared/design/DESIGN-RULES.md`

@@ -9,6 +9,8 @@ license: Apache-2.0
 Teacher (no coding) asks for 공문, 가정통신문, 안내문, 계획서·결과 보고서, or to fill / fix a 한글·워드·PDF file. You write a **short JSON spec** (or a list of edits); the tools apply the official format, the house typesetting and the checks.
 Respond in the user's language, in plain words (`../teacher-slides/references/teacher-language.md`: never show code or file names). Ask-first rule: `../teacher-studio/references/ask-first.md`. Student info, 생기부, someone else's work or public sharing -> also `teacher-law`.
 
+Content quality first: before writing any content read references/content-docs.md; pass the expert gate in shared/content/CONTENT-RULES.md.
+
 ## Which job
 | teacher says | do |
 |---|---|
@@ -26,7 +28,7 @@ Respond in the user's language, in plain words (`../teacher-slides/references/te
 | 옛 .hwp 파일 | never upload it. `docs.py text x.hwp` prints the plain guide: 한글에서 「다른 이름으로 저장 → HWPX」, or convert with their own 한글 (`docs.py where` says if installed). |
 
 ## PDF: the short path (one build, one look)
-1. Write the spec ONCE, complete (start from `assets/examples/guide-parent-counseling.json`: 안내문 + 신청서 뒷면). 「알아서」 = no questions: choose plausible dates (weekdays that really match), times, deadline; unknown names -> 「우리 학교」「우리 학교장」「담임 선생님」, never `○○`, `(학교명 입력)` or a made-up real-looking name. Say the assumptions in one line at the end.
+1. Write the spec ONCE, complete, from this document's own content (keys below; the files in `assets/examples/` are test fixtures, not patterns: never copy their sections or sentences). 「알아서」 = no questions: choose plausible dates (weekdays that really match), times, deadline; unknown names -> 「우리 학교」「우리 학교장」「담임 선생님」, never `○○`, `(학교명 입력)` or a made-up real-looking name. Say the assumptions in one line at the end.
 2. `python3 scripts/docs.py make --spec x.json --out 안내문.pdf` . It prints the gate (blanks, dates, fonts, **쪽수 + how full each page is + smallest text**) and `look x.preview.png`.
 3. Open **only that preview picture**, once. Do not read the PDF file itself and do not print pages one by one: that costs far more than the whole job.
 4. `READY` = done. `NOT DONE` / `FAIL` -> fix the spec and rerun (max 2 loops). A last page that holds only a few lines -> `"max_pages": N` (the build shrinks the print scale a little to fit, never below 10 pt).
@@ -42,7 +44,7 @@ Output: one new file next to the original (never overwrite theirs) + for HWPX a 
  "attachments":["운영 계획 1부", "신청서 1부"], "sender":"우리교육지원청교육장", "receivers":["관내 초등학교장"], "fillins":["담당자 전화"]}
 ```
 A string is an item, a list right after it holds its sub-items; marks are automatic: **1. 가. 1) 가) (1) (가) ① ㉮**, one item alone = no mark, `끝.` added with two spaces (after the last 붙임 line, or under a final table), dates become `2026. 11. 19.`. Dict entries: `{"p": 번호 없는 문단}`, `{"h": 소제목}`, `{"note": "※ …"}`, `{"table": {columns, rows, unit, source, widths, kind:"form"}}`, `{"box": [...], "label": "요약"}`.
-Official vs practice and the sources: `references/gongmun-format.md`. Examples: `assets/examples/*.json` (공문, 가정통신문, 안내문, 보고서, 신청서 양식).
+Official vs practice and the sources: `references/gongmun-format.md`. `assets/examples/*.json` = test fixtures, not patterns (one per kind, for the builder's tests); a document that repeats one gets the WARN 「예시를 그대로 따라간 것 같아요」.
 **No blanks:** same rule as slides (`[학교명]`, `20XX`, `○○`, `000-0000` FAIL) - fill with stated assumptions or list in `"fillins"`; 「양식으로」 -> `"template_blanks": true`.
 
 ## Gate (`doc_check.py`, runs after every make; also `docs.py check FILE`)
