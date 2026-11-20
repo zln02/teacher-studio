@@ -116,11 +116,20 @@ def validate(spec: dict) -> list[str]:
     return errs
 
 
+def request_seed(spec: dict) -> int:
+    parts = [str(p.get("name") or p.get("type") or "") for p in (spec.get("parts") or []) if isinstance(p, dict)]
+    key = "|".join([str(spec.get("title") or ""), str(spec.get("subtitle") or "")] + parts)
+    return int(__import__("hashlib").sha256(key.encode("utf-8")).hexdigest()[:8], 16) or 1
+
+
 def make_tokens(spec: dict) -> dict:
     forced = spec.get("style") if spec.get("style") in styles.STYLES else ""
     words = " ".join(str(spec.get(k) or "") for k in ("words", "mood"))
     text = " ".join(str(spec.get(k) or "") for k in ("title", "subtitle"))
-    sid, _why = styles.pick_style(text, "generic", int(spec.get("seed", 0) or 0), forced, words)
+    # no seed in the spec: the request itself is the seed (title + subtitle + part names), so two different programs do not share one
+    # default style, and the same request still gives the same page
+    seed = int(spec.get("seed", 0) or 0) or request_seed(spec)
+    sid, _why = styles.pick_style(text, "generic", seed, forced, words)
     pal = spec.get("palette") if isinstance(spec.get("palette"), dict) else None
     t = shell.tokens(sid, user=pal)
     t["picked"] = sid
