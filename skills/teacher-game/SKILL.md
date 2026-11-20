@@ -91,6 +91,7 @@ Change only what was said, in the spec, then rebuild with the same `design.seed`
 | `references/advanced.md` | sound/effects kit tuning (`juice`), custom mechanics and custom art, legacy finished skins (`fire`), credit line, voice |
 | `scripts/build.py` | the one command (`--no-check`, `--verbose`, `--review`, `--ok-content`, `--seed N`) |
 | `scripts/check_game.py` · `design_review.py` | run by `build.py`; alone only to re-check a finished file |
+| `../../shared/tools/sound_ears.py` | **optional audio check / custom effects**: `py sound_ears.py listen clip.wav` (plain-Korean loudness · clipping · too harsh/quiet · length · fits a kids' classroom; works for .wav with no install, richer with the optional earshot ears) · `sfx "물방울 똑" --out x.wav --seconds 1`. Not installed -> it says so, offers the install (size stated, only after a yes: `py ensure.py earshot --yes`) and the game keeps its built-in ZzFX sounds. Use when the user wants custom effect files, or when reviewing a finished game: check peaks (<= -1 dB), no clipping, effects of similar volume. Classroom-safe rules stay: sound-off button, no sudden loud sound, no flashing (<= 3 flashes/s). |
 
 ## Pipeline (`../teacher-studio/references/pipeline.md`)
 대본 = the question table (step 2); 콘티 = screen flow sheet: `python3 ../teacher-studio/scripts/storyboard.py spec.json --html sheet.html --open`, shown before the build only when the router's checkpoint is `storyboard`. Skip both stops for 「알아서」「바로」. Deliver with `deliver.py game.html`.

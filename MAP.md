@@ -67,5 +67,6 @@
 | `shared/voice/voice.js` | 브라우저에서 가장 자연스러운 목소리를 골라 읽어 주기 (문장 나눔·15초 끊김 대책·iOS 대응) | 게임 조립 때 자동 포함 (`TSVoice.speak`) |
 | `shared/stage/` | 슬라이드·영상 공통 무대 | 기존대로 |
 | `shared/juice/` | 「Game Wow」 키트: 소리 12종·입자·흔들림·점수 올라가기·시상대·움직임 효과 10개 + 안전 점검(`juice_lint.py`) | 게임·수업 도구가 자동 포함 (`spec.juice`로 조절) |
+| `shared/tools/sound_ears.py` | 소리 파일 듣기·점검(크기·깨짐·길이, 교실에 맞는지), 효과음 만들기. 선택 도구 earshot은 동의 후 전용 폴더에 설치, 없어도 기본 점검·ZzFX로 동작 | teacher-game·teacher-motion 점검 |
 | `shared/tools/video_eyes.py` | 영상 → 장면 사진(+선택 자막), **내 컴퓨터 안에서만**(외부 전송 없음, 동의 후 도구 설치) | `diagnose.py`·`ref_analyze.py`가 사용 |
 | `shared/vendor/qrcodegen` | QR을 만들 때 SVG로 직접 그림(MIT) | 슬라이드 QR 장 |

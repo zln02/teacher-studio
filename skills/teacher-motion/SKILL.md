@@ -130,6 +130,7 @@ python3 scripts/check_page.py page.html
 | `assets/missiles/<미사일>/skins/*.json` | 스킨 기본 문구·색 전체 목록이 필요할 때 |
 | `assets/missiles/<미사일>/show.js` | 직접 제작 때 수준 기준점·도우미(add/box/fit) 참고 |
 | `references/legal-advisory.md` | 음악·글꼴·사진·초상권 권고 문장 |
+| `../../shared/tools/sound_ears.py` | after exporting a video with narration/BGM: extract the audio (ffmpeg `-vn`, wav) and run `py sound_ears.py listen audio.wav`; fix by lowering BGM under the voice (BGM about 10-15 dB below narration), keep peaks <= -1 dB, no clipping. Optional ears (earshot) install only after consent; without it the basic check still runs. |
 | `scripts/build_stage.py` · `scripts/check_page.py` · `scripts/render_mp4.py` | 조립 / 점검 / MP4 (`--yes`: 동의 뒤 작은 도구 설치, 시스템 크롬·ffmpeg 먼저) |
 | `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 차분`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·CSS. Motion은 2020년 이전 크롬에서 안 돌아가서 `--allow-modern`을 줄 때만 들어가요) |
 | 「만든 표시」 | 파일 속 보이지 않는 정보로 `교사 스튜디오 · 박진영`이 자동으로 들어가요(화면에는 안 보임). **선생님이 원할 때만** `build_stage.py --credit`으로 마지막 화면에 작게 「교사 스튜디오로 만듦」을 넣어요 (기본은 끔, 먼저 권하지 않아요) |

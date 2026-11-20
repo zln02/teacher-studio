@@ -1,13 +1,13 @@
 # 도구 레이더 (Tool radar)
 
-하네스에 넣을지 검토한 외부 도구·저장소 기록. 확인한 날: 2026-11-19.
+하네스에 넣을지 검토한 외부 도구·저장소 기록. 확인한 날: 2026-11-19 (earshot 행은 2026-11-20 원문 확인).
 판정: **채택**(필요할 때 설치·연결) · **참고**(방식만 가져옴) · **안내만**(선생님께 조건과 함께 소개) · **넘어감** · **지켜보기**.
 라이선스·약관은 바뀔 수 있으니 실제로 넣기 전에 원문을 다시 확인한다.
 
 | 도구 | 하는 일 | 라이선스·조건 | 판정 | 이유 |
 |---|---|---|---|---|
 | Openverse (openverse.org) | CC·공공 저작물 이미지·소리 검색 API | 계정 없이 사용, 대량 수집 금지 | 채택 | 배경음악·효과음 무료 검색처, 출처 표기 자동화 |
-| earshot (Leonxlnx/earshot) | AI가 소리를 듣고 평가, 효과음 합성 | MIT, CPU, 모델 약 1.1GB | 채택(선택) | 효과음 만들기·소리 점검 |
+| earshot (Leonxlnx/earshot) v0.4.1 (2026-11-06) | 소리 파일을 듣고 설명·측정(LUFS·최대음·깨짐)하고, 코드로 만든 효과음 창고 252개에서 골라 만듦 (**글로 새 소리를 만드는 AI는 아님**) | 코드 MIT(LICENSE 원문 확인). 모델은 따로 받음: CLAP `laion/larger_clap_general` Apache-2.0, AST `MIT/ast-finetuned-audioset` BSD-3-Clause(모델 카드 확인). CPU 전용, Windows 가능(torch 포함 파이썬 3.10+). 크기 실측: 라이브러리 약 1.3GB + 모델 1.1GB ≈ 2.4GB, 설치 약 7분. PyPI의 `earshot`은 **다른 프로젝트**라 GitHub 태그로 설치 | 채택(선택·동의 후 설치) | `shared/tools/ensure.py earshot`(전용 폴더, `--uninstall`) · `sound_ears.py listen/sfx`. 이 PC에서는 보안 정책(Application Control)이 `earshot.exe`를 막아 실행 확인은 못 함 |
 | MMAudio | 영상에 맞는 효과음 생성 | 코드 MIT, **가중치 CC-BY-NC**, GPU 약 6GB | 안내만 | 비상업·GPU 필요 |
 | Supertonic 3 | 로컬 음성 합성 | MIT / OpenRAIL-M(AI 음성 표시, 사칭 금지) | 채택(기본 목소리) | 일반 PC에서 빠름 |
 | Qwen3-TTS 0.6B | 로컬 음성 합성(소희) | Apache-2.0, CPU 느림 | 채택(고급 옵션) | 품질 좋음, 시간 오래 걸림 |

@@ -95,6 +95,11 @@ This product includes third-party components:
 22. python-docx 1.2.0 (Steve Canny, MIT), pypdf 7.1.1 (Mathieu Fenniak and contributors, BSD-3-Clause) and pdfplumber 0.11.10
    (Jeremy Singer-Vine, MIT) — install-on-need, NOT vendored (teacher-docs: Word, PDF tools). LICENSE files read from the downloaded wheels.
 
+23. earshot 0.4.1 (Leon Lin, MIT) — install-on-need, NOT vendored, NOT redistributed (shared/tools/ensure.py `earshot`, isolated venv in ~/.teacher-studio/tools/earshot, after consent).
+   Installed from github.com/Leonxlnx/earshot (tag v0.4.1); the PyPI package named "earshot" is a different project. LICENSE read from the repository: MIT.
+   It downloads two models on first setup, each under its own licence (read from the Hugging Face model cards): CLAP laion/larger_clap_general — Apache-2.0;
+   AST MIT/ast-finetuned-audioset-10-10-0.4593 — BSD-3-Clause. Used by shared/tools/sound_ears.py to listen to audio and render effects from earshot's own bank.
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 

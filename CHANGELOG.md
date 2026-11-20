@@ -22,6 +22,7 @@
 - **입구 평가**: `tools/router_eval.py` + `tools/router_cases.json`(요청 30개) + `tools/test_direction.py`(31개 테스트). 모델별 바닥값·평균: `docs/research/router-eval-2026-11.md`.
 - `tools/sync_shared.py --check`가 문서의 스킬·zip 개수와 `skills/` 폴더 수가 다르면 실패(INSTALL.md·docs/training의 5개 → 7개 수정). `teacher-studio`도 `shared/design`을 받음.
 - 연구 기록: `docs/research/self-audit-2026-11.md`, `docs/research/benchmark-2026-11.md`.
+- **소리 귀 (선택 무기 earshot)**: `shared/tools/sound_ears.py`(`listen` 쉬운 한국어 소리 점검, `sfx` 효과음 만들기, 설치 안 돼도 기본 점검·ZzFX로 동작) + `ensure.py earshot`(동의 뒤, 크기 약 2.4GB 안내, 전용 폴더 `~/.teacher-studio/tools/earshot`, `--uninstall`). 코드 MIT · 모델 Apache-2.0/BSD-3-Clause. 게임 소리 점검·영상 소리 믹스 점검에 연결. 시험 `py shared/tools/test_sound_ears.py`(12개).
 ### Fixed
 - 첫 관문 스크립트의 HTML 저장형 XSS 막기: `direction.py` 미리보기 카드·`ref_analyze.py` 분석 시트(페이지에서 읽은 값 전부)·`storyboard.py`는 모든 글자를 `html.escape`, 색은 `#rrggbb`만 받음. 시험 5개 추가(`tools/test_security_xss.py`). `examples/baseline/game-baseline.json`의 sha256은 원래 만들 때마다 달라서(글꼴 부분집합·seed) 이스케이프 때문이 아니며, 실제 본문 차이는 JSON 안의 `<` → `<` 한 곳뿐(같은 뜻). 두 스킨 화면을 전후로 비교해 같은 모습임을 확인하고 기준 파일을 갱신.
 - Windows(cp949)에서 `studio.py fire`·`check`가 한글 출력 때문에 죽던 문제: 하위 프로세스 읽기를 UTF-8로 고정하고, 출력이 파이프일 때 UTF-8로 내보냄(`prefs.py show` 글자 깨짐도 해결).
