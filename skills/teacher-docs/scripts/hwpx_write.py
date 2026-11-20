@@ -126,6 +126,15 @@ class Writer:
         self.oid = int(time.time()) % 100000000
         self.parts: list[str] = []
 
+    scale = 1.0
+    break_next = False
+
+    @property
+    def skipped(self) -> list:
+        if not hasattr(self, "_skipped"):
+            self._skipped = []
+        return self._skipped
+
     def _id(self) -> str:
         self.pid += 1
         return str(self.pid)
@@ -146,6 +155,7 @@ class Writer:
 
     def p(self, bl: dict) -> str:
         size, bold = docmodel.STYLES.get(bl.get("style", "body"), (12.5, False))
+        size = round(size * self.scale * 2) / 2
         align = {"left": "LEFT", "center": "CENTER", "right": "RIGHT", "justify": "JUSTIFY"}[bl.get("align", "left")]
         unit = size * 100  # 2타 = one Hangul character of the body size
         left = int(bl.get("indent", 0) * unit)
@@ -163,7 +173,8 @@ class Writer:
             intent = -hw
         prev = 600 if bl.get("space_before") else 0
         pid = self.h.para(align, left, intent, prev, 0, 160)
-        return (f'<hp:p id="{self._id()}" paraPrIDRef="{pid}" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">'
+        brk, self.break_next = ("1" if self.break_next else "0"), False
+        return (f'<hp:p id="{self._id()}" paraPrIDRef="{pid}" styleIDRef="0" pageBreak="{brk}" columnBreak="0" merged="0">'
                 f'{self.runs(text, size, bold)}</hp:p>')
 
     def empty(self, size: float = 8) -> str:
@@ -240,6 +251,13 @@ class Writer:
             return self.rule()
         if t == "cut":
             return self.cut()
+        if t == "pagebreak":  # 한글: the NEXT paragraph starts a new page (pageBreak="1")
+            self.break_next = True
+            return ""
+        if t in ("image", "qr"):  # no picture part in our HWPX yet: keep the words (and the address) so nothing is lost
+            self.skipped.append(t)
+            txt = " ".join(x for x in (bl.get("caption", ""), bl.get("url", "")) if x)
+            return self.p(docmodel.P(txt, "small", "center")) if txt else ""
         return ""
 
 
@@ -258,7 +276,13 @@ def write(model: dict, out: Path, title: str = "") -> Path:
         files = {i.filename: z.read(i.filename) for i in z.infolist()}
         order = [i.filename for i in z.infolist()]
     w = Writer(files["Contents/header.xml"].decode("utf-8"), model.get("meta", {}).get("font", "batang"))
-    body = "".join(w.block(b) for b in model["blocks"])
+    w.scale = float(model.get("meta", {}).get("scale", 1.0))
+    blocks = list(model["blocks"])
+    for i, b in enumerate(blocks):  # a page break must land on a paragraph: put an empty one in front of a table
+        if b["t"] == "pagebreak" and i + 1 < len(blocks) and blocks[i + 1]["t"] != "p":
+            blocks.insert(i + 1, docmodel.P("", "small", "left"))
+    body = "".join(w.block(b) for b in blocks)
+    model.setdefault("meta", {})["skipped"] = w.skipped
     files["Contents/section0.xml"] = _section(files["Contents/section0.xml"].decode("utf-8"), body).encode("utf-8")
     files["Contents/header.xml"] = w.h.render().encode("utf-8")
     now = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

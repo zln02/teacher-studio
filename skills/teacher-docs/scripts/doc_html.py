@@ -36,8 +36,38 @@ def _rich(s: str) -> str:
     return t.replace("\n", "<br>")
 
 
-def render(model: dict, mood: str = "단정", embed_fonts: bool = True) -> str:
+def _image_uri(path: str, base: Path | None) -> str:
+    import base64
+    import mimetypes
+    p = Path(path)
+    if not p.is_absolute() and base is not None:
+        p = base / p
+    if not p.exists():
+        raise FileNotFoundError(f"그림 파일이 없어요: {path}")
+    mime = mimetypes.guess_type(str(p))[0] or "image/png"
+    return f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+
+
+def qr_svg(url: str, size_mm: float) -> str:
+    """Offline QR (qrcodegen, MIT) as inline SVG: black on white, 4-module quiet zone, prints well in grayscale."""
+    for vp in (SKILL / "shared" / "vendor" / "qrcodegen", SKILL.parent.parent / "shared" / "vendor" / "qrcodegen", SKILL.parent / "teacher-slides" / "shared" / "vendor" / "qrcodegen"):
+        if vp.exists() and str(vp) not in sys.path:
+            sys.path.insert(0, str(vp))
+    import qrcodegen
+    t = url if re.match(r"^(https?://|mailto:|tel:)", url, re.I) else "https://" + url
+    q = qrcodegen.QrCode.encode_text(t, qrcodegen.QrCode.Ecc.MEDIUM)
+    n = q.get_size()
+    rects = "".join(f'<rect x="{x + 4}" y="{y + 4}" width="1" height="1"/>' for y in range(n) for x in range(n) if q.get_module(x, y))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {n + 8} {n + 8}" width="{size_mm}mm" height="{size_mm}mm" shape-rendering="crispEdges">'
+            f'<rect width="{n + 8}" height="{n + 8}" fill="#fff"/><g fill="#000">{rects}</g></svg>')
+
+
+def render(model: dict, mood: str = "단정", embed_fonts: bool = True, base: Path | None = None, scale: float | None = None) -> str:
     kind = model["meta"]["kind"]
+    k = float(scale if scale is not None else model["meta"].get("scale", 1.0))  # print scale: every pt size is multiplied by it
+    lh = float(model["meta"].get("line", 1.6))
+    pt = lambda v: f"{v * k:.2f}".rstrip("0").rstrip(".")  # noqa: E731
+    dressed = kind in ("notice", "guide", "form")  # a quiet title band + accent headings (공문·보고서 stay plain black)
     c = _tokens(mood)
     accent = "#111111" if kind == "gongmun" else c.get("primary", "#1f5fbf")
     serif = model["meta"].get("font", "batang") == "batang"
@@ -49,7 +79,7 @@ def render(model: dict, mood: str = "단정", embed_fonts: bool = True) -> str:
             size, bold = docmodel.STYLES.get(bl.get("style", "body"), (12.5, False))
             ind = bl.get("indent", 0)
             text = bl["text"]
-            st = f"font-size:{size}pt;{'font-weight:700;' if bold else ''}text-align:{bl.get('align', 'left')};"
+            st = f"font-size:{pt(size)}pt;{'font-weight:700;' if bold else ''}text-align:{bl.get('align', 'left')};"
             if bl.get("hang"):
                 hang = bl["hang"] + " "
                 st += f"padding-left:calc({ind}em + {len(hang) * 0.55:.2f}em);text-indent:-{len(hang) * 0.55:.2f}em;"
@@ -60,9 +90,24 @@ def render(model: dict, mood: str = "단정", embed_fonts: bool = True) -> str:
                 st += f"padding-left:{ind}em;"
             if bl.get("space_before"):
                 st += "margin-top:10pt;"
+            cls = ""
             if bl.get("style") in ("heading", "title", "subtitle") and kind != "gongmun":
                 st += f"color:{accent};"
-            parts.append(f'<p style="{st}">{_rich(text)}</p>')
+                if dressed and bl.get("style") == "title":
+                    cls = ' class="band"'
+                elif dressed and bl.get("style") == "heading":
+                    cls = ' class="hd"'
+            parts.append(f'<p{cls} style="{st}">{_rich(text)}</p>')
+        elif t == "pagebreak":
+            parts.append('<div class="pb"></div>')
+        elif t in ("image", "qr"):
+            al = {"left": "flex-start", "right": "flex-end"}.get(bl.get("align", "center"), "center")
+            if t == "image":
+                inner = f'<img src="{_image_uri(bl["file"], base)}" style="width:{bl["width_mm"]}mm;max-width:100%;height:auto" alt="{html.escape(bl.get("caption", ""))}">'
+            else:
+                inner = qr_svg(bl["url"], bl["size_mm"])
+            cap = f'<figcaption style="font-size:{pt(10)}pt">{_rich(bl["caption"])}</figcaption>' if bl.get("caption") else ""
+            parts.append(f'<figure style="align-items:{al}">{inner}{cap}</figure>')
         elif t == "space":
             parts.append('<p class="sp">&nbsp;</p>')
         elif t == "rule":
@@ -89,20 +134,25 @@ def render(model: dict, mood: str = "단정", embed_fonts: bool = True) -> str:
             if bl.get("widths"):
                 tot = sum(bl["widths"])
                 cols = "<colgroup>" + "".join(f'<col style="width:{w / tot * 100:.1f}%">' for w in bl["widths"]) + "</colgroup>"
-            parts.append(f'<table class="t-{kind_t}">{cols}{head}<tbody>{"".join(body)}</tbody></table>')
+            parts.append(f'<table class="t-{kind_t}{" tall" if bl.get("tall") else ""}">{cols}{head}<tbody>{"".join(body)}</tbody></table>')
     css = f"""
 @page{{size:A4;margin:20mm 20mm 15mm 20mm}}
 html,body{{margin:0;background:#fff;color:#111}}
-body{{font-family:{fam};font-size:12.5pt;line-height:1.6;word-break:keep-all;overflow-wrap:break-word}}
+body{{font-family:{fam};font-size:{pt(12.5)}pt;line-height:{lh};word-break:keep-all;overflow-wrap:break-word}}
+.pb{{break-before:page;page-break-before:always;height:0}}
+figure{{margin:6pt 0 8pt;display:flex;flex-direction:column;gap:3pt;break-inside:avoid}} figcaption{{color:#333}}
+.band{{background:{accent};color:#fff!important;padding:{pt(9)}pt {pt(12)}pt;border-radius:4pt;margin:{pt(4)}pt 0 {pt(8)}pt;-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+.hd{{border-left:{pt(4)}pt solid {accent};padding-left:{pt(7)}pt;margin-bottom:{pt(3)}pt;break-after:avoid}}
+.t-form.tall th,.t-form.tall td{{padding:{pt(9)}pt {pt(8)}pt}}
 .doc{{max-width:170mm;margin:0 auto}}
-p{{margin:0 0 2pt}} p.sp{{line-height:.8}}
+p{{margin:0 0 2pt;white-space:pre-wrap}} p.sp{{line-height:.8}}
 hr{{border:0;border-top:1.6pt solid #222;margin:4pt 0 8pt}}
-.cut{{text-align:center;font-size:10pt;color:#555;margin:14pt 0 8pt}}
-table{{width:100%;border-collapse:collapse;margin:6pt 0 8pt;font-size:11pt;page-break-inside:avoid}}
-th,td{{border:.8pt solid #333;padding:4pt 7pt;vertical-align:middle;word-break:keep-all}}
+.cut{{text-align:center;font-size:{pt(10)}pt;color:#555;margin:14pt 0 8pt}}
+table{{width:100%;border-collapse:collapse;margin:6pt 0 8pt;font-size:{pt(11)}pt;page-break-inside:avoid}}
+th,td{{border:.8pt solid #333;padding:4pt 7pt;vertical-align:middle;word-break:keep-all;white-space:pre-wrap}}
 th{{background:#e8edf4;font-weight:700;text-align:center}}
 td.n{{text-align:right;font-variant-numeric:tabular-nums}}
-.t-titlebox td{{border:2pt solid #222;text-align:center;font-size:20pt;font-weight:700;padding:10pt}}
+.t-titlebox td{{border:2pt solid #222;text-align:center;font-size:{pt(20)}pt;font-weight:700;padding:10pt}}
 .t-box th{{background:{'#e8edf4' if kind == 'gongmun' else c.get('bg2', '#eef2f7')};text-align:left}}
 @media screen{{body{{background:#e9ecef}} .doc{{background:#fff;padding:20mm;margin:16px auto;box-shadow:0 2px 10px rgba(0,0,0,.15);max-width:170mm}}}}
 """

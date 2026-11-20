@@ -34,7 +34,7 @@ PLAN = {
     "teacher-studio": {"design": True, "fonts": True, "tools": True, "video_eyes": True, "vendor": []},
     "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
     "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
-    "teacher-docs": {"design": True, "fonts": True, "tools": True, "placeholders": True, "vendor": []},
+    "teacher-docs": {"design": True, "fonts": True, "tools": True, "placeholders": True, "vendor": ["qrcodegen"]},
 }
 
 

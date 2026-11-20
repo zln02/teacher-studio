@@ -124,6 +124,18 @@ def write(model: dict, out, template=None) -> Path:
             if bl.get("space_before"):
                 pf.space_before = Pt(10)
             _runs(par, text, font, size, bold)
+        elif t == "pagebreak":
+            d.add_page_break()
+        elif t == "image":
+            p_ = Path(bl["file"])
+            if p_.exists():
+                from docx.shared import Mm
+                d.add_picture(str(p_), width=Mm(bl.get("width_mm", 80)))
+                d.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+            if bl.get("caption"):
+                _runs(d.add_paragraph(), bl["caption"], font, 10, False)
+        elif t == "qr":
+            _runs(d.add_paragraph(), " ".join(x for x in (bl.get("caption", ""), bl.get("url", "")) if x), font, 10, False)
         elif t == "space":
             d.add_paragraph()
         elif t == "rule":

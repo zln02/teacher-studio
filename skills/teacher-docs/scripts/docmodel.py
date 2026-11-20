@@ -9,13 +9,20 @@ Spec (short JSON the AI writes):
             {"note": "※ 참고"}],
    "attachments": ["운영 계획 1부"], "footer": {"시행": "...", "전화": "..."},      # gongmun
    "greeting": "학부모님, 안녕하십니까?", "number": "제2026-35호", "reply": {"title": "참가 신청서", "fields": ["참가 여부 (□ 참가  □ 불참)"]},  # notice
-   "fillins": [...], "template_blanks": false, "design": {"mood": "단정", "font": "batang|dotum"}}
+   "fillins": [...], "template_blanks": false, "design": {"mood": "단정", "font": "batang|dotum", "font_size": 12.5 | "large" | "small", "line": 1.6},
+   "max_pages": 1 (PDF: shrink a little to fit, FAIL when it still does not), "min_font": 10}
+  kind "form" = a one-page 신청서 / 동의서: {"kind":"form","org","title","intro","fields":["학년 / 반", ["상담 방법", "□ 방문   □ 전화"]],"body":[...],
+                                              "statement":"위와 같이 신청합니다.","sign":"보호자:            (서명)","to":"우리 학교장"}
+  body extras: {"pagebreak": true} | {"image": "photo.png", "width_mm": 80, "caption": ""} | {"qr": "https://...", "caption": "", "size_mm": 28}
+               | {"form": {"title": "", "fields": [...], "sign": ""}}
+  "reply" works for notice AND guide; "reply": {..., "page": true} puts the 회신서/신청서 on its own page instead of under a cut line.
 
 공문 rules applied here (sources: ../references/gongmun-format.md):
   item marks 1. 가. 1) 가) (1) (가) ① ㉮ ; first level at the left margin, each lower level 2타(= one Hangul character) further in ;
   a group with a single item gets no mark ; `끝.` two spaces after the last body text, or after the last 붙임 line, or under a final table ;
   붙임 without a colon, numbered only when there are two or more ; dates 2026. 11. 19.
 Blocks: {"t":"p", text, style, align, indent (chars), hang (mark)} | {"t":"table", columns, rows, widths, kind} | {"t":"space"} | {"t":"rule"} | {"t":"cut"}
+        | {"t":"pagebreak"} | {"t":"image", file, width_mm, caption, align} | {"t":"qr", url, size_mm, caption}
 """
 from __future__ import annotations
 
@@ -25,6 +32,22 @@ STYLES = {  # pt sizes / weight (house type scale for A4 documents)
     "org": (16, True), "title": (20, True), "subtitle": (14, True), "heading": (14, True), "body": (12.5, False), "bold": (12.5, True),
     "small": (10, False), "sender": (17, True), "table": (11, False), "thead": (11, True), "label": (12.5, True), "note": (10.5, False),
 }
+BASE_PT = 12.5
+SIZE_WORDS = {"small": 11.0, "작게": 11.0, "normal": 12.5, "보통": 12.5, "large": 14.0, "크게": 14.0, "큰 글씨": 14.0, "xlarge": 16.0, "아주 크게": 16.0}
+
+
+def scale_of(spec: dict) -> float:
+    """Print scale from design.font_size (pt of the body text, or small / large / xlarge): every style scales with it."""
+    v = (spec.get("design") or {}).get("font_size") or spec.get("font_size")
+    if v in (None, ""):
+        return 1.0
+    try:
+        pt = float(SIZE_WORDS.get(str(v).strip().lower(), v))
+    except (TypeError, ValueError):
+        return 1.0
+    return min(18.0, max(9.0, pt)) / BASE_PT
+
+
 GANA = "가나다라마바사아자차카타파하"
 GANA2 = "거너더러머버서어저처커터퍼허"
 CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮"
@@ -114,7 +137,38 @@ def special(e: dict, indent: float = 0.0) -> list:
         return [{"t": "table", "columns": [], "rows": [[e.get("label", "요약")], ["\n".join(lines)]], "widths": None, "kind": "box"}]
     if "space" in e:
         return [{"t": "space"}]
+    if e.get("pagebreak") or e.get("page_break") or e.get("newpage"):
+        return [{"t": "pagebreak"}]
+    if "image" in e:
+        return [{"t": "image", "file": str(e["image"]), "width_mm": float(e.get("width_mm") or 80), "caption": str(e.get("caption", "")), "align": e.get("align", "center")}]
+    if "qr" in e:
+        return [{"t": "qr", "url": str(e["qr"]), "size_mm": float(e.get("size_mm") or 28), "caption": str(e.get("caption", "")), "align": e.get("align", "center")}]
+    if "form" in e:
+        return form_blocks(e["form"] if isinstance(e["form"], dict) else {"fields": e["form"]})
     return []
+
+
+def form_rows(fields) -> list:
+    """["학년 / 반", ["상담 방법", "□ 방문  □ 전화"]] -> [[label, value]] (an empty value = a blank to write in by hand)."""
+    rows = []
+    for f in fields or []:
+        if isinstance(f, (list, tuple)):
+            rows.append([str(f[0]), str(f[1]) if len(f) > 1 else ""])
+        elif isinstance(f, dict):
+            rows.append([str(f.get("label", "")), str(f.get("value", ""))])
+        else:
+            rows.append([str(f), ""])
+    return rows
+
+
+def form_blocks(fm: dict) -> list:
+    out = []
+    if fm.get("title"):
+        out.append(P(fm["title"], "subtitle", "center"))
+    out.append({"t": "table", "columns": [], "rows": form_rows(fm.get("fields")), "widths": fm.get("widths") or [0.34, 0.66], "kind": "form"})
+    if fm.get("sign"):
+        out.append(P(fm["sign"], "body", "right"))
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------------- kinds
@@ -123,10 +177,17 @@ def build(spec: dict) -> dict:
     kind = str(spec.get("kind") or "gongmun").lower()
     kind = {"공문": "gongmun", "기안문": "gongmun", "가정통신문": "notice", "통신문": "notice", "안내문": "guide", "안내": "guide",
             "보고서": "report", "계획서": "report", "결과보고서": "report"}.get(kind, kind)
-    fn = {"gongmun": _gongmun, "notice": _notice, "guide": _guide, "report": _report}.get(kind, _gongmun)
+    kind = {"신청서": "form", "동의서": "form", "회신서": "form", "양식": "form"}.get(kind, kind)
+    fn = {"gongmun": _gongmun, "notice": _notice, "guide": _guide, "report": _report, "form": _form}.get(kind, _gongmun)
     blocks = fn(spec)
+    design = spec.get("design") or {}
+    try:
+        line = float(design.get("line") or 1.6)
+    except (TypeError, ValueError):
+        line = 1.6
     return {"blocks": blocks, "meta": {"kind": kind, "title": str(spec.get("title", "")), "org": str(spec.get("org", "")),
-                                       "date": gov_date(spec.get("date", "")), "font": (spec.get("design") or {}).get("font", "batang")}}
+                                       "date": gov_date(spec.get("date", "")), "font": design.get("font", "batang"),
+                                       "scale": scale_of(spec), "line": min(2.2, max(1.2, line))}}
 
 
 def _end_mark(blocks: list, after: int | None = None) -> None:
@@ -212,16 +273,63 @@ def _notice(spec: dict) -> list:
         b.append(P(gov_date(spec["date"]), "body", "center"))
     if spec.get("sender"):
         b.append(P(spec["sender"], "sender", "center"))
+    b.extend(_reply(spec))
+    return b
+
+
+def _reply(spec: dict) -> list:
+    """회신서 / 신청서: under a cut line (default) or on its own page ("page": true)."""
     rp = spec.get("reply")
-    if rp:
+    if not rp:
+        return []
+    b: list = []
+    own_page = bool(rp.get("page"))
+    if own_page:
+        b.append({"t": "pagebreak"})
+        if spec.get("org"):
+            b.append(P(str(spec["org"]), "small", "center"))
+        b.append(P(rp.get("title") or "회신서", "title", "center"))
+        if rp.get("intro"):
+            b.append(P(rp["intro"], "body", "justify"))
+        b.append({"t": "space"})
+    else:
         b.append({"t": "space"})
         b.append({"t": "cut"})
         b.append(P(rp.get("title") or "회신서", "subtitle", "center"))
-        fields = rp.get("fields") or ["참가 여부 (□ 참가   □ 불참)"]
-        b.append({"t": "table", "columns": [], "rows": [[str(f), ""] for f in fields], "widths": [0.38, 0.62], "kind": "form"})
-        b.append(P(rp.get("sign") or "보호자 확인:                (서명)", "body", "right"))
-        if spec.get("sender"):
-            b.append(P(f"{spec['sender']} 귀하", "label", "center"))
+    fields = rp.get("fields") or ["참가 여부 (□ 참가   □ 불참)"]
+    b.append({"t": "table", "columns": [], "rows": form_rows(fields), "widths": rp.get("widths") or [0.38, 0.62], "kind": "form", "tall": own_page})
+    for n in rp.get("notes") or []:
+        b.append(P(str(n), "note", "left"))
+    if own_page:
+        b.append({"t": "space"})
+        b.append(P(rp.get("statement") or "위와 같이 신청합니다.", "body", "center"))
+        b.append(P(rp.get("date_line") or "년        월        일", "body", "center"))
+    b.append(P(rp.get("sign") or "보호자 확인:                (서명)", "body", "right"))
+    if spec.get("sender"):
+        b.append(P(f"{spec['sender']} 귀하", "label", "center"))
+    return b
+
+
+def _form(spec: dict) -> list:
+    """One-page 신청서 / 동의서 (kind "form"): title, short intro, a write-in table, statement, date line, signature, addressee."""
+    b: list = []
+    if spec.get("org"):
+        b.append(P(str(spec["org"]), "small", "center"))
+    b.append(P(spec.get("title", "신청서"), "title", "center"))
+    if spec.get("intro"):
+        b.append(P(spec["intro"], "body", "justify"))
+    b.append({"t": "space"})
+    b.append({"t": "table", "columns": [], "rows": form_rows(spec.get("fields")), "widths": spec.get("widths") or [0.3, 0.7], "kind": "form", "tall": True})
+    body: list = []
+    _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
+    b.extend(body)
+    b.append({"t": "space"})
+    b.append(P(spec.get("statement") or "위와 같이 신청합니다.", "body", "center"))
+    b.append(P(gov_date(spec["date"]) if spec.get("date") else (spec.get("date_line") or "년        월        일"), "body", "center"))
+    b.append(P(spec.get("sign") or "신청인(보호자):                    (서명)", "body", "right"))
+    if spec.get("to") or spec.get("sender"):
+        b.append({"t": "space"})
+        b.append(P(f"{spec.get('to') or spec.get('sender')} 귀하", "sender", "center"))
     return b
 
 
@@ -253,6 +361,7 @@ def _guide(spec: dict) -> list:
             b.append(P(gov_date(spec["date"]), "body", "center"))
         if spec.get("sender"):
             b.append(P(spec["sender"], "sender", "center"))
+    b.extend(_reply(spec))
     return b
 
 
@@ -283,6 +392,8 @@ def block_text(bl: dict) -> str:
         return ((bl["hang"] + " ") if bl.get("hang") else "") + bl["text"]
     if bl["t"] == "table":
         return "\n".join(" | ".join(r) for r in ([bl["columns"]] if bl["columns"] else []) + bl["rows"])
+    if bl["t"] in ("image", "qr"):
+        return " ".join(x for x in (bl.get("caption", ""), bl.get("url", "")) if x)
     return ""
 
 

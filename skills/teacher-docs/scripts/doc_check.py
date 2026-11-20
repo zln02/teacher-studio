@@ -336,7 +336,7 @@ def is_gongmun(lines: list[str]) -> bool:
     return any(re.match(r"^\s*수신\s", ln) for ln in lines) and any(re.match(r"^\s*제목\s", ln) for ln in lines)
 
 
-def run(path, kind: str = "", fillins=(), allow_blanks: bool = False) -> list[tuple[str, str]]:
+def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages: int | None = None, min_font: float | None = None) -> list[tuple[str, str]]:
     path = Path(path)
     fills = ph.with_blanks(list(fillins or []), allow_blanks)
     res = []
@@ -352,6 +352,9 @@ def run(path, kind: str = "", fillins=(), allow_blanks: bool = False) -> list[tu
     res += check_dates(lines, official)
     res += check_spacing(lines)
     res += check_fonts(path)
+    if path.suffix.lower() == ".pdf":  # page count (limit), how full each page is, smallest text size
+        import doc_look
+        res += doc_look.checks(path, max_pages, min_font)
     return res
 
 
@@ -362,8 +365,10 @@ def main() -> int:
     ap.add_argument("--fillins", default="")
     ap.add_argument("--allow-blanks", action="store_true")
     ap.add_argument("--json", action="store_true")
+    ap.add_argument("--max-pages", type=int, help="PDF: FAIL when the file has more pages")
+    ap.add_argument("--min-font", type=float, help="PDF: FAIL when the smallest text is below this many pt")
     a = ap.parse_args()
-    res = run(a.file, a.kind, [x for x in a.fillins.split(",") if x], a.allow_blanks)
+    res = run(a.file, a.kind, [x for x in a.fillins.split(",") if x], a.allow_blanks, a.max_pages, a.min_font)
     if a.json:
         print(json.dumps(res, ensure_ascii=False))
     else:
