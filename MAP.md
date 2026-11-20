@@ -31,7 +31,7 @@
 ## 2. 설치·내려받기
 - Claude Code / Codex: 저장소의 `INSTALL.md`를 따라 `python3 scripts/setup.py --agent <claude-code|codex>` (스킬 8개 등록 + 환경 확인)
 - Claude 앱·웹: `dist/`의 zip 8개를 스킬로 올리기
-- 모든 요청의 첫 관문은 `skills/teacher-studio` (번호 붙은 라우터 R0~R5: 안전 → 분명/막연 → 만들기/같이 기획 → 스킬 → 못 찾으면 스카우트·맨 길). 막연하면 `scripts/direction.py`(방향 3가지 + 분위기 카드), 기획·조사는 `references/co-plan.md`. 만드는 일은 모두 `references/pipeline.md`의 6단계(기획→대본→콘티→제작→수정→배포, 확인 최대 3번): 콘티 `scripts/storyboard.py`, 배포 `scripts/deliver.py`. 평가: `tools/router_eval.py` + `tools/router_cases.json`(결과 `docs/research/router-eval-2026-11.md`)
+- 모든 요청의 첫 관문은 `skills/teacher-studio` (번호 붙은 라우터 R0~R5: 안전 → 분명/막연 → 만들기/같이 기획 → 스킬 → 못 찾으면 스카우트·맨 길). 막연하면 `scripts/direction.py`(방향 3가지 + 분위기 카드), 기획·조사는 `references/co-plan.md`. 만드는 일은 모두 `references/pipeline.md`의 6단계(기획→대본→콘티→제작→수정→배포, 확인 최대 3번): 콘티 `scripts/storyboard.py`, 배포 `scripts/deliver.py`, 끝에 활용·전달 단계(선생님은 「수업 활용」: `references/classroom-use.md`, `deliver.py --use tv|tablet|print|lms|home|archive|screen|share|sns|drive`, 이 컴퓨터 프로그램 확인 `scripts/env_programs.py`). 평가: `tools/router_eval.py` + `tools/router_cases.json`(결과 `docs/research/router-eval-2026-11.md`)
 
 ## 3. 부품 등급
 | 등급 | 뜻 | 예 |
