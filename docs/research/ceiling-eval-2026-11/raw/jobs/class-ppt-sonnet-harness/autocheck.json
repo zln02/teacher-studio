@@ -1,0 +1,6 @@
+{
+ "check": {
+  "rc": 1,
+  "out": "PASS no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...)\nFAIL text fits its box (estimate): [(7, 'i', 1.13), (7, 'r', 1.13), (7, 'i', 1.13), (7, 'r', 1.13)]\nPASS every shape inside the slide\nPASS no empty placeholder\n\nRESULT: FAIL (1 fail)\n"
+ }
+}

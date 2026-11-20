@@ -1,0 +1,10 @@
+{
+ "check_game": {
+  "rc": 1,
+  "out": "PASS file size 260 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nPASS no optional chaining ?. (old Chrome)\nPASS no nullish ?? (old Chrome)\nPASS no replaceAll (old Chrome)\nPASS no .at() (old Chrome)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nPASS no alert/prompt/confirm blocks the game\nFAIL no aspect-ratio (old Chrome) (5 found)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nPASS GAME.items has 0 entries\nPASS JavaScript syntax\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\n\nRESULT: FAIL (7 fail, 0 warn)\n"
+ },
+ "check_webapp": {
+  "rc": 0,
+  "out": "PASS no outside address: works offline\nPASS script syntax ES2017 (no ?. / ??)\nPASS no network or storage API\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 259 KB\nPASS [1600x900] layout, names, labels, contrast OK\nPASS helper answered a question\nPASS [projector] layout, names, labels, contrast OK\nPASS 처음으로 clears the screen\nPASS 「이 프로그램은?」 panel opens\nPASS clicked 2 part(s)\nPASS [phone 390] layout, names, labels, contrast OK\nPASS no JS errors\nPASS no outside requests while running\ncheck: PASS\n"
+ }
+}

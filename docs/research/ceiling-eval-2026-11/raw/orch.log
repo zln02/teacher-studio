@@ -1,0 +1,84 @@
+11:03:19 JOBS 32
+11:03:19 START hwpx-notice-sonnet-bare
+11:03:19 START pdf-guide-fable-bare
+11:09:26 DONE hwpx-notice-sonnet-bare first=69s total=226s rounds=2 acc=True cost=1.16+1.22
+11:09:26 START pdf-guide-fable-harness
+11:10:10 DONE pdf-guide-fable-bare first=225s total=325s rounds=1 acc=True cost=4.77+0.83
+11:10:10 START pdf-guide-sonnet-bare
+11:15:32 DONE pdf-guide-sonnet-bare first=77s total=245s rounds=1 acc=True cost=1.96+0.79
+11:15:32 START pdf-guide-sonnet-harness
+11:17:00 DONE pdf-guide-fable-harness first=108s total=330s rounds=2 acc=True cost=8.32+1.23
+11:17:00 START game-fable-bare
+11:18:03 DONE pdf-guide-sonnet-harness first=70s total=110s rounds=0 acc=True cost=0.56+0.40
+11:18:03 START game-fable-harness
+11:27:33 DONE game-fable-bare first=528s total=528s rounds=0 acc=True cost=2.00+0.79
+11:27:33 START game-sonnet-bare
+11:29:40 DONE game-sonnet-bare first=80s total=80s rounds=0 acc=True cost=0.29+0.47
+11:29:40 START game-sonnet-harness
+11:36:24 Popen OSError, retry 0 [WinError 216] %1의 버전이 실행 중인 Windows 버전과 호환되지 않습니다. 컴퓨터의 시스템 정보를 확인하고 소프트웨어 게시자에
+11:38:04 DONE game-fable-harness first=210s total=623s rounds=1 acc=True cost=4.42+1.59
+11:38:04 START webapp-fable-bare
+11:41:16 DONE game-sonnet-harness first=381s total=381s rounds=0 acc=True cost=0.33+0.77
+11:41:16 START webapp-fable-harness
+11:48:37 DONE webapp-fable-harness first=233s total=233s rounds=0 acc=True cost=1.98+0.80
+11:48:37 START webapp-sonnet-bare
+11:52:10 DONE webapp-fable-bare first=646s total=646s rounds=0 acc=True cost=2.21+0.61
+11:52:10 START webapp-sonnet-harness
+11:59:41 DONE webapp-sonnet-bare first=556s total=556s rounds=0 acc=True cost=1.03+0.71
+11:59:41 START unseen-fable-bare
+12:00:18 DONE webapp-sonnet-harness first=428s total=428s rounds=0 acc=True cost=0.48+0.63
+12:00:18 START unseen-fable-harness
+12:07:39 DONE unseen-fable-harness first=170s total=170s rounds=0 acc=True cost=1.64+0.60
+12:07:39 START unseen-sonnet-bare
+12:29:09 DONE unseen-sonnet-bare first=144s total=399s rounds=1 acc=True cost=0.93+1.31
+12:29:09 START unseen-sonnet-harness
+12:29:46 DONE unseen-fable-bare first=537s total=742s rounds=1 acc=True cost=4.42+1.29
+12:38:38 DONE unseen-sonnet-harness first=151s total=237s rounds=2 acc=True cost=1.69+1.97
+12:40:52 checked class-ppt fable bare
+12:40:53 checked class-ppt fable harness
+12:40:54 checked class-ppt sonnet bare
+12:40:56 checked class-ppt sonnet harness
+12:40:58 checked promo-ppt fable bare
+12:41:01 checked promo-ppt fable harness
+12:43:38 checked promo-ppt sonnet bare
+12:43:42 checked promo-ppt sonnet harness
+12:45:04 checked public-ppt fable bare
+12:46:42 checked public-ppt fable harness
+12:47:15 checked public-ppt sonnet bare
+12:48:18 checked public-ppt sonnet harness
+12:48:38 checked hwpx-notice fable bare
+12:48:42 checked hwpx-notice fable harness
+12:48:47 checked hwpx-notice sonnet bare
+12:48:50 checked hwpx-notice sonnet harness
+12:48:57 checked pdf-guide fable bare
+12:49:03 judged class-ppt 2 True
+12:49:07 checked pdf-guide fable harness
+12:49:07 judged class-ppt 1 True
+12:49:21 checked pdf-guide sonnet bare
+12:49:41 checked pdf-guide sonnet harness
+12:50:21 checked game fable bare
+12:50:25 judged promo-ppt 2 True
+12:50:27 judged promo-ppt 1 True
+12:52:34 judged public-ppt 2 True
+12:52:36 checked game fable harness
+12:52:36 judged public-ppt 1 True
+12:52:43 checked game sonnet bare
+12:53:08 judged hwpx-notice 1 True
+12:53:10 judged hwpx-notice 2 True
+12:53:39 checked game sonnet harness
+12:53:53 judged pdf-guide 1 True
+12:53:55 judged pdf-guide 2 True
+12:53:57 checked webapp fable bare
+12:54:06 checked webapp fable harness
+12:54:12 checked webapp sonnet bare
+12:54:20 checked webapp sonnet harness
+12:54:25 checked unseen fable bare
+12:54:32 judged game 1 True
+12:54:33 judged game 2 True
+12:54:34 checked unseen fable harness
+12:54:44 checked unseen sonnet bare
+12:54:52 checked unseen sonnet harness
+12:55:09 judged webapp 1 True
+12:55:12 judged webapp 2 True
+12:55:38 judged unseen 1 True
+12:55:44 judged unseen 2 True

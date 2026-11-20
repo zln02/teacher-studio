@@ -1,0 +1,37 @@
+{
+ "note": "A/B가 어느 쪽인지 보려면 이 파일을 연다. bare=일반 AI, harness=교사 스튜디오. 둘 다 fable 모델.",
+ "key": {
+  "01-class-ppt.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  },
+  "02-promo-ppt.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  },
+  "03-public-ppt.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  },
+  "04-hwpx-notice.png": {
+   "A": "fable-harness",
+   "B": "fable-bare"
+  },
+  "05-pdf-guide.png": {
+   "A": "fable-harness",
+   "B": "fable-bare"
+  },
+  "06-game.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  },
+  "07-webapp.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  },
+  "08-unseen.png": {
+   "A": "fable-bare",
+   "B": "fable-harness"
+  }
+ }
+}

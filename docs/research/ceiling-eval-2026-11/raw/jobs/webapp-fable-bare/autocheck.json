@@ -1,0 +1,10 @@
+{
+ "check_game": {
+  "rc": 1,
+  "out": "PASS file size 47 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nPASS no optional chaining ?. (old Chrome)\nPASS no nullish ?? (old Chrome)\nPASS no replaceAll (old Chrome)\nPASS no .at() (old Chrome)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nPASS no alert/prompt/confirm blocks the game\nFAIL no aspect-ratio (old Chrome) (1 found)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nPASS GAME.items has 0 entries\nPASS JavaScript syntax\nWARN 색 구분: 정답색과(와) 오답색이(가) 녹색약(초록색을 약하게 봄)에게 거의 같아 보여요 (차이 0.04 < 0.10). 빨강·초록만으로 구분하고 있어요. 모양이나 글자(○ ✕, 정답/오답)도 같이 써 주세요.\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\n\nRESULT: FAIL (7 fail, 1 warn)\n"
+ },
+ "check_webapp": {
+  "rc": 1,
+  "out": "PASS no outside address: works offline\nPASS script syntax ES2017 (no ?. / ??)\nFAIL network/storage API in script: localStorage\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 46 KB\nWARN [1600x900] text under 14px: 12px 1 | 12px 2 | 13px (-1/2, 0) | 13px (0, 1)\nWARN [projector] text under 14px: 12px 1 | 12px 2 | 13px (-1/2, 0) | 13px (0, 1)\nFAIL no reset button (#wa-reset)\nPASS clicked 0 part(s)\nWARN [phone 390] text under 14px: 11px (-1/2, 0) | 11px (0, 1) | 11px -10 | 11px -2\nPASS no JS errors\nPASS no outside requests while running\ncheck: FAIL (2)\n"
+ }
+}

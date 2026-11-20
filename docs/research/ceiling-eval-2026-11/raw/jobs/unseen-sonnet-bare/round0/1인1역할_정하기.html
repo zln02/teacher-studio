@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1인 1역할 공정 배정기</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--ink:#1f2430;--sub:#667085;--line:#e3e6ef;--pri:#4f6bed;--pri2:#e8ecff;--ok:#1a9d6b;--warn:#d9822b;--bad:#d64545}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+header{padding:22px 20px 8px;max-width:1100px;margin:auto}
+h1{margin:0;font-size:24px}
+header p{margin:4px 0 0;color:var(--sub);font-size:14px}
+main{max-width:1100px;margin:auto;padding:12px 20px 40px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:800px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h2{margin:0 0 8px;font-size:16px}
+.full{grid-column:1/-1}
+textarea{width:100%;min-height:240px;border:1px solid var(--line);border-radius:8px;padding:10px;font:inherit;font-size:14px;resize:vertical}
+.hint{font-size:12.5px;color:var(--sub);margin:6px 0 0}
+.hint code{background:var(--pri2);padding:1px 5px;border-radius:4px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+button{font:inherit;font-size:14px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{background:#f0f2f8}
+button.pri{background:var(--pri);color:#fff;border-color:var(--pri);font-weight:bold}
+button.pri:hover{background:#3f58cf}
+input[type=text],input[type=number]{border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;font-size:14px;width:120px}
+.msg{margin-top:10px;padding:9px 12px;border-radius:8px;font-size:13.5px}
+.msg.err{background:#fdecec;color:var(--bad)}
+.msg.warn{background:#fff4e5;color:#8a5200}
+.msg.ok{background:#e6f6ef;color:#0f6b49}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:10px}
+.tile{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fafbff;position:relative;animation:pop .35s both}
+.tile .who{font-weight:bold;font-size:16px}
+.tile .role{color:var(--pri);font-size:15px;margin-top:2px}
+.tile .tag{font-size:11.5px;color:var(--sub);margin-top:4px;min-height:16px}
+.tile .tag b{color:var(--ok)}
+.tile .tag i{color:var(--warn);font-style:normal}
+.tile.locked{border-color:var(--pri);background:var(--pri2)}
+.tile .lock{position:absolute;top:6px;right:6px;border:none;background:none;padding:2px 4px;font-size:15px;opacity:.5}
+.tile.locked .lock{opacity:1}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:none}}
+table{border-collapse:collapse;width:100%;font-size:13px;margin-top:8px}
+th,td{border:1px solid var(--line);padding:5px 8px;text-align:center}
+th{background:#f3f4fa}
+td.hit{background:var(--pri2);font-weight:bold}
+.scroll{overflow-x:auto}
+.stat{font-size:13px;color:var(--sub);margin-top:6px}
+@media print{header p,.card:not(#resCard),.row,button,.hint{display:none!important}main{display:block}#resCard{border:none}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎲 1인 1역할 공정 배정기</h1>
+  <p>무작위 추첨 + 지난 역할 반복 방지 + 희망/제외 반영. 누가 봐도 납득되는 방식으로 정합니다.</p>
+</header>
+<main>
+  <section class="card">
+    <h2>① 학생 명단</h2>
+    <textarea id="students" placeholder="김민수 | 희망: 칠판지기, 우유당번 | 제외: 청소
+이서연
+박지호 | 제외: 칠판지기
+..."></textarea>
+    <p class="hint">한 줄에 한 명. 선택 입력: <code>| 희망: 역할1, 역할2, 역할3</code> (순서대로 1~3순위), <code>| 제외: 역할</code> (건강·사정 등으로 어려운 역할). 쉼표·줄바꿈 모두 가능.</p>
+    <div class="row">
+      <button id="sampleBtn">예시 채우기</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>② 역할 목록</h2>
+    <textarea id="roles" placeholder="칠판지기
+우유당번 x2
+청소반장
+..."></textarea>
+    <p class="hint">한 줄에 하나. 같은 역할이 여러 명 필요하면 <code>역할명 x2</code> 처럼 적으세요.</p>
+    <div class="row">
+      <label>시드 <input type="text" id="seed" placeholder="자동"></label>
+      <label><input type="checkbox" id="usePref" checked> 희망 반영</label>
+      <label><input type="checkbox" id="useHist" checked> 지난 역할 반복 방지</label>
+    </div>
+    <p class="hint">시드는 같은 값이면 같은 결과가 나오게 하는 번호입니다. 결과를 학급에 공개·재현할 때 쓰세요.</p>
+  </section>
+
+  <section class="card full" id="resCard">
+    <h2>③ 배정 결과 <span id="seedShow" class="hint"></span></h2>
+    <div class="row" style="margin-top:0">
+      <button class="pri" id="runBtn">🎲 추첨하기</button>
+      <button id="confirmBtn">✅ 이 결과 확정(기록에 저장)</button>
+      <button id="csvBtn">CSV 저장</button>
+      <button onclick="window.print()">인쇄</button>
+    </div>
+    <div id="msgs"></div>
+    <div class="grid" id="result"></div>
+    <div class="stat" id="stat"></div>
+    <p class="hint">🔒 칸의 자물쇠를 누르면 그 배정은 고정되고, 나머지만 다시 뽑을 수 있습니다.</p>
+  </section>
+
+  <section class="card full">
+    <h2>④ 지난 기록 <span class="hint">(이 브라우저에 저장됨)</span></h2>
+    <div id="histInfo" class="hint"></div>
+    <div class="scroll" id="histTable"></div>
+    <div class="row">
+      <button id="undoBtn">마지막 기록 삭제</button>
+      <button id="clearBtn">기록 전체 초기화</button>
+    </div>
+  </section>
+
+  <section class="card full">
+    <h2>공정성 원칙</h2>
+    <ul style="margin:0;padding-left:20px;font-size:13.5px;color:var(--sub)">
+      <li>모든 학생·역할 조합에 <b>무작위 가중치</b>를 주고, 전체 불만(비용)이 최소가 되는 배정을 헝가리안 알고리즘으로 찾습니다. 순서나 번호에 따른 유리·불리가 없습니다.</li>
+      <li>이전에 한 역할을 다시 맡을수록 비용이 커져서, 기록이 쌓일수록 모두가 여러 역할을 고르게 경험합니다.</li>
+      <li>희망은 1순위 &gt; 2순위 &gt; 3순위 순으로 반영하되, 반복 방지가 더 우선입니다. 제외 역할은 절대 배정되지 않습니다.</li>
+      <li>역할 수가 학생보다 적으면 '역할 없음'이 생기는데, 지난번에도 없던 학생이 또 빠지지 않도록 같은 원리로 조정합니다.</li>
+    </ul>
+  </section>
+</main>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const KEY="role_assign_v1";
+const BIG=1e6;
+let current=null;      // {assign:[{student,role}], seed}
+let locked=new Set();  // student names
+
+/* ---------- 저장 ---------- */
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return {}}}
+function save(o){try{localStorage.setItem(KEY,JSON.stringify(o))}catch(e){}}
+function getHist(){return load().hist||[]}
+function setHist(h){const o=load();o.hist=h;save(o)}
+function saveInputs(){const o=load();o.students=$("students").value;o.roles=$("roles").value;save(o)}
+
+/* ---------- 파싱 ---------- */
+const splitList=s=>s.split(/[,，、]/).map(x=>x.trim()).filter(Boolean);
+function parseStudents(txt){
+  const out=[],seen=new Set(),dups=[];
+  txt.split(/\r?\n/).forEach(line=>{
+    line=line.trim(); if(!line)return;
+    const parts=line.split("|").map(x=>x.trim());
+    const name=parts[0]; if(!name)return;
+    const s={name,prefs:[],ban:new Set()};
+    parts.slice(1).forEach(p=>{
+      const m=p.match(/^(희망|제외)\s*[:：]\s*(.*)$/);
+      if(!m)return;
+      if(m[1]==="희망")s.prefs=splitList(m[2]).slice(0,3);
+      else splitList(m[2]).forEach(r=>s.ban.add(r));
+    });
+    if(seen.has(name)){dups.push(name);return}
+    seen.add(name);out.push(s);
+  });
+  return {list:out,dups};
+}
+function parseRoles(txt){
+  const out=[];
+  txt.split(/\r?\n/).forEach(line=>{
+    line=line.trim(); if(!line)return;
+    const m=line.match(/^(.*?)\s*[xX×*]\s*(\d+)$/);
+    const name=m?m[1].trim():line, n=m?Math.min(+m[2],50):1;
+    if(!name)return;
+    for(let i=0;i<n;i++)out.push(name);
+  });
+  return out;
+}
+
+/* ---------- 난수 (시드 고정 가능) ---------- */
+function hashStr(s){let h=1779033703^s.length;for(let i=0;i<s.length;i++){h=Math.imul(h^s.charCodeAt(i),3432918353);h=h<<13|h>>>19}return h>>>0}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ---------- 헝가리안 (최소비용 배정, n×n) ---------- */
+function hungarian(a){
+  const n=a.length,INF=1e18;
+  const u=new Array(n+1).fill(0),v=new Array(n+1).fill(0),p=new Array(n+1).fill(0),way=new Array(n+1).fill(0);
+  for(let i=1;i<=n;i++){
+    p[0]=i;let j0=0;const minv=new Array(n+1).fill(INF),used=new Array(n+1).fill(false);
+    do{
+      used[j0]=true;const i0=p[j0];let delta=INF,j1=0;
+      for(let j=1;j<=n;j++)if(!used[j]){
+        const cur=a[i0-1][j-1]-u[i0]-v[j];
+        if(cur<minv[j]){minv[j]=cur;way[j]=j0}
+        if(minv[j]<delta){delta=minv[j];j1=j}
+      }
+      for(let j=0;j<=n;j++){if(used[j]){u[p[j]]+=delta;v[j]-=delta}else minv[j]-=delta}
+      j0=j1;
+    }while(p[j0]!==0);
+    do{const j1=way[j0];p[j0]=p[j1];j0=j1}while(j0);
+  }
+  const res=new Array(n);
+  for(let j=1;j<=n;j++)res[p[j]-1]=j-1;
+  return res; // res[row]=col
+}
+
+/* ---------- 배정 ---------- */
+const NONE="(역할 없음)";
+function assign(students,roleSlots,seed,opt,lockedMap){
+  const rnd=mulberry32(hashStr(String(seed)));
+  const hist=opt.useHist?getHist():[];
+  const cnt={},last={},noneCnt={};
+  hist.forEach((rd,ri)=>{
+    rd.a.forEach(([s,r])=>{
+      if(r===NONE){noneCnt[s]=(noneCnt[s]||0)+1;return}
+      cnt[s+"\u0000"+r]=(cnt[s+"\u0000"+r]||0)+1;
+      if(ri===hist.length-1)last[s]=r;
+    });
+  });
+  // 고정된 배정 제외
+  const fixed=[];
+  let st=students.slice(),slots=roleSlots.slice();
+  st=st.filter(s=>{
+    if(lockedMap.has(s.name)){
+      const r=lockedMap.get(s.name),k=slots.indexOf(r);
+      if(k>=0){slots.splice(k,1);fixed.push({student:s.name,role:r,locked:true});return false}
+    }
+    return true;
+  });
+  const n=Math.max(st.length,slots.length);
+  const warnings=[];
+  if(n===0)return {assign:fixed,warnings,seed};
+  const cost=[];
+  for(let i=0;i<n;i++){
+    const row=[];
+    for(let j=0;j<n;j++){
+      const S=st[i],R=slots[j];
+      let c;
+      if(!S&&!R)c=0;
+      else if(!S)c=0;                       // 빈 학생 -> 남는 역할
+      else if(!R){                          // 학생 -> 역할 없음
+        c=(noneCnt[S.name]||0)*25+rnd();
+      }else if(S.ban.has(R))c=BIG;
+      else{
+        c=rnd();
+        if(opt.useHist){
+          c+=(cnt[S.name+"\u0000"+R]||0)*20;
+          if(last[S.name]===R)c+=15;
+        }
+        if(opt.usePref&&S.prefs.length){
+          const k=S.prefs.indexOf(R);
+          c+= k<0?10:[0,3,6][k];
+        }
+      }
+      row.push(c);
+    }
+    cost.push(row);
+  }
+  const m=hungarian(cost);
+  const out=fixed.slice();
+  for(let i=0;i<st.length;i++){
+    const S=st[i],R=slots[m[i]]||NONE;
+    if(R!==NONE&&S.ban.has(R))warnings.push(`${S.name}: 제외 조건 때문에 가능한 배정이 없습니다. 역할 구성을 조정해 주세요.`);
+    const tags=[];
+    if(R!==NONE){
+      const k=S.prefs.indexOf(R);
+      if(opt.usePref&&k>=0)tags.push(`<b>${k+1}순위 희망 ✓</b>`);
+      const c=cnt[S.name+"\u0000"+R]||0;
+      if(opt.useHist&&c>0)tags.push(`<i>이전 ${c}회 경험</i>`);
+      else if(opt.useHist&&hist.length)tags.push("처음 맡는 역할");
+    }
+    out.push({student:S.name,role:R,tags});
+  }
+  return {assign:out,warnings,seed};
+}
+
+/* ---------- 화면 ---------- */
+function msg(type,t){const d=document.createElement("div");d.className="msg "+type;d.innerHTML=t;$("msgs").appendChild(d)}
+function validate(){
+  $("msgs").innerHTML="";
+  const {list,dups}=parseStudents($("students").value);
+  const slots=parseRoles($("roles").value);
+  if(dups.length)msg("warn",`중복된 이름은 한 번만 반영했어요: ${dups.join(", ")} (동명이인은 '김민수A'처럼 구분해 주세요)`);
+  if(!list.length){msg("err","학생 명단을 입력해 주세요.");return null}
+  if(!slots.length){msg("err","역할 목록을 입력해 주세요.");return null}
+  const roleSet=new Set(slots);
+  const unk=new Set();
+  list.forEach(s=>{s.prefs.forEach(r=>{if(!roleSet.has(r))unk.add(r)});s.ban.forEach(r=>{if(!roleSet.has(r))unk.add(r)})});
+  if(unk.size)msg("warn",`역할 목록에 없는 이름이 희망/제외에 있어요(무시됨): ${[...unk].join(", ")}`);
+  if(slots.length<list.length)msg("warn",`역할(${slots.length}개)이 학생(${list.length}명)보다 적어 ${list.length-slots.length}명은 '역할 없음'이 됩니다. 이는 기록되어 다음번에 우선 배정됩니다.`);
+  if(slots.length>list.length)msg("warn",`역할(${slots.length}개)이 학생(${list.length}명)보다 많아 ${slots.length-list.length}개 역할이 비게 됩니다.`);
+  return {list,slots};
+}
+function run(useNewSeed){
+  const v=validate();if(!v)return;
+  saveInputs();
+  let seed=$("seed").value.trim();
+  if(!seed||useNewSeed){
+    if(!seed||$("seed").dataset.auto==="1"){seed=String(Math.floor(Math.random()*1e6)).padStart(6,"0");$("seed").value=seed;$("seed").dataset.auto="1"}
+  }
+  const lm=new Map();
+  if(current)current.assign.forEach(a=>{if(locked.has(a.student))lm.set(a.student,a.role)});
+  const r=assign(v.list,v.slots,seed,{usePref:$("usePref").checked,useHist:$("useHist").checked},lm);
+  r.warnings.forEach(w=>msg("err",w));
+  // 명단 순서로 정렬
+  const order=new Map(v.list.map((s,i)=>[s.name,i]));
+  r.assign.sort((a,b)=>order.get(a.student)-order.get(b.student));
+  current=r;
+  render();
+}
+function render(){
+  const box=$("result");box.innerHTML="";
+  if(!current)return;
+  $("seedShow").textContent=`(시드 ${current.seed})`;
+  current.assign.forEach((a,i)=>{
+    const t=document.createElement("div");
+    t.className="tile"+(locked.has(a.student)?" locked":"");
+    t.style.animationDelay=(i*40)+"ms";
+    t.innerHTML=`<button class="lock" title="고정/해제">${locked.has(a.student)?"🔒":"🔓"}</button><div class="who"></div><div class="role"></div><div class="tag">${(a.tags||[]).join(" · ")}</div>`;
+    t.querySelector(".who").textContent=a.student;
+    t.querySelector(".role").textContent=a.role;
+    t.querySelector(".lock").onclick=()=>{locked.has(a.student)?locked.delete(a.student):locked.add(a.student);render()};
+    box.appendChild(t);
+  });
+  const withRole=current.assign.filter(a=>a.role!==NONE);
+  const prefHit=current.assign.filter(a=>(a.tags||[]).some(t=>t.includes("순위"))).length;
+  $("stat").textContent=`배정 ${withRole.length}명`+(prefHit?` · 희망 반영 ${prefHit}명`:"");
+}
+function confirmRound(){
+  if(!current){msg("err","먼저 추첨해 주세요.");return}
+  const h=getHist();
+  h.push({d:new Date().toLocaleDateString("ko-KR"),a:current.assign.map(a=>[a.student,a.role])});
+  setHist(h);
+  $("msgs").innerHTML="";msg("ok","기록에 저장했습니다. 다음 추첨부터 이번 역할의 반복을 피합니다.");
+  locked.clear();renderHist();
+}
+function renderHist(){
+  const h=getHist();
+  $("histInfo").textContent=h.length?`총 ${h.length}회 기록됨`:"아직 기록이 없습니다. 결과가 마음에 들면 '확정'을 눌러 주세요.";
+  if(!h.length){$("histTable").innerHTML="";return}
+  const names=[];h.forEach(r=>r.a.forEach(([s])=>{if(!names.includes(s))names.push(s)}));
+  let html="<table><tr><th>이름</th>"+h.map((r,i)=>`<th>${i+1}회<br><small>${r.d}</small></th>`).join("")+"</tr>";
+  names.forEach(n=>{
+    html+=`<tr><td>${esc(n)}</td>`;
+    h.forEach(r=>{const f=r.a.find(x=>x[0]===n);html+=`<td>${f?esc(f[1]):"-"}</td>`});
+    html+="</tr>";
+  });
+  $("histTable").innerHTML=html+"</table>";
+}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function csv(){
+  if(!current){msg("err","먼저 추첨해 주세요.");return}
+  const q=s=>'"'+String(s).replace(/"/g,'""')+'"';
+  const text="﻿이름,역할\n"+current.assign.map(a=>q(a.student)+","+q(a.role)).join("\n");
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([text],{type:"text/csv;charset=utf-8"}));
+  a.download="1인1역할_결과.csv";a.click();
+}
+
+/* ---------- 이벤트 ---------- */
+$("runBtn").onclick=()=>run(true);
+$("confirmBtn").onclick=confirmRound;
+$("csvBtn").onclick=csv;
+$("seed").addEventListener("input",()=>{$("seed").dataset.auto="0"});
+$("students").addEventListener("input",saveInputs);
+$("roles").addEventListener("input",saveInputs);
+$("undoBtn").onclick=()=>{const h=getHist();h.pop();setHist(h);renderHist()};
+$("clearBtn").onclick=()=>{if(confirm("모든 기록을 지울까요?")){setHist([]);renderHist()}};
+$("sampleBtn").onclick=()=>{
+  $("students").value=["김민수 | 희망: 칠판지기, 우유당번","이서연 | 희망: 도서도우미","박지호 | 제외: 칠판지기","최유나","정하준 | 희망: 칠판지기","강소미","윤도현","한지우 | 희망: 화분관리, 청소반장"].join("\n");
+  $("roles").value=["칠판지기","우유당번","도서도우미","화분관리","청소반장","불끄기","창문지기","알림장도우미"].join("\n");
+  saveInputs();
+};
+// 복원
+const o=load();if(o.students)$("students").value=o.students;if(o.roles)$("roles").value=o.roles;
+renderHist();
+})();
+</script>
+</body>
+</html>

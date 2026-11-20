@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1인 1역할 공정 뽑기</title>
+<style>
+:root{
+  --bg:#f3f6f8; --card:#fff; --ink:#14232e; --sub:#5a6b78; --line:#d5dee5;
+  --main:#0f6e7a; --main-d:#0a4f58; --acc:#f2b705; --ok:#1f7a45; --bad:#b3261e; --soft:#e4f1f3;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;font-size:18px;line-height:1.5}
+header{background:var(--main-d);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{margin:0;font-size:26px}
+header .sub{opacity:.85;font-size:15px}
+nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav button{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4);padding:8px 16px;border-radius:999px;font:inherit;font-weight:700;cursor:pointer}
+nav button.on{background:var(--acc);color:#222;border-color:var(--acc)}
+main{max-width:1200px;margin:0 auto;padding:18px}
+section.tab{display:none}
+section.tab.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.card h2{margin:0 0 6px;font-size:22px}
+.hint{color:var(--sub);font-size:15px;margin:0 0 12px}
+button.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:10px 18px;cursor:pointer;background:var(--main);color:#fff;min-height:44px}
+button.btn:hover{background:var(--main-d)}
+button.btn.alt{background:var(--soft);color:var(--main-d)}
+button.btn.warn{background:#fbe9e7;color:var(--bad)}
+button.btn.big{font-size:26px;padding:16px 34px;background:var(--acc);color:#222}
+button.btn.big:hover{background:#dba400}
+button:disabled{opacity:.45;cursor:not-allowed}
+input[type=number],input[type=text],select{font:inherit;padding:8px 10px;border:2px solid var(--line);border-radius:8px;background:#fff;min-height:42px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+table{border-collapse:collapse;width:100%}
+th,td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:15px;color:var(--sub)}
+td.num{font-weight:800;font-size:20px;width:70px;text-align:center}
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:8px}
+.role-item{display:flex;gap:6px;align-items:center;background:var(--soft);border-radius:10px;padding:6px 8px}
+.role-item input[type=text]{flex:1;min-width:0;border-color:transparent;text-overflow:clip}
+.role-item input[type=number]{width:62px}
+.role-item .x{background:none;border:0;font-size:22px;cursor:pointer;color:var(--bad)}
+.stat{display:inline-block;background:var(--soft);border-radius:999px;padding:4px 12px;margin:2px 4px 2px 0;font-weight:700;font-size:15px}
+.stat.bad{background:#fbe9e7;color:var(--bad)}
+.stat.ok{background:#e3f4ea;color:var(--ok)}
+#banner{min-height:130px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:54px;font-weight:900;background:var(--main-d);color:#fff;border-radius:14px;margin-bottom:14px;padding:10px 20px}
+#banner small{display:block;font-size:20px;font-weight:600;opacity:.8}
+#banner .n{color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.rc{background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px;text-align:center;min-height:92px;display:flex;flex-direction:column;justify-content:center}
+.rc .n{font-size:15px;color:var(--sub);font-weight:700}
+.rc .r{font-size:22px;font-weight:800;word-break:keep-all;overflow-wrap:normal;line-height:1.3}
+.rc .r.long{font-size:18px}
+.rc .r.xlong{font-size:15px}
+.rc.hid .r{color:#b8c4cc}
+.rc.new{border-color:var(--acc);background:#fff8dc;transform:scale(1.04)}
+.rc .tag{font-size:13px;font-weight:700;margin-top:2px}
+.tag.w1{color:var(--ok)} .tag.w2{color:var(--main)} .tag.w3{color:var(--main)} .tag.no{color:var(--sub)} .tag.av{color:var(--bad)}
+.seg{display:inline-flex;border:2px solid var(--main);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:#fff;color:var(--main-d);font:inherit;font-weight:700;padding:8px 16px;cursor:pointer}
+.seg button.on{background:var(--main);color:#fff}
+.hist-item{border-top:1px solid var(--line);padding:10px 0}
+.hist-item summary{cursor:pointer;font-weight:700}
+.rolebox{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.rolebox div{background:var(--soft);border-radius:10px;padding:8px 12px}
+.rolebox b{display:block;word-break:keep-all}
+.empty{color:var(--sub);padding:20px;text-align:center}
+.note{background:#fff8dc;border-left:5px solid var(--acc);padding:10px 14px;border-radius:8px;margin:10px 0;font-size:16px}
+#toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:10px 20px;border-radius:999px;opacity:0;transition:.3s;pointer-events:none;z-index:9}
+#toast.on{opacity:1}
+@media print{
+  header,nav,.noprint,button{display:none!important}
+  body{background:#fff;font-size:14px}
+  section.tab{display:none!important}
+  section#t-draw{display:block!important}
+  #banner{display:none}
+  .rc.hid .r{color:#000}
+}
+@media(max-width:700px){#banner{font-size:34px}header h1{font-size:22px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧹 1인 1역할 공정 뽑기</h1>
+  <span class="sub">번호만 사용 · 이름·개인정보는 입력하지 않아요</span>
+  <nav>
+    <button data-tab="setup" class="on">① 역할 정하기</button>
+    <button data-tab="wish">② 희망 모으기</button>
+    <button data-tab="draw">③ 뽑기·결과</button>
+    <button data-tab="hist">④ 기록·공정성</button>
+  </nav>
+</header>
+<main>
+
+<section class="tab on" id="t-setup">
+  <div class="card">
+    <h2>우리 반 인원</h2>
+    <p class="hint">학생 이름 대신 출석 번호(1번~N번)로 진행해요.</p>
+    <div class="row">
+      <label>학생 수 <input type="number" id="n" min="2" max="40" style="width:90px"></label>
+      <span id="slotInfo" class="stat"></span>
+    </div>
+  </div>
+  <div class="card">
+    <h2>역할 목록</h2>
+    <p class="hint">역할 이름과 필요한 인원(자리 수)을 적어요. 자리 합계가 학생 수보다 많으면 빈 역할이 생기고, 적으면 인기 순서 없이 앞 역할부터 함께 맡도록 자동으로 채워요.</p>
+    <div class="roles-grid" id="roles"></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn alt" id="addRole">+ 역할 추가</button>
+      <button class="btn alt" id="resetRoles">기본 역할로 되돌리기</button>
+    </div>
+  </div>
+</section>
+
+<section class="tab" id="t-wish">
+  <div class="card">
+    <h2>희망 역할 (선택 사항)</h2>
+    <p class="hint">종이나 구글폼으로 받은 희망을 번호별로 입력해요. 비워 두면 “아무거나 괜찮아요”로 처리돼요. 한 역할을 두 번 고를 수 없어요.</p>
+    <div class="row noprint" style="margin-bottom:10px">
+      <button class="btn alt" id="demoWish">시험 삼아 무작위 희망 채우기</button>
+      <button class="btn warn" id="clearWish">희망 모두 지우기</button>
+    </div>
+    <div style="overflow-x:auto"><table id="wishTable"></table></div>
+  </div>
+</section>
+
+<section class="tab" id="t-draw">
+  <div class="card noprint">
+    <h2>공정하게 뽑기</h2>
+    <div class="note">
+      <b>어떻게 공정하게 정하나요?</b><br>
+      ① 희망 순위가 높을수록 점수가 좋아요. ② <b>지난번과 같은 역할은 최대한 피해요</b>(돌아가며 해요). ③ 지난 라운드에서 희망이 안 이뤄진 번호는 이번에 <b>우선권</b>이 커져요. ④ ‘피하고 싶은 역할’은 가능한 한 배정하지 않아요. ⑤ 비슷한 조건끼리는 <b>무작위</b>로 정해요.
+    </div>
+    <div class="row">
+      <button class="btn big" id="drawBtn">🎲 뽑기!</button>
+      <button class="btn" id="nextBtn" disabled>다음 공개 (Space)</button>
+      <button class="btn alt" id="allBtn" disabled>전부 공개</button>
+      <button class="btn" id="commitBtn" disabled style="background:var(--ok)">✔ 이 결과로 확정</button>
+    </div>
+  </div>
+  <div id="banner"><span style="opacity:.7;font-size:30px">‘뽑기!’를 눌러 주세요</span></div>
+  <div class="card">
+    <div class="row noprint" style="margin-bottom:10px">
+      <div class="seg" id="viewSeg"><button data-v="num" class="on">번호별</button><button data-v="role">역할별</button></div>
+      <button class="btn alt" id="copyBtn">결과 복사</button>
+      <button class="btn alt" id="printBtn">인쇄</button>
+    </div>
+    <div id="fair"></div>
+    <div id="result"><div class="empty">아직 뽑은 결과가 없어요.</div></div>
+  </div>
+</section>
+
+<section class="tab" id="t-hist">
+  <div class="card">
+    <h2>확정된 기록</h2>
+    <p class="hint">확정한 결과가 쌓이면 다음 뽑기부터 “돌아가며 하기”와 “우선권”에 반영돼요.</p>
+    <div id="hist"></div>
+    <div class="row noprint" style="margin-top:12px">
+      <button class="btn alt" id="exportBtn">기록 저장(파일)</button>
+      <label class="btn alt" style="display:inline-flex;align-items:center;cursor:pointer">기록 불러오기<input type="file" id="importFile" accept=".json" hidden></label>
+      <button class="btn warn" id="undoBtn">마지막 기록 취소</button>
+      <button class="btn warn" id="resetHist">새 학기 시작(기록 비우기)</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>번호별 누적 현황</h2>
+    <p class="hint">‘만족 점수’는 낮을수록 희망이 잘 이뤄졌다는 뜻이에요. 높은 번호가 다음에 우선권을 받아요.</p>
+    <div style="overflow-x:auto"><table id="cum"></table></div>
+  </div>
+</section>
+</main>
+<div id="toast"></div>
+
+<script id="core">
+/* ===== 공정 배정 핵심 (화면과 분리) ===== */
+function buildSlots(roles,N){
+  var slots=[],extra=0;
+  roles.forEach(function(r,ri){for(var k=0;k<r.seats;k++)slots.push(ri);});
+  if(!slots.length)return{slots:slots,extra:0};
+  var i=0;
+  while(slots.length<N){slots.push(i%roles.length);i++;extra++;}
+  return{slots:slots,extra:extra};
+}
+/* 번호 i가 역할 r을 받을 때의 불만 점수(낮을수록 좋음) */
+function cost(i,r,c){
+  var w=c.wish[i]||[];
+  var has=w.some(function(x){return x>=0;});
+  var p=w.indexOf(r);
+  var base;
+  if(p>=0&&r>=0)base=p;            // 1·2·3지망 = 0,1,2
+  else base=has?4:2;                // 희망 밖 4, 희망 없음(아무거나) 2
+  if(c.avoid[i]===r&&r>=0)base=12;
+  var weight=1+0.3*(c.dis[i]||0);   // 지난번 불만이 쌓였으면 이번엔 더 우선
+  var rep=0;
+  if(c.last[i]===r)rep+=6;          // 직전과 같은 역할 피하기
+  rep+=1.5*((c.hist[i]&&c.hist[i][r])||0); // 해 본 적 있는 역할 피하기
+  return base*weight+rep;
+}
+/* 헝가리안 알고리즘: 비용 합이 가장 작은 배정 (a: 1-indexed n×n) */
+function hungarian(a,n){
+  var INF=1e18,u=[],v=[],p=[],way=[],i,j;
+  for(i=0;i<=n;i++){u[i]=0;v[i]=0;p[i]=0;way[i]=0;}
+  for(i=1;i<=n;i++){
+    p[0]=i;var j0=0,minv=[],used=[];
+    for(j=0;j<=n;j++){minv[j]=INF;used[j]=false;}
+    do{
+      used[j0]=true;var i0=p[j0],delta=INF,j1=0;
+      for(j=1;j<=n;j++)if(!used[j]){
+        var cur=a[i0][j]-u[i0]-v[j];
+        if(cur<minv[j]){minv[j]=cur;way[j]=j0;}
+        if(minv[j]<delta){delta=minv[j];j1=j;}
+      }
+      for(j=0;j<=n;j++){
+        if(used[j]){u[p[j]]+=delta;v[j]-=delta;}else minv[j]-=delta;
+      }
+      j0=j1;
+    }while(p[j0]!==0);
+    do{var j1b=way[j0];p[j0]=p[j1b];j0=j1b;}while(j0);
+  }
+  var res=[];for(j=1;j<=n;j++)res[p[j]]=j;  // res[행]=열
+  return res;
+}
+function solve(N,roles,c,rnd){
+  var s=buildSlots(roles,N),slots=s.slots,M=slots.length;
+  if(!M)return null;
+  var a=[],i,j;
+  for(i=0;i<=M;i++){a[i]=[];}
+  for(i=1;i<=M;i++)for(j=1;j<=M;j++){
+    var base=(i<=N)?cost(i-1,slots[j-1],c):0;
+    a[i][j]=base+rnd()*0.4;          // 비슷한 조건끼리는 무작위
+  }
+  var res=hungarian(a,M),out=[];
+  for(i=1;i<=N;i++)out.push(slots[res[i]-1]);
+  return{assign:out,extra:s.extra};
+}
+/* 결과 평가 */
+function satisfaction(i,r,c){
+  var w=c.wish[i]||[];
+  var has=w.some(function(x){return x>=0;});
+  if(c.avoid[i]===r&&r>=0)return{pts:5,tag:'av'};
+  var p=w.indexOf(r);
+  if(p>=0&&r>=0)return{pts:p,tag:'w'+(p+1)};
+  return has?{pts:3,tag:'no'}:{pts:0,tag:'free'};
+}
+if(typeof module!=='undefined')module.exports={buildSlots:buildSlots,cost:cost,hungarian:hungarian,solve:solve,satisfaction:satisfaction};
+</script>
+
+<script>
+(function(){
+"use strict";
+var KEY='role-picker-v1';
+var DEF_ROLES=[
+ ['칠판 지우개',2],['우유·급식 도우미',2],['분리수거',2],['불 끄기·켜기',1],['창문 열고 닫기',1],
+ ['화분 돌보기',1],['도서 정리',2],['알림장 도우미',1],['줄 서기 안내',1],['TV·컴퓨터 담당',1],
+ ['칭찬 스티커 담당',1],['게시판 관리',2],['청소 도구 정리',2],['책상 줄 맞춤',2],['우산·분실물 관리',1],
+ ['복도 정리',1],['인사 도우미',1],['날씨·날짜 알림',1]
+];
+var S;
+function defState(){
+  return{n:25,roles:DEF_ROLES.map(function(r){return{name:r[0],seats:r[1]};}),wish:{},avoid:{},rounds:[]};
+}
+function load(){
+  try{var t=localStorage.getItem(KEY);if(t){var o=JSON.parse(t);if(o&&o.roles)return o;}}catch(e){}
+  return defState();
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+S=load();
+S.wish=S.wish||{};S.avoid=S.avoid||{};S.rounds=S.rounds||[];
+
+var $=function(id){return document.getElementById(id);};
+function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(function(){t.classList.remove('on');},2200);}
+function rnd(){try{var a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}catch(e){return Math.random();}}
+function cleanRoles(){return S.roles.filter(function(r){return r.name.trim()&&r.seats>0;});}
+function names(){return cleanRoles().map(function(r){return r.name.trim();});}
+
+/* ---------- 탭 ---------- */
+function showTab(t){
+  document.querySelectorAll('nav button').forEach(function(b){b.classList.toggle('on',b.dataset.tab===t);});
+  document.querySelectorAll('section.tab').forEach(function(s){s.classList.toggle('on',s.id==='t-'+t);});
+  if(t==='wish')renderWish();
+  if(t==='hist')renderHist();
+}
+document.querySelectorAll('nav button').forEach(function(b){b.onclick=function(){showTab(b.dataset.tab);};});
+
+/* ---------- 설정 ---------- */
+function slotTotal(){return cleanRoles().reduce(function(a,r){return a+r.seats;},0);}
+function renderSetup(){
+  $('n').value=S.n;
+  var box=$('roles');box.innerHTML='';
+  S.roles.forEach(function(r,i){
+    var d=document.createElement('div');d.className='role-item';
+    d.innerHTML='<input type="text" value="'+esc(r.name)+'" maxlength="16" aria-label="역할 이름"><input type="number" min="1" max="10" value="'+r.seats+'" aria-label="자리 수"><span>명</span><button class="x" title="삭제" aria-label="삭제">×</button>';
+    var ins=d.querySelectorAll('input');
+    ins[0].oninput=function(){r.name=ins[0].value;save();info();};
+    ins[1].oninput=function(){r.seats=Math.max(1,Math.min(10,parseInt(ins[1].value)||1));save();info();};
+    d.querySelector('.x').onclick=function(){S.roles.splice(i,1);save();renderSetup();};
+    box.appendChild(d);
+  });
+  info();
+}
+function info(){
+  var t=slotTotal(),el=$('slotInfo');
+  el.className='stat';
+  if(t===S.n){el.textContent='역할 자리 '+t+' = 학생 '+S.n+'명 ✔ 딱 맞아요';el.classList.add('ok');}
+  else if(t>S.n){el.textContent='역할 자리 '+t+' > 학생 '+S.n+'명 → 빈 자리 '+(t-S.n)+'개';}
+  else{el.textContent='역할 자리 '+t+' < 학생 '+S.n+'명 → 함께 맡는 자리 '+(S.n-t)+'개';el.classList.add('bad');}
+}
+$('n').oninput=function(){S.n=Math.max(2,Math.min(40,parseInt($('n').value)||2));save();info();};
+$('addRole').onclick=function(){S.roles.push({name:'새 역할',seats:1});save();renderSetup();};
+$('resetRoles').onclick=function(){if(confirm('역할 목록을 기본값으로 되돌릴까요?')){S.roles=defState().roles;save();renderSetup();}};
+
+/* ---------- 희망 ---------- */
+function opts(sel,exclude){
+  var h='<option value="">-</option>';
+  names().forEach(function(n){h+='<option'+(n===sel?' selected':'')+(exclude.indexOf(n)>=0&&n!==sel?' disabled':'')+'>'+esc(n)+'</option>';});
+  return h;
+}
+function renderWish(){
+  var t=$('wishTable');
+  var h='<tr><th>번호</th><th>1지망</th><th>2지망</th><th>3지망</th><th>피하고 싶은 역할</th></tr>';
+  for(var i=0;i<S.n;i++){
+    var w=S.wish[i]||['','',''],av=S.avoid[i]||'';
+    var used=w.concat([av]);
+    h+='<tr data-i="'+i+'"><td class="num">'+(i+1)+'</td>';
+    for(var k=0;k<3;k++)h+='<td><select data-k="'+k+'">'+opts(w[k],used)+'</select></td>';
+    h+='<td><select data-k="a">'+opts(av,used)+'</select></td></tr>';
+  }
+  t.innerHTML=h;
+  t.querySelectorAll('select').forEach(function(s){
+    s.onchange=function(){
+      var i=s.closest('tr').dataset.i,k=s.dataset.k;
+      if(k==='a'){if(s.value)S.avoid[i]=s.value;else delete S.avoid[i];}
+      else{var w=(S.wish[i]||['','','']).slice();w[k]=s.value;S.wish[i]=w;}
+      save();renderWish();
+    };
+  });
+}
+$('clearWish').onclick=function(){if(confirm('모든 희망을 지울까요?')){S.wish={};S.avoid={};save();renderWish();}};
+$('demoWish').onclick=function(){
+  var ns=names();if(ns.length<4)return;
+  S.wish={};S.avoid={};
+  for(var i=0;i<S.n;i++){
+    var pool=ns.slice(),w=[];
+    for(var k=0;k<3;k++){var j=Math.floor(rnd()*pool.length);w.push(pool.splice(j,1)[0]);}
+    S.wish[i]=w;
+    if(rnd()<.4)S.avoid[i]=pool[Math.floor(rnd()*pool.length)];
+  }
+  save();renderWish();toast('시험용 희망을 채웠어요 (실제 사용 전에는 지워 주세요)');
+};
+
+/* ---------- 기록 → 맥락 ---------- */
+function context(){
+  var ns=names(),idx={};ns.forEach(function(n,i){idx[n]=i;});
+  var c={wish:[],avoid:[],last:[],hist:[],dis:[]};
+  for(var i=0;i<S.n;i++){
+    c.wish[i]=(S.wish[i]||[]).map(function(n){return n in idx?idx[n]:-1;});
+    c.avoid[i]=(S.avoid[i]&&S.avoid[i] in idx)?idx[S.avoid[i]]:-1;
+    c.last[i]=-1;c.hist[i]=[];c.dis[i]=0;
+  }
+  S.rounds.forEach(function(rd,ri){
+    for(var i=0;i<S.n;i++){
+      var nm=rd.assign[i];
+      if(nm!=null&&nm in idx){
+        c.hist[i][idx[nm]]=(c.hist[i][idx[nm]]||0)+1;
+        if(ri===S.rounds.length-1)c.last[i]=idx[nm];
+      }
+      c.dis[i]+=(rd.dis&&rd.dis[i])||0;
+    }
+  });
+  return c;
+}
+
+/* ---------- 뽑기 ---------- */
+var cur=null; // {assign:[roleIdx], names:[], revealed, committed, ctx, extra}
+var view='num';
+function draw(){
+  var rs=cleanRoles();
+  if(!rs.length){toast('역할을 먼저 추가해 주세요');showTab('setup');return;}
+  var c=context(),r=solve(S.n,rs,c,rnd);
+  var ns=names();
+  cur={assign:r.assign,names:ns,revealed:0,committed:false,ctx:c,extra:r.extra};
+  renderResult();banner(null);
+  $('nextBtn').disabled=false;$('allBtn').disabled=false;$('commitBtn').disabled=true;
+  toast('뽑았어요! ‘다음 공개’를 눌러 한 명씩 발표해요');
+}
+function banner(i){
+  var b=$('banner');
+  if(i==null){b.innerHTML='<span style="opacity:.7;font-size:30px">'+(cur?'준비됐어요. 다음 공개를 눌러요':'‘뽑기!’를 눌러 주세요')+'</span>';return;}
+  b.innerHTML='<div><small>'+(i+1)+'번 친구의 역할은…</small><span class="n">'+(i+1)+'번</span> → '+esc(cur.names[cur.assign[i]])+'</div>';
+}
+function next(){
+  if(!cur||cur.revealed>=S.n)return;
+  var i=cur.revealed++;banner(i);renderResult(i);
+  if(cur.revealed>=S.n)done();
+}
+function all(){
+  if(!cur)return;cur.revealed=S.n;renderResult();done();
+  $('banner').innerHTML='<div><small>모두 공개했어요</small>🎉 결과를 확인하고 확정해 주세요</div>';
+}
+function done(){$('nextBtn').disabled=true;$('allBtn').disabled=true;$('commitBtn').disabled=cur.committed;}
+$('drawBtn').onclick=draw;$('nextBtn').onclick=next;$('allBtn').onclick=all;
+document.addEventListener('keydown',function(e){
+  if(e.code==='Space'&&$('t-draw').classList.contains('on')&&!/INPUT|SELECT|TEXTAREA|BUTTON/.test(document.activeElement.tagName)){e.preventDefault();next();}
+});
+function lenCls(n){var l=n.length;return l>12?' xlong':(l>8?' long':'');}
+var TAGS={w1:'★ 1지망',w2:'2지망',w3:'3지망',no:'희망 외',av:'⚠ 피하고 싶던 역할',free:''};
+function renderResult(newIdx){
+  var box=$('result');
+  if(!cur){box.innerHTML='<div class="empty">아직 뽑은 결과가 없어요.</div>';$('fair').innerHTML='';return;}
+  var h='';
+  if(view==='num'){
+    h='<div class="grid">';
+    for(var i=0;i<S.n;i++){
+      var shown=i<cur.revealed,s=satisfaction(i,cur.assign[i],cur.ctx);
+      h+='<div class="rc'+(shown?'':' hid')+(i===newIdx?' new':'')+'"><span class="n">'+(i+1)+'번</span><span class="r'+(shown?lenCls(cur.names[cur.assign[i]]):'')+'">'+(shown?esc(cur.names[cur.assign[i]]):'?')+'</span>'+(shown&&TAGS[s.tag]?'<span class="tag '+s.tag+'">'+TAGS[s.tag]+'</span>':'')+'</div>';
+    }
+    h+='</div>';
+  }else{
+    var by={};
+    for(var j=0;j<S.n;j++)if(j<cur.revealed)(by[cur.assign[j]]=by[cur.assign[j]]||[]).push(j+1);
+    h='<div class="rolebox">';
+    cleanRoles().forEach(function(r,ri){
+      h+='<div><b>'+esc(r.name)+' <small>('+r.seats+'명)</small></b>'+(by[ri]?by[ri].map(function(x){return x+'번';}).join(', '):'<span style="color:var(--sub)">—</span>')+'</div>';
+    });
+    h+='</div>';
+  }
+  box.innerHTML=h;
+  fairness();
+}
+function fairness(){
+  var el=$('fair');
+  if(!cur||cur.revealed<S.n){el.innerHTML='';return;}
+  var cnt={w1:0,w2:0,w3:0,no:0,av:0,free:0},rep=0,anyWish=false;
+  for(var i=0;i<S.n;i++){
+    var s=satisfaction(i,cur.assign[i],cur.ctx);cnt[s.tag]++;
+    if(cur.ctx.last[i]===cur.assign[i])rep++;
+  }
+  var wishers=S.n-cnt.free;
+  var h='<div style="margin-bottom:10px"><b>공정성 점검</b> ';
+  if(wishers){
+    h+='<span class="stat ok">1지망 '+cnt.w1+'명</span><span class="stat">2지망 '+cnt.w2+'명</span><span class="stat">3지망 '+cnt.w3+'명</span><span class="stat">희망 외 '+cnt.no+'명</span>';
+    h+='<span class="stat'+(cnt.av?' bad':' ok')+'">피하고 싶은 역할 배정 '+cnt.av+'명</span>';
+  }else h+='<span class="stat">희망 입력 없음 → 완전 무작위</span>';
+  h+='<span class="stat'+(rep?' bad':' ok')+'">지난번과 같은 역할 '+rep+'명</span>';
+  if(cur.extra)h+='<span class="stat">함께 맡는 자리 '+cur.extra+'개</span>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+$('viewSeg').querySelectorAll('button').forEach(function(b){b.onclick=function(){
+  view=b.dataset.v;$('viewSeg').querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b);});renderResult();};});
+$('commitBtn').onclick=function(){
+  if(!cur||cur.committed)return;
+  var assign=[],dis=[];
+  for(var i=0;i<S.n;i++){assign.push(cur.names[cur.assign[i]]);dis.push(satisfaction(i,cur.assign[i],cur.ctx).pts);}
+  S.rounds.push({date:new Date().toLocaleDateString('ko-KR'),n:S.n,assign:assign,dis:dis});
+  cur.committed=true;save();$('commitBtn').disabled=true;
+  toast('확정했어요! 다음 뽑기부터 돌아가며 하기에 반영돼요');
+};
+function textResult(){
+  if(!cur)return'';var out=[];
+  for(var i=0;i<S.n;i++)out.push((i+1)+'번\t'+cur.names[cur.assign[i]]);
+  return out.join('\n');
+}
+$('copyBtn').onclick=function(){
+  if(!cur||cur.revealed<S.n){toast('먼저 결과를 전부 공개해 주세요');return;}
+  var t=textResult();
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('복사했어요');},function(){
+    var ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');toast('복사했어요');}catch(e){toast('복사에 실패했어요');}ta.remove();});
+};
+$('printBtn').onclick=function(){if(!cur||cur.revealed<S.n){toast('먼저 결과를 전부 공개해 주세요');return;}window.print();};
+
+/* ---------- 기록 ---------- */
+function renderHist(){
+  var h=$('hist');
+  if(!S.rounds.length)h.innerHTML='<div class="empty">아직 확정한 기록이 없어요.</div>';
+  else{
+    var s='';
+    S.rounds.slice().reverse().forEach(function(rd,k){
+      var no=S.rounds.length-k;
+      s+='<details class="hist-item"'+(k===0?' open':'')+'><summary>'+no+'회차 · '+esc(rd.date)+' · '+rd.n+'명</summary><div class="rolebox" style="margin-top:8px">';
+      var by={};rd.assign.forEach(function(r,i){if(r!=null)(by[r]=by[r]||[]).push(i+1);});
+      Object.keys(by).forEach(function(r){s+='<div><b>'+esc(r)+'</b>'+by[r].map(function(x){return x+'번';}).join(', ')+'</div>';});
+      s+='</div></details>';
+    });
+    h.innerHTML=s;
+  }
+  var t='<tr><th>번호</th><th>만족 점수(누적)</th><th>해 본 역할 수</th><th>지금 우선권</th></tr>';
+  var c=context();
+  for(var i=0;i<S.n;i++){
+    var kinds=0;(c.hist[i]||[]).forEach(function(x){if(x)kinds++;});
+    var w=1+0.3*c.dis[i];
+    t+='<tr><td class="num">'+(i+1)+'</td><td>'+c.dis[i]+'</td><td>'+kinds+'</td><td>'+(c.dis[i]>0?'▲ ×'+w.toFixed(1):'보통')+'</td></tr>';
+  }
+  $('cum').innerHTML=t;
+}
+$('undoBtn').onclick=function(){if(S.rounds.length&&confirm('마지막 회차 기록을 취소할까요?')){S.rounds.pop();save();renderHist();}};
+$('resetHist').onclick=function(){if(confirm('모든 확정 기록을 지우고 새로 시작할까요? (되돌릴 수 없어요)')){S.rounds=[];save();renderHist();}};
+$('exportBtn').onclick=function(){
+  var b=new Blob([JSON.stringify(S)],{type:'application/json'}),a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='1인1역할_기록.json';document.body.appendChild(a);a.click();a.remove();
+};
+$('importFile').onchange=function(e){
+  var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{var o=JSON.parse(r.result);if(!o.roles||!o.rounds)throw 0;S=o;S.wish=S.wish||{};S.avoid=S.avoid||{};save();renderSetup();renderHist();toast('불러왔어요');}catch(x){toast('올바른 기록 파일이 아니에요');}};
+  r.readAsText(f);e.target.value='';
+};
+
+renderSetup();
+})();
+</script>
+</body>
+</html>

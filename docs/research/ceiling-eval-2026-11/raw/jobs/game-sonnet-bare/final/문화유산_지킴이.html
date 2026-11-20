@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>문화유산 지킴이 - 초5 사회 복습 게임</title>
+<style>
+:root{--bg:#fff7e6;--ink:#3b2a1a;--main:#b5451b;--sub:#f2b84b;--ok:#2e9e5b;--no:#d64545;--card:#fff;--line:#e8d3a8}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;display:flex;justify-content:center}
+#app{width:100%;max-width:720px;padding:16px}
+h1{margin:8px 0;font-size:2rem;color:var(--main);text-align:center}
+.card{background:var(--card);border:3px solid var(--line);border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 4px 0 var(--line)}
+.btn{display:block;width:100%;font:inherit;font-size:1.1rem;padding:14px;margin:8px 0;border:3px solid var(--main);background:#fff;color:var(--ink);border-radius:14px;cursor:pointer;text-align:left}
+.btn:hover:not(:disabled){background:#ffeccc}
+.btn.primary{background:var(--main);color:#fff;text-align:center;font-weight:bold}
+.btn.primary:hover{background:#98380f}
+.btn.ok{background:#d6f5e3;border-color:var(--ok)}
+.btn.no{background:#fbdcdc;border-color:var(--no)}
+.btn:disabled{cursor:default}
+.hud{display:flex;justify-content:space-between;align-items:center;font-weight:bold;flex-wrap:wrap;gap:6px}
+.bar{height:12px;background:#eadcb8;border-radius:8px;overflow:hidden;margin:8px 0}
+.bar>div{height:100%;background:var(--sub);transition:width .3s}
+.q{font-size:1.3rem;line-height:1.5;margin:10px 0;font-weight:bold}
+.exp{margin-top:10px;padding:12px;border-radius:12px;background:#fff3cf;line-height:1.5}
+.big{font-size:3rem;text-align:center}
+.center{text-align:center}
+.row{display:flex;gap:10px}.row .btn{text-align:center}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mem{aspect-ratio:1/1;font:inherit;font-size:.95rem;border:3px solid var(--main);border-radius:12px;background:var(--main);color:#fff;cursor:pointer;padding:4px;display:flex;align-items:center;justify-content:center;text-align:center;word-break:keep-all}
+.mem.open{background:#fff;color:var(--ink)}
+.mem.done{background:#d6f5e3;border-color:var(--ok);color:var(--ink);cursor:default}
+.item{font-size:2rem;text-align:center;font-weight:bold;padding:24px 8px;border:3px dashed var(--sub);border-radius:16px;background:#fffdf5}
+.small{font-size:.9rem;color:#7a6548}
+@media(max-width:480px){.grid{grid-template-columns:repeat(3,1fr)}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ---------- 데이터 ----------
+const QUIZ=[
+{q:"조상들이 남겨 오늘날까지 전해지며 보존할 가치가 있는 것을 무엇이라고 할까요?",c:["문화유산","자연재해","현대 건축","유행"],a:0,e:"문화유산은 조상들이 물려준 소중한 것으로, 우리가 잘 지켜서 후손에게 물려줘야 해요."},
+{q:"형태가 있는 문화유산(건축물, 책, 그림, 조각 등)을 무엇이라고 할까요?",c:["무형유산","유형문화유산","자연유산","생활용품"],a:1,e:"눈에 보이고 만질 수 있는 문화유산은 유형문화유산이에요. 예) 숭례문, 석굴암"},
+{q:"판소리, 탈춤, 강강술래처럼 형태는 없지만 기술이나 예능으로 전해지는 것은?",c:["유형문화유산","천연기념물","무형유산","유적지"],a:2,e:"몸짓·소리·기술처럼 형태가 없는 것은 무형유산이에요. 사람을 통해 전해져요."},
+{q:"우리 지역 문화유산을 알아보는 방법으로 알맞지 않은 것은?",c:["박물관 방문하기","지역 어르신께 여쭤보기","누리집(인터넷) 찾아보기","확인 없이 소문만 믿기"],a:3,e:"믿을 수 있는 자료(박물관, 누리집, 책, 어르신 인터뷰, 답사)로 확인해야 해요."},
+{q:"문화유산 답사의 올바른 순서는?",c:["발표→조사→계획","계획→조사(답사)→정리→발표","정리→계획→발표","조사→발표→계획"],a:1,e:"주제·계획 세우기 → 조사(답사) → 자료 정리 → 발표 순서예요."},
+{q:"문화유산을 답사할 때 지켜야 할 태도로 알맞은 것은?",c:["유물에 이름 새기기","마음대로 만져 보기","안내 표지를 따르고 소중히 다루기","큰 소리로 뛰어다니기"],a:2,e:"문화유산은 한 번 훼손되면 되돌리기 어려워요. 안내를 따르고 소중히 다뤄요."},
+{q:"문화유산이 훼손되는 원인이 아닌 것은?",c:["낙서와 무분별한 손상","오염과 자연재해","전쟁과 화재","정기적인 보존 관리"],a:3,e:"정기적인 보존 관리는 오히려 문화유산을 지키는 방법이에요."},
+{q:"문화유산을 보호하기 위한 노력으로 알맞은 것은?",c:["보수하고 복원하기","방치하기","상품으로 마구 팔기","출입 안내 무시하기"],a:0,e:"보수·복원, 기록 남기기, 홍보와 체험 행사 등으로 문화유산을 지켜요."},
+{q:"문화유산을 국가 차원에서 지정·관리하는 일을 맡은 기관은? (예전 문화재청)",c:["소방서","국가유산청","우체국","도서관"],a:1,e:"국가유산청(예전 문화재청)이 국가유산을 보호하고 관리해요."},
+{q:"'수원 화성'은 어떤 문화유산일까요?",c:["무형유산","음악","유형문화유산(성곽 건축물)","동물"],a:2,e:"수원 화성은 조선 정조 때 지은 성곽으로, 유네스코 세계유산이에요."},
+{q:"'강릉 단오제'는 어떤 유산일까요?",c:["유형문화유산","무형유산","천연기념물","화폐"],a:1,e:"강릉 단오제는 제사, 굿, 탈춤, 씨름 등이 어우러진 무형유산이에요."},
+{q:"한글을 만든 원리를 설명한 책으로 유네스코 기록유산인 것은?",c:["훈민정음 해례본","택리지","동의보감 한 쪽","여권"],a:0,e:"훈민정음 해례본은 한글의 창제 원리를 설명한 책이에요."},
+{q:"지역 문화유산을 조사할 때 가장 먼저 해야 할 일은?",c:["발표하기","조사할 주제 정하고 계획 세우기","바로 집에 가기","사진 지우기"],a:1,e:"무엇을 알아볼지 주제를 정하고 계획을 세워야 효율적으로 조사할 수 있어요."},
+{q:"우리 지역의 문화유산을 알아야 하는 까닭으로 알맞은 것은?",c:["지역의 역사와 조상의 삶을 이해하기 위해","시험에 나오기 때문에만","남에게 자랑만 하려고","관심 없어도 되니까"],a:0,e:"문화유산에는 지역의 역사와 조상들의 삶의 지혜가 담겨 있어요."},
+{q:"문화유산 안내 책자(리플릿)나 누리집에서 얻기 어려운 정보는?",c:["위치","만들어진 시기","개인적 소문과 확인 안 된 이야기","특징"],a:2,e:"공식 자료에는 위치, 시기, 특징 등 확인된 정보가 담겨 있어요."},
+{q:"우리가 문화유산을 지키기 위해 실천할 수 있는 일은?",c:["유물에 낙서하기","쓰레기 버리고 가기","문화유산을 홍보하고 안내 지키기","담을 넘어 들어가기"],a:2,e:"안내를 지키고, 문화유산의 가치를 친구와 가족에게 알리는 것도 좋은 실천이에요."},
+{q:"석굴암과 불국사가 있는 도시는?",c:["경주","부산","대구","인천"],a:0,e:"불국사와 석굴암은 경주에 있으며 유네스코 세계유산이에요."},
+{q:"[OX] 문화유산은 한번 훼손되면 완전히 되돌리기 어렵다.",c:["O","X"],a:0,e:"그래서 훼손되지 않도록 미리 보호하는 것이 매우 중요해요."},
+{q:"[OX] 판소리는 눈에 보이는 건축물이므로 유형문화유산이다.",c:["O","X"],a:1,e:"판소리는 소리로 전해지는 무형유산이에요."},
+{q:"[OX] 문화유산은 오래된 것만 있고 우리 지역에는 없다.",c:["O","X"],a:1,e:"전국 어디든 지역마다 건축물, 전통 행사, 이야기 등 다양한 문화유산이 있어요."}
+];
+const SORT=[
+["숭례문","유형"],["석굴암","유형"],["훈민정음 해례본","유형"],["팔만대장경판","유형"],["수원 화성","유형"],["경복궁","유형"],
+["판소리","무형"],["강릉 단오제","무형"],["탈춤","무형"],["강강술래","무형"],["김장 문화","무형"],["제주 해녀 문화","무형"],
+["진돗개","자연"],["독도 천연기념물","자연"],["두루미","자연"],["성산 일출봉","자연"]
+];
+const PAIRS=[["숭례문","서울의 성문"],["수원 화성","정조가 지은 성곽"],["석굴암","경주 토함산"],["판소리","소리꾼의 노래"],["강릉 단오제","무형유산 축제"],["훈민정음","한글 창제 원리"]];
+
+// ---------- 유틸 ----------
+const $=s=>document.querySelector(s);
+const app=$("#app");
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let ac;
+function beep(f,d=.15,t="sine"){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=.12;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const good=()=>{beep(660,.1);setTimeout(()=>beep(880,.15),100)};
+const bad=()=>beep(200,.3,"square");
+function best(k,v){try{const key="heritage_"+k;const o=+localStorage.getItem(key)||0;if(v!==undefined&&v>o){localStorage.setItem(key,v);return v}return o}catch(e){return v||0}}
+const esc=s=>String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+function rank(p){return p>=90?"🏆 문화유산 박사":p>=70?"🥇 문화유산 지킴이":p>=50?"🥈 문화유산 탐험가":"🥉 문화유산 새싹"}
+
+// ---------- 메뉴 ----------
+function menu(){
+app.innerHTML=`<h1>🏯 문화유산 지킴이</h1>
+<p class="center small">초등 5학년 사회 · 우리 지역의 문화유산 복습 게임</p>
+<div class="card center"><div class="big">🏛️ 🎎 🌳</div></div>
+<button class="btn primary" id="m1">📝 1단계 · 문화유산 퀴즈 (10문제)<br><span class="small" style="color:#fff">최고 점수 ${best("quiz")}점</span></button>
+<button class="btn primary" id="m2">🗂️ 2단계 · 유산 분류 챌린지 (10개)<br><span class="small" style="color:#fff">최고 점수 ${best("sort")}점</span></button>
+<button class="btn primary" id="m3">🃏 3단계 · 짝 맞추기<br><span class="small" style="color:#fff">최소 시도 ${best("pair")?(100-best("pair")):"-"}${best("pair")?"번":""}</span></button>
+<div class="card"><b>📚 핵심 정리</b><ul style="line-height:1.7;margin:6px 0 0;padding-left:20px">
+<li><b>유형문화유산</b>: 건축물·책·그림처럼 형태가 있는 것</li>
+<li><b>무형유산</b>: 소리·춤·기술처럼 형태가 없는 것</li>
+<li><b>자연유산</b>: 천연기념물, 경치가 뛰어난 곳 등</li>
+<li>답사 순서: 계획 → 조사 → 정리 → 발표</li>
+<li>보호 방법: 보수·복원, 기록, 홍보, 안내 지키기</li></ul></div>`;
+$("#m1").onclick=quiz;$("#m2").onclick=sort;$("#m3").onclick=pair;
+}
+
+// ---------- 1단계 퀴즈 ----------
+function quiz(){
+const qs=shuffle(QUIZ).slice(0,10).map(q=>{const idx=q.c.map((_,i)=>i);const order=q.q.startsWith("[OX]")?idx:shuffle(idx);return{...q,c:order.map(i=>q.c[i]),a:order.indexOf(q.a)}});
+let i=0,score=0,lives=3,combo=0,hint=2;
+function show(){
+const q=qs[i];
+app.innerHTML=`<div class="hud"><span>문제 ${i+1}/10</span><span>${"❤️".repeat(lives)}${"🖤".repeat(3-lives)}</span><span>⭐ ${score}</span></div>
+<div class="bar"><div style="width:${i/10*100}%"></div></div>
+<div class="card"><div class="q">${esc(q.q)}</div><div id="ch"></div><div id="fb"></div></div>
+<div class="row"><button class="btn" id="hint">💡 힌트 (${hint})</button><button class="btn" id="home">🏠 처음으로</button></div>
+${combo>=2?`<p class="center"><b>🔥 ${combo}콤보!</b></p>`:""}`;
+const ch=$("#ch");
+q.c.forEach((t,k)=>{const b=document.createElement("button");b.className="btn";b.textContent=`${k+1}. ${t}`;b.onclick=()=>pick(k);ch.appendChild(b)});
+$("#home").onclick=menu;
+$("#hint").onclick=()=>{if(hint<=0)return;const wrong=[...ch.children].filter((b,k)=>k!==q.a&&!b.disabled);if(wrong.length<=1)return;hint--;const w=shuffle(wrong)[0];w.disabled=true;w.style.opacity=.3;$("#hint").textContent=`💡 힌트 (${hint})`};
+}
+function pick(k){
+const q=qs[i];const bs=[...$("#ch").children];bs.forEach(b=>b.disabled=true);$("#hint").disabled=true;
+const right=k===q.a;
+bs[q.a].classList.add("ok");
+if(right){combo++;score+=10+Math.min(combo-1,5)*2;good()}else{bs[k].classList.add("no");combo=0;lives--;bad()}
+$("#fb").innerHTML=`<div class="exp"><b>${right?"⭕ 정답!":"❌ 아쉬워요"}</b><br>${esc(q.e)}</div><button class="btn primary" id="nx">${(i===9||lives===0)?"결과 보기":"다음 문제 ▶"}</button>`;
+$("#nx").onclick=()=>{i++;(i>=10||lives===0)?end():show()};
+}
+function end(){
+const answered=i>10?10:i;const nb=best("quiz",score);
+app.innerHTML=`<h1>${lives>0?"🎉 퀴즈 완료!":"💔 게임 오버"}</h1>
+<div class="card center"><div class="big">${rank(Math.min(score,100))}</div><p style="font-size:1.4rem">점수 <b>${score}</b>점 ${score>=nb&&score>0?"🆕 최고기록!":""}</p><p class="small">푼 문제 ${answered}/10 · 남은 목숨 ${lives}</p></div>
+<button class="btn primary" id="r">🔁 다시 하기</button><button class="btn primary" id="h">🏠 메뉴로</button>`;
+$("#r").onclick=quiz;$("#h").onclick=menu;
+}
+show();
+}
+
+// ---------- 2단계 분류 ----------
+function sort(){
+const items=shuffle(SORT).slice(0,10);let i=0,score=0,wrong=[];
+const label={유형:"🏛️ 유형문화유산",무형:"🎭 무형유산",자연:"🌿 자연유산"};
+function show(){
+const[n]=items[i];
+app.innerHTML=`<div class="hud"><span>${i+1}/10</span><span>⭐ ${score}</span></div><div class="bar"><div style="width:${i/10*100}%"></div></div>
+<div class="card"><p class="center small">어떤 유산일까요?</p><div class="item" id="it">${esc(n)}</div><div id="fb"></div></div>
+<div id="bt">${Object.keys(label).map(k=>`<button class="btn" data-k="${k}" style="text-align:center">${label[k]}</button>`).join("")}</div>
+<button class="btn" id="home" style="text-align:center">🏠 처음으로</button>`;
+$("#home").onclick=menu;
+document.querySelectorAll("#bt .btn").forEach(b=>b.onclick=()=>pick(b.dataset.k));
+}
+function pick(k){
+const[n,a]=items[i];const right=k===a;
+document.querySelectorAll("#bt .btn").forEach(b=>{b.disabled=true;if(b.dataset.k===a)b.classList.add("ok");else if(b.dataset.k===k)b.classList.add("no")});
+if(right){score+=10;good()}else{wrong.push(n+" → "+label[a]);bad()}
+$("#fb").innerHTML=`<div class="exp"><b>${right?"⭕ 정답!":"❌ 정답은 "+label[a]}</b></div><button class="btn primary" id="nx">${i===9?"결과 보기":"다음 ▶"}</button>`;
+$("#nx").onclick=()=>{i++;i>=10?end():show()};
+}
+function end(){
+const nb=best("sort",score);
+app.innerHTML=`<h1>🗂️ 분류 완료!</h1><div class="card center"><div class="big">${rank(score)}</div><p style="font-size:1.4rem">점수 <b>${score}</b>점 ${score>=nb&&score>0?"🆕 최고기록!":""}</p></div>
+${wrong.length?`<div class="card"><b>📌 틀린 문제 복습</b><ul>${wrong.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>`:`<div class="card center">모두 맞혔어요! 👏</div>`}
+<button class="btn primary" id="r">🔁 다시 하기</button><button class="btn primary" id="h">🏠 메뉴로</button>`;
+$("#r").onclick=sort;$("#h").onclick=menu;
+}
+show();
+}
+
+// ---------- 3단계 짝 맞추기 ----------
+function pair(){
+const cards=shuffle(PAIRS.flatMap((p,k)=>[{t:p[0],k},{t:p[1],k}]));
+let open=[],found=0,tries=0,lock=false;
+app.innerHTML=`<div class="hud"><span>🃏 문화유산과 설명을 짝지어요</span><span id="tr">시도 0</span></div>
+<div class="card"><div class="grid" id="g"></div></div><button class="btn" id="home" style="text-align:center">🏠 처음으로</button>`;
+$("#home").onclick=menu;
+const g=$("#g");
+cards.forEach((c,idx)=>{const b=document.createElement("button");b.className="mem";b.textContent="❓";b.onclick=()=>{
+if(lock||b.classList.contains("open")||b.classList.contains("done"))return;
+b.classList.add("open");b.textContent=c.t;open.push({b,c});beep(500,.06);
+if(open.length===2){tries++;$("#tr").textContent="시도 "+tries;lock=true;
+const[x,y]=open;
+if(x.c.k===y.c.k){setTimeout(()=>{x.b.className=y.b.className="mem done";found++;good();open=[];lock=false;if(found===PAIRS.length)win()},400)}
+else setTimeout(()=>{[x,y].forEach(o=>{o.b.classList.remove("open");o.b.textContent="❓"});bad();open=[];lock=false},900)}
+};g.appendChild(b)});
+function win(){
+const sc=Math.max(0,100-tries);const prev=best("pair");if(!prev||sc>prev)best("pair",sc);
+app.innerHTML=`<h1>🎊 모두 찾았어요!</h1><div class="card center"><div class="big">${tries<=8?"🏆":tries<=12?"🥇":"🥈"}</div><p style="font-size:1.3rem"><b>${tries}</b>번 만에 성공!</p>
+<p class="small">${PAIRS.map(p=>esc(p[0])+" = "+esc(p[1])).join("<br>")}</p></div>
+<button class="btn primary" id="r">🔁 다시 하기</button><button class="btn primary" id="h">🏠 메뉴로</button>`;
+$("#r").onclick=pair;$("#h").onclick=menu;
+}
+}
+menu();
+</script>
+</body>
+</html>

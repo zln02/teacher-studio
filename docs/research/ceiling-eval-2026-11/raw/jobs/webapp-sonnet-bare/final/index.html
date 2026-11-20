@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>일차함수 그래프 놀이터</title>
+<style>
+:root{--bg:#f4f7fb;--card:#fff;--ink:#1f2937;--sub:#4b5563;--line:#d5dce6;--blue:#1d4ed8;--blue-d:#1e3a8a;--orange:#c2410c;--green:#15803d;--red:#b91c1c;--soft:#eaf1ff}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;line-height:1.6;font-size:16px}
+header{background:linear-gradient(90deg,#1d4ed8,#2563eb);color:#fff;padding:14px 16px}
+header h1{margin:0;font-size:1.35rem}
+header p{margin:2px 0 0;font-size:.95rem}
+#scoreSummary{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.92rem}
+#scoreSummary span{background:rgba(255,255,255,.18);padding:2px 10px;border-radius:99px}
+nav[role=tablist]{display:flex;gap:6px;padding:10px 12px 0;max-width:1100px;margin:0 auto;flex-wrap:wrap}
+nav button{font:inherit;font-weight:700;padding:10px 18px;border:2px solid var(--line);border-bottom:none;background:#e5ebf4;color:var(--ink);border-radius:10px 10px 0 0;cursor:pointer;min-height:44px}
+nav button[aria-selected=true]{background:var(--card);color:var(--blue-d);border-color:var(--blue)}
+main{max-width:1100px;margin:0 auto;padding:0 12px 30px}
+.tabpanel{background:var(--card);border:2px solid var(--blue);border-radius:0 12px 12px 12px;padding:14px;display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:18px;align-items:start}
+@media(max-width:860px){.tabpanel{grid-template-columns:minmax(0,1fr);padding:10px}}
+.plotwrap{width:100%}
+canvas{width:100%;aspect-ratio:1/1;display:block;background:#fff;border:1px solid var(--line);border-radius:8px;touch-action:none;max-width:560px}
+.legend{font-size:.88rem;color:var(--sub);margin:6px 0 0}
+.panel>*:first-child{margin-top:0}
+h2{font-size:1.1rem;margin:14px 0 6px}
+.eq{font-size:1.7rem;font-weight:800;color:var(--blue-d);background:var(--soft);border-radius:10px;padding:6px 14px;display:inline-block;margin:0 0 8px;min-width:12ch}
+.ctl{display:grid;grid-template-columns:7.5em 1fr 5.5em;gap:8px;align-items:center;margin:6px 0}
+.ctl label{font-weight:700}
+.ctl input[type=range]{width:100%;min-height:32px;accent-color:var(--blue)}
+input[type=number],input[type=text],select{font:inherit;padding:6px 8px;border:2px solid #94a3b8;border-radius:8px;min-height:40px;width:100%;color:var(--ink);background:#fff}
+button.btn{font:inherit;font-weight:700;padding:8px 14px;border-radius:10px;border:2px solid var(--blue);background:var(--blue);color:#fff;cursor:pointer;min-height:44px}
+button.btn.sec{background:#fff;color:var(--blue-d)}
+button.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+.info{background:#f8fafc;border:1px solid var(--line);border-radius:10px;padding:8px 12px;margin:8px 0}
+.info p{margin:4px 0}
+.note{min-height:1.5em;font-weight:700}
+.ok{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--orange)}
+.cmp{border:2px dashed #94a3b8;border-radius:10px;padding:8px 12px;margin:10px 0}
+details{margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:6px 12px;background:#fcfdff}
+summary{cursor:pointer;font-weight:700;min-height:32px}
+.qtext{font-size:1.1rem;font-weight:700;margin:4px 0 8px}
+.qinputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:8px 0}
+.qinputs label{font-weight:700;display:block}
+.expl{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:6px 12px;margin:8px 0}
+.expl p{margin:4px 0}
+.chk{display:inline-flex;align-items:center;gap:6px;margin-right:14px;min-height:32px}
+.chk input{width:20px;height:20px}
+.big{font-size:1.15rem}
+</style>
+</head>
+<body>
+<script>
+window.addEventListener('error',function(e){document.documentElement.setAttribute('data-err',(document.documentElement.getAttribute('data-err')||'')+e.message+' @'+e.lineno+';');});
+</script>
+<header>
+  <h1>일차함수 그래프 놀이터</h1>
+  <p>y = ax + b 의 a(기울기)와 b(y절편)를 직접 움직이며 익혀 봐요.</p>
+  <div id="scoreSummary" aria-live="polite"></div>
+</header>
+
+<nav role="tablist" aria-label="학습 메뉴">
+  <button role="tab" id="tb-explore" aria-controls="tab-explore" aria-selected="true">탐구</button>
+  <button role="tab" id="tb-quiz" aria-controls="tab-quiz" aria-selected="false" tabindex="-1">문제 풀기</button>
+  <button role="tab" id="tb-play" aria-controls="tab-play" aria-selected="false" tabindex="-1">놀이 도전</button>
+</nav>
+
+<main>
+<!-- 탐구 -->
+<section id="tab-explore" class="tabpanel" role="tabpanel" aria-labelledby="tb-explore">
+  <div class="plotwrap">
+    <canvas id="cvExplore" tabindex="0" role="img" aria-label="일차함수 그래프. 방향키로 기울기와 y절편을 조절할 수 있습니다."></canvas>
+    <p class="legend" id="lgExplore"></p>
+    <p class="legend">그래프 위의 파란 점을 끌어서도 바꿀 수 있어요. (위쪽 점: y절편, 오른쪽 점: x=1일 때의 값) 그래프를 선택하고 방향키를 눌러도 됩니다(좌우: a, 상하: b).</p>
+  </div>
+  <div class="panel">
+    <div class="eq" id="exEq" aria-live="polite">y = x</div>
+    <div id="exCtl"></div>
+    <div>
+      <label class="chk"><input type="checkbox" id="exTri" checked> 기울기 삼각형 보기</label>
+      <label class="chk"><input type="checkbox" id="exInt" checked> 절편 표시</label>
+    </div>
+    <div class="info" id="exInfo" aria-live="polite"></div>
+
+    <h2>비교 모드</h2>
+    <div class="cmp">
+      <div class="row">
+        <button class="btn sec" id="cmpFix">현재 그래프를 기준(점선)으로 고정</button>
+        <button class="btn sec" id="cmpClear">기준 해제</button>
+      </div>
+      <div class="row" role="group" aria-label="비교 프리셋">
+        <button class="btn sec" data-pre="a">a만 변경</button>
+        <button class="btn sec" data-pre="b">b만 변경 (평행이동)</button>
+        <button class="btn sec" data-pre="perp">수직인 직선</button>
+        <button class="btn sec" data-pre="neg">a의 부호 반대</button>
+      </div>
+      <p class="note" id="cmpMsg" aria-live="polite"></p>
+      <p id="cmpRel"></p>
+    </div>
+
+    <details open>
+      <summary>개념 정리</summary>
+      <p><b>기울기 a</b>: x가 1 증가할 때 y가 얼마나 변하는지를 나타냅니다. a &gt; 0이면 오른쪽 위로 향하는(증가) 직선, a &lt; 0이면 오른쪽 아래로 향하는(감소) 직선입니다. |a|가 클수록 가파릅니다.</p>
+      <p><b>y절편 b</b>: 그래프가 y축과 만나는 점 (0, b)의 y좌표입니다. b가 바뀌면 직선이 위아래로 평행이동합니다.</p>
+      <p><b>x절편</b>: 그래프가 x축과 만나는 점의 x좌표로, y = 0을 대입한 <b>x = -b/a</b> (a ≠ 0)입니다.</p>
+      <p><b>a = 0</b>이면 y = b 꼴의 상수함수로 x축에 평행한 직선이며, 엄밀하게는 일차함수가 아닙니다.</p>
+      <p><b>평행</b>: 두 직선 y = a₁x + b₁, y = a₂x + b₂에서 a₁ = a₂, b₁ ≠ b₂ 이면 평행합니다. (b₁ = b₂ 이면 일치)</p>
+      <p><b>수직</b>: a₁ × a₂ = -1 이면 두 직선이 서로 수직입니다. 예) 기울기 2와 -1/2</p>
+    </details>
+  </div>
+</section>
+
+<!-- 문제 풀기 -->
+<section id="tab-quiz" class="tabpanel" role="tabpanel" aria-labelledby="tb-quiz" hidden>
+  <div class="plotwrap">
+    <canvas id="cvQuiz" tabindex="0" role="img" aria-label="문제 그래프"></canvas>
+    <p class="legend" id="lgQuiz"></p>
+  </div>
+  <div class="panel">
+    <div class="row" style="align-items:center">
+      <label for="qType" style="font-weight:700">문제 유형</label>
+      <select id="qType" style="width:auto">
+        <option value="random">무작위</option>
+        <option value="graph">그래프를 보고 식 맞히기</option>
+        <option value="twopoints">두 점을 지나는 일차함수</option>
+        <option value="intercept">x절편 / y절편 구하기</option>
+        <option value="parperp">평행 / 수직 조건</option>
+      </select>
+    </div>
+    <div class="info" id="qScore" aria-live="polite"></div>
+    <p class="qtext" id="qText"></p>
+    <div id="qInputs" class="qinputs"></div>
+    <div class="row">
+      <button class="btn" id="qCheck">정답 확인</button>
+      <button class="btn sec" id="qHint">힌트</button>
+      <button class="btn sec" id="qReveal">정답·해설 보기</button>
+      <button class="btn sec" id="qNext">다음 문제</button>
+    </div>
+    <p class="note" id="qFeed" aria-live="polite"></p>
+    <div class="info" id="qHints" hidden></div>
+    <div class="expl" id="qExpl" hidden></div>
+  </div>
+</section>
+
+<!-- 놀이 도전 -->
+<section id="tab-play" class="tabpanel" role="tabpanel" aria-labelledby="tb-play" hidden>
+  <div class="plotwrap">
+    <canvas id="cvPlay" tabindex="0" role="img" aria-label="목표 점이 있는 좌표평면. 방향키로 직선을 조절합니다."></canvas>
+    <p class="legend">주황색 동그라미가 목표 점입니다. 직선이 지나가면 초록색으로 바뀌어요. 파란 점을 끌거나 방향키(좌우: a, 상하: b)를 쓸 수 있어요.</p>
+  </div>
+  <div class="panel">
+    <h2 style="margin-top:0" id="plTitle">단계 1</h2>
+    <p>모든 목표 점을 지나는 직선 y = ax + b를 만드세요.</p>
+    <div class="eq" id="plEq" aria-live="polite">y = 0</div>
+    <div id="plCtl"></div>
+    <p class="big" id="plStatus" aria-live="polite"></p>
+    <p class="note" id="plMsg" aria-live="polite"></p>
+    <div class="row">
+      <button class="btn" id="plNext" disabled>다음 단계</button>
+      <button class="btn sec" id="plNew">새 문제(같은 단계)</button>
+      <button class="btn sec" id="plReset">직선 초기화</button>
+    </div>
+    <details>
+      <summary>도움말</summary>
+      <p>점 두 개만 지나게 하면 직선이 하나로 정해져요. 먼저 점 하나를 정해 y절편 b를 맞추고, 기울기 a로 나머지 점을 맞춰 보세요.</p>
+      <p>단계가 올라가면 점이 늘고, 기울기가 0.5 단위인 직선도 나옵니다.</p>
+    </details>
+    <div class="row"><button class="btn sec" id="resetAll">학습 기록 지우기</button></div>
+  </div>
+</section>
+</main>
+
+<script id="logic">
+/* ===== 순수 로직 (DOM 없음) ===== */
+var EPS = 1e-6;
+function r1(v){ return Math.round(v*10)/10 + 0; }
+function clamp(v,lo,hi){ return Math.min(hi, Math.max(lo, v)); }
+function fmtNum(n){ var s = String(Math.round(n*100)/100); if (s === '-0') s = '0'; return s; }
+function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ var t=a%b; a=b; b=t; } return a; }
+function rhsStr(a,b){
+  var rhs = '';
+  if (Math.abs(a) > EPS){
+    if (Math.abs(a-1) < EPS) rhs = 'x';
+    else if (Math.abs(a+1) < EPS) rhs = '-x';
+    else rhs = fmtNum(a) + 'x';
+  }
+  if (Math.abs(b) > EPS || rhs === ''){
+    if (rhs === '') rhs = fmtNum(b);
+    else rhs += (b < 0 ? ' - ' : ' + ') + fmtNum(Math.abs(b));
+  }
+  return rhs;
+}
+function eqStr(a,b){ return 'y = ' + rhsStr(a,b); }
+function pn(n){ return n < 0 ? '(' + fmtNum(n) + ')' : fmtNum(n); }
+function fracStr(num,den){
+  if (den < 0){ num=-num; den=-den; }
+  var g = gcd(num,den) || 1; num/=g; den/=g;
+  return den === 1 ? String(num+0) : num + '/' + den;
+}
+/* x절편 정보 */
+function xIntercept(a,b){
+  if (Math.abs(a) < EPS){
+    return Math.abs(b) < EPS ? {kind:'all'} : {kind:'none'};
+  }
+  var v = -b/a + 0;
+  var n = Math.round(-b*1000), d = Math.round(a*1000);
+  var f = fracStr(n,d);
+  var text = f;
+  if (f.indexOf('/') >= 0) text += ' (≈ ' + fmtNum(v) + ')';
+  return {kind:'point', value:v, text:text, short:f};
+}
+function trendKind(a){ return a > EPS ? 'up' : (a < -EPS ? 'down' : 'flat'); }
+function relation(a1,b1,a2,b2){
+  if (Math.abs(a1-a2) < EPS) return Math.abs(b1-b2) < EPS ? 'same' : 'parallel';
+  if (Math.abs(a1*a2 + 1) < EPS) return 'perp';
+  return 'cross';
+}
+function parseNum(s){
+  if (typeof s !== 'string') return NaN;
+  s = s.trim().replace(/−/g,'-').replace(/\s+/g,'');
+  if (s === '') return NaN;
+  var m = /^([-+]?\d+(?:\.\d+)?)\/([-+]?\d+(?:\.\d+)?)$/.exec(s);
+  if (m){ var d = parseFloat(m[2]); return d === 0 ? NaN : parseFloat(m[1])/d; }
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(s)) return NaN;
+  return Number(s);
+}
+function ri(rng,lo,hi){ return lo + Math.floor(rng()*(hi-lo+1)); }
+function pick(rng,arr){ return arr[Math.floor(rng()*arr.length)]; }
+
+function genGraph(rng){
+  var a = pick(rng,[-3,-2,-1,1,2,3,-3,-2,-1,1,2,3,-0.5,0.5]);
+  var b = ri(rng,-5,5);
+  return {
+    type:'graph', label:'그래프를 보고 식 맞히기',
+    text:'주황색 그래프를 보고 일차함수 y = ax + b 의 a와 b를 맞혀 보세요. 슬라이더나 점 끌기로 파란 점선 그래프를 겹치면 됩니다.',
+    inputs:[{key:'a',name:'a',label:'기울기 a',answer:a},{key:'b',name:'b',label:'y절편 b',answer:b}],
+    slider:true, lines:[], answerLine:{a:a,b:b}, alwaysShow:true, points:[], marks:[],
+    hints:['그래프가 y축과 만나는 점의 y좌표가 y절편 b입니다. (그래프에 표시했어요)','x가 1 증가할 때 y가 얼마나 변하는지가 기울기 a입니다. (삼각형으로 표시했어요)'],
+    hintViz:['yint','slope'],
+    explain:['그래프가 y축과 만나는 점이 (0, '+fmtNum(b)+') 이므로 y절편 b = '+fmtNum(b)+' 입니다.',
+      'x가 1 증가할 때 y가 '+fmtNum(a)+' 만큼 변하므로 기울기 a = '+fmtNum(a)+' 입니다.',
+      '따라서 구하는 식은 '+eqStr(a,b)+' 입니다.'],
+    legend:'주황색 실선: 목표 그래프 / 파란 점선: 내 그래프'
+  };
+}
+function genTwoPoints(rng){
+  for (var t=0;t<500;t++){
+    var a,x1,x2;
+    if (rng() < 0.2){ a = pick(rng,[0.5,-0.5]); x1 = pick(rng,[-4,-2,0,2]); x2 = x1 + pick(rng,[2,4]); }
+    else { a = pick(rng,[-3,-2,-1,1,2,3]); x1 = ri(rng,-3,2); x2 = x1 + ri(rng,1,3); }
+    var b = ri(rng,-4,4);
+    var y1 = a*x1+b, y2 = a*x2+b;
+    if (Math.abs(y1) > 7 || Math.abs(y2) > 7) continue;
+    var dx = x2-x1, dy = y2-y1;
+    return {
+      type:'twopoints', label:'두 점을 지나는 일차함수',
+      text:'두 점 ('+x1+', '+y1+'), ('+x2+', '+y2+')를 지나는 일차함수 y = ax + b 에서 a와 b의 값을 구하세요.',
+      inputs:[{key:'a',name:'a',label:'기울기 a',answer:a},{key:'b',name:'b',label:'y절편 b',answer:b}],
+      slider:false, lines:[], answerLine:{a:a,b:b}, alwaysShow:false,
+      points:[{x:x1,y:y1,label:'('+x1+', '+y1+')'},{x:x2,y:y2,label:'('+x2+', '+y2+')'}], marks:[],
+      hints:['기울기 a = (y의 증가량) ÷ (x의 증가량) = (y₂ - y₁) ÷ (x₂ - x₁) 입니다.','a를 구한 뒤, 한 점의 좌표를 y = ax + b 에 대입해서 b를 구하세요.'],
+      hintViz:['',''],
+      explain:['기울기 a = ('+pn(y2)+' - '+pn(y1)+') ÷ ('+pn(x2)+' - '+pn(x1)+') = '+fmtNum(dy)+' ÷ '+fmtNum(dx)+' = '+fmtNum(a)+'',
+        '점 ('+x1+', '+y1+')을 y = '+fmtNum(a)+'x + b 에 대입: '+y1+' = '+fmtNum(a)+' × '+pn(x1)+' + b, 따라서 b = '+fmtNum(b),
+        '구하는 식: '+eqStr(a,b)],
+      legend:'주황색 점: 주어진 두 점 (정답을 맞히면 초록색 직선이 나타납니다)'
+    };
+  }
+}
+function genIntercept(rng){
+  for (var t=0;t<500;t++){
+    var a = pick(rng,[-3,-2,-1,1,2,3]);
+    var xi = ri(rng,-4,4);
+    if (xi === 0) continue;
+    var b = -a*xi;
+    if (Math.abs(b) > 8) continue;
+    return {
+      type:'intercept', label:'x절편 / y절편 구하기',
+      text:'일차함수 '+eqStr(a,b)+' 의 x절편과 y절편을 각각 구하세요.',
+      inputs:[{key:'x',name:'x절편',label:'x절편',answer:xi},{key:'y',name:'y절편',label:'y절편',answer:b}],
+      slider:false, lines:[], answerLine:{a:a,b:b}, alwaysShow:false, points:[],
+      marks:[{x:xi,y:0,label:'('+xi+', 0)'},{x:0,y:b,label:'(0, '+b+')'}],
+      hints:['x절편은 y = 0 일 때의 x값, y절편은 x = 0 일 때의 y값입니다.','식에 y = 0, 또는 x = 0 을 대입해 보세요. (그래프도 보여 줄게요)'],
+      hintViz:['','line'],
+      explain:['y절편: x = 0 을 대입하면 y = '+fmtNum(b)+' 이므로 y절편은 '+fmtNum(b)+' (점 (0, '+fmtNum(b)+')).',
+        'x절편: y = 0 을 대입하면 0 = '+rhsStr(a,b)+' 에서 x = -b/a = '+fmtNum(xi)+' 이므로 x절편은 '+fmtNum(xi)+' (점 ('+fmtNum(xi)+', 0)).'],
+      legend:'힌트를 열면 그래프가 나타납니다.'
+    };
+  }
+}
+function genParPerp(rng){
+  var sub = ri(rng,0,3);
+  var steep = [-3,-2,-1,1,2,3], perpA = [-2,-1,-0.5,0.5,1,2];
+  for (var t=0;t<500;t++){
+    if (sub === 0 || sub === 1){
+      var a1 = pick(rng, sub===0 ? steep : perpA), b1 = ri(rng,-4,4), c = ri(rng,-5,5);
+      if (c === 0 || c === b1) continue;
+      var ans = sub===0 ? a1 : -1/a1;
+      var rel = sub===0 ? '평행' : '수직';
+      return {
+        type:'parperp', label:'평행/수직 조건',
+        text:'두 직선 '+eqStr(a1,b1)+' 와 y = ax '+(c<0?'- ':'+ ')+Math.abs(c)+' 가 서로 '+rel+'일 때, 상수 a의 값을 구하세요. (분수는 -1/2 처럼 입력해도 됩니다)',
+        inputs:[{key:'a',name:'a',label:'a의 값',answer:ans}],
+        slider:false, lines:[{a:a1,b:b1}], answerLine:{a:ans,b:c}, alwaysShow:false, points:[], marks:[],
+        hints: sub===0 ? ['평행한 두 직선은 기울기가 같고 y절편이 다릅니다.','첫 번째 직선의 기울기는 '+fmtNum(a1)+' 입니다.']
+                       : ['수직인 두 직선의 기울기의 곱은 -1 입니다. (a₁ × a₂ = -1)','방정식 '+fmtNum(a1)+' × a = -1 을 풀어 보세요.'],
+        hintViz:['',''],
+        explain: sub===0 ? ['평행하면 기울기가 같으므로 a = '+fmtNum(a1)+' 입니다. (y절편이 다르므로 일치하지 않고 평행)']
+                         : ['수직이면 기울기의 곱이 -1 이므로 '+fmtNum(a1)+' × a = -1, 따라서 a = -1/'+pn(a1)+' = '+fmtNum(ans)+' 입니다.'],
+        legend:'회색 직선: 주어진 직선 (정답을 맞히면 초록색 직선이 나타납니다)'
+      };
+    }
+    var a1b = pick(rng, sub===2 ? steep : perpA), b1b = ri(rng,-4,4);
+    var a2 = sub===2 ? a1b : -1/a1b;
+    var p = (Math.abs(a2 - Math.round(a2)) > EPS) ? pick(rng,[-4,-2,0,2,4]) : ri(rng,-4,4);
+    var q = ri(rng,-6,6);
+    var b2 = q - a2*p;
+    if (Math.abs(b2) > 8 || Math.abs(b2 - Math.round(b2)) > EPS) continue;
+    if (Math.abs(q - (a1b*p+b1b)) < EPS) continue;
+    var r = sub===2 ? '평행' : '수직';
+    return {
+      type:'parperp', label:'평행/수직 조건',
+      text:'직선 '+eqStr(a1b,b1b)+' 에 '+r+'하고 점 ('+p+', '+q+')을 지나는 직선을 y = ax + b 로 나타낼 때, a와 b의 값을 구하세요.',
+      inputs:[{key:'a',name:'a',label:'기울기 a',answer:a2},{key:'b',name:'b',label:'y절편 b',answer:b2+0}],
+      slider:false, lines:[{a:a1b,b:b1b}], answerLine:{a:a2,b:b2+0}, alwaysShow:false,
+      points:[{x:p,y:q,label:'('+p+', '+q+')'}], marks:[],
+      hints: sub===2 ? ['평행한 직선은 기울기가 같습니다.','기울기 a를 정한 뒤, 점의 좌표를 y = ax + b 에 대입해 b를 구하세요.']
+                     : ['수직인 두 직선의 기울기의 곱은 -1 입니다. (a₁ × a₂ = -1)','기울기 a를 정한 뒤, 점의 좌표를 y = ax + b 에 대입해 b를 구하세요.'],
+      hintViz:['',''],
+      explain:[ sub===2 ? '평행하므로 기울기가 같아 a = '+fmtNum(a1b)+' 입니다.'
+                        : '수직이므로 '+fmtNum(a1b)+' × a = -1, 따라서 a = '+fmtNum(a2)+' 입니다.',
+        '점 ('+p+', '+q+')을 지나므로 '+q+' = '+fmtNum(a2)+' × '+pn(p)+' + b, 따라서 b = '+fmtNum(b2+0)+' 입니다.',
+        '구하는 식: '+eqStr(a2,b2+0)],
+      legend:'회색 직선: 주어진 직선 / 주황색 점: 지나야 하는 점'
+    };
+  }
+}
+var QTYPES = ['graph','twopoints','intercept','parperp'];
+function genQuestion(type,rng){
+  rng = rng || Math.random;
+  if (!type || type === 'random') type = pick(rng,QTYPES);
+  if (type === 'graph') return genGraph(rng);
+  if (type === 'twopoints') return genTwoPoints(rng);
+  if (type === 'intercept') return genIntercept(rng);
+  return genParPerp(rng);
+}
+function checkQuestion(q,vals){
+  var per = {}, ok = true;
+  q.inputs.forEach(function(f){
+    var v = vals[f.key];
+    var g = typeof v === 'number' && isFinite(v) && Math.abs(v - f.answer) < EPS;
+    per[f.key] = g; if (!g) ok = false;
+  });
+  return {ok:ok, per:per};
+}
+function answerText(q){
+  return q.inputs.map(function(f){ return f.name + ' = ' + fmtNum(f.answer); }).join(', ');
+}
+function pointsFor(streak,usedHint){ return usedHint ? 5 : 10 + 2*Math.min(Math.max(streak-1,0),5); }
+
+/* 놀이 도전 */
+function genPlay(level,rng){
+  rng = rng || Math.random;
+  var half = level >= 3, n = level <= 1 ? 2 : (level <= 4 ? 3 : 4);
+  for (var t=0;t<1000;t++){
+    var a = half ? pick(rng,[-3,-2,-1.5,-1,-0.5,0.5,1,1.5,2,3]) : pick(rng,[-3,-2,-1,1,2,3]);
+    var b = ri(rng,-4,4);
+    var evenOnly = Math.abs(a - Math.round(a)) > EPS;
+    var cand = [];
+    for (var x=-6;x<=6;x++){ if (evenOnly && x%2 !== 0) continue; var y=a*x+b; if (Math.abs(y)<=7) cand.push(x); }
+    if (cand.length < n) continue;
+    var xs = [];
+    while (xs.length < n){ var c = pick(rng,cand); if (xs.indexOf(c) < 0) xs.push(c); }
+    xs.sort(function(p,q){return p-q;});
+    if (xs[xs.length-1]-xs[0] < 3) continue;
+    return {level:level,a:a,b:b,points:xs.map(function(x){return {x:x,y:a*x+b};})};
+  }
+  return {level:level,a:1,b:0,points:[{x:0,y:0},{x:2,y:2}]};
+}
+function playHits(a,b,points){
+  return points.filter(function(p){ return Math.abs(a*p.x + b - p.y) < EPS; }).length;
+}
+</script>
+
+<script>
+/* ===== UI ===== */
+(function(){
+var R = 8;
+function $(s){ return document.querySelector(s); }
+function setLines(box,lines){ box.textContent=''; lines.forEach(function(t){ var p=document.createElement('p'); p.textContent=t; box.appendChild(p); }); }
+
+/* 진행도 */
+var KEY='linfunc-progress-v1';
+var prog={correct:0,streak:0,best:0,score:0,playLevel:1,playCleared:0};
+try{ var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&typeof s==='object'){ for(var k in prog){ if(typeof s[k]==='number'&&isFinite(s[k])) prog[k]=s[k]; } } }catch(e){}
+function saveProg(){ try{ localStorage.setItem(KEY,JSON.stringify(prog)); }catch(e){} renderScore(); }
+function renderScore(){
+  var h=$('#scoreSummary'); h.textContent='';
+  ['정답 '+prog.correct+'개','연속 정답 '+prog.streak+' (최고 '+prog.best+')','점수 '+prog.score+'점','놀이 도전 '+prog.playLevel+'단계 · 클리어 '+prog.playCleared+'회'].forEach(function(t){
+    var sp=document.createElement('span'); sp.textContent=t; h.appendChild(sp); });
+  $('#qScore').textContent='정답 '+prog.correct+'개 · 연속 정답 '+prog.streak+' (최고 '+prog.best+') · 점수 '+prog.score+'점';
+}
+
+/* 캔버스 플롯 */
+function Plot(canvas,drawFn,opts){
+  var self=this; this.canvas=canvas; this.ctx=canvas.getContext('2d'); this.drawFn=drawFn; this.opts=opts||{}; this.size=0; this.drag=null;
+  canvas.addEventListener('pointerdown',function(e){
+    var hs=self.opts.handles?self.opts.handles():[]; var p=self.pos(e); var best=null,bd=24;
+    hs.forEach(function(h){ var d=Math.hypot(self.X(h.x)-p.px,self.Y(h.y)-p.py); if(d<bd){bd=d;best=h;} });
+    if(best){ self.drag=best; try{canvas.setPointerCapture(e.pointerId);}catch(_){} e.preventDefault(); canvas.focus(); }
+  });
+  canvas.addEventListener('pointermove',function(e){
+    if(!self.drag) return; var p=self.pos(e);
+    var mx=Math.round(self.ix(p.px)*2)/2, my=Math.round(self.iy(p.py)*2)/2;
+    self.drag.move(clamp(mx,-R,R),clamp(my,-R,R)); e.preventDefault();
+  });
+  function up(){ self.drag=null; }
+  canvas.addEventListener('pointerup',up); canvas.addEventListener('pointercancel',up);
+  canvas.addEventListener('keydown',function(e){ if(self.opts.key && self.opts.key(e)) e.preventDefault(); });
+  if(window.ResizeObserver){ new ResizeObserver(function(){ self.resize(); }).observe(canvas); }
+  window.addEventListener('resize',function(){ self.resize(); });
+  this.resize();
+}
+Plot.prototype.pos=function(e){ var r=this.canvas.getBoundingClientRect(); return {px:(e.clientX-r.left)*this.size/r.width,py:(e.clientY-r.top)*this.size/r.height}; };
+Plot.prototype.X=function(x){ return (x+R)/(2*R)*this.size; };
+Plot.prototype.Y=function(y){ return this.size-(y+R)/(2*R)*this.size; };
+Plot.prototype.ix=function(px){ return px/this.size*2*R-R; };
+Plot.prototype.iy=function(py){ return (this.size-py)/this.size*2*R-R; };
+Plot.prototype.resize=function(){
+  var w=Math.round(this.canvas.getBoundingClientRect().width); if(!w||w===this.cw) return; this.cw=w;
+  var d=window.devicePixelRatio||1; this.canvas.width=Math.round(w*d); this.canvas.height=Math.round(w*d);
+  this.ctx.setTransform(d,0,0,d,0,0); this.size=w; this.draw();
+};
+Plot.prototype.draw=function(){
+  var c=this.ctx,s=this.size; if(!s) return; var i;
+  c.clearRect(0,0,s,s); c.fillStyle='#fff'; c.fillRect(0,0,s,s);
+  c.lineWidth=1; c.strokeStyle='#e2e8f0'; c.beginPath();
+  for(i=-R;i<=R;i++){ c.moveTo(this.X(i),0); c.lineTo(this.X(i),s); c.moveTo(0,this.Y(i)); c.lineTo(s,this.Y(i)); }
+  c.stroke();
+  c.strokeStyle='#111827'; c.lineWidth=2; c.beginPath();
+  c.moveTo(0,this.Y(0)); c.lineTo(s,this.Y(0)); c.moveTo(this.X(0),0); c.lineTo(this.X(0),s); c.stroke();
+  c.fillStyle='#374151'; c.font='11px sans-serif'; c.textAlign='center'; c.textBaseline='alphabetic';
+  var step=s<380?2:1;
+  c.strokeStyle='#111827'; c.lineWidth=1; c.beginPath();
+  for(i=-R+1;i<R;i++){ if(i===0) continue; c.moveTo(this.X(i),this.Y(0)-3); c.lineTo(this.X(i),this.Y(0)+3); c.moveTo(this.X(0)-3,this.Y(i)); c.lineTo(this.X(0)+3,this.Y(i)); }
+  c.stroke();
+  for(i=-R+1;i<R;i++){ if(i===0||i%step) continue; c.textAlign='center'; c.fillText(i,this.X(i),this.Y(0)+15); c.textAlign='right'; c.fillText(i,this.X(0)-6,this.Y(i)+4); }
+  c.textAlign='left'; c.font='bold 13px sans-serif'; c.fillText('x',s-12,this.Y(0)-8); c.fillText('y',this.X(0)+7,12);
+  c.textAlign='right'; c.font='11px sans-serif'; c.fillText('O',this.X(0)-5,this.Y(0)+14);
+  this.drawFn(this);
+};
+Plot.prototype.line=function(a,b,col,w,dash){
+  var c=this.ctx; c.save(); c.beginPath(); c.rect(0,0,this.size,this.size); c.clip();
+  c.strokeStyle=col; c.lineWidth=w||3; c.setLineDash(dash||[]); c.lineCap='round';
+  c.beginPath(); c.moveTo(this.X(-R-1),this.Y(a*(-R-1)+b)); c.lineTo(this.X(R+1),this.Y(a*(R+1)+b)); c.stroke(); c.restore();
+};
+Plot.prototype.pt=function(x,y,col,r,hollow){
+  var c=this.ctx; c.save(); c.beginPath(); c.arc(this.X(x),this.Y(y),r||6,0,Math.PI*2);
+  if(hollow){ c.fillStyle='#fff'; c.fill(); c.strokeStyle=col; c.lineWidth=3; c.stroke(); }
+  else { c.fillStyle=col; c.fill(); c.strokeStyle='#fff'; c.lineWidth=2; c.stroke(); }
+  c.restore();
+};
+Plot.prototype.txt=function(str,x,y,col,align,dx,dy){
+  var c=this.ctx; c.save(); c.font='bold 12px sans-serif'; c.textAlign=align||'center'; c.textBaseline='alphabetic';
+  var px=this.X(x)+(dx||0), py=this.Y(y)+(dy||0);
+  c.lineWidth=4; c.strokeStyle='#fff'; c.lineJoin='round'; c.strokeText(str,px,py); c.fillStyle=col; c.fillText(str,px,py); c.restore();
+};
+Plot.prototype.tri=function(a,b,col){
+  var c=this.ctx; c.save(); c.strokeStyle=col; c.lineWidth=2.5; c.setLineDash([]);
+  c.beginPath(); c.moveTo(this.X(0),this.Y(b)); c.lineTo(this.X(1),this.Y(b)); c.lineTo(this.X(1),this.Y(a+b)); c.stroke(); c.restore();
+  this.txt('x +1',0.5,b,col,'center',0,a>=0?18:-8);
+  this.txt('y '+(a>0?'+':'')+fmtNum(a),1,b+a/2,col,'left',8,4);
+};
+Plot.prototype.handle=function(x,y,col){ this.pt(x,y,col,9,true); this.pt(x,y,col,3.5); };
+function arrowKeys(e,get,set,step){
+  var st=e.shiftKey?0.1:step; var a=get().a,b=get().b;
+  if(e.key==='ArrowRight') a+=st; else if(e.key==='ArrowLeft') a-=st; else if(e.key==='ArrowUp') b+=st; else if(e.key==='ArrowDown') b-=st; else return false;
+  set(r1(clamp(a,-5,5)),r1(clamp(b,-5,5))); return true;
+}
+
+/* 숫자 컨트롤 (슬라이더 + 숫자 입력) */
+var ctlN=0;
+function NumControl(parent,label,min,max,step,onChange){
+  var id='nc'+(++ctlN); var row=document.createElement('div'); row.className='ctl';
+  row.innerHTML='<label for="'+id+'r">'+label+'</label><input type="range" id="'+id+'r" min="'+min+'" max="'+max+'" step="'+step+'" value="0"><input type="number" id="'+id+'n" min="'+min+'" max="'+max+'" step="'+step+'" value="0" aria-label="'+label+' 숫자 입력">';
+  parent.appendChild(row);
+  var rg=row.querySelector('input[type=range]'), nm=row.querySelector('input[type=number]'); var val=0;
+  function set(v){ val=r1(clamp(v,min,max)); rg.value=val; if(document.activeElement!==nm) nm.value=val; }
+  rg.addEventListener('input',function(){ val=r1(+rg.value); nm.value=val; onChange(val); });
+  nm.addEventListener('input',function(){ var v=parseFloat(nm.value); if(!isFinite(v)) return; val=r1(clamp(v,min,max)); rg.value=val; onChange(val); });
+  nm.addEventListener('change',function(){ nm.value=val; });
+  return {set:set,get:function(){return val;},row:row};
+}
+
+/* ===== 탭 ===== */
+var tabs=['explore','quiz','play'];
+function showTab(name){
+  tabs.forEach(function(t){
+    var on=t===name; $('#tb-'+t).setAttribute('aria-selected',on); $('#tb-'+t).tabIndex=on?0:-1; $('#tab-'+t).hidden=!on;
+  });
+  [exPlot,qzPlot,plPlot].forEach(function(p){ p.cw=0; p.resize(); });
+}
+tabs.forEach(function(t,i){
+  var b=$('#tb-'+t); b.addEventListener('click',function(){ showTab(t); });
+  b.addEventListener('keydown',function(e){
+    var j=-1; if(e.key==='ArrowRight') j=(i+1)%3; else if(e.key==='ArrowLeft') j=(i+2)%3; else if(e.key==='Home') j=0; else if(e.key==='End') j=2;
+    if(j>=0){ e.preventDefault(); showTab(tabs[j]); $('#tb-'+tabs[j]).focus(); }
+  });
+});
+
+/* ===== 탐구 ===== */
+var ex={a:1,b:0,base:null};
+var exA=NumControl($('#exCtl'),'기울기 a',-5,5,0.1,function(v){ ex.a=v; exUpdate(); });
+var exB=NumControl($('#exCtl'),'y절편 b',-5,5,0.1,function(v){ ex.b=v; exUpdate(); });
+function exSet(a,b){ ex.a=r1(clamp(a,-5,5)); ex.b=r1(clamp(b,-5,5)); exA.set(ex.a); exB.set(ex.b); exUpdate(); }
+var exPlot=new Plot($('#cvExplore'),function(P){
+  var a=ex.a,b=ex.b;
+  if(ex.base) P.line(ex.base.a,ex.base.b,'#4b5563',2.5,[9,6]);
+  P.line(a,b,'#1d4ed8',3.5);
+  if($('#exTri').checked) P.tri(a,b,'#c2410c');
+  if($('#exInt').checked){
+    P.pt(0,b,'#c2410c',6); P.txt('(0, '+fmtNum(b)+')',0,b,'#c2410c','left',10,-10);
+    var xi=xIntercept(a,b);
+    if(xi.kind==='point' && Math.abs(xi.value)<=R){ P.pt(xi.value,0,'#15803d',6); P.txt('('+xi.short+', 0)',xi.value,0,'#15803d','center',0,22); }
+  }
+  P.handle(0,b,'#1d4ed8'); P.handle(1,a+b,'#1d4ed8');
+},{
+  handles:function(){ return [{x:0,y:ex.b,move:function(x,y){ exSet(ex.a,y); }},{x:1,y:ex.a+ex.b,move:function(x,y){ exSet(y-ex.b,ex.b); }}]; },
+  key:function(e){ return arrowKeys(e,function(){return ex;},exSet,0.5); }
+});
+function exUpdate(){
+  var a=ex.a,b=ex.b; $('#exEq').textContent=eqStr(a,b);
+  $('#cvExplore').setAttribute('aria-label','일차함수 그래프 '+eqStr(a,b)+'. 방향키로 조절할 수 있습니다.');
+  var L=[], k=trendKind(a);
+  if(k==='up') L.push('a = '+fmtNum(a)+' > 0 이므로 x가 증가하면 y도 증가합니다. x가 1 늘 때 y는 '+fmtNum(a)+' 늘어납니다. (오른쪽 위로 향하는 직선)');
+  else if(k==='down') L.push('a = '+fmtNum(a)+' < 0 이므로 x가 증가하면 y는 감소합니다. x가 1 늘 때 y는 '+fmtNum(Math.abs(a))+' 줄어듭니다. (오른쪽 아래로 향하는 직선)');
+  else L.push('a = 0 이므로 y = '+fmtNum(b)+' (상수함수)입니다. x가 변해도 y는 항상 '+fmtNum(b)+' 이고 x축에 평행합니다. (엄밀히는 일차함수가 아님)');
+  L.push('y절편: x = 0 을 대입하면 y = '+fmtNum(b)+', 점 (0, '+fmtNum(b)+')에서 y축과 만납니다.');
+  var xi=xIntercept(a,b);
+  if(xi.kind==='point') L.push('x절편: y = 0 을 대입 → 0 = '+rhsStr(a,b)+' → x = -b/a = -('+fmtNum(b)+')/('+fmtNum(a)+') = '+xi.text+'.');
+  else if(xi.kind==='none') L.push('x절편: a = 0 이고 b ≠ 0 이라 x축과 만나지 않습니다. (x절편 없음)');
+  else L.push('x절편: 그래프가 x축과 완전히 겹쳐서(y = 0) 모든 점이 x축 위에 있습니다.');
+  setLines($('#exInfo'),L);
+  var rel=$('#cmpRel');
+  if(ex.base){
+    var r=relation(ex.base.a,ex.base.b,a,b);
+    var txt={same:'두 직선이 일치합니다.',parallel:'두 직선은 평행합니다. (기울기 같음, y절편 다름)',perp:'두 직선은 수직입니다. (기울기의 곱 = '+fmtNum(ex.base.a)+' × '+fmtNum(a)+' = -1)',cross:'두 직선은 한 점에서 만나지만 수직은 아닙니다. (기울기의 곱 = '+fmtNum(ex.base.a*a)+')'}[r];
+    rel.textContent='기준: '+eqStr(ex.base.a,ex.base.b)+' (점선) / 현재: '+eqStr(a,b)+' → '+txt;
+  } else rel.textContent='기준 그래프가 없습니다. "기준으로 고정"을 눌러 보세요.';
+  $('#lgExplore').textContent=ex.base?'회색 점선: 기준 그래프 / 파란 실선: 현재 그래프':'파란 실선: 현재 그래프';
+  exPlot.draw();
+}
+$('#exTri').addEventListener('change',function(){exPlot.draw();});
+$('#exInt').addEventListener('change',function(){exPlot.draw();});
+$('#cmpFix').addEventListener('click',function(){ ex.base={a:ex.a,b:ex.b}; $('#cmpMsg').textContent='현재 그래프를 기준으로 고정했습니다.'; exUpdate(); });
+$('#cmpClear').addEventListener('click',function(){ ex.base=null; $('#cmpMsg').textContent='기준을 해제했습니다.'; exUpdate(); });
+Array.prototype.forEach.call(document.querySelectorAll('[data-pre]'),function(btn){
+  btn.addEventListener('click',function(){
+    if(!ex.base) ex.base={a:ex.a,b:ex.b};
+    var B=ex.base, msg=$('#cmpMsg'); msg.className='note'; var kind=btn.getAttribute('data-pre');
+    if(kind==='a'){ exSet(B.a+1<=5?B.a+1:B.a-1,B.b); msg.textContent='b는 그대로 두고 a만 바꿨어요. y절편이 같아서 (0, '+fmtNum(B.b)+')에서 만납니다.'; }
+    else if(kind==='b'){ exSet(B.a,B.b+2<=5?B.b+2:B.b-2); msg.textContent='a는 그대로 두고 b만 바꿨어요. 기울기가 같으니 평행이동(평행)입니다.'; }
+    else if(kind==='neg'){ if(Math.abs(B.a)<EPS){ msg.className='note warn'; msg.textContent='a = 0 이라 부호를 바꿔도 같은 직선입니다.'; return; } exSet(-B.a,B.b); msg.textContent='a의 부호만 바꾸면 y축에 대칭인 직선이 됩니다.'; }
+    else {
+      if(Math.abs(B.a)<EPS){ msg.className='note warn'; msg.textContent='기울기가 0인 수평선에 수직인 직선은 x = (상수) 꼴이라 y = ax + b 로 나타낼 수 없습니다.'; return; }
+      var a2=-1/B.a, rr=r1(a2);
+      if(Math.abs(rr-a2)>1e-9||Math.abs(rr)>5){ msg.className='note warn'; msg.textContent='수직인 직선의 기울기 -1/a = '+fmtNum(a2)+' 이(가) 0.1 단위나 -5~5 범위에 맞지 않아요. 기준 기울기를 1, 2, 0.5 등으로 바꿔 보세요.'; return; }
+      exSet(rr,B.b); msg.textContent='기울기의 곱 a₁ × a₂ = -1 이 되도록 수직인 직선을 만들었어요. (y절편은 같게)';
+    }
+  });
+});
+
+/* ===== 문제 풀기 ===== */
+var qz={q:null,hints:0,solved:false,revealed:false,ctl:{},usedHint:false,user:{a:0,b:0},inputEls:{}};
+var qzPlot=new Plot($('#cvQuiz'),function(P){
+  var q=qz.q; if(!q) return; var done=qz.solved||qz.revealed; var vz=q.hintViz.slice(0,qz.hints);
+  q.lines.forEach(function(l){ P.line(l.a,l.b,'#4b5563',2.5); });
+  var showAns=q.alwaysShow||done||vz.indexOf('line')>=0;
+  if(showAns) P.line(q.answerLine.a,q.answerLine.b,done?'#15803d':'#c2410c',q.alwaysShow&&!done?4.5:3.5);
+  if(q.slider&&!done) P.line(qz.user.a,qz.user.b,'#1d4ed8',2.5,[7,5]);
+  if(vz.indexOf('yint')>=0){ P.pt(0,q.answerLine.b,'#c2410c',7); P.txt('y절편',0,q.answerLine.b,'#c2410c','left',10,-10); }
+  if(vz.indexOf('slope')>=0) P.tri(q.answerLine.a,q.answerLine.b,'#c2410c');
+  q.points.forEach(function(p){ P.pt(p.x,p.y,'#c2410c',6); P.txt(p.label,p.x,p.y,'#c2410c','left',9,-9); });
+  if(done) q.marks.forEach(function(p){ P.pt(p.x,p.y,'#15803d',6); P.txt(p.label,p.x,p.y,'#15803d','left',9,-9); });
+  if(q.slider&&!done){ P.handle(0,qz.user.b,'#1d4ed8'); P.handle(1,qz.user.a+qz.user.b,'#1d4ed8'); }
+},{
+  handles:function(){ if(!qz.q||!qz.q.slider||qz.solved||qz.revealed) return []; return [
+    {x:0,y:qz.user.b,move:function(x,y){ qSetUser(qz.user.a,y); }},
+    {x:1,y:qz.user.a+qz.user.b,move:function(x,y){ qSetUser(y-qz.user.b,qz.user.b); }}]; },
+  key:function(e){ if(!qz.q||!qz.q.slider||qz.solved||qz.revealed) return false; return arrowKeys(e,function(){return qz.user;},qSetUser,0.5); }
+});
+function qSetUser(a,b){
+  qz.user.a=r1(clamp(a,-5,5)); qz.user.b=r1(clamp(b,-5,5));
+  if(qz.ctl.a){ qz.ctl.a.set(qz.user.a); qz.ctl.b.set(qz.user.b); } qzPlot.draw();
+}
+function newQuestion(){
+  var q=genQuestion($('#qType').value); qz.q=q; qz.hints=0; qz.solved=false; qz.revealed=false; qz.usedHint=false; qz.user={a:0,b:0}; qz.ctl={}; qz.inputEls={};
+  $('#qText').textContent=q.label+' — '+q.text; $('#lgQuiz').textContent=q.legend;
+  var box=$('#qInputs'); box.textContent='';
+  if(q.slider){
+    qz.ctl.a=NumControl(box,'기울기 a',-5,5,0.1,function(v){ qz.user.a=v; qzPlot.draw(); });
+    qz.ctl.b=NumControl(box,'y절편 b',-5,5,0.1,function(v){ qz.user.b=v; qzPlot.draw(); });
+    box.style.display='block';
+  } else {
+    box.style.display='';
+    q.inputs.forEach(function(f,i){
+      var w=document.createElement('div'); var id='qi'+i;
+      w.innerHTML='<label for="'+id+'">'+f.label+'</label><input type="text" id="'+id+'" inputmode="text" autocomplete="off" placeholder="예: 2, -1/2">';
+      box.appendChild(w); var inp=w.querySelector('input'); qz.inputEls[f.key]=inp;
+      inp.addEventListener('keydown',function(e){ if(e.key==='Enter') $('#qCheck').click(); });
+    });
+  }
+  $('#qFeed').textContent=''; $('#qFeed').className='note'; $('#qHints').hidden=true; $('#qExpl').hidden=true;
+  $('#qCheck').disabled=false; $('#qHint').disabled=false; $('#qReveal').disabled=false;
+  $('#cvQuiz').setAttribute('aria-label','문제 그래프. '+q.text);
+  qzPlot.draw();
+}
+function finishQuestion(){
+  $('#qCheck').disabled=true; $('#qHint').disabled=true; $('#qReveal').disabled=true;
+  setLines($('#qExpl'),['해설'].concat(qz.q.explain)); $('#qExpl').hidden=false; qzPlot.draw();
+}
+$('#qHint').addEventListener('click',function(){
+  var q=qz.q; if(!q||qz.solved||qz.revealed) return;
+  if(qz.hints<q.hints.length) qz.hints++; qz.usedHint=true;
+  setLines($('#qHints'),q.hints.slice(0,qz.hints).map(function(h,i){ return '힌트 '+(i+1)+': '+h; })); $('#qHints').hidden=false;
+  if(qz.hints>=q.hints.length) $('#qHint').disabled=true; qzPlot.draw();
+});
+$('#qCheck').addEventListener('click',function(){
+  var q=qz.q; if(!q||qz.solved||qz.revealed) return; var vals={}, empty=false; var feed=$('#qFeed');
+  q.inputs.forEach(function(f){
+    var v = q.slider ? qz.ctl[f.key].get() : parseNum(qz.inputEls[f.key].value);
+    if(!isFinite(v)) empty=true; vals[f.key]=v;
+  });
+  if(empty){ feed.className='note warn'; feed.textContent='모든 칸에 숫자(또는 -1/2 같은 분수)를 입력하세요.'; return; }
+  var res=checkQuestion(q,vals);
+  if(res.ok){
+    qz.solved=true; prog.correct++; prog.streak++; prog.best=Math.max(prog.best,prog.streak);
+    var pts=pointsFor(prog.streak,qz.usedHint); prog.score+=pts; saveProg();
+    feed.className='note ok'; feed.textContent='정답입니다! +'+pts+'점'+(qz.usedHint?' (힌트를 써서 기본 점수)':'')+(prog.streak>=2?' · '+prog.streak+'연속 정답!':'');
+    finishQuestion();
+  } else {
+    prog.streak=0; saveProg(); feed.className='note bad';
+    var ok=q.inputs.filter(function(f){return res.per[f.key];}).map(function(f){return f.name;});
+    var bad=q.inputs.filter(function(f){return !res.per[f.key];}).map(function(f){return f.name;});
+    feed.textContent='아직 아니에요. '+(ok.length?ok.join(', ')+'은(는) 맞았어요. ':'')+bad.join(', ')+'을(를) 다시 확인해 보세요. 힌트를 사용해도 좋아요.';
+  }
+});
+$('#qReveal').addEventListener('click',function(){
+  var q=qz.q; if(!q||qz.solved) return; qz.revealed=true; prog.streak=0; saveProg();
+  var feed=$('#qFeed'); feed.className='note warn'; feed.textContent='정답: '+answerText(q)+' (연속 정답이 0으로 돌아갑니다)';
+  if(q.slider){ qSetUser(q.inputs[0].answer,q.inputs[1].answer); } finishQuestion();
+});
+$('#qNext').addEventListener('click',newQuestion);
+$('#qType').addEventListener('change',newQuestion);
+
+/* ===== 놀이 도전 ===== */
+var pl={puz:null,a:0,b:0,done:false};
+var plA=NumControl($('#plCtl'),'기울기 a',-5,5,0.1,function(v){ pl.a=v; plUpdate(); });
+var plB=NumControl($('#plCtl'),'y절편 b',-5,5,0.1,function(v){ pl.b=v; plUpdate(); });
+function plSet(a,b){ pl.a=r1(clamp(a,-5,5)); pl.b=r1(clamp(b,-5,5)); plA.set(pl.a); plB.set(pl.b); plUpdate(); }
+var plPlot=new Plot($('#cvPlay'),function(P){
+  if(!pl.puz) return; P.line(pl.a,pl.b,pl.done?'#15803d':'#1d4ed8',3.5);
+  pl.puz.points.forEach(function(p){
+    var hit=Math.abs(pl.a*p.x+pl.b-p.y)<EPS;
+    P.pt(p.x,p.y,hit?'#15803d':'#c2410c',9,!hit); if(hit) P.pt(p.x,p.y,'#15803d',5);
+    P.txt('('+p.x+', '+p.y+')',p.x,p.y,hit?'#15803d':'#c2410c','left',12,-10);
+  });
+  if(!pl.done){ P.handle(0,pl.b,'#1d4ed8'); P.handle(1,pl.a+pl.b,'#1d4ed8'); }
+},{
+  handles:function(){ return pl.done?[]:[{x:0,y:pl.b,move:function(x,y){ plSet(pl.a,y); }},{x:1,y:pl.a+pl.b,move:function(x,y){ plSet(y-pl.b,pl.b); }}]; },
+  key:function(e){ return pl.done?false:arrowKeys(e,function(){return pl;},plSet,0.5); }
+});
+function plUpdate(){
+  if(!pl.puz) return; var n=pl.puz.points.length, h=playHits(pl.a,pl.b,pl.puz.points);
+  $('#plEq').textContent=eqStr(pl.a,pl.b); $('#plStatus').textContent='지나는 목표 점: '+h+' / '+n;
+  var msg=$('#plMsg');
+  if(h===n && !pl.done){
+    pl.done=true; prog.playCleared++; prog.playLevel=Math.max(prog.playLevel,pl.puz.level+1); saveProg();
+    msg.className='note ok'; msg.textContent='성공! 모든 점을 지났어요. 직선은 '+eqStr(pl.a,pl.b)+' 입니다.'; $('#plNext').disabled=false;
+  } else if(!pl.done){ msg.className='note'; msg.textContent=h===0?'아직 지나는 점이 없어요.':(h+'개를 지났어요. 계속 맞춰 보세요!'); }
+  plPlot.draw();
+}
+function plNew(level){
+  pl.puz=genPlay(level); pl.done=false; $('#plTitle').textContent='단계 '+level; $('#plNext').disabled=true;
+  $('#plMsg').textContent=''; plSet(0,0);
+}
+$('#plNext').addEventListener('click',function(){ plNew(pl.puz.level+1); });
+$('#plNew').addEventListener('click',function(){ plNew(pl.puz.level); });
+$('#plReset').addEventListener('click',function(){ if(!pl.done) plSet(0,0); });
+$('#resetAll').addEventListener('click',function(){
+  if(window.confirm('학습 기록(정답 수, 점수, 놀이 단계)을 모두 지울까요?')){
+    prog={correct:0,streak:0,best:0,score:0,playLevel:1,playCleared:0}; saveProg(); plNew(1);
+  }
+});
+
+renderScore(); exSet(1,0); newQuestion(); plNew(Math.min(prog.playLevel,8));
+})();
+</script>
+</body>
+</html>
