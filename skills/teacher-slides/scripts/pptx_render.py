@@ -6,14 +6,14 @@
     py pptx_render.py deck.pptx --out review/ [--yes]
 
 mode "libreoffice": real rendering (soffice -> PDF -> PNG via pypdfium2). LibreOffice is large (~350MB): only with the teacher's yes (--yes).
-mode "approx":      no LibreOffice -> an HTML drawn from the pptx shapes (position, colour, text, alignment) screenshotted with the
-                    system Chrome/Edge. APPROXIMATE: fonts, line breaks and autofit differ from PowerPoint. Boxes whose text is
+mode "approx":      no LibreOffice -> HTML+SVG drawn from the pptx XML (pptx_draw.py: shapes, lines and arrows, pictures, tables,
+                    native charts, groups, master/layout art, text styles) screenshotted with the system Chrome/Edge.
+                    APPROXIMATE: fonts, line breaks and autofit differ from PowerPoint. Boxes whose text is
                     estimated to overflow get a red outline. Always say so when showing it.
 """
 from __future__ import annotations
 
 import argparse
-import html
 import subprocess
 import sys
 import tempfile
@@ -47,66 +47,17 @@ def _sheet(pngs, dest: Path, cols: int = 2, tw: int = 800):
 
 
 def pptx_to_html(path: Path, outdir: Path, overflow=()):
-    """One HTML per slide, drawn from the shapes. overflow = [(slide_no, text, ratio)] from pptx_check (outlined red)."""
+    """One HTML per slide, drawn from the pptx XML by pptx_draw (shapes, lines, pictures, tables, charts, groups, master/layout art).
+    overflow = [(slide_no, text, ratio)] from pptx_check (outlined red)."""
     from pptx import Presentation
+    import pptx_draw
     prs = Presentation(str(path))
-    W, H = prs.slide_width, prs.slide_height
     bad = {(n, t) for n, t, _ in overflow}
+    fonts = pptx_draw.fonts_css(SKILL)
     files = []
     for i, s in enumerate(prs.slides, 1):
-        bg = "#fff"
-        try:
-            m = s._element.cSld.xpath("./p:bg//a:srgbClr/@val")
-            if m:
-                bg = "#" + m[0]
-        except Exception:
-            pass
-        parts = []
-        for sh in s.shapes:
-            if sh.left is None:
-                continue
-            st = "left:%.2f%%;top:%.2f%%;width:%.2f%%;height:%.2f%%;" % (sh.left / W * 100, sh.top / H * 100, sh.width / W * 100, sh.height / H * 100)
-            try:
-                c = sh._element.spPr.xpath("./a:solidFill/a:srgbClr/@val")
-                if c:
-                    st += "background:#%s;" % c[0]
-                g = sh._element.spPr.xpath("./a:prstGeom/@prst")
-                if g and g[0] == "ellipse":
-                    st += "border-radius:50%;"
-                elif g and g[0] == "roundRect":
-                    st += "border-radius:1.6cqw;"
-            except Exception:
-                pass
-            t = ""
-            first = ""
-            if sh.has_text_frame:
-                for para in sh.text_frame.paragraphs:
-                    runs = para.runs
-                    if not runs:
-                        t += "<div>&nbsp;</div>"
-                        continue
-                    f = runs[0].font
-                    sz = f.size.pt if f.size else 18
-                    col = "#333"
-                    m = para._p.xpath(".//a:rPr/a:solidFill/a:srgbClr/@val")
-                    if m:
-                        col = "#" + m[0]
-                    al = para._p.xpath("./a:pPr/@algn")
-                    al = al[0] if al else "l"
-                    first = first or para.text.strip()[:20]
-                    t += '<div style="text-align:%s;font-size:%.2fcqw;color:%s;font-weight:%s">%s</div>' % (
-                        {"ctr": "center", "r": "right"}.get(al, "left"), sz / 960 * 100, col, "700" if f.bold else "400", html.escape(para.text))
-                anchor = {"ctr": "center", "b": "flex-end"}.get((sh.text_frame._txBody.xpath("./a:bodyPr/@anchor") or ["t"])[0], "flex-start")
-                st += "display:flex;flex-direction:column;justify-content:%s;" % anchor
-            if (i, first) in bad:
-                st += "outline:3px solid #ff2d2d;"
-            parts.append('<div class=sh style="%s">%s</div>' % (st, t))
-        doc = ('<meta charset=utf-8><style>body{margin:0;background:#222;display:flex;justify-content:center;align-items:center;height:100vh}'
-               '.sl{position:relative;height:100vh;container-type:inline-size;overflow:hidden;font-family:"Noto Sans KR","Malgun Gothic",sans-serif}'
-               '.sh{position:absolute;box-sizing:border-box;padding:.3cqw .6cqw;line-height:1.3}</style>'
-               '<div class=sl style="background:%s;aspect-ratio:%d/%d">%s</div>' % (bg, W, H, "".join(parts)))
         f = outdir / f"_approx-{i:02d}.html"
-        f.write_text(doc, encoding="utf-8")
+        f.write_text(pptx_draw.slide_html(prs, s, fonts, bad, i), encoding="utf-8")
         files.append(f)
     return files
 
@@ -148,7 +99,7 @@ def render(path: Path, out: Path, consent: bool = False, overflow=()) -> dict:
                 pg.goto(f.resolve().as_uri())
                 pg.wait_for_timeout(250)
                 p = f.with_suffix(".png")
-                pg.screenshot(path=str(p))
+                pg.locator(".sl").first.screenshot(path=str(p))
                 pngs.append(p)
             b.close()
         sheet = _sheet(pngs, out / f"{name}-approx-sheet.png")

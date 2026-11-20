@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Placeholder detector: a deliverable must never ship `[학교명]`, `20XX`, `OO초`, `000-0000` or other blanks.
+"""Placeholder detector: a deliverable must never ship `[학교명]`, `(학교명 입력)`, `○○학교`, `OOO`, `(예시)`, `20XX`, `000-0000` or other blanks.
 
     find(text)                       -> ['[학교명]', '20XX', ...]   (raw matches)
     leftovers(text, fillins)         -> matches that the spec did NOT list as fill-ins
@@ -14,14 +14,20 @@ from __future__ import annotations
 
 import re
 
-_BRACKET = re.compile(r"\[([^\[\]\n]{1,40})\]|【([^【】\n]{1,40})】|\{\{[^{}\n]{1,40}\}\}")
+_BRACKET = re.compile(r"\[([^\[\]\n]{1,40})\]|【([^【】\n]{1,40})】|\{\{[^{}\n]{1,40}\}\}|[<＜〈]([^<>＜＞〈〉\n]{1,16}(?:명|이름|날짜|입력|번호))[>＞〉]")
 _OTHER = [
     re.compile(r"(?<![0-9A-Za-z])20[Xx＊*○〇]{2}(?![0-9A-Za-z])"),          # 20XX
     re.compile(r"(?<![A-Za-z])[OＯ]{2,}(?![A-Za-z])"),                      # OO팀, OOO
-    re.compile(r"[○〇◯□■◇]{2,}"),                                          # ○○
+    re.compile(r"[○〇◯□■◇△▢]{2,}"),                                        # ○○학교, △△부
     re.compile(r"(?<![A-Za-z])[X×Ｘ]{2,}(?![A-Za-z])"),                    # XX
     re.compile(r"(?<![\d,.])0{3,}(?![\d,])"),                              # 000-0000 (not 1,000 / 2000)
+    re.compile(r"(?<![\d.:])00 ?[월일](?![가-힣])|(?<![\d.:])0 ?월 ?0 ?일"),   # 00월 00일, 0월 0일 (not 10월, 20일)
     re.compile(r"학교명|담임명|교사명|담당자명|선생님 ?성함|OO ?초|OO ?중|OO ?고|\bTBD\b|\bTODO\b|\bFIXME\b|Lorem ipsum|(?:제목|내용|텍스트|이름)[을를] 입력"),
+    # a note that tells the reader to fill the slot: (학교명 입력) · (기관명을 입력하세요) · (날짜 기입) · (실제 값으로 바꿔 주세요) · (수정 필요)
+    re.compile(r"[(（][^()（）\n]{1,24}(?:입력|기입|기재)(?:하세요|해 ?주세요|하십시오| ?요망| ?필요| ?바람| ?란)?[)）]"),
+    re.compile(r"[(（][^()（）\n]{1,24}(?:넣어|적어|바꿔|써|채워) ?주세요[)）]|[(（][^()（）\n]{0,20}(?:교체|수정|변경) ?(?:필요|요망)[)）]"),
+    re.compile(r"[(（] ?(?:예시|샘플|가칭|미정|추후 ?(?:확정|안내|기재|결정)|작성 ?예) ?[)）]"),   # (예시) (미정) (추후 확정)
+    re.compile(r"여기에 [^\n.]{0,16}(?:입력|기입|작성|넣으|적으)"),                             # 여기에 내용을 입력
 ]
 
 
@@ -35,7 +41,7 @@ def find(text: str) -> list[str]:
     t = text or ""
     out: list[str] = []
     for m in _BRACKET.finditer(t):
-        inner = m.group(1) or m.group(2) or m.group(0)
+        inner = m.group(1) or m.group(2) or m.group(3) or m.group(0)
         if not _bracket_is_ui(inner):
             out.append(m.group(0))
     for rx in _OTHER:

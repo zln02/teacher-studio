@@ -1,6 +1,6 @@
 ---
 name: teacher-studio
-description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, 영상, 보고서. Use it first, even when told 「알아서」「묻지 말고」 (that skips questions, not this skill). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
+description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, PPT·파워포인트, 영상, 보고서, 안내문·PDF. Use it first, even when told 「알아서」「묻지 말고」 (that skips questions, not this skill). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
 license: Apache-2.0
 ---
 

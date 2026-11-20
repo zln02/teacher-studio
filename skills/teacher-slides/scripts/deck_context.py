@@ -81,7 +81,7 @@ RECIPES: dict[str, dict] = {
 }
 
 DATA_TYPES = ("chart", "table", "bignumber", "bignumbers")
-CONTENT_TYPES = ("bullets", "compare", "steps", "bignumbers", "bignumber", "timeline", "chart", "table", "summary", "illustration", "image", "quiz", "math")
+CONTENT_TYPES = ("bullets", "compare", "steps", "bignumbers", "bignumber", "timeline", "chart", "table", "summary", "illustration", "image", "quiz", "math", "diagram")
 ROMAN = "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ Ⅷ Ⅸ Ⅹ".split()
 GANA = "가나다라마바사아자차카타파하"
 _NUMBERED = re.compile(r"^\s*(?:[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+\.|\d+\.|[가-하]\.|\d+\)|[가-하]\))\s")
@@ -259,7 +259,11 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
         if "summary" not in types:
             warns.append("공공 보고: 요약(핵심) 장이 없어요 -> \"summary\": [\"핵심 1\", ...] 또는 {\"type\":\"summary\"} 추가")
         if not (spec.get("org") or spec.get("agency")):
-            warns.append("공공 보고: 표지에 기관명이 없어요 -> spec \"org\": \"○○교육청\" 대신 실제 기관명")
+            warns.append("공공 보고: 표지에 기관명이 없어요 -> spec \"org\": 실제 기관명, 모르면 \"우리 학교\" (빈칸·○○ 금지)")
+        if not ({"table", "chart"} & set(types)):
+            warns.append("공공 보고: 표나 그래프가 없어요 -> 실적은 {\"type\":\"table\"} / {\"type\":\"chart\"} + \"source\" (서로 맞는 숫자로)")
+        if len(slides) >= 8 and not ({"timeline", "steps"} & set(types)):
+            warns.append("공공 보고: 일정 장이 없어요 -> 향후 계획은 {\"type\":\"timeline\"} (분기·월별)")
         d = str(spec.get("date") or "")
         if not d:
             warns.append("공공 보고: 표지 날짜가 없어요 -> spec \"date\": \"2026. 11. 19.\"")
@@ -275,6 +279,17 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
         for i, it in enumerate(slides, 1):
             if it.get("type") == "bullets" and len(it.get("items") or []) > 4:
                 warns.append(f"slide {i}: 수업용은 한 장에 4개까지가 잘 읽혀요 ({len(it['items'])}개) -> 두 장으로 나누기")
+            if it.get("type") == "quiz" and not str(it.get("explain") or "").strip():
+                warns.append(f"slide {i}: 확인 문제에 풀이가 없어요 -> \"explain\": \"한 줄 풀이\" (PPT의 정답 장에 함께 나와요)")
+        if len(slides) >= 8:
+            n_quiz = types.count("quiz")
+            n_act = sum(1 for x in slides if x.get("_role") == "activity") + types.count("timer")
+            if n_quiz < 2:
+                warns.append(f"수업용: 확인 문제가 {n_quiz}개예요 -> 개념 묶음마다 하나씩, 2개 이상 ({{\"type\":\"quiz\",\"answer\":0,\"explain\":\"...\"}})")
+            if not n_act:
+                warns.append("수업용: 활동 장이 없어요 -> {\"type\":\"activity\",\"minutes\":5,\"steps\":[...]} 한 장 (준비물은 note에)")
+            if not ({"diagram", "image", "compare", "table", "chart", "steps", "timeline", "illustration"} & set(types)):
+                warns.append("수업용: 그림·표가 하나도 없어요 -> 교과서에 그림이 있는 개념은 {\"type\":\"diagram\"}으로 그리기 (광선, 순환, 구조)")
     elif ctx == "promo":
         if not any((x.get("type") in ("hero", "closing", "qr")) and (x.get("url") or x.get("cta")) for x in slides):
             warns.append("홍보용: 행동 유도(CTA)가 없어요 -> hero의 \"cta\" 또는 closing의 \"url\"(QR)")

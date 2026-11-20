@@ -6,7 +6,8 @@ Spec (short JSON the AI writes):
   {"purpose":"학부모 설명회", "audience":"3학년 학부모", "mood":"따뜻하게", "subject":"", "title":"...", "seed": 7 (optional),
    "design": {"style":"pastel-cute" (optional), "builds": true},
    "slides":[{"type":"title","title":"..","subtitle":"..","meta":".."}, {"type":"bullets","title":"..","items":[..]}, ... ]}
-Types: title section statement bullets compare steps bignumber bignumbers quote illustration quiz timeline chart math timer qr image video closing.
+Types: title section statement bullets compare steps bignumber bignumbers quote illustration quiz timeline chart math timer qr image video closing
+       table summary toc hero diagram (drawn figure from lines / arrows / shapes / labels: deck_diagram.py).
 Every slide may carry: kicker, note (presenter notes), build (false = all at once), layout ("bullets.cards" = force a variant),
 flair {"css": scoped css, "svg": decorative svg} (sandboxed).
 """
@@ -28,13 +29,13 @@ if not _V.exists():
 sys.path.insert(0, str(_V))
 
 TYPES = ("title", "section", "statement", "bullets", "compare", "steps", "bignumber", "bignumbers", "quote", "illustration", "quiz", "timeline",
-         "chart", "math", "timer", "qr", "image", "video", "closing", "table", "summary", "toc", "hero")
+         "chart", "math", "timer", "qr", "image", "video", "closing", "table", "summary", "toc", "hero", "diagram")
 ALIAS = {"cover": "title", "end": "closing", "thanks": "closing", "cards": "bullets", "list": "bullets", "bigtext": "statement", "question": "statement",
          "big-number": "bignumber", "stat": "bignumber", "stats": "bignumbers", "compare-numbers": "bignumbers", "numbers": "bignumbers",
          "image-free": "illustration", "art": "illustration", "picture": "image", "photo": "image", "countdown": "timer", "quiz-reveal": "quiz",
          "formula": "math", "bignumber2": "bignumbers", "agenda": "bullets", "grid": "table", "datatable": "table", "key-points": "summary",
-         "keypoints": "summary", "contents": "toc", "banner": "hero", "process": "steps", "outro": "closing", "intro": "title"}
-EMOJI = re.compile("[\U0001F000-\U0001FFFF☀-➿⬀-⯿️‍←-⇿]")
+         "keypoints": "summary", "contents": "toc", "figure": "diagram", "drawing": "diagram", "그림": "diagram", "도식": "diagram", "banner": "hero", "process": "steps", "outro": "closing", "intro": "title"}
+EMOJI = re.compile("[\U0001F000-\U0001FFFF☀-➿⬀-⯿️‍]")  # arrows (← → ↔ ⇒) stay: 「공기 → 물」 loses its meaning without them
 URL = re.compile(r"(https?://[^\s·「」)]+|(?:[a-z0-9-]+\.)+(?:com|kr|net|org|io|me|dev|ly)(?:/[^\s·「」)]*)?)", re.I)
 MAX_IMG_BYTES = 3 * 1024 * 1024
 MAX_VIDEO_EMBED = 8 * 1024 * 1024
@@ -147,6 +148,9 @@ def check_extra(i: int, it: dict) -> list[str]:
             e.append(f"slide {i} toc.items: use 2-8")
         if any(len(plain(str(x))) > 30 for x in its):
             e.append(f"slide {i} toc.items: <= 30 chars each")
+    elif t == "diagram":
+        import deck_diagram
+        e += deck_diagram.check(i, it)
     elif t == "hero":
         if len(plain(str(it.get("headline", "")))) > 34:
             e.append(f"slide {i} hero.headline: {len(plain(str(it.get('headline', ''))))} chars > 34 -> short and punchy")
@@ -162,7 +166,7 @@ def check_slide(i: int, it: dict, warns: list[str], caps: dict | None = None) ->
     need = {"title": ["title"], "section": ["title"], "statement": ["text"], "bullets": ["title", "items"], "compare": ["title", "a", "b"], "steps": ["title", "steps"],
             "bignumber": ["value"], "bignumbers": ["items"], "quote": ["text"], "illustration": ["title"], "quiz": ["q", "choices"], "timeline": ["title", "events"],
             "chart": ["title", "labels", "series"], "math": ["tex"], "timer": [], "qr": ["url"], "image": ["file"], "video": ["file"], "closing": ["title"],
-            "table": ["title", "columns", "rows"], "summary": ["points"], "toc": [], "hero": ["headline"]}[t]
+            "table": ["title", "columns", "rows"], "summary": ["points"], "toc": [], "hero": ["headline"], "diagram": ["title", "shapes"]}[t]
     for k in need:
         if not it.get(k):
             e.append(f"slide {i} {t}: '{k}' is required")

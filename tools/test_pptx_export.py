@@ -54,7 +54,8 @@ class PptxExport(unittest.TestCase):
             with self.subTest(f.name):
                 spec, out = self.build(f)
                 prs = Presentation(str(out))
-                n = len(deck_spec.normalize(dict(spec), f.parent)[0]["slides"])
+                norm = deck_spec.normalize(dict(spec), f.parent)[0]["slides"]
+                n = len(norm) + sum(1 for x in norm if x["type"] == "quiz")  # every quiz is followed by its answer slide in the .pptx
                 self.assertEqual(len(prs.slides), n)
                 W, H = prs.slide_width, prs.slide_height
                 for i, s in enumerate(prs.slides, 1):
@@ -69,7 +70,14 @@ class PptxExport(unittest.TestCase):
                         self.assertLessEqual(sh.top + sh.height, H + 10, f"slide {i} {sh.name} bottom edge")
                         if sh.has_text_frame and sh.text_frame.text.strip():
                             self.assertFalse(overflow(sh, 0), f"slide {i}: text may overflow: {sh.text_frame.text[:30]!r}")
-                for it, s in zip(deck_spec.normalize(dict(spec), f.parent)[0]["slides"], prs.slides):
+                own, skip = [], False
+                for s in prs.slides:  # the slide right after a quiz is its answer screen, not a spec slide
+                    if skip:
+                        skip = False
+                        continue
+                    own.append(s)
+                    skip = norm[len(own) - 1]["type"] == "quiz"
+                for it, s in zip(norm, own):
                     if it.get("note"):
                         self.assertTrue(s.has_notes_slide and it["note"][:8] in s.notes_slide.notes_text_frame.text, "speaker note lost")
                     if it["type"] == "quiz":

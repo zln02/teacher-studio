@@ -272,12 +272,19 @@ def main() -> int:
     ap.add_argument("--style", default="")
     ap.add_argument("--no-check", action="store_true")
     ap.add_argument("--pptx", nargs="?", const="auto", metavar="OUT.pptx", help="ALSO write an editable PowerPoint (.pptx) from the same spec (python-pptx, installed on first need)")
+    ap.add_argument("--pptx-only", action="store_true", help="the user asked only for a PowerPoint file: skip the web-deck checks and screenshots (faster), keep the .pptx gate and preview")
     ap.add_argument("--template", type=Path, help="with --pptx: the teacher's own .pptx/.potx - its masters and layouts are used (template-first)")
     ap.add_argument("--yes", action="store_true", help="the teacher agreed to install python-pptx")
     ap.add_argument("--yes-libreoffice", action="store_true", help="the teacher agreed to install LibreOffice (~350MB) so the .pptx can be drawn for real")
     ap.add_argument("--review", type=Path, help="also write the contact sheet + metrics into this folder")
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
+    only = bool(a.pptx_only and a.pptx)
+    if only and not a.out:  # PowerPoint only: the web page is just a by-product (kept out of the user's folder)
+        import tempfile
+        a.out = Path(tempfile.mkdtemp(prefix="deck-")) / "deck.html"
+        if a.pptx == "auto":
+            a.pptx = str(a.spec.with_suffix(".pptx"))
     out = a.out or OUT_DIR / f"deck-{a.spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     ov: dict = {"purpose": a.purpose, "mood": a.mood}
@@ -301,9 +308,9 @@ def main() -> int:
         print("바꿔 넣을 곳 (선생님께 마지막에 알려 주세요): " + ", ".join(listed))
         if spec.get("template_blanks") is True:
             print("NOTE 양식 모드: 빈칸을 일부러 남겼어요. 사용하기 전에 위 곳을 채워 주세요.")
-    if not a.no_check:
+    if not a.no_check and not only:
         code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out), "--no-play"]).returncode or code
-    if a.review:
+    if a.review and not only:
         code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review)]).returncode or code
     if a.pptx:
         px = out.with_suffix(".pptx") if a.pptx == "auto" else Path(a.pptx)
@@ -328,11 +335,17 @@ def main() -> int:
                 rr = pptx_render.render(px, a.review, consent=a.yes_libreoffice, overflow=ck["overflow"])
                 print(("PASS " if rr["mode"] == "libreoffice" else "NOTE ") + "pptx 그림: " + rr["note"])
                 print("sheet:", (rr["files"] or ["-"])[0])
-            print(f"READY {px}")
+            if any(lv == "FAIL" for lv, _ in ck["results"]):  # hard gate: a failing .pptx is never "ready"
+                print(f"NOT DONE {px}: 위 pptx FAIL을 spec에서 고치고 같은 명령을 다시 실행하세요 (PASS가 될 때까지 완료 보고 금지). "
+                      "빈칸은 「우리 학교」·오늘 날짜 같은 그럴듯한 값으로 채우고, 비어 보이는 장은 내용을 더 넣거나 옆 장과 합치세요.")
+            else:
+                print(f"READY {px}")
         else:
             code = code or 1
             print("FIX pptx:", "; ".join(pr_["errors"]))
-    print(f"READY {out}")
+    if only:
+        return code
+    print(f"READY {out}" if not code else f"NOT DONE {out}: 위 FAIL을 고치고 다시 실행하세요 (PASS가 될 때까지 완료 보고 금지)")
     return code
 
 

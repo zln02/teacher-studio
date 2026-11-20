@@ -220,6 +220,8 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         tbox(s, x, y, w, h, text, size, color or C["tx"], True, align, anchor, "disp", shape=ph)
         return ph
 
+    extra_slides = [0]
+
     def kicker(s, text, y=0.38):
         if text:
             tbox(s, 0.8, y, 11.7, 0.4, str(text).upper(), 14, C["emc"], True)
@@ -306,13 +308,15 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 for dd in range(lv + 1, 4):
                     cnt[dd] = 0
                 lines.append(("    " * (lv - 1)) + m + " " + plain(tx_))
-            tbox(s, 0.9, 1.8, 11.5, 4.9, "\n".join(lines), 20, C["tx"], spacing=1.35)
+            nl = len(lines)
+            tbox(s, 0.9, 1.8, 11.5, 4.9, "\n".join(lines), 28 if nl <= 3 else (26 if nl == 4 else (22 if nl <= 6 else 20)), C["tx"],
+                 spacing=2.0 if nl <= 3 else (1.8 if nl == 4 else (1.55 if nl <= 6 else 1.35)))
         elif t == "table":
             put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
             cols, rows = it["columns"], it["rows"]
             if it.get("unit"):
                 tbox(s, 8.5, 1.5, 4.0, 0.35, f"(단위: {it['unit']})", 12, C["mu"], align="r")
-            gt = s.shapes.add_table(len(rows) + 1, len(cols), I(0.8), I(1.9), I(11.7), I(min(4.8, 0.62 * (len(rows) + 1))))
+            gt = s.shapes.add_table(len(rows) + 1, len(cols), I(0.8), I(1.9), I(11.7), I(min(4.8, 0.85 * (len(rows) + 1))))
             tb = gt.table
             hi = it.get("highlight")
             for r in range(len(rows) + 1):
@@ -325,7 +329,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     tf.paragraphs[0].text = ""
                     num_ = bool(re.match(r"^[\s+\-]?[\d,.]+\s*\S{0,2}$", txt))
                     tf.paragraphs[0].alignment = PP_ALIGN.CENTER if r == 0 else (PP_ALIGN.RIGHT if num_ else PP_ALIGN.LEFT)
-                    fill_runs(tf.paragraphs[0], txt, 16, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
+                    fill_runs(tf.paragraphs[0], txt, 18 if len(rows) <= 6 else 16, C["bt"] if r == 0 else (C["emc"] if hi == c_ else C["tx"]), C["emc"], bold=(r == 0 or hi == c_))
                     cell.vertical_anchor = MSO_ANCHOR.MIDDLE
         elif t == "summary":
             put_title(s, plain(it.get("title") or "요약"), 0.8, 0.65 if pub else 0.45, 11.7, 0.85, 28 if pub else 34)
@@ -336,7 +340,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             rect(s, 0.8, y0 + 0.2, 11.7, 6.6 - y0 - 0.2, None, line=C["pr"], round_=False, lw=2.5)
             lab = rect(s, 1.1, y0, 1.4, 0.42, C["pr"], round_=False)
             tbox(s, 1.1, y0, 1.4, 0.42, it.get("label") or "핵심", 16, C["bt"], True, "c", "m", shape=lab)
-            tbox(s, 1.2, y0 + 0.75, 10.9, 6.3 - y0 - 0.9, "\n".join("□ " + plain(x_) for x_ in it["points"]), 22, C["tx"], spacing=1.4)
+            np_ = len(it["points"])
+            tbox(s, 1.2, y0 + 0.75, 10.9, 6.3 - y0 - 0.9, "\n".join("□ " + plain(x_) for x_ in it["points"]), 26 if np_ <= 3 else (24 if np_ == 4 else 22), C["tx"],
+                 spacing=2.0 if np_ <= 3 else (1.7 if np_ == 4 else 1.4))
         elif t == "toc":
             put_title(s, plain(it.get("title") or "목차"), 0.8, 0.6, 5, 1.0, 40)
             rect(s, 0.8, 1.7, 0.7, 0.07, C["pr"], round_=False).name = "accent"
@@ -396,18 +402,22 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             put_title(s, plain(it["title"]))
             items = it["items"]
             n = len(items)
-            gap = 0.18
-            ch = min(1.1, (5.2 - gap * (n - 1)) / n)
+            gap = 0.2
+            ch = min(1.5, (4.9 - gap * (n - 1)) / n)  # cards grow to fill the body; a short list is centred, not stuck to the top
+            y0 = 1.95 + max(0.0, (4.9 - (ch * n + gap * (n - 1))) / 2)
+            fs = 26 if n <= 3 else (24 if n == 4 else 22)
             for i, x in enumerate(items):
-                y = 1.95 + i * (ch + gap)
+                y = y0 + i * (ch + gap)
                 card(s, 0.8, y, 11.7, ch)
                 rect(s, 0.8, y, 0.14, ch, C["pr"], round_=False).name = "accent"
-                tbox(s, 1.15, y, 11.2, ch, x, 22, C["ct"], anchor="m", emc=C["emcc"])
+                d_ = rect(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, C["pr"], shape=MSO_SHAPE.OVAL)
+                tbox(s, 1.2, y + ch / 2 - 0.3, 0.6, 0.6, str(i + 1), 18, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d_)
+                tbox(s, 2.05, y, 10.3, ch, x, fs, C["ct"], anchor="m", emc=C["emcc"])
         elif t == "compare":
             put_title(s, plain(it["title"]))
             if it.get("rows"):
                 rows = it["rows"]
-                gt = s.shapes.add_table(len(rows) + 1, 3, I(0.8), I(1.95), I(11.7), I(0.7 * (len(rows) + 1)))
+                gt = s.shapes.add_table(len(rows) + 1, 3, I(0.8), I(1.95), I(11.7), I(min(4.9, 0.9 * (len(rows) + 1))))
                 tb = gt.table
                 tb.columns[0].width, tb.columns[1].width, tb.columns[2].width = I(3.1), I(4.3), I(4.3)
                 head = ["", it["a"].get("label", "A"), it["b"].get("label", "B")]
@@ -427,8 +437,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     card(s, x, 1.95, 5.7, 4.9)
                     hd = rect(s, x, 1.95, 5.7, 0.9, C["pr"] if j == 0 else C["ac"])
                     tbox(s, x, 1.95, 5.7, 0.9, it[side].get("label", side.upper()), 26, C["bt"], True, "c", "m", "disp", emc=C["bt"])
-                    for i, x_ in enumerate(it[side].get("items", [])[:5]):
-                        tbox(s, x + 0.3, 3.05 + i * 0.75, 5.1, 0.7, "• " + plain(x_), 20, C["ct"], emc=C["emcc"])
+                    its_ = it[side].get("items", [])[:5]
+                    rh_ = min(1.15, 3.8 / max(len(its_), 1))  # rows spread over the whole panel
+                    for i, x_ in enumerate(its_):
+                        tbox(s, x + 0.3, 3.0 + i * rh_, 5.1, rh_, "• " + plain(x_), 22 if len(its_) <= 4 else 20, C["ct"], anchor="m", emc=C["emcc"])
         elif t == "steps":
             put_title(s, plain(it["title"]))
             st = it["steps"]
@@ -439,8 +451,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 cx = 0.8 + i * cw
                 d = rect(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, C["pr"], shape=MSO_SHAPE.OVAL)
                 tbox(s, cx + cw / 2 - 0.45, 2.45, 0.9, 0.9, str(i + 1), 28, C["bt"], True, "c", "m", "disp", emc=C["bt"], shape=d)
-                tbox(s, cx + 0.1, 3.65, cw - 0.2, 0.8, x_.get("title", ""), 22, C["tx"], True, "c", name="disp")
-                tbox(s, cx + 0.1, 4.45, cw - 0.2, 1.6, x_.get("text", ""), 17, C["mu"], align="c")
+                card(s, cx + 0.1, 3.6, cw - 0.2, 2.9)
+                tbox(s, cx + 0.2, 3.7, cw - 0.4, 0.8, x_.get("title", ""), 22, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
+                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.9, x_.get("text", ""), 18, C["ct"], align="c", emc=C["emcc"])
         elif t == "bignumber":
             if it.get("title"):
                 put_title(s, plain(it["title"]))
@@ -472,19 +485,37 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             rect(s, 9.4, 2.6, 2.4, 2.4, C["pr"], shape=MSO_SHAPE.OVAL).name = "decor"
             notes.append("(그림 자리: 웹 슬라이드의 아이콘 그림은 PPT에서는 도형으로 바꿨어요. 원하는 그림을 직접 넣어 보세요.)")
         elif t == "quiz":
-            put_title(s, it["q"], 0.8, 1.0, 11.7, 1.8, 38)
             ch = it["choices"]
-            cols = 2 if len(ch) > 3 else 1
-            rows = (len(ch) + cols - 1) // cols
-            bw = (11.7 - 0.3 * (cols - 1)) / cols
-            bh = min(1.0, (3.9 - 0.2 * (rows - 1)) / rows)
-            for i, x_ in enumerate(ch):
-                x = 0.8 + (i % cols) * (bw + 0.3)
-                y = 3.0 + (i // cols) * (bh + 0.2)
-                b = card(s, x, y, bw, bh)
-                tbox(s, x + 0.2, y, bw - 0.3, bh, f"{'ABCDE'[i]}.  {plain(x_)}", 24, C["ct"], anchor="m", emc=C["emcc"])
             ans = int(it.get("answer", 0))
-            notes.append(f"정답: {'ABCDE'[ans]}. {plain(ch[ans])}" + (f" - {plain(it['explain'])}" if it.get("explain") else ""))
+
+            def quiz_draw(sl, reveal, it=it, ch=ch, ans=ans):
+                put_title(sl, it["q"], 0.8, 0.85 if reveal else 1.0, 11.7, 1.6 if reveal else 1.8, 36 if reveal else 38)
+                cols = 2 if len(ch) > 3 else 1
+                rows = (len(ch) + cols - 1) // cols
+                bw = (11.7 - 0.3 * (cols - 1)) / cols
+                top, room = ((2.6, 3.0) if it.get("explain") else (2.6, 4.1)) if reveal else (3.0, 3.9)
+                bh = min(1.15, (room - 0.2 * (rows - 1)) / rows)
+                for i, x_ in enumerate(ch):
+                    x = 0.8 + (i % cols) * (bw + 0.3)
+                    y = top + (i // cols) * (bh + 0.2)
+                    hit = reveal and i == ans
+                    if hit:
+                        rect(sl, x, y, bw, bh, C["pr"])
+                    else:
+                        card(sl, x, y, bw, bh)
+                    tbox(sl, x + 0.2, y, bw - 0.3, bh, f"{'ABCDE'[i]}.  {plain(x_)}" + ("   (정답)" if hit else ""), 24, C["bt"] if hit else C["ct"], hit, anchor="m",
+                         emc=C["bt"] if hit else C["emcc"])
+                if reveal and it.get("explain"):
+                    rect(sl, 0.8, 5.85, 11.7, 0.95, None, line=C["pr"], lw=2)
+                    tbox(sl, 1.0, 5.85, 11.3, 0.95, "풀이: " + plain(it["explain"]), 22, C["tx"], anchor="m")
+            quiz_draw(s, False)
+            notes.append(f"정답: {'ABCDE'[ans]}. {plain(ch[ans])}" + (f" - {plain(it['explain'])}" if it.get("explain") else "") + " (다음 장이 정답 화면이에요)")
+            s2 = prs.slides.add_slide(layout_for("other"))  # the answer screen: same question, the right choice filled in, the reason below
+            bg(s2, t)
+            tbox(s2, 0.8, 0.38, 11.7, 0.4, "정답", 14, C["emc"], True)
+            quiz_draw(s2, True)
+            drop_empty(s2)
+            extra_slides[0] += 1
         elif t == "timeline":
             put_title(s, plain(it["title"]))
             ev = it["events"]
@@ -495,8 +526,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 cx = 0.8 + i * cw
                 tbox(s, cx, 2.3, cw, 0.6, e.get("when", ""), 22, C["emc"], True, "c", name="disp")
                 rect(s, cx + cw / 2 - 0.16, 3.05, 0.32, 0.32, C["pr"], shape=MSO_SHAPE.OVAL)
-                tbox(s, cx + 0.05, 3.7, cw - 0.1, 0.7, e.get("title", ""), 22, C["tx"], True, "c", name="disp")
-                tbox(s, cx + 0.05, 4.4, cw - 0.1, 1.6, e.get("text", ""), 17, C["mu"], align="c")
+                card(s, cx + 0.1, 3.65, cw - 0.2, 2.8)
+                tbox(s, cx + 0.2, 3.75, cw - 0.4, 0.75, e.get("title", ""), 22, C["ct"], True, "c", "m", name="disp", emc=C["emcc"])
+                tbox(s, cx + 0.2, 4.5, cw - 0.4, 1.85, e.get("text", ""), 18, C["ct"], align="c", emc=C["emcc"])
         elif t == "chart":
             put_title(s, plain(it["title"]), h=1.0)
             cd = CategoryChartData()
@@ -580,6 +612,82 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             put_title(s, plain(it.get("title", "")) or "영상", h=1.0)
             card(s, 2.5, 2.2, 8.3, 3.6)
             tbox(s, 2.5, 2.2, 8.3, 3.6, f"영상 파일: {Path(it['file']).name}\n[삽입 > 비디오]로 이 자리에 넣어 주세요", 24, C["ct"], align="c", anchor="m")
+        elif t == "diagram":
+            import deck_diagram as dg
+            from pptx.enum.dml import MSO_LINE
+            from pptx.enum.shapes import MSO_CONNECTOR
+            from pptx.oxml.ns import qn as _qn
+            put_title(s, plain(it["title"]), 0.8, 0.65 if pub else 0.45, 11.7, 0.95, 28 if pub else 34)
+            pts_ = it.get("points") or []
+            cw_ = 7.6 if pts_ else 8.4
+            ch_ = cw_ * 0.6
+            cx0, cy0 = (0.8 if pts_ else (13.333 - cw_) / 2), 1.75
+            card(s, cx0, cy0, cw_, ch_)
+            u = cw_ / 100.0
+            for n_, sh_ in enumerate(it["shapes"]):
+                kd = dg.kind_of(sh_)
+                col = dg.legible(dg.color(sh_.get("color"), C, "ct" if kd in ("label", "line", "dash") else "pr"), it["shapes"], n_, C)
+                if kd in ("line", "dash", "arrow", "dasharrow"):
+                    cn = s.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, I(cx0 + float(sh_["x1"]) * u), I(cy0 + float(sh_["y1"]) * u),
+                                                I(cx0 + float(sh_["x2"]) * u), I(cy0 + float(sh_["y2"]) * u))
+                    cn.line.color.rgb = rgb(col)
+                    cn.line.width = Pt(max(2.0, float(sh_.get("w", 4)) * 0.75))
+                    if "dash" in kd:
+                        cn.line.dash_style = MSO_LINE.DASH
+                    if "arrow" in kd:
+                        ln_ = cn.line._get_or_add_ln()
+                        ln_.append(ln_.makeelement(_qn("a:tailEnd"), {"type": "triangle", "w": "med", "len": "med"}))
+                    cn.name = "diagram"
+                elif kd in ("rect", "circle"):
+                    fill_ = None if sh_.get("fill") == "none" else dg.color(sh_.get("fill"), C, "bg2")
+                    line_ = dg.color(sh_.get("color"), C, "line") if (sh_.get("color") or fill_ is None) else None
+                    if kd == "rect":
+                        bx = (cx0 + float(sh_["x"]) * u, cy0 + float(sh_["y"]) * u, float(sh_["w"]) * u, float(sh_["h"]) * u)
+                        g_ = rect(s, *bx, fill_, line=line_, round_=False, lw=2)
+                    else:
+                        r_ = float(sh_["r"]) * u
+                        bx = (cx0 + float(sh_["cx"]) * u - r_, cy0 + float(sh_["cy"]) * u - r_, 2 * r_, 2 * r_)
+                        g_ = rect(s, *bx, fill_, line=line_, shape=MSO_SHAPE.OVAL, lw=2)
+                    g_.name = "diagram"
+                    if sh_.get("text"):
+                        tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
+                        tbox(s, bx[0], bx[1], bx[2], bx[3], plain(sh_["text"]), 16, tc_, True, "c", "m", emc=tc_, shape=g_)
+                elif kd == "arc":
+                    acx, acy, ar, a0, a1 = dg.arc_points(sh_)
+                    ar *= u
+                    g_ = s.shapes.add_shape(MSO_SHAPE.ARC, I(cx0 + acx * u - ar), I(cy0 + acy * u - ar), I(2 * ar), I(2 * ar))
+                    av = g_._element.spPr.find(_qn("a:prstGeom")).find(_qn("a:avLst"))
+                    if av is None:
+                        pg_ = g_._element.spPr.find(_qn("a:prstGeom"))
+                        av = pg_.makeelement(_qn("a:avLst"), {})
+                        pg_.append(av)
+                    for old_ in list(av):
+                        av.remove(old_)
+                    for nm_, vv in (("adj1", a0), ("adj2", a1)):
+                        av.append(av.makeelement(_qn("a:gd"), {"name": nm_, "fmla": "val %d" % int(round(vv * 60000))}))
+                    g_.fill.background()
+                    g_.line.color.rgb = rgb(col)
+                    g_.line.width = Pt(2.5)
+                    g_.shadow.inherit = False
+                    g_.name = "diagram"
+                elif kd == "label":
+                    fs_ = {"s": 14, "m": 18, "l": 24}.get(str(sh_.get("size", "m")), 18)
+                    al_ = str(sh_.get("align", "c"))[:1]
+                    al_ = al_ if al_ in ("l", "c", "r") else "c"
+                    wd_ = max(1.2, pfit.width_em(plain(sh_["text"])) * fs_ / 72 + 0.45)
+                    lx = cx0 + float(sh_["x"]) * u - {"l": 0.08, "r": wd_ - 0.08}.get(al_, wd_ / 2)
+                    tbox(s, lx, cy0 + float(sh_["y"]) * u - 0.27, wd_, 0.54, plain(sh_["text"]), fs_, col, True, al_, "m", emc=col).name = "diagram label"
+            if pts_:
+                px_, pw_ = cx0 + cw_ + 0.3, 12.5 - (cx0 + cw_ + 0.3)
+                rh_ = min(1.4, (ch_ - 0.2 * (len(pts_) - 1)) / len(pts_))
+                y0_ = cy0 + (ch_ - (rh_ * len(pts_) + 0.2 * (len(pts_) - 1))) / 2
+                for i, x_ in enumerate(pts_):
+                    yy = y0_ + i * (rh_ + 0.2)
+                    card(s, px_, yy, pw_, rh_)
+                    rect(s, px_, yy, 0.12, rh_, C["pr"], round_=False).name = "accent"
+                    tbox(s, px_ + 0.25, yy, pw_ - 0.35, rh_, x_, 20, C["ct"], anchor="m", emc=C["emcc"])
+            if it.get("caption"):
+                tbox(s, 0.8, cy0 + ch_ + 0.1, 11.7, 0.45, it["caption"], 16, C["mu"], align="c")
         elif t == "closing":
             put_title(s, plain(it["title"]), 0.8, 1.2, 7.4, 2.4, 52, anchor="m")
             if it.get("sub"):
@@ -602,7 +710,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     rep["overflow"] = [f for f in fit_log if not f["fits"]]
     for f in rep["overflow"]:
         rep["warnings"].append(f"slide {f['slide']}: 줄여도 글이 상자를 넘쳐요 ('{f['text']}...') -> 글을 줄이거나 두 장으로 나누세요")
-    rep.update(ok=True, slides=len(slides), fit=fit_log, style=dz["style"], seed=seed, template=str(template) if template else "",
+    rep.update(ok=True, slides=len(slides) + extra_slides[0], fit=fit_log, style=dz["style"], seed=seed, template=str(template) if template else "",
                font_note=f"글꼴 {fdisp}/{fbody}이(가) PC에 없으면 PowerPoint가 비슷한 글꼴로 바꿔 보여요. 글꼴 파일은 shared/fonts에 있어요.")
     return rep
 

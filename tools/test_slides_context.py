@@ -46,7 +46,7 @@ class Presets(unittest.TestCase):
         for f in EX:
             c = dctx.context_of(json.loads(f.read_text(encoding="utf-8")))
             got[c] = got.get(c, 0) + 1
-        self.assertEqual(got, {"class": 2, "promo": 2, "public": 2, "personal": 2})
+        self.assertEqual(got, {"class": 3, "promo": 2, "public": 2, "personal": 2})  # class also has the diagram example (light reflection)
 
     def test_aliases(self):
         for word, c in (("수업용", "class"), ("홍보", "promo"), ("공공기관 보고용", "public"), ("기관 보고", "public"), ("개인", "personal"), ("", "")):

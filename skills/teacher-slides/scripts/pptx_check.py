@@ -10,6 +10,7 @@ Checks (FAIL = fix before handing over):
                 reported as 「바꿔 넣을 곳」)
   text fit      estimated text height vs. its box (pptx_fit.py, same metrics deck_pptx shrinks with): FAIL when clearly over
   geometry      shapes inside the slide, no empty text placeholders
+  visual weight no body slide that looks mostly empty (pptx_fill.py: content < 6 % of the slide, or content ends above 60 % of the height)
   notes         placeholders in speaker notes count too
 --render DIR    also draws the slides as PNG: real LibreOffice rendering when installed (or --yes to install it, large), else an
                 APPROXIMATE preview from the shapes (labelled as such; fonts and line breaks differ from PowerPoint).
@@ -109,7 +110,15 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
     results.append(("FAIL" if over else "PASS", "text fits its box (estimate)" + (f": {over[:6]}" if over else "")))
     results.append(("FAIL" if off else "PASS", "every shape inside the slide" + (f": {off[:4]}" if off else "")))
     results.append(("FAIL" if empty else "PASS", "no empty placeholder" + (f": {empty[:4]}" if empty else "")))
-    return {"results": results, "fillins": listed, "texts": texts_all, "overflow": over, "slides": len(prs.slides)}
+    try:  # visual weight: a body slide that is mostly empty (or stops above the middle) reads as unfinished on a projector
+        import pptx_fill
+        thin = pptx_fill.problems(prs)
+    except Exception as exc:  # the ink map must never block a deck it cannot read
+        thin = []
+        results.append(("NOTE", f"slide fill not measured ({str(exc)[:60]})"))
+    results.append(("FAIL" if thin else "PASS", "no empty-looking slide (visual weight)" + (": " + "; ".join(f"{n}번 {why}" for n, why in thin[:6])
+                    + " -> 그 장에 내용(표·그림·활동·예시)을 더 넣거나 옆 장과 합치세요" if thin else "")))
+    return {"results": results, "fillins": listed, "texts": texts_all, "overflow": over, "slides": len(prs.slides), "thin": thin}
 
 
 def main() -> int:
@@ -143,6 +152,9 @@ def main() -> int:
             print(f"sheet: {p}")
     fails = sum(1 for lv, _ in r["results"] if lv == "FAIL")
     print(f"\nRESULT: {'FAIL' if fails else 'PASS'} ({fails} fail)")
+    if fails:
+        print("NOT DONE: 위 FAIL을 고치고 이 점검을 다시 돌리세요. PASS가 될 때까지는 「다 됐어요」라고 하지 않아요. "
+              "(모르는 값은 「우리 학교」·오늘 날짜처럼 그럴듯한 값으로 채우고 마지막에 한 줄로 알리기. 양식을 원한 경우만 --allow-blanks)")
     return 1 if fails else 0
 
 

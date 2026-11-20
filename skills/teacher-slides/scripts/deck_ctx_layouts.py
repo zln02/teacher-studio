@@ -34,6 +34,7 @@ CSS = """
 .cta .tx{color:var(--bt);font-weight:800;text-align:center}
 .hscrim{background:rgba(12,12,16,.66)}
 .hang .tx{padding-left:1.25em;text-indent:-1.25em}
+.dgm svg{display:block;width:100%;height:100%}.dgm .dl{font-family:var(--fb)}
 """
 
 # ------------------------------------------------------------------- helpers
@@ -229,6 +230,31 @@ def _always(it):
     return True
 
 
+def diagram_canvas(ctx, it):
+    """Drawn figure (deck_diagram.svg) on a card; optional notes on the right."""
+    import deck_diagram
+    pub = ctx.dz.get("context") == "public"
+    hh = [_head(ctx, it)] if pub else [T(ctx, it.get("title", ""), MX, 96, CW, 130, 76, 48, cls="h", va="m", lh=1.14)]
+    pts = it.get("points") or []
+    if pts:
+        w, h, x, y = 1080, 648, MX, 270
+    else:
+        w, h, x, y = 1150, 690, (W - 1150) // 2, 258
+    hh.append(box(x, y, w, h, deck_diagram.svg(it, ctx.dz["colors"], w, h, ctx.floor, f"dg{ctx.idx}"), "dgm"))
+    if pts:
+        px, pw = x + w + 40, W - MX - (x + w + 40)
+        rh = min(190, (h - 20 * (len(pts) - 1)) // len(pts))
+        y0 = y + (h - (rh * len(pts) + 20 * (len(pts) - 1))) // 2
+        for i, p in enumerate(pts):
+            yy = y0 + i * (rh + 20)
+            hh.append(rect(px, yy, pw, rh, "cd"))
+            hh.append(rect(px, yy, 12, rh, "bar"))
+            hh.append(T(ctx, p, px + 36, yy + 8, pw - 56, rh - 16, 40, 28, cls="p ct", va="m", lh=1.3))
+    if it.get("caption"):
+        hh.append(T(ctx, it["caption"], MX, y + h + 14, CW, 56, 32, 28, cls="p mu", va="m", align="center"))
+    return {"html": "".join(hh), "role": "content", "room": True}
+
+
 def register(REG: dict) -> None:
     REG.setdefault("title", [])
     if not any(v[0] == "gov" for v in REG["title"]):
@@ -239,6 +265,7 @@ def register(REG: dict) -> None:
     REG["summary"] = [("box", "editorial", summary_box, _always)]
     REG["toc"] = [("list", "editorial", toc_list, _always)]
     REG["hero"] = [("full", "bigtype", hero_full, _always), ("split", "split", hero_split, _always)]
+    REG["diagram"] = [("canvas", "split", diagram_canvas, _always)]
 
 
 # ------------------------------------------------------------------- decorate: public header + 자료/주 line
