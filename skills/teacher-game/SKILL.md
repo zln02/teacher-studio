@@ -1,6 +1,6 @@
 ---
 name: teacher-game
-description: Makes any game as one HTML file - class quiz, escape room, bingo, board, matching; also club, family and shop events (모임·동호회·가게). For teachers and anyone. Big readable defaults.
+description: "수업용 퀴즈·방탈출·빙고·단어 짝 맞추기 게임을 만들 때 씁니다. Use for original classroom games with play rules or scoring that can run in a single offline HTML file. Class timers, general websites, and existing code edits follow their own workflows."
 license: Apache-2.0
 ---
 
@@ -22,7 +22,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
    - `CONTENT FIX` (the build stopped before assembling, 1 second) -> fix those questions in the spec, rerun. Add `--ok-content` only when the user gave these exact questions.
    - `WARN` -> leave it unless it names text the user would see cut or covered.
    - `sheet: <png>` -> open that picture ONCE and run the look check below. A problem -> change `design.words` / `seed` / `style` only, rebuild once.
-   - `READY <path>` -> go to step 6. No `READY` after 2 rebuilds -> give the file, name the open problem in one line.
+   - `READY <path>` -> go to step 6. `PARTIAL` -> state the missing checks and offer the generated file when useful. For `FAIL`, fix the listed issues before using the file; use the fallback if two fixes fail.
 6. **Last message, always a real answer** (never 「만드는 중」): full path of the file · 「더블클릭하면 브라우저에서 열려요, F = 전체 화면, ⚙️ = 선생님 메뉴(일시정지·정답 보기·점수 조정)」 · what is inside (문항 수, 팀, 시간) · check result in one line · 2-3 tweaks in plain words (「글자 더 크게」「문제 더 어렵게」「다른 분위기로」).
 
 ## Request -> mechanic (first match)

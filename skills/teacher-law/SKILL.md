@@ -18,7 +18,7 @@ This skill stores no article text and no conclusions (law changes). It is: where
 1. **Sort the question** into one or two kinds and pick the laws from the table. Ask ONE question only if a missing fact flips the answer (공개 범위, 학생 얼굴이 나오는지, 상업적 이용인지); otherwise state the assumption in the card.
 2. **Read the official text in ONE call** (prints 시행일 + the article text + its link; each law takes about 2 s):
    `python3 scripts/law_fetch.py --articles "저작권법:25,35의5"` (repeat `--articles` for a second law; Windows `py`; `--chars 1200` for a long article)
-   - The table below is only a guess of WHERE to look. Use what the script prints; 「못 찾은 조문」 or 「못 읽음」 -> write 「확인 필요」 for that item and give the link. Never retry the same site.
+   - The table below is only a guess of WHERE to look. Use what the script prints; 「못 찾은 조문」 or 「못 읽음」 -> use the host's available search to find only those items via another official route. If the official wording or effective date is still unavailable, mark that item 「확인 필요」 and give the link. A partial response confirms only the articles and effective date it actually reports.
 3. **Only if needed, ONE web search**: the question hangs on something that is not a statute (교육부 지침, 교육청 안내, a service's terms, a 위원회 해설), or step 2 could not read anything. Official sites first (`references/sources.md`); a blog or news page may support the answer but is labelled 「보조 출처(공식 아님)」.
 4. **Write the card.** Stop there: no extra sections, no source list after the card.
 No search or shell tool in this environment -> say 「지금 이 환경에서는 최신 법을 확인할 수 없어요」, give the official links from the table, and give NO conclusion (how to turn search on: `references/sources.md` §4).

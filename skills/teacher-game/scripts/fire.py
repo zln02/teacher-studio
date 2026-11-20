@@ -48,7 +48,7 @@ def merge(skin: dict, content: dict) -> dict:
     return out
 
 
-def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> None:
+def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> int:
     """Assemble, build and check one game."""
     base = MISSILES / missile
     skin_path = base / "skins" / f"{skin}.json"
@@ -71,8 +71,9 @@ def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> None:
     print(f"fired {missile}/{skin} -> {out} ({size // 1024} KB{note})")
     result = subprocess.run([sys.executable, str(SKILL / "scripts" / "check_game.py"), str(out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     print(result.stdout.strip().splitlines()[-1] if result.stdout.strip() else result.stderr)
-    if result.returncode:
-        raise SystemExit(result.stdout)
+    if result.returncode == 1:
+        print(result.stdout or result.stderr)
+    return result.returncode
 
 
 def main() -> None:
@@ -88,7 +89,7 @@ def main() -> None:
         return
     if not (a.missile and a.skin and a.out):
         ap.error("--missile, --skin and --out are required")
-    fire(a.missile, a.skin, a.content, a.out)
+    raise SystemExit(fire(a.missile, a.skin, a.content, a.out))
 
 
 if __name__ == "__main__":

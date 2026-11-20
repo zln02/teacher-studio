@@ -135,10 +135,11 @@ def _get(url: str, timeout: float) -> str:
 
 def law_articles(law: str, arts: list[str], timeout: float = 6.0, chars: int = 700) -> dict:
     """Official article text from 국가법령정보센터 in two short requests (the law page gives the ids, the body endpoint gives the text).
-    Returns {'ok', 'law', 'effective', 'articles': [{'no', 'text', 'url'}], 'missing': [...], 'why', 'secs'}. One try, never retried."""
+    Returns {'ok', 'status', 'law', 'effective', 'articles': [{'no', 'text', 'url'}], 'missing': [...], 'why', 'secs'}. One try, never retried."""
     t0 = time.time()
     name = re.sub(r"\s+", "", law)
-    out = {"ok": False, "law": law, "effective": "", "articles": [], "missing": [], "why": "", "secs": 0.0,
+    out = {"ok": False, "status": "FAIL", "law": law, "effective": "", "articles": [],
+           "missing": [art_no(a) for a in arts], "why": "", "secs": 0.0,
            "url": f"https://www.law.go.kr/법령/{name}"}
     host = "www.law.go.kr"
     if host in _memo():
@@ -157,6 +158,7 @@ def law_articles(law: str, arts: list[str], timeout: float = 6.0, chars: int = 7
         body = _get(f"https://{host}/LSW/lsInfoR.do?lsiSeq={seq.group(1)}" + (f"&efYd={efyd.group(1)}" if efyd else "") + "&chrClsCd=010202&ancYnChk=0", timeout)
         body = re.sub(r"<(script|style|noscript)\b.*?</\1>", " ", body, flags=re.S | re.I)
         text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", body)))
+        out["missing"] = []
         for a in arts:
             blk = cut_article(text, a, chars)
             no = art_no(a)
@@ -164,9 +166,15 @@ def law_articles(law: str, arts: list[str], timeout: float = 6.0, chars: int = 7
                 out["articles"].append({"no": no, "text": blk, "url": f"{out['url']}/{no}"})
             else:
                 out["missing"].append(no)
-        out["ok"] = bool(out["articles"]) or not arts
-        if not out["ok"]:
-            out["why"] = "조문 번호를 본문에서 찾지 못함 (번호가 바뀌었을 수 있어요)"
+        out["ok"] = not out["missing"] and bool(out["effective"])
+        if out["ok"]:
+            out["status"] = "PASS"
+        elif out["articles"] or not arts:
+            out["status"] = "PARTIAL"
+        if out["missing"]:
+            out["why"] = "요청한 조문 일부 또는 전부를 본문에서 찾지 못했어요."
+        elif not out["effective"]:
+            out["why"] = "시행일을 확인하지 못했어요."
     except urllib.error.HTTPError as e:
         out["why"] = f"HTTP {e.code} (접속 거부·차단일 수 있어요)"
         _remember(host)
@@ -184,20 +192,24 @@ def print_articles(specs: list[str], timeout: float, chars: int, as_json: bool) 
     for sp in specs:
         law, _, nums = sp.partition(":")
         results.append(law_articles(law.strip(), [n.strip() for n in nums.split(",") if n.strip()], timeout, chars))
+    code = 0 if all(r["ok"] for r in results) else 3 if any(r["status"] != "FAIL" for r in results) else 2
     if as_json:
         print(json.dumps(results, ensure_ascii=False, indent=1))
-        return 0 if any(r["ok"] for r in results) else 2
+        return code
     today = time.strftime("%Y-%m-%d")
     for r in results:
-        if r["ok"]:
-            print(f"=== 공식 원문: {r['law']} (시행 {r['effective'] or '확인 필요'}) · 확인한 날 {today} · {r['secs']}초")
+        if r["status"] != "FAIL":
+            label = "공식 원문" if r["ok"] else "일부만 확인한 공식 원문"
+            print(f"=== {label}: {r['law']} (시행 {r['effective'] or '확인 필요'}) · 확인한 날 {today} · {r['secs']}초")
             for a in r["articles"]:
                 print(f"[{a['no']}] {a['url']}\n{a['text']}")
             if r["missing"]:
-                print(f"못 찾은 조문: {', '.join(r['missing'])} -> 답에 「확인 필요」")
+                print(f"못 찾은 조문: {', '.join(r['missing'])} -> 다른 공식 조회 경로에서 확인")
+            if not r["effective"]:
+                print("시행일: 확인 필요")
         else:
             print(f"=== 못 읽음: {r['law']} ({r['why']}) -> 재시도하지 말고 「확인 필요」 + 링크 {r['url']}")
-    return 0 if any(r["ok"] for r in results) else 2
+    return code
 
 
 def law_url(law: str, article: str) -> str:

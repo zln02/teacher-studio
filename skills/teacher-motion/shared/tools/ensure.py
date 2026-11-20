@@ -14,12 +14,14 @@ CLI:
     python3 ensure.py playwright [--yes]     # system Chrome/Edge first, else (with --yes) download Chromium
 
 Rules: nothing is installed without consent=True / --yes; no ffmpeg binary is ever shipped in this repo.
-If the network looks off (typical for Codex's default sandbox) the prompt says how to allow it.
+Connectivity checks refer only to the package host.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib
+import io
 import importlib.util
 import json
 import os
@@ -28,6 +30,9 @@ import shutil
 import site
 import socket
 import subprocess
+import tarfile
+import tempfile
+import urllib.request
 import sys
 from pathlib import Path
 
@@ -51,8 +56,7 @@ PACKAGES: dict[str, dict] = {
     "playwright": {"imports": ["playwright"], "pip": ["playwright"], "mb": 40, "why": "화면을 직접 열어 보고 영상으로 녹화하려면"},
     "pypdfium2": {"imports": ["pypdfium2"], "pip": ["pypdfium2"], "mb": 6, "why": "PDF 쪽을 그림으로 바꿔 보려면"},
 }
-CODEX_NETWORK_HELP = ("인터넷이 막혀 있어요. Codex에서는 ~/.codex/config.toml 에 [sandbox_workspace_write] 아래 network_access = true 를 넣고 "
-                      "Codex를 다시 시작해 주세요. (회사·학교 망이면 pypi.org 접속이 허용돼야 해요.)")
+CODEX_NETWORK_HELP = "도구를 받는 곳에 연결하지 못했어요. 설치 없이 가능한 방법으로 진행할 수 있어요."
 
 
 def _importable(mod: str) -> bool:
@@ -80,7 +84,7 @@ def network_ok(host: str = "pypi.org", timeout: float = 3.0) -> bool:
 
 def _prompt(name: str, spec: dict) -> str:
     size = f"약 {spec['mb']}MB"
-    return f"{spec['why']} 작은 도구({name}, {size})를 한 번만 설치해야 해요. 설치할까요? (선생님 컴퓨터에만 설치돼요)"
+    return f"{spec['why']} 작은 도구({size})를 한 번만 설치해야 해요. 설치할까요? (선생님 컴퓨터에만 설치돼요)"
 
 
 def _pip_install(packages: list[str]) -> tuple[bool, str]:
@@ -129,7 +133,7 @@ def ensure(name: str, consent: bool = False) -> dict:
     res["ok"] = ok and is_present(name)
     if not res["ok"]:
         res["error"] = err or "install failed"
-        res["prompt"] = f"{name} 설치가 안 됐어요. 인터넷이나 권한 문제일 수 있어요: {err}".strip()
+        res["prompt"] = "필요한 도구를 설치하지 못했어요. 파일 저장 권한이나 인터넷 연결을 확인해 주세요."
     return res
 
 
@@ -153,6 +157,42 @@ def ensure_ffmpeg(consent: bool = False) -> dict:
     if "40MB" not in prompt and not win:
         prompt += " (영상 도구는 보통 40~70MB예요)"
     return {"ok": False, "path": "", "source": "", "prompt": prompt}
+
+
+ACORN_VERSION = "8.15.0"
+ACORN_SHA256 = "fdb08546776ec6228b03e8d02b40d4ab3255bae5f401adba7ff5dad927ac5c9c"
+
+
+def ensure_acorn(consent: bool = False) -> dict:
+    """Fetch the pinned parser on first need, without executing package scripts."""
+    cache = Path(os.environ.get("TEACHER_STUDIO_HOME") or Path.home() / ".teacher-studio") / "tools"
+    parser = cache / f"acorn-{ACORN_VERSION}.js"
+    try:
+        if parser.is_file() and hashlib.sha256(parser.read_bytes()).hexdigest() == ACORN_SHA256:
+            return {"ok": True, "path": str(parser.resolve()), "prompt": ""}
+    except OSError:
+        pass
+    if not consent:
+        return {"ok": False, "path": "", "prompt": "오래된 크롬에서 열리는지 확인할 작은 점검 도구가 필요해요(약 0.2MB). 받아도 될까요?"}
+    url = f"https://registry.npmjs.org/acorn/-/acorn-{ACORN_VERSION}.tgz"
+    try:
+        with urllib.request.urlopen(url, timeout=8) as response:
+            archive = response.read(200001)
+        if len(archive) > 200000:
+            raise ValueError("unexpected package size")
+        with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tar:
+            with tar.extractfile("package/dist/acorn.js") as file:
+                data = file.read(300001)
+        if hashlib.sha256(data).hexdigest() != ACORN_SHA256:
+            raise ValueError("unexpected parser checksum")
+        cache.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=cache) as tmp:
+            candidate = Path(tmp) / parser.name
+            candidate.write_bytes(data)
+            candidate.replace(parser)
+    except (OSError, ValueError, KeyError, tarfile.TarError):
+        return {"ok": False, "path": "", "prompt": "오래된 크롬용 점검 도구를 받지 못했어요."}
+    return {"ok": True, "path": str(parser.resolve()), "prompt": ""}
 
 
 def find_system_browser() -> str:
@@ -181,8 +221,17 @@ def ensure_playwright(consent: bool = False) -> dict:
     channel = find_system_browser()
     if not res["ok"]:
         return {"ok": False, "channel": channel, "prompt": res["prompt"]}
-    if channel:
-        return {"ok": True, "channel": channel, "prompt": ""}
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            for candidate in dict.fromkeys((channel, "")):
+                try:
+                    pw.chromium.launch(timeout=5000, **({"channel": candidate} if candidate else {})).close()
+                    return {"ok": True, "channel": candidate, "prompt": ""}
+                except Exception:
+                    continue
+    except Exception:
+        pass
     if not consent:
         return {"ok": False, "channel": "", "prompt": "컴퓨터에 크롬이나 엣지가 없어서 화면 녹화용 브라우저(약 150MB)를 따로 내려받아야 해요. 설치할까요?"}
     if not network_ok():
@@ -291,7 +340,7 @@ def status() -> dict:
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", help="status | ffmpeg | playwright | libreoffice | earshot | " + " | ".join(PACKAGES))
+    ap.add_argument("what", help="status | ffmpeg | playwright | libreoffice | earshot | acorn | " + " | ".join(PACKAGES))
     ap.add_argument("--yes", action="store_true", help="the teacher agreed: install now")
     ap.add_argument("--json", action="store_true")
     ap.add_argument("--uninstall", action="store_true", help="earshot only: delete its venv and models")
@@ -302,6 +351,8 @@ def main() -> int:
         out = ensure_ffmpeg(a.yes)
     elif a.what == "playwright":
         out = ensure_playwright(a.yes)
+    elif a.what == "acorn":
+        out = ensure_acorn(a.yes)
     elif a.what == "libreoffice":
         out = ensure_libreoffice(a.yes)
     elif a.what == "earshot":

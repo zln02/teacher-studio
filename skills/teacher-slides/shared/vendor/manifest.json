@@ -10,11 +10,11 @@
    "global": "anime",
    "es": "es2017",
    "use": "글자·도형 움직임 (슬라이드·영상 기본)",
-   "notes": "one optional-chaining expression replaced for old Chrome (see NOTICE)",
+   "notes": "Optional chaining, object spread and optional catch bindings adjusted for ES2017 (see NOTICE)",
    "source": "npm:animejs@4.5.0",
    "license_file": "animejs/LICENSE",
-   "bytes": 118042,
-   "sha256": "717d1cb286d4bf486bfba765d72b82d3f21ca7c354fe0c2dd578028f867c6863"
+   "bytes": 118395,
+   "sha256": "a9e481b868428a57c4a5355c500290d8d55387946e9550624ec1494a31722181"
   },
   "motion": {
    "name": "Motion (motion.dev, vanilla)",

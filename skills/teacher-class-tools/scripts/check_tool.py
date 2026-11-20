@@ -15,11 +15,11 @@ from __future__ import annotations
 
 import json
 import re
-import shutil
-import subprocess
 import sys
-import tempfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
+from syntax_check import checks as syntax_checks  # noqa: E402
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -123,14 +123,6 @@ def static_checks(html: str, path: Path) -> list[tuple[str, str]]:
     if tk:
         errs = design.validate_tokens(tk)
         add("FAIL" if errs else "PASS", f"design tokens: text contrast >= 4.5:1 and {tk['use']} type floor" + (": " + " | ".join(errs[:3]) if errs else ""))
-    node = shutil.which("node")
-    if node:
-        with tempfile.NamedTemporaryFile("w", suffix=".js", delete=False, encoding="utf-8") as tmp:
-            tmp.write(js)
-        p = subprocess.run([node, "--check", tmp.name], capture_output=True, text=True, encoding="utf-8", errors="replace")
-        add("PASS" if p.returncode == 0 else "FAIL", "JavaScript syntax" + ("" if p.returncode == 0 else ": " + p.stderr.strip().splitlines()[-1][:160]))
-    else:
-        add("WARN", "node not found; JavaScript syntax not checked")
     return out
 
 
@@ -143,13 +135,16 @@ def _scenario(pg, tool: str, data: dict) -> list[tuple[str, str]]:
         pg.evaluate("TOOL_API.step()")
         total = data["minutes"] * 60 if data["mode"] == "countdown" else 0
         if data["mode"] == "countdown":
-            pg.evaluate(f"advanceTime({max(0, total - 5) * 1000})")
-            w = st()
-            out.append(("PASS" if w["warn"] or total <= data["warn_at"] else "FAIL", "timer shows the 'almost over' state before the end"))
-            pg.evaluate("advanceTime(6000)")
+            warn_at = max(1, min(total, data["warn_at"]))
+            pg.evaluate(f"advanceTime({(total - warn_at) * 1000})")
+            out.append(("PASS" if st()["warn"] == (data["warn_at"] > 0) else "FAIL", "timer warning follows the configured threshold"))
+            pg.evaluate(f"advanceTime({(warn_at + 1) * 1000})")
             e = st()
             vis = pg.evaluate("document.querySelector('.state').textContent === '시간 끝!'")
             out.append(("PASS" if e["ended"] and e["seconds"] == 0 and vis else "FAIL", "timer ends at 00:00 and shows the end alert (text, not only color)"))
+            pg.get_by_role("button", name="다시 하기", exact=True).click(timeout=3000)
+            reset = st()
+            out.append(("PASS" if not reset["ended"] and reset["seconds"] == total else "FAIL", "timer can reset to the starting time"))
         else:
             pg.evaluate("advanceTime(61000)")
             out.append(("PASS" if st()["seconds"] in (61, 62) else "FAIL", "stopwatch counts up"))
@@ -198,7 +193,7 @@ def play_checks(path: Path, html: str) -> list[tuple[str, str]]:
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return [("WARN", "Playwright not installed: headless checks skipped (static checks only)")]
+        return [("SKIP", "Playwright not installed: headless checks skipped (static checks only)")]
     m = re.search(r"window\.TOOL = (\{.*?\});</script>", html, re.S)
     T = json.loads(m.group(1).replace("<\\/", "</"))
     tool, data, tk = T["tool"], T["data"], T["tokens"]
@@ -217,7 +212,7 @@ def play_checks(path: Path, html: str) -> list[tuple[str, str]]:
                 except Exception:
                     continue
             if b is None:
-                return [("WARN", "no headless browser found: headless checks skipped")]
+                return [("SKIP", "no headless browser found: headless checks skipped")]
 
             def new(vw, vh, rm=False):
                 ctx = b.new_context(viewport={"width": vw, "height": vh}, reduced_motion="reduce" if rm else "no-preference")
@@ -246,21 +241,23 @@ def play_checks(path: Path, html: str) -> list[tuple[str, str]]:
             ctx.close()
 
             ctx, pg = new(1080, 1920)  # portrait phone / tablet
-            _scenario(pg, tool, data)
+            out += _scenario(pg, tool, data)
             pg.wait_for_timeout(800)
             for kind, tag, txt in pg.evaluate(LAYOUT_JS % (floor, minbtn)):
                 lay.setdefault(f"{kind}:{tag}:{txt}", f"{kind} <{tag}> '{txt}' (portrait)")
             ctx.close()
 
             ctx, pg = new(1920, 1080, rm=True)
-            _scenario(pg, tool, data)
+            out += _scenario(pg, tool, data)
             pg.wait_for_timeout(800)
             running = pg.evaluate("document.getAnimations().filter(function(a){return a.playState==='running'}).length")
             out.append(("PASS" if running == 0 else "FAIL", "reduced motion: no animation keeps running" + ("" if running == 0 else f" ({running} running)")))
             ctx.close()
             b.close()
     except Exception as exc:
-        return out + [("WARN", f"headless checks could not finish ({str(exc).splitlines()[0][:100]})")]
+        if errors:
+            out.append(("FAIL", f"JavaScript errors: {errors[:2]}"))
+        return out + [("SKIP", f"headless checks could not finish ({str(exc).splitlines()[0][:100]})")]
     ov = [v for k, v in lay.items() if k.startswith(("offstage", "overflow"))]
     sm = [v for k, v in lay.items() if k.startswith("smalltext")]
     bt = [v for k, v in lay.items() if k.startswith("smallbtn")]
@@ -332,17 +329,18 @@ def wow_checks(path: Path, html: str, tool: str, use: str) -> list[tuple[str, st
     """Accessibility + safety lint of the Game Wow kit (flashes, reduced motion, colour cues, sizes, own work per frame at 4x throttle, response time)."""
     jl = _juice_lint()
     if jl is None:
-        return [("WARN", "wow lint skipped: shared/juice not found")]
+        return [("SKIP", "wow lint skipped: shared/juice not found")]
     out = list(jl.static_checks(html, use))
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
-        return out + [("WARN", "Playwright not installed: wow runtime lint skipped")]
+        return out + [("SKIP", "Playwright not installed: wow runtime lint skipped")]
     try:
         with sync_playwright() as p:
-            out += jl.runtime(p, path.resolve().as_uri(), _wow_drive(tool), use)
+            out += [("SKIP" if lv == "WARN" and "skipped" in msg else lv, msg)
+                    for lv, msg in jl.runtime(p, path.resolve().as_uri(), _wow_drive(tool), use)]
     except Exception as exc:
-        out.append(("WARN", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
+        out.append(("SKIP", f"wow runtime lint could not run ({str(exc).splitlines()[0][:100]})"))
     return out
 
 
@@ -356,16 +354,17 @@ def color_blind_results(html: str) -> list[tuple[str, str]]:
                 import color_check
                 return color_check.html_results(html)
             except Exception as exc:  # a colour hint must never break a check
-                return [("WARN", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
+                return [("SKIP", f"color-blind check skipped ({str(exc).splitlines()[0][:80]})")]
     return []
 
 
-def main(path: Path, play: bool = True) -> int:
+def main(path: Path, play: bool = True, consent: bool = False) -> int:
     if not path.exists():
         print(f"FAIL file not found: {path}")
         return 1
     html = path.read_text(encoding="utf-8", errors="replace")
     res = static_checks(html, path)
+    res += syntax_checks(html, consent=consent)
     res += color_blind_results(html)
     if play:
         res += play_checks(path, html)
@@ -374,16 +373,18 @@ def main(path: Path, play: bool = True) -> int:
             T0 = json.loads(mm.group(1).replace("<\\/", "</"))
             res += wow_checks(path, html, T0["tool"], T0["use"])
     else:
-        res.append(("WARN", "headless checks skipped (--no-play)"))
+        res.append(("SKIP", "headless checks skipped (--no-play)"))
     for lv, msg in res:
         print(f"{lv:4} {msg}")
     fails = sum(1 for lv, _ in res if lv == "FAIL")
-    print(f"\nRESULT: {'FAIL' if fails else 'PASS'} ({fails} fail, {sum(1 for lv, _ in res if lv == 'WARN')} warn)")
-    return 1 if fails else 0
+    skipped = sum(lv == "SKIP" for lv, _ in res)
+    status = "FAIL" if fails else "PARTIAL" if skipped else "PASS"
+    print(f"\nRESULT: {status} ({fails} fail, {skipped} unchecked, {sum(lv == 'WARN' for lv, _ in res)} warn)")
+    return 1 if fails else 2 if skipped else 0
 
 
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     if len(args) != 1:
         raise SystemExit(__doc__)
-    sys.exit(main(Path(args[0]), play="--no-play" not in sys.argv))
+    sys.exit(main(Path(args[0]), play="--no-play" not in sys.argv, consent="--yes" in sys.argv))

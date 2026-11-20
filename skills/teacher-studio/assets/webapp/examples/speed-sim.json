@@ -11,6 +11,10 @@
       "icon": "car",
       "html": "<div class=\"wa-row\"><label for=\"sp\">속력 (m/s)</label><input id=\"sp\" class=\"wa-in\" type=\"range\" min=\"1\" max=\"30\" value=\"10\" autocomplete=\"off\"><output id=\"spv\" class=\"big\">10</output></div><div class=\"wa-row\"><label for=\"tm\">시간 (초)</label><input id=\"tm\" class=\"wa-in\" type=\"range\" min=\"1\" max=\"20\" value=\"5\" autocomplete=\"off\"><output id=\"tmv\" class=\"big\">5</output></div><p class=\"result\">이동 거리 <strong id=\"dist\">50</strong> m</p><div class=\"track\" aria-hidden=\"true\"><div id=\"bar\" class=\"bar\"></div></div><button type=\"button\" class=\"wa-btn\" id=\"rand\">문제 내기</button><p id=\"quiz\" class=\"wa-hint\"></p>",
       "css": ".big{font-size:1.4rem;font-weight:800;min-width:2.5rem;text-align:right}.result{font-size:1.6rem;margin:.2rem 0}.result strong{color:var(--sk-pt);font-size:2.4rem}.track{height:1.4rem;border-radius:999px;background:var(--sk-bg);border:1px solid var(--sk-ln);overflow:hidden}.bar{height:100%;width:0;background:var(--sk-pr);transition:width .3s}",
+      "cases": [
+        {"inputs": {"sp": 12, "tm": 7}, "output": "dist", "expected": 84},
+        {"inputs": {"sp": 1, "tm": 20}, "output": "dist", "expected": 20}
+      ],
       "js": "var sp = APP.el('sp'), tm = APP.el('tm');\nfunction draw() {\n  var v = +sp.value, t = +tm.value, d = v * t;\n  APP.el('spv').textContent = v; APP.el('tmv').textContent = t; APP.el('dist').textContent = d;\n  APP.el('bar').style.width = Math.round(d / 600 * 100) + '%';\n}\nsp.addEventListener('input', draw); tm.addEventListener('input', draw);\nAPP.el('rand').addEventListener('click', function () {\n  var v = 2 + Math.floor(Math.random() * 20), t = 2 + Math.floor(Math.random() * 10);\n  APP.el('quiz').textContent = '속력 ' + v + ' m/s로 ' + t + '초 동안 가면 몇 m일까요? (정답: ' + (v * t) + ' m)';\n});\nAPP.onReset(function () { APP.el('quiz').textContent = ''; draw(); });\ndraw();"
     }
   ]

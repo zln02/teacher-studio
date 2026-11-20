@@ -96,6 +96,17 @@ def validate(spec: dict) -> list[str]:
                 errs.append(f"parts[{i}] custom: put scripts in js, not inside html")
             if ES_BAD.search(str(p.get("js") or "")):
                 errs.append(f"parts[{i}] custom js uses ?. or ?? (not allowed: old school Chrome). Use a && a.b and (x != null ? x : y)")
+            cases = p.get("cases", [])
+            valid_id = lambda key: isinstance(key, str) and bool(re.fullmatch(r"[A-Za-z][A-Za-z0-9_-]*", key))
+            if not isinstance(cases, list) or len(cases) > 5:
+                errs.append(f"parts[{i}].cases: up to five test cases")
+            else:
+                for j, case in enumerate(cases):
+                    if (not isinstance(case, dict) or not isinstance(case.get("inputs"), dict)
+                        or not all(valid_id(k) and isinstance(v, (str, int, float)) for k, v in case["inputs"].items())
+                        or not isinstance(case.get("output"), str) or not valid_id(case["output"])
+                        or not isinstance(case.get("expected"), (str, int, float))):
+                        errs.append(f"parts[{i}].cases[{j}]: expected inputs, output id and expected text")
     return errs
 
 
@@ -228,10 +239,12 @@ def main() -> int:
     out.write_text(page, encoding="utf-8")
     print(f"wrote {out} ({len(page.encode('utf-8')) // 1024} KB, style {rep['style']}, fonts {'embedded' if rep['embedded'] else 'not embedded'})")
     if a.no_check:
+        print(f"PARTIAL {out.resolve()} (checks disabled)")
         return 0
     import check_webapp
     rc = check_webapp.run(out, browser=not a.no_browser, shot=a.shot)
-    print(f"{'READY' if rc == 0 else 'NOT READY'} {out.resolve()} ({time.time() - t0:.1f}s)")
+    status = {0: "READY", 2: "PARTIAL"}.get(rc, "NOT READY")
+    print(f"{status} {out.resolve()} ({time.time() - t0:.1f}s)")
     return rc
 
 

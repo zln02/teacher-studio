@@ -8,9 +8,11 @@ skills/<skill>/shared/ (design, fonts, tools, vendor, voice, juice, shell) and, 
 Usage:
     python3 tools/sync_shared.py            # copy shared -> skills, then rebuild dist/*.zip
     python3 tools/sync_shared.py --check    # exit 1 if any copy differs from shared/ (also AGENTS.md vs CLAUDE.md, dist zips)
+    --skip-skill NAME --skip-zips       # scoped work only; release checks use no exclusions
 """
 from __future__ import annotations
 
+import argparse
 import json
 import re
 import sys
@@ -40,7 +42,8 @@ PLAN = {
 
 def _files(folder: Path) -> list[Path]:
     """All files under a folder (no caches), sorted."""
-    return sorted(f for f in folder.rglob("*") if f.is_file() and "__pycache__" not in f.parts)
+    files = (f for f in folder.rglob("*") if f.is_file() and "__pycache__" not in f.parts and f.suffix != ".pyc")
+    return sorted(files, key=lambda f: f.relative_to(folder).as_posix())
 
 
 def expected() -> dict[Path, bytes]:
@@ -68,6 +71,8 @@ def expected() -> dict[Path, bytes]:
         if cfg["tools"]:
             for tool in ("ensure.py", "stamp.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
+        if plan_skill in ("teacher-game", "teacher-motion", "teacher-studio", "teacher-class-tools", "teacher-slides"):
+            add(SHARED / "tools" / "syntax_check.py", base / "tools" / "syntax_check.py")
         if cfg.get("placeholders"):  # blank detector shared with teacher-slides (scripts/placeholders.py must equal shared/tools/placeholders.py)
             add(SHARED / "tools" / "placeholders.py", base / "tools" / "placeholders.py")
         if cfg.get("video_eyes"):  # local-only video frames helper (diagnose.py / ref_analyze.py)
@@ -88,6 +93,7 @@ def expected() -> dict[Path, bytes]:
             man = json.loads((SHARED / "vendor" / "manifest.json").read_text(encoding="utf-8"))
             libs = {k: v for k, v in man["libs"].items() if k in cfg["vendor"]}
             man["libs"] = libs
+            man.pop("on_demand_tools", None)
             out[base / "vendor" / "manifest.json"] = json.dumps(man, ensure_ascii=False, indent=1).encode("utf-8")
             add(SHARED / "vendor" / "inline.py", base / "vendor" / "inline.py")
             for lib in libs.values():
@@ -96,9 +102,11 @@ def expected() -> dict[Path, bytes]:
     return out
 
 
-def sync() -> None:
+def sync(excluded=()) -> None:
     """Make every skill's shared copies byte-identical to shared/."""
     for dst, data in expected().items():
+        if dst.relative_to(ROOT).parts[1] in excluded:
+            continue
         if not dst.exists() or dst.read_bytes() != data:
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_bytes(data)
@@ -190,8 +198,8 @@ def skill_meta_problems() -> list[str]:
     return out
 
 
-def check() -> int:
-    """Report every drifted copy; return 1 if any."""
+def check(excluded=(), skip_zips: bool = False) -> int:
+    """Report copy drift and check the full release by default."""
     problems: list[str] = []
     game = (ROOT / "skills" / "teacher-game" / "scripts" / "check_game.py").read_bytes()
     if (STAGE / "check_page.py").read_bytes() != game:
@@ -200,8 +208,13 @@ def check() -> int:
         problems.append("shared/stage/clipcheck.py != skills/teacher-game/scripts/clipcheck.py")
     if (SHARED / "tools" / "placeholders.py").read_bytes() != (ROOT / "skills" / "teacher-slides" / "scripts" / "placeholders.py").read_bytes():
         problems.append("shared/tools/placeholders.py != skills/teacher-slides/scripts/placeholders.py (one blank detector for slides and docs)")
+    copies = 0
     for dst, data in expected().items():
-        rel = dst.relative_to(ROOT).as_posix()
+        relative = dst.relative_to(ROOT)
+        if relative.parts[1] in excluded:
+            continue
+        copies += 1
+        rel = relative.as_posix()
         if not dst.exists():
             problems.append(f"missing copy: {rel}")
         elif dst.read_bytes() != data:
@@ -212,47 +225,93 @@ def check() -> int:
     agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8").splitlines()[1:]
     if claude != agents:
         problems.append("AGENTS.md and CLAUDE.md differ beyond the title line")
-    for skill in sorted((ROOT / "skills").iterdir()):
-        zpath = ROOT / "dist" / f"{skill.name}.zip"
-        if not (skill / "SKILL.md").exists():
-            continue
-        if not zpath.exists():
-            problems.append(f"missing dist/{zpath.name}")
-            continue
-        with zipfile.ZipFile(zpath) as z:
-            names = {n for n in z.namelist() if not n.endswith("/")}
-            want = {f.relative_to(skill.parent).as_posix(): f for f in _files(skill)}
-            if names != set(want):
-                problems.append(f"dist/{zpath.name} file list is stale ({len(names ^ set(want))} differ)")
-                continue
-            for n, f in want.items():
-                if z.read(n) != f.read_bytes():
-                    problems.append(f"dist/{zpath.name} stale: {n}")
-                    break
+    if not skip_zips:
+        problems += zip_problems(excluded)
     if problems:
         print("DRIFT:\n - " + "\n - ".join(problems))
         return 1
-    print(f"sync check OK ({len(expected())} copies, AGENTS.md/CLAUDE.md, dist zips)")
+    print(f"sync check OK ({copies} copies, AGENTS.md/CLAUDE.md)")
+    if excluded or skip_zips:
+        skipped = sorted(excluded)
+        if skip_zips:
+            skipped.append("dist ZIPs")
+        print(f"Skipped by request: {', '.join(skipped)}")
+    else:
+        print("Release ZIPs match the skill folders.")
     return 0
 
 
-def package() -> None:
-    """Zip each skill folder for upload (claude.ai Settings > Skills)."""
+# Git stores these skill files as LF. Binary assets must retain every byte.
+TEXT_SUFFIXES = {".css", ".csv", ".html", ".js", ".json", ".md", ".py", ".sh", ".svg", ".txt", ".yaml", ".yml"}
+
+
+def zip_bytes(name: str, data: bytes) -> bytes:
+    if Path(name).suffix.lower() in TEXT_SUFFIXES or Path(name).name in {"LICENSE", "NOTICE"}:
+        return data.replace(b"\r\n", b"\n")
+    return data
+
+
+def zip_problems(excluded=()) -> list[str]:
+    problems = []
+    for skill in sorted((ROOT / "skills").iterdir()):
+        if skill.name in excluded or not (skill / "SKILL.md").is_file():
+            continue
+        path = ROOT / "dist" / f"{skill.name}.zip"
+        if not path.is_file():
+            problems.append(f"missing dist/{path.name}")
+            continue
+        try:
+            with zipfile.ZipFile(path) as z:
+                names = [n for n in z.namelist() if not n.endswith("/")]
+                want = {f.relative_to(skill.parent).as_posix(): f for f in _files(skill)}
+                if len(names) != len(set(names)) or set(names) != set(want):
+                    problems.append(f"dist/{path.name} file list is stale")
+                    continue
+                for n, f in want.items():
+                    if zip_bytes(n, z.read(n)) != zip_bytes(n, f.read_bytes()):
+                        problems.append(f"dist/{path.name} stale: {n}")
+                        break
+        except (OSError, zipfile.BadZipFile) as exc:
+            problems.append(f"cannot read dist/{path.name}: {exc}")
+    return problems
+
+
+def package(excluded=()) -> None:
+    """Zip each skill with LF text, stable ordering, permissions and timestamps."""
     dist = ROOT / "dist"
     dist.mkdir(exist_ok=True)
     for skill in sorted((ROOT / "skills").iterdir()):
-        if not (skill / "SKILL.md").exists():
+        if skill.name in excluded or not (skill / "SKILL.md").is_file():
             continue
         out = dist / f"{skill.name}.zip"
         with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as z:
             for f in _files(skill):
-                z.write(f, f.relative_to(skill.parent))
+                name = f.relative_to(skill.parent).as_posix()
+                entry = zipfile.ZipInfo(name)
+                entry.create_system = 3
+                entry.external_attr = 0o100644 << 16
+                z.writestr(entry, zip_bytes(name, f.read_bytes()), compress_type=zipfile.ZIP_DEFLATED)
         print(f"{out.name}: {out.stat().st_size // 1024} KB")
 
 
+def main() -> int:
+    ap = argparse.ArgumentParser(description=__doc__)
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--check", action="store_true")
+    mode.add_argument("--package-only", action="store_true")
+    ap.add_argument("--skip-skill", action="append", choices=tuple(PLAN), default=[],
+                    help="skip shared copies and packaging for this skill in a scoped worktree")
+    ap.add_argument("--skip-zips", action="store_true", help="skip dist packaging or checking in a scoped worktree")
+    args = ap.parse_args()
+    if args.check:
+        return check(args.skip_skill, args.skip_zips)
+    if not args.package_only:
+        _stage_source_in_sync()
+        sync(args.skip_skill)
+    if not args.skip_zips:
+        package(args.skip_skill)
+    return 0
+
+
 if __name__ == "__main__":
-    if "--check" in sys.argv[1:]:
-        sys.exit(check())
-    _stage_source_in_sync()
-    sync()
-    package()
+    sys.exit(main())

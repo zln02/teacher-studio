@@ -20,6 +20,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
+from syntax_check import checks as syntax_checks  # noqa: E402
+
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
         _s.reconfigure(encoding="utf-8", errors="replace")
@@ -147,11 +150,33 @@ def _launch(p):
     raise RuntimeError(f"no Chromium: {last}")
 
 
+def _expected_outputs(pg, expect) -> list[tuple[str, str]]:
+    parts = pg.evaluate("window.WEBAPP ? window.WEBAPP.parts : []")
+    findings = []
+    for i, part in enumerate(parts):
+        if part.get("type") != "custom":
+            continue
+        scope = pg.locator(f"#wa-part-{i}")
+        for j, case in enumerate(part.get("cases", []), 1):
+            try:
+                for key, value in case["inputs"].items():
+                    scope.locator(f"#{key}").evaluate(
+                        "(el, value) => { el.value = value; for (const name of ['input', 'change']) el.dispatchEvent(new Event(name, {bubbles:true})); }",
+                        str(value), timeout=3000,
+                    )
+                expect(scope.locator(f"#{case['output']}")).to_have_text(str(case["expected"]), timeout=3000)
+            except Exception as exc:
+                findings.append(("FAIL", f"part {i + 1} expected result {j} did not match: {str(exc).splitlines()[0][:100]}"))
+            else:
+                findings.append(("PASS", f"part {i + 1} expected result {j} matched"))
+    return findings
+
+
 def browser_checks(path: Path, shot: str | None = None, deep: bool = False) -> list[tuple[str, str]]:
     try:
-        from playwright.sync_api import sync_playwright
+        from playwright.sync_api import expect, sync_playwright
     except ImportError:
-        return [("WARN", "Playwright not installed: browser checks skipped (static checks only)")]
+        return [("SKIP", "Playwright not installed: browser checks skipped (static checks only)")]
     out: list[tuple[str, str]] = []
     url = path.resolve().as_uri()
     errors: list[str] = []
@@ -167,6 +192,7 @@ def browser_checks(path: Path, shot: str | None = None, deep: bool = False) -> l
         try:
             pg = b.new_page(viewport={"width": 1600, "height": 900})
             watch(pg)
+            pg.route("**/*", lambda route: route.continue_() if route.request.url.startswith(("file:", "data:", "blob:", "about:")) else route.abort())
             pg.goto(url)
             pg.wait_for_timeout(250)
             out += _layout_findings("1600x900", pg.evaluate(LAYOUT_JS))
@@ -212,11 +238,15 @@ def browser_checks(path: Path, shot: str | None = None, deep: bool = False) -> l
                 stopped = "멈췄어요" in pg.inner_text(".wa-out")
                 out.append(("PASS" if stopped else "FAIL", "endless loop is stopped" if stopped else "endless loop was not stopped"))
             out.append(("PASS", f"clicked {acted} part(s)"))
+            out += _expected_outputs(pg, expect)
             ph = b.new_page(viewport={"width": 390, "height": 844}, is_mobile=True, has_touch=True)
             watch(ph)
+            ph.route("**/*", lambda route: route.continue_() if route.request.url.startswith(("file:", "data:", "blob:", "about:")) else route.abort())
             ph.goto(url)
             ph.wait_for_timeout(200)
             out += _layout_findings("phone 390", ph.evaluate(LAYOUT_JS))
+        except Exception as exc:
+            out.append(("SKIP", f"browser checks could not finish: {str(exc)[:120]}"))
         finally:
             b.close()
     errs = sorted(set(errors))
@@ -225,19 +255,24 @@ def browser_checks(path: Path, shot: str | None = None, deep: bool = False) -> l
     return out
 
 
-def run(path: Path, browser: bool = True, shot: str | None = None, deep: bool = False) -> int:
+def run(path: Path, browser: bool = True, shot: str | None = None, deep: bool = False, consent: bool = False) -> int:
     html = Path(path).read_text(encoding="utf-8", errors="replace")
     res = static_checks(html)
+    res += syntax_checks(html, consent=consent)
     if browser:
         try:
             res += browser_checks(Path(path), shot, deep)
-        except Exception as exc:  # noqa: BLE001 - a missing browser is a warning, not a crash
-            res.append(("WARN", f"browser checks skipped: {str(exc)[:120]}"))
+        except Exception as exc:
+            res.append(("SKIP", f"browser checks could not finish: {str(exc)[:120]}"))
+    else:
+        res.append(("SKIP", "browser checks disabled"))
     for lvl, msg in res:
         print(f"{lvl} {msg}")
     fails = sum(1 for lvl, _ in res if lvl == "FAIL")
-    print(f"check: {'PASS' if not fails else f'FAIL ({fails})'}")
-    return 1 if fails else 0
+    skipped = sum(lvl == "SKIP" for lvl, _ in res)
+    status = "FAIL" if fails else "PARTIAL" if skipped else "PASS"
+    print(f"check: {status} ({fails} fail, {skipped} unchecked)")
+    return 1 if fails else 2 if skipped else 0
 
 
 def main() -> int:
@@ -246,8 +281,9 @@ def main() -> int:
     ap.add_argument("--no-browser", action="store_true")
     ap.add_argument("--shot")
     ap.add_argument("--deep", action="store_true")
+    ap.add_argument("--yes", action="store_true", help="download the optional syntax checker")
     a = ap.parse_args()
-    return run(a.page, not a.no_browser, a.shot, a.deep)
+    return run(a.page, not a.no_browser, a.shot, a.deep, a.yes)
 
 
 if __name__ == "__main__":

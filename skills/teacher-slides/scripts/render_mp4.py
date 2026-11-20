@@ -17,6 +17,7 @@ import argparse
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
@@ -47,6 +48,18 @@ def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None
         raise SystemExit("Playwright not installed: use the 🎥 button in the page (Chrome) instead.")
     if not ffmpeg:
         raise SystemExit("ffmpeg not found: use the 🎥 button in the page (Chrome) instead.")
+    if fps <= 0 or max_mb <= 0 or (seconds is not None and seconds <= 0):
+        raise ValueError("재생 시간, 프레임 수, 최대 크기는 0보다 커야 해요.")
+    with tempfile.TemporaryDirectory(prefix=".teacher-video-", dir=out.parent) as staging:
+        video = Path(staging) / "video.mp4"
+        duration = _encode(sync_playwright, channel, ffmpeg, page, video, fps, max_mb, seconds)
+        if not video.is_file() or video.stat().st_size == 0:
+            raise OSError("영상 파일이 만들어지지 않았어요.")
+        video.replace(out)
+    print(f"\n영상 파일을 만들었어요. {out} ({out.stat().st_size / 1024 / 1024:.1f} MB, {duration:.1f}초)")
+
+
+def _encode(sync_playwright, channel, ffmpeg, page, video, fps, max_mb, seconds):
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel=channel) if channel else pw.chromium.launch()
         tab = browser.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=1)
@@ -61,18 +74,23 @@ def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None
         kbps = int(max_mb * 8 * 1024 * 0.92 / max(duration_ms / 1000, 1))
         cmd = [ffmpeg, "-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", str(fps), "-i", "-",
                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "medium", "-b:v", f"{min(kbps, 12000)}k",
-               "-maxrate", f"{min(kbps, 12000)}k", "-bufsize", f"{min(kbps, 12000) * 2}k", "-movflags", "+faststart", str(out)]
-        enc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-        assert enc.stdin is not None
-        for i in range(frames):
-            tab.evaluate(f"window.__stage.seek({i * 1000 / fps:.3f})")
-            enc.stdin.write(tab.screenshot(type="png"))
-            if i % (fps * 2) == 0:
-                print(f"\r{i}/{frames} frames", end="", file=sys.stderr)
-        enc.stdin.close()
-        enc.wait()
+               "-maxrate", f"{min(kbps, 12000)}k", "-bufsize", f"{min(kbps, 12000) * 2}k", "-movflags", "+faststart", str(video)]
+        with subprocess.Popen(cmd, stdin=subprocess.PIPE) as enc:
+            try:
+                for i in range(frames):
+                    tab.evaluate(f"window.__stage.seek({i * 1000 / fps:.3f})")
+                    enc.stdin.write(tab.screenshot(type="png"))
+                    if i % (fps * 2) == 0:
+                        print(f"\r{i}/{frames}", end="", file=sys.stderr)
+                enc.stdin.close()
+                if enc.wait() != 0:
+                    raise OSError("영상 파일로 바꾸지 못했어요.")
+            except BaseException:
+                if enc.poll() is None:
+                    enc.kill()
+                raise
         browser.close()
-    print(f"\nrendered {out} ({out.stat().st_size / 1024 / 1024:.1f} MB, {duration_ms / 1000:.1f}s @ {fps}fps)")
+    return duration_ms / 1000
 
 
 def main() -> None:
@@ -84,7 +102,10 @@ def main() -> None:
     ap.add_argument("--seconds", type=float)
     ap.add_argument("--yes", action="store_true", help="the teacher agreed to install the small tools that are missing")
     a = ap.parse_args()
-    render(a.page, a.out, a.fps, a.max_mb, a.seconds, a.yes)
+    try:
+        render(a.page, a.out, a.fps, a.max_mb, a.seconds, a.yes)
+    except (OSError, ValueError) as exc:
+        raise SystemExit(f"영상 파일을 만들지 못했어요. {exc}") from exc
 
 
 if __name__ == "__main__":

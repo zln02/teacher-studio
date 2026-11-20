@@ -1,93 +1,82 @@
-# INSTALL — AI가 읽고 따라 하는 설치 순서
+# 교사 스튜디오 설치 안내
 
-> 이 문서는 **Claude Code·Codex·Claude 앱(코드 실행)** 이 읽고 그대로 실행하는 설치 지시서입니다.
-> 상대는 코딩을 모르는 선생님입니다. 진행 중에는 **선생님 말로 한 줄씩만** 알리고, 명령어·경로·영어 오류 문장을 길게 보여 주지 마세요.
+> Codex·Claude가 읽고 실행하는 안내입니다. 선생님께는 진행 상황과 다음에 할 일을 일상적인 말로 짧게 알려 주세요.
 
-## 설치 방법 4단계 (위에서부터 해 보고, 안 되면 다음 단계로)
-| 단계 | 방법 | 이럴 때 |
-|---|---|---|
-| ① 링크 한 줄 | AI에게 「https://github.com/zln02/teacher-studio 이 스킬 설치해 줘」(또는 「내가 준 링크에 하네스 세팅해 줘」)라고 말한다. AI가 이 문서(INSTALL.md)를 읽고 알아서 설치한다. **되는 곳**: Claude Code, Claude 데스크톱 앱의 Cowork·Code 탭, Codex 앱. **안 되는 곳**: 일반 Chat 탭(링크만으로는 설치 못 함) → ③으로 | 가장 쉬움 |
-| ② 명령 한 줄 | 터미널(명령 창)에 `npx skills add zln02/teacher-studio` (Claude Code 안에서는 `/plugin install teacher-studio --marketplace zln02/teacher-studio`). 스킬 8개를 **모두** 고르세요 | ①이 안 될 때 (Node.js 필요) |
-| ③ 파일 올리기 | Claude 앱·웹 Chat: [`dist/`](dist/)의 zip 8개를 Customize → Skills에 올리기 (설정 → Capabilities에서 코드 실행 켜기) | 일반 Chat 탭, 링크 설치가 안 될 때 |
-| ④ 폴더 복사 | 저장소를 내려받아(초록색 Code 버튼 → Download ZIP) 압축을 풀고, `skills` 안의 `teacher-` 폴더 8개를 `.claude/skills`(Claude Code) 또는 `.agents/skills`(Codex) 폴더에 통째로 복사 (내 사용자 폴더 안) | 인터넷·명령이 막힌 학교 PC |
-- 여덟 개가 한 묶음이라 **하나라도 빠지면 일부 기능이 안 돼요.** 끝나면 새 대화에서 「교사 스튜디오 시작」.
-- 개발자용: Claude Code 플러그인(`.claude-plugin/`)·Codex 플러그인(`.codex-plugin/`, `.agents/plugins/`) 정보가 들어 있다. 아래 1~5단계(`setup.py`)는 그대로 쓸 수 있다.
+## 1. 사용할 곳 확인
 
-## 앱별 설치 길 (2026-11-19 검색 요약으로 확인 — **연수 전 실제 화면 확인 필요**. 메뉴 이름은 앱 버전마다 달라요)
-| 쓰는 곳 | 방법 | 알아 둘 점 |
-|---|---|---|
-| **Claude 데스크톱 · Cowork / Code 탭** | 「내가 준 링크에 하네스 세팅해 줘」+ 링크. 또는 Customize → Plugins → Add marketplace → `zln02/teacher-studio` | Cowork·플러그인은 유료(Pro 이상). Team·Enterprise는 관리자가 플러그인을 켜 줘야 함 |
-| **Claude Chat 탭 (일반 대화)** | 링크로는 설치 불가. [`dist/`](dist/)의 zip 8개를 Customize → Skills에 올리기 | Settings → Capabilities에서 코드 실행 켜기. 스크립트가 도는 환경이라 가장 제한이 많음 |
-| **ChatGPT 개인 계정** | **Codex 앱**을 쓴다. 스킬 폴더 `~/.agents/skills`에 복사, 또는 skill-installer에 GitHub 폴더 주소를 주기, 또는 플러그인(마켓플레이스) | 일반 ChatGPT 화면에는 개인용 스킬 설치가 없음 |
-| **ChatGPT Business·Enterprise·Edu** | Skills에 파일 업로드 | 관리자가 허용해야 함 |
-| **Gemini 앱** | SKILL.md 형식 Skills 업로드가 2026-10부터 있음 | 우리 도구는 스크립트를 돌려야 해서 **결과가 제한적**일 수 있음 (글 위주 기능만 기대) |
-| **Gemini CLI** | `gemini skills install https://github.com/zln02/teacher-studio` | 개발자용 |
-- 어느 길이든 여덟 개를 한 묶음으로. 설치가 막히면 AI가 「이 환경에서는 ○○까지만 돼요」라고 한 줄로 알린다.
+- **Codex 앱·명령 창·편집기**에서 이 저장소를 열었다면 아래 순서를 실행한다. 사용자 스킬 위치는 Windows에서 `$HOME/.agents/skills`, macOS에서 `~/.agents/skills`다.
+- **Claude Code**는 같은 순서에서 `--agent claude-code`를 쓴다. 사용자 스킬 위치는 `~/.claude/skills`다.
+- **Claude 앱·웹**에서 스킬 올리기와 파일 실행 기능을 실제로 사용할 수 있다면, [배포](dist/)에서 같은 출시 버전의 ZIP 8개를 올린다.
+- 일반 대화와 관리형 환경에서는 스킬 목록, 명령 실행, 파일 저장이 서로 다른 기능이다. 앱에서 확인한 범위만 안내한다. Codex 공개 플러그인 배포 상태와 관계없이 아래 사용자 폴더 설치를 쓸 수 있다.
 
-## 0. 내가 어디서 실행 중인지 정하기
-스스로 판단해 `AGENT` 값을 정한다.
-- Claude Code → `claude-code` · Codex(앱·CLI·IDE) → `codex` · Claude 앱·웹의 코드 실행 → `claude-app`
+선생님께 「교사 스튜디오 설치를 시작할게요.」라고 알린다.
 
-선생님께: 「교사 스튜디오를 설치할게요. 1~2분 걸려요.」
+## 2. 설치 파일과 파이썬 확인
 
-## 1. 내려받기
-```bash
-git clone --depth 1 https://github.com/zln02/teacher-studio.git ~/teacher-studio \
-  || (cd ~/teacher-studio && git pull --ff-only)
+이미 저장소를 열었다면 그 폴더에서 이어 간다. 링크만 받았다면 쓸 수 있는 작업 폴더에서 `git clone --depth 1 https://github.com/zln02/teacher-studio.git`을 실행하고 `teacher-studio`로 이동한다. `git`을 쓸 수 없으면 저장소의 Download ZIP을 내려받아 압축을 푼다.
+
+**Windows PowerShell**
+
+```powershell
+py --version
+# py로 실행되지 않으면 다음 명령을 시험한다.
+python --version
 ```
-- `git`이 없으면: `https://codeload.github.com/zln02/teacher-studio/zip/refs/heads/main` 를 받아 `~/teacher-studio`에 풀기 (Python `urllib` + `zipfile`로 가능).
-- Windows는 `~` 대신 `%USERPROFILE%`. 명령은 PowerShell 기준으로 바꿔 실행한다.
 
-## 2. 등록 + 환경 확인
-```bash
-cd ~/teacher-studio
-python3 scripts/setup.py --agent <AGENT>
+**macOS**
+
+```sh
+python3 --version
 ```
-- 파이썬 실행 이름은 환경마다 다르다. 이 문서의 `python3`는 Windows에서 `py`(없으면 `python`)로 바꿔 실행한다. 예: `py scripts/setup.py --agent <AGENT>`
-- 스킬 8개(`teacher-studio`, `teacher-game`, `teacher-slides`, `teacher-motion`, `teacher-law`, `teacher-class-tools`, `teacher-data`, `teacher-docs`)를 등록한다.
 
-### 환경별 설치
-| 환경 | 설치 방법 | 알아 둘 점 |
-|---|---|---|
-| **Claude Code** | 위 명령 → `~/.claude/skills/`에 등록 | 내 컴퓨터에서 실행, 인터넷 제한 없음. 웹 검색·페이지 읽기 내장 (최신 법 확인 OK). Claude 구독 또는 API 키 필요 |
-| **Codex** (앱·CLI·IDE) | 위 명령 → `~/.agents/skills/`에 등록 | 내 컴퓨터에서 실행. 작업 폴더 밖에 쓸 때는 **승인 창**이 뜨니 허용하도록 안내. **인터넷은 기본 꺼짐**: `~/.codex/config.toml`에 `[sandbox_workspace_write]` 아래 `network_access = true`를 켜야 도구 설치·최신 법 확인이 된다. 웹 검색은 `--search`(live)로 켠다. 무료·Go 요금제에도 포함 |
-| **Claude 앱·웹** | 등록 대신 zip 올리기 (아래). 데스크톱 앱 Cowork·Code 탭은 링크 한 줄 | Chat은 클라우드 컨테이너에서 실행 → 내 컴퓨터 폴더·크롬에 접근 못 함, 결과는 미리보기·다운로드. 인터넷은 PyPI·npm·GitHub 정도만 허용. **Cowork·플러그인은 유료 요금제(Pro 이상)**, Team·Enterprise는 관리자가 켜야 함. 스킬 올리기·코드 실행이 무료에서도 되는지는 **연수 전 실제 화면 확인 필요** |
+실제로 Python 3.9 이상이 실행된 명령을 이후에도 사용한다. 실행기가 없으면 [Python 내려받기](https://www.python.org/downloads/)를 이용하거나 이미 쓸 수 있는 실행기를 고른다. 설치 위치에 쓸 수 있는 권한이 있어야 한다. 앱이 제공하는 승인 절차가 있으면 그 절차를 따르고, 학교에서 관리하는 환경의 권한을 임의로 바꾸지 않는다.
 
-**Claude 앱·웹 (`claude-app`)**: 선생님께 「설정(Customize) → Skills에서 `dist/` 폴더의 zip 8개(`teacher-studio`·`teacher-game`·`teacher-slides`·`teacher-motion`·`teacher-law`·`teacher-class-tools`·`teacher-data`·`teacher-docs`)를 올려 주세요. 다음 대화부터 자동으로 켜져요」라고 안내한다.
-- 설정 → Capabilities에서 **코드 실행·파일 만들기**가 켜져 있어야 한다 (기본 켜짐). 최신 법 확인에는 **웹 검색**도 켠다.
-- AI가 이미 코드 실행 환경에 저장소를 받았다면 `python3 skills/teacher-studio/scripts/studio.py doctor --agent claude-app`로 환경만 확인한다.
-- 끝에 「🎉 준비 완료」 요약이 나온다 (Claude Code·Codex).
+## 3. 사용자 폴더에 등록
 
-## 3. 영상 MP4·자동 플레이 점검 도구 — 처음 요청할 때 설치
-**설치 중에는 묻지 않는다.** 선생님이 처음으로 MP4 파일(또는 자동 플레이 점검)이 필요한 요청을 했을 때 이렇게 말한다:
-「MP4로 받으려면 프로그램을 하나 더 깔아야 해요(약 80MB, 크롬이 이미 있으면 그걸 써요). 지금 깔까요? (예 / 나중에)」
-- **예** → `python3 scripts/setup.py --agent <AGENT> --video` (직접 미리 깔고 싶을 때 쓰는 수동 방법이기도 하다)
-  - 영상 도구(ffmpeg)는 `shared/tools/ensure.py`가 컴퓨터에 있는 것을 먼저 쓰고, 없으면 `pip install --user imageio-ffmpeg`(약 40MB)로 받는다. 직접 깔려면 Windows `winget install ffmpeg`, Mac `brew install ffmpeg`. 실패하면 「영상은 화면의 🎥 버튼으로 받으시면 돼요」로 마무리.
-- **Claude Code**: 바로 가능 (인터넷 제한 없음).
-- **Codex**: 인터넷이 켜져 있어야 한다. 꺼져 있으면 위 표의 `network_access = true` 안내를 먼저 하고, 그래도 어려우면 🎥 녹화로 대신한다.
-- **Claude 앱·웹**: 인터넷 제한 때문에 도구 설치가 안 될 가능성이 크다 → 처음부터 크롬 녹화(.webm) 방법으로 안내한다.
+**Windows PowerShell**
 
-## 4. 시험 발사 (30초)
-```bash
-python3 ~/.claude/skills/teacher-studio/scripts/studio.py fire motion/lesson-opening/bold-pop --open
-# Codex는 ~/.agents/skills/... 경로
-# Windows(PowerShell): py "$env:USERPROFILE\.claude\skills\teacher-studio\scripts\studio.py" fire motion/lesson-opening/bold-pop --open
+```powershell
+$env:PYTHONUTF8 = '1'
+py scripts/setup.py --agent codex
+# 앞 단계에서 python만 동작했다면 python scripts/setup.py --agent codex
 ```
-- `READY` 가 나오면 성공. 크롬에 「수업 시작 화면」이 열린다.
 
-## 5. 선생님께 첫 인사
-`teacher-studio` 스킬의 **준비 카드**를 그대로 보여 준다 (doctor 요약 + 메뉴 8개).
-- 이 환경에서 안 되는 기능(공유 링크, MP4 등)은 카드 안에 이미 한 줄로 들어 있다. 덧붙여 설명하지 않는다.
-- 마지막 줄: 「새 대화에서 '교사 스튜디오 시작'이라고 하시거나, 만들고 싶은 걸 바로 말씀해 주세요.」
-- Claude Code·Codex는 새 스킬을 바로 못 볼 수 있다 → 「한 번 껐다 켜 주세요」 안내.
+**macOS**
 
-## 문제가 생기면
-| 상황 | 할 일 |
-|---|---|
-| `python3` 없음 (Windows는 `py`) | Windows: `py` 사용, 없으면 `winget install Python.Python.3.12` / Mac: `xcode-select --install` |
-| 권한 오류 | 사용자 폴더(`~`) 안에서만 설치한다. 관리자 권한을 요구하지 않는다 |
-| 회사·학교 네트워크로 git 차단 | zip 받기 경로로 |
-| 그래도 안 됨 | 선생님께 「캡처 한 장 보내 주세요」, 오류 문장은 직접 해석해서 한 줄로 설명 |
+```sh
+python3 scripts/setup.py --agent codex
+```
 
-## 업데이트
-`cd ~/teacher-studio && git pull && python3 scripts/setup.py --agent <AGENT>` (Windows: `py scripts/setup.py --agent <AGENT>`)
+Claude Code에서는 `codex`를 `claude-code`로 바꾼다. 스킬 8개는 서로 옆 폴더를 찾는 한 묶음이므로 함께 등록한다. 설치기는 새 묶음을 임시 위치에서 확인한 뒤 교체한다. 업데이트할 때는 저장소를 `git pull --ff-only`로 갱신한 뒤 같은 명령을 쓴다.
+
+명령 실행이 불가능하고 사용자 폴더에 쓸 수 있다면 `skills` 안의 `teacher-` 폴더를 모두 해당 사용자 스킬 위치에 복사할 수 있다. 이미 설치한 것이 있으면 먼저 별도 위치에 보관한다.
+
+## 4. 현재 대화에서 확인
+
+새 대화나 앱 재시작 후, 연동된 목록에서 `teacher-studio`를 확인한다. 저장소 안에서 읽는 `AGENTS.md`는 해당 작업에 적용된다. 저장소 밖에서는 설치된 스킬 설명을 보고 고르므로, 빈 작업 폴더에서 「교사 스튜디오 시작」, 「5분 타이머 만들어 줘」, 「중2 과학 수업 시작 화면 만들어 줘」를 각각 시험할 수 있다. Codex에서 직접 고를 때는 `$teacher-studio`를 사용한다.
+
+작업 폴더에서 셸 실행과 파일 저장을 확인할 수 있다면, 다음 명령은 HTML을 만들고 검사를 실행한다.
+
+**Windows PowerShell**
+
+```powershell
+py "$HOME/.agents/skills/teacher-studio/scripts/studio.py" fire motion/lesson-opening/bold-pop --out "수업 시작.html"
+```
+
+**macOS**
+
+```sh
+python3 "$HOME/.agents/skills/teacher-studio/scripts/studio.py" fire motion/lesson-opening/bold-pop --out "수업 시작.html"
+```
+
+Claude Code에서는 명령의 `.agents`를 `.claude`로 바꾼다. 파일이 만들어졌는지와 실제 작동을 확인했는지는 따로 알린다. 브라우저 확인이 어려우면 선생님께 「파일을 만들었어요. 화면이 잘 움직이는지는 아직 확인하지 못했어요.」라고 알린다.
+
+현재 대화에서 실제로 검색·미리 보기·링크 만들기를 할 수 있는지 각각 확인한다. 준비 카드에 포함하려면 `studio.py doctor`에 `--web-search`, `--preview`, `--share`를 각각 `yes` 또는 `no`로 전달한다. 확인 전에는 생략한다. 셸에서 설치 파일을 받는 곳에 연결되는지와 대화에서 공식 출처를 검색할 수 있는지는 별도로 판단한다.
+
+문법 검사가 일부 미확인이고 작은 점검 도구 받기에 동의한 경우, `shared/tools/ensure.py acorn --yes`를 같은 파이썬 명령으로 실행한다. 그다음 검사를 다시 실행한다.
+
+## 5. 필요해졌을 때 영상 도구 확인
+
+MP4나 자동 작동 확인을 처음 부탁받으면 쓸 수 있는 도구가 있는지 먼저 확인한다. 추가 설치가 필요하면 용량을 짧게 알리고 동의를 받은 뒤 같은 설치 명령에 `--video`를 붙인다. 이미 설치된 Chrome·Edge나 녹화 프로그램부터 확인한다. 설치가 어려우면 만들 수 있는 화면을 제공하고 「화면의 녹화 버튼으로 영상을 받을 수 있어요.」라고 안내한다.
+
+설치 이후에는 새 대화에서 「교사 스튜디오 시작」이라고 하시거나, 만들고 싶은 걸 바로 말씀해 달라고 안내한다.

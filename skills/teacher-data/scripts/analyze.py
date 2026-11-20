@@ -125,11 +125,13 @@ def _test(groups: dict[str, list[float]]) -> dict:
     gs = list(groups.values())
     if len(gs) == 2:
         w = tdata.welch(gs[0], gs[1])
-        d = tdata.mean(gs[0]) - tdata.mean(gs[1])
-        pooled = math.sqrt((tdata.sd(gs[0]) ** 2 + tdata.sd(gs[1]) ** 2) / 2) or 1
-        return {"done": True, "test": "welch", "p": _r(w["p"], 4), "effect_d": _r(d / pooled, 2), "significant": w["p"] < 0.05}
-    a = tdata.anova(gs)
-    return {"done": True, "test": "anova", "p": _r(a["p"], 4), "effect_eta2": _r(a["eta2"], 3), "significant": a["p"] < 0.05}
+        if w is not None:
+            return {"done": True, "test": "welch", "p": _r(w["p"], 4), "effect_d": _r(w["effect_d"], 2), "significant": w["p"] < 0.05}
+    else:
+        a = tdata.anova(gs)
+        if a is not None:
+            return {"done": True, "test": "anova", "p": _r(a["p"], 4), "effect_eta2": _r(a["eta2"], 3), "significant": a["p"] < 0.05}
+    return {"done": False, "note": "각 모둠 안에서 값이 모두 같아서 차이 검사를 계산할 수 없어요."}
 
 
 # ---------- analyses ----------
@@ -424,8 +426,10 @@ def a_correlation(t, p, idx, pii):
         raise PlanError("짝지은 값이 5개보다 적어서 관계를 보기 어려워요")
     xs, ys = [a for a, _ in pairs], [b for _, b in pairs]
     r = tdata.pearson(xs, ys)
+    if r is None:
+        raise PlanError("한쪽 값이 모두 같아서 함께 움직이는 정도를 계산할 수 없어요.")
     n = len(pairs)
-    pv = tdata.p_from_t(r * math.sqrt((n - 2) / max(1e-12, 1 - r * r)), n - 2) if abs(r) < 1 else 0.0
+    pv = tdata.p_from_t(r * math.sqrt((n - 2) / ((1 - r) * (1 + r))), n - 2) if abs(r) < 1 else 0.0
     nb = min(5, max(2, n // 5))
     srt = sorted(pairs)
     chunks = [srt[round(j * n / nb): round((j + 1) * n / nb)] for j in range(nb)]
@@ -433,7 +437,7 @@ def a_correlation(t, p, idx, pii):
     ym = [tdata.mean([b for _, b in c]) for c in chunks]
     ux, uy = tdata.guess_unit(xc, xs), p.get("unit") or tdata.guess_unit(yc, ys)
     strength = "거의 없음" if abs(r) < 0.2 else "약함" if abs(r) < 0.4 else "보통" if abs(r) < 0.7 else "강함"
-    facts = {"x": xc, "y": yc, "r": _r(r, 2), "n": n, "strength": strength, "direction": "같이 오름" if r > 0 else "반대로 움직임", "p": _r(pv, 4),
+    facts = {"x": xc, "y": yc, "r": _r(r, 2), "n": n, "strength": strength, "direction": "같이 오름" if r > 0 else "반대로 움직임" if r < 0 else "뚜렷한 방향 없음", "p": _r(pv, 4),
              "significant": pv < 0.05 and n >= 10, "x_unit": ux, "y_unit": uy, "first_mean": _r(ym[0]), "last_mean": _r(ym[-1])}
     notes = ["두 가지가 함께 움직인다고 해서, 하나가 다른 하나의 '원인'이라는 뜻은 아니에요. (상관관계 ≠ 인과관계)"]
     if n < 30:
@@ -561,7 +565,9 @@ def _overview(t, p, idx, pii):
             ca, cb = cols[a], cols[b]
             both = [i for i in vals[ca] if i in vals[cb]]
             if len(both) >= 5:
-                pairs.append((ca, cb, tdata.pearson([vals[ca][i] for i in both], [vals[cb][i] for i in both]), len(both)))
+                r = tdata.pearson([vals[ca][i] for i in both], [vals[cb][i] for i in both])
+                if r is not None:
+                    pairs.append((ca, cb, r, len(both)))
     mf = {}
     if pairs:
         pairs.sort(key=lambda x: -abs(x[2]))
@@ -569,7 +575,7 @@ def _overview(t, p, idx, pii):
         top = pairs[0]
         stg = lambda r_: "거의 없음" if abs(r_) < 0.2 else "약함" if abs(r_) < 0.4 else "보통" if abs(r_) < 0.7 else "강함"
         mf = {"pairs": {f"{a}·{b}": _r(r_, 2) for a, b, r_, _ in pairs}, "top_pair": f"{top[0]}·{top[1]}", "top_a": top[0], "top_b": top[1], "top_r": _r(top[2], 2),
-              "top_strength": stg(top[2]), "top_direction": "같이 오름" if top[2] > 0 else "반대로 움직임", "weak_pair": f"{pairs[-1][0]}·{pairs[-1][1]}",
+              "top_strength": stg(top[2]), "top_direction": "같이 오름" if top[2] > 0 else "반대로 움직임" if top[2] < 0 else "뚜렷한 방향 없음", "weak_pair": f"{pairs[-1][0]}·{pairs[-1][1]}",
               "weak_r": _r(pairs[-1][2], 2), "n_pairs": len(pairs), "n": top[3]}
         results.append(("matrix", {"chart": "bar", "labels": [f"{a}·{b}" for a, b, _, _ in pairs], "series": [{"name": "함께 움직이는 정도", "values": [_r(r_, 2) for _, _, r_, _ in pairs]}],
                                    "unit": "함께 움직이는 정도", "axis_max": 1,

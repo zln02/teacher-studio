@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Profile a CSV/XLSX WITHOUT showing raw rows: columns, types, missing values, units, personal-data warning, 3 masked sample rows.
+"""Profile a CSV/XLSX WITHOUT showing raw rows: columns, types, missing values, units, personal-data warning, aggregate summaries.
 
     python3 profile_data.py data.csv [--sheet 시트] [--yes] [--json]
 
@@ -14,7 +14,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -33,12 +32,11 @@ def profile(path: str, sheet: str | None = None, consent: bool = False) -> dict:
         if c in pii:
             info.update(kind="personal", pii=pii[c])
             info.pop("unique", None)
-        elif info["kind"] == "category" and info["unique"] <= 12:
-            info["top_values"] = [[k, v] for k, v in Counter(str(x) for x in safe.data[c] if not tdata.is_missing(x)).most_common(8)]
+        elif safe.n - info["missing"] < 5:
+            for key in ("min", "max", "mean", "first", "last"):
+                info.pop(key, None)
         cols.append(info)
     dup = safe.n - len({tuple(str(safe.data[c][i]) for c in safe.cols) for i in range(safe.n)})
-    sample = [{c: (tdata.scrub_text(safe.data[c][i]) if isinstance(safe.data[c][i], str) else str(safe.data[c][i])) for c in safe.cols}
-              for i in range(min(3, safe.n))]
     nums = [c["name"] for c in cols if c["kind"] == "number"]
     cats = [c["name"] for c in cols if c["kind"] == "category"]
     dates = [c["name"] for c in cols if c["kind"] == "date"]
@@ -49,7 +47,7 @@ def profile(path: str, sheet: str | None = None, consent: bool = False) -> dict:
         hints.append(f"{cats[0]}별 {nums[0]} 비교 (groupby)")
     if dates and nums:
         hints.append(f"{dates[0]}에 따른 {nums[0]} 변화 (trend/change)")
-    likert = [c["name"] for c in cols if c["kind"] == "number" and c.get("integer_scale") and c.get("max", 0) <= 10]
+    likert = [c["name"] for c in cols if c["kind"] == "number" and c.get("integer_scale") and c.get("max", float("inf")) <= 10]
     if len(likert) >= 2:
         hints.append(f"점수 척도 칸 {len(likert)}개 평균 (likert)")
     if cats:
@@ -61,7 +59,7 @@ def profile(path: str, sheet: str | None = None, consent: bool = False) -> dict:
     if worst:
         notes.append("빈칸이 많은 칸(20% 이상): " + ", ".join(worst))
     return {"rows": safe.n, "columns": cols, "pii": rep["pii_columns"], "pseudonymized": rep["pseudonymized"], "warning": rep["warning"],
-            "duplicate_rows": dup, "sample_rows_masked": sample, "suggested": hints, "notes": notes,
+            "duplicate_rows": dup, "suggested": hints, "notes": notes,
             "privacy": "원본 파일은 바꾸지 않았고, 아무 데로도 보내지 않았어요."}
 
 

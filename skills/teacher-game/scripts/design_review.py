@@ -407,11 +407,11 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
         import ensure
         r = ensure.ensure("pillow", consent=yes)
         if not r["ok"]:
-            return {"verdict": "SKIP", "hints": [r["prompt"] + "  (동의하면 --yes 로 다시 실행)"]}
+            return {"verdict": "PARTIAL", "hints": [r["prompt"] + "  (동의하면 --yes 로 다시 실행)"]}
     try:
         shots, probes, backs = capture(html)
     except Exception as exc:  # no browser etc.
-        return {"verdict": "SKIP", "hints": [f"화면을 열 수 없어 디자인 점검을 건너뛰었어요 ({str(exc).splitlines()[0][:80]})"]}
+        return {"verdict": "PARTIAL", "hints": [f"화면을 열 수 없어 디자인 점검을 건너뛰었어요 ({str(exc).splitlines()[0][:80]})"]}
     backs["question"] = backs.get("question")
     metrics = {k: measure(shots[k], backs[k], probes[k]) for k in shots}
     sheet = out_dir / f"{html.stem}-sheet.png"
@@ -447,6 +447,8 @@ def review(html: Path, out_dir: Path, yes: bool = False) -> dict:
                 hints += ["폰 화면 주의: " + m for m in ph["warns"]]
             phone = ph
         except Exception as exc:  # no browser etc.: the main review still counts
+            if verdict != "FAIL":
+                verdict = "PARTIAL"
             phone = {"error": str(exc).splitlines()[0][:80]}
             hints.append("폰 화면 점검을 건너뛰었어요 (" + phone["error"] + ")")
     else:
@@ -559,10 +561,9 @@ def main() -> int:
         print("  - " + h)
     if res.get("missing_screens"):
         print("  (이 게임 방식에는 없는 화면: " + ", ".join(res["missing_screens"]) + ")")
-    if res["verdict"] == "SKIP" or not res.get("sheet"):
-        return 0
-    print("  → 위 PNG를 직접 눈으로 보고 references/design-rubric.md 항목을 확인하세요.")
-    return 0
+    if res.get("sheet"):
+        print("  → 화면을 직접 보고 글자가 잘 읽히는지 확인하세요.")
+    return {"FAIL": 1, "PARTIAL": 2}[res["verdict"]] if res["verdict"] in ("FAIL", "PARTIAL") else 0
 
 
 if __name__ == "__main__":

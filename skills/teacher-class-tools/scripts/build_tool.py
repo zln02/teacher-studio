@@ -180,8 +180,12 @@ def main() -> int:
     note = "fonts embedded" if rep.get("embedded") else (rep.get("prompt") or rep.get("reason") or "fonts not embedded")
     print(f"wrote {a.out} ({len(html) // 1024} KB, {note})")
     if a.no_check:
+        print(f"PARTIAL {a.out} (checks disabled)")
         return 0
-    return subprocess.call([sys.executable, str(HERE / "check_tool.py"), a.out])
+    result = subprocess.call([sys.executable, str(HERE / "check_tool.py"), a.out])
+    status = {0: "READY", 2: "PARTIAL"}.get(result, "NOT READY")
+    print(f"{status} {Path(a.out).resolve()}")
+    return result
 
 
 if __name__ == "__main__":

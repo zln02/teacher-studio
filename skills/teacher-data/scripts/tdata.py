@@ -138,13 +138,18 @@ def to_num(v):
     if is_missing(v) or isinstance(v, bool):
         return None
     if isinstance(v, (int, float)):
-        return float(v)
+        try:
+            number = float(v)
+        except OverflowError:
+            return None
+        return number if math.isfinite(number) else None
     if isinstance(v, (dt.date, dt.datetime)):
         return None
     s = str(v).strip().replace(",", "").replace(" ", "")
     if not _NUM_RE.fullmatch(s):
         return None
-    return float(re.match(r"[-+]?\d+(?:\.\d+)?", s).group(0))
+    number = float(re.match(r"[-+]?\d+(?:\.\d+)?", s).group(0))
+    return number if math.isfinite(number) else None
 
 
 _DATE_RE = re.compile(r"^((?:19|20)\d{2})[-./](\d{1,2})(?:[-./](\d{1,2}))?(?:[ T].*)?$")
@@ -205,7 +210,7 @@ def column_info(name: str, vals: list) -> dict:
         info["kind"] = "number"
         info["unit"] = guess_unit(name, xs)
         info["integer_scale"] = all(x.is_integer() for x in xs) and len(set(xs)) <= 10
-        info.update(min=min(xs), max=max(xs), mean=round(sum(xs) / len(xs), 2))
+        info.update(min=min(xs), max=max(xs), mean=round(mean(xs), 2))
         return info
     strs = [str(v) for v in present]
     avg_len = sum(len(s) for s in strs) / len(strs)
@@ -315,31 +320,49 @@ def scrub_text(s: str, limit: int = 14) -> str:
 
 # ---------- statistics ----------
 def mean(xs):
-    return sum(xs) / len(xs)
+    scale = max(map(abs, xs))
+    return (math.fsum(x / scale for x in xs) / len(xs)) * scale if scale else 0.0
 
 
 def median(xs):
     s = sorted(xs)
     n = len(s)
-    return s[n // 2] if n % 2 else (s[n // 2 - 1] + s[n // 2]) / 2
+    return s[n // 2] if n % 2 else mean(s[n // 2 - 1:n // 2 + 1])
 
 
 def sd(xs):
     n = len(xs)
-    if n < 2:
+    if n < 2 or min(xs) == max(xs):
         return 0.0
-    m = mean(xs)
-    return math.sqrt(sum((x - m) ** 2 for x in xs) / (n - 1))
+    scale = max(map(abs, xs))
+    scaled = [x / scale for x in xs]
+    m = mean(scaled)
+    return (math.hypot(*(x - m for x in scaled)) / math.sqrt(n - 1)) * scale
 
 
 def pearson(xs, ys):
-    n = len(xs)
-    mx, my = mean(xs), mean(ys)
-    sxx = sum((x - mx) ** 2 for x in xs)
-    syy = sum((y - my) ** 2 for y in ys)
-    if sxx == 0 or syy == 0:
-        return 0.0
-    return sum((x - mx) * (y - my) for x, y in zip(xs, ys)) / math.sqrt(sxx * syy)
+    """Pearson r, or None if it is undefined after dropping incomplete pairs."""
+    if len(xs) != len(ys):
+        return None
+    pairs = [(x, y) for x, y in zip(xs, ys) if x is not None and y is not None
+             and math.isfinite(x) and math.isfinite(y)]
+    if len(pairs) < 2:
+        return None
+
+    def centered(values):
+        if min(values) == max(values):
+            return []
+        scale = max(map(abs, values))
+        scaled = [x / scale for x in values]
+        avg = mean(scaled)
+        deviations = [x - avg for x in scaled]
+        norm = math.hypot(*deviations)
+        return [x / norm for x in deviations] if norm else []
+
+    xx, yy = map(centered, zip(*pairs))
+    if not xx or not yy:
+        return None
+    return max(-1.0, min(1.0, math.fsum(x * y for x, y in zip(xx, yy))))
 
 
 def _betacf(a, b, x):
@@ -384,26 +407,46 @@ def p_from_t(t, df):
     return betainc(df / 2, 0.5, df / (df + t * t)) if df > 0 else 1.0
 
 
+def _scaled_samples(groups):
+    """Drop non-finite values and use a common scale for dimensionless tests."""
+    samples = [[x for x in g if x is not None and math.isfinite(x)] for g in groups]
+    scale = max((abs(x) for g in samples for x in g), default=0.0) or 1.0
+    return [[x / scale for x in g] for g in samples]
+
+
 def welch(a, b):
+    a, b = _scaled_samples((a, b))
     na, nb = len(a), len(b)
-    va, vb = sd(a) ** 2 / na, sd(b) ** 2 / nb
-    if va + vb == 0:
-        return {"t": 0.0, "df": na + nb - 2, "p": 1.0}
-    t = (mean(a) - mean(b)) / math.sqrt(va + vb)
-    df = (va + vb) ** 2 / (va ** 2 / (na - 1) + vb ** 2 / (nb - 1))
-    return {"t": t, "df": df, "p": p_from_t(t, df)}
+    if min(na, nb) < 2:
+        return None
+    sa, sb = sd(a), sd(b)
+    se = math.hypot(sa / math.sqrt(na), sb / math.sqrt(nb))
+    if not se:
+        return None
+    d = mean(a) - mean(b)
+    wa = (sa / math.sqrt(na) / se) ** 2
+    wb = (sb / math.sqrt(nb) / se) ** 2
+    df = 1 / (wa ** 2 / (na - 1) + wb ** 2 / (nb - 1))
+    t = d / se
+    return {"t": t, "df": df, "p": p_from_t(t, df), "effect_d": d / (math.hypot(sa, sb) / math.sqrt(2))}
 
 
 def anova(groups):
+    groups = _scaled_samples(groups)
+    if len(groups) < 2 or any(not g for g in groups):
+        return None
     allx = [x for g in groups for x in g]
     n, k = len(allx), len(groups)
+    if n <= k:
+        return None
     gm = mean(allx)
-    ssb = sum(len(g) * (mean(g) - gm) ** 2 for g in groups)
-    ssw = sum((x - mean(g)) ** 2 for g in groups for x in g)
+    means = [mean(g) for g in groups]
+    ssb = math.fsum(len(g) * (m - gm) ** 2 for g, m in zip(groups, means))
+    ssw = math.fsum((x - m) ** 2 for g, m in zip(groups, means) if min(g) != max(g) for x in g)
+    if not ssw:
+        return None
     d1, d2 = k - 1, n - k
-    if ssw == 0 or d2 <= 0:
-        return {"F": 0.0, "p": 1.0, "eta2": 0.0}
-    f = (ssb / d1) / (ssw / d2)
+    f = (ssb / ssw) * (d2 / d1)
     return {"F": f, "p": betainc(d2 / 2, d1 / 2, d2 / (d2 + d1 * f)), "eta2": ssb / (ssb + ssw)}
 
 

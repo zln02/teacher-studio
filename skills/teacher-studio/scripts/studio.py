@@ -14,7 +14,7 @@ Usage:
     python3 studio.py doctor                                 # what works in this environment
 
 Missile ids are <kind>/<missile>/<skin>; kind = game | slides | motion.
-Output defaults to ~/TeacherStudio/<missile>-<skin>-<time>.html
+Output defaults to ./TeacherStudio/<missile>-<skin>-<time>.html
 """
 from __future__ import annotations
 
@@ -34,7 +34,7 @@ for _s in (sys.stdout, sys.stderr):
 HERE = Path(__file__).resolve().parent
 SKILLS = HERE.parent.parent  # .../skills
 KINDS = {"game": "teacher-game", "slides": "teacher-slides", "motion": "teacher-motion"}
-OUT_DIR = Path.home() / "TeacherStudio"
+OUT_DIR = Path.cwd() / "TeacherStudio"
 
 
 def _skill(kind: str) -> Path:
@@ -63,12 +63,14 @@ def cmd_list() -> None:
             print(f"{kind}/{m.name}: {skins}")
 
 
-def cmd_fire(target: str, content: Path | None, out: Path | None, open_it: bool, mp4: bool) -> None:
+def cmd_fire(target: str, content: Path | None, out: Path | None, open_it: bool, mp4: bool) -> int:
     """Build one missile with the teacher's content, check it, optionally open / render."""
     try:
         kind, missile, skin = target.split("/")
     except ValueError:
         raise SystemExit("target must be kind/missile/skin, e.g. game/quiz-show/tv-studio")
+    if mp4 and kind == "game":
+        raise SystemExit("이 게임은 화면 파일로 받을 수 있어요.")
     skill = _skill(kind)
     out = out or OUT_DIR / f"{missile}-{skin}-{time.strftime('%m%d-%H%M%S')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -76,22 +78,26 @@ def cmd_fire(target: str, content: Path | None, out: Path | None, open_it: bool,
         args = [str(skill / "scripts" / "fire.py"), "--missile", missile, "--skin", skin, "--out", str(out)]
         if content:
             args += ["--content", str(content)]
-        if _run(args):
-            raise SystemExit(1)
+        check = _run(args)
     else:
         args = [str(skill / "scripts" / "build_stage.py"), "--missile", missile, "--skin", skin, "--out", str(out)]
         if content:
             args += ["--content", str(content)]
-        if _run(args) or _run([str(skill / "scripts" / "check_page.py"), str(out)]):
-            raise SystemExit(1)
-    print(f"READY {out}")
+        if _run(args):
+            return 1
+        check = _run([str(skill / "scripts" / "check_page.py"), str(out)])
+    if check not in (0, 2):
+        return 1
     if mp4:
-        if kind == "game":
-            print("MP4 is for slides/motion only")
-        else:
-            _run([str(skill / "scripts" / "render_mp4.py"), str(out), str(out.with_suffix(".mp4"))])
+        video = out.with_suffix(".mp4")
+        if _run([str(skill / "scripts" / "render_mp4.py"), str(out), str(video)]):
+            print(f"NOT READY {video} (HTML created at {out})")
+            return 1
+        print(f"READY {video}")
+    print(f"{'PARTIAL' if check == 2 else 'READY'} {out}")
     if open_it:
         webbrowser.open(out.resolve().as_uri())
+    return check
 
 
 def cmd_build(kind: str, spec: Path, out: Path | None, open_it: bool, extra: list[str] | None = None) -> None:
@@ -110,16 +116,16 @@ def cmd_build(kind: str, spec: Path, out: Path | None, open_it: bool, extra: lis
     skill = _skill("game")
     out = out or OUT_DIR / f"game-{spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
-    if _run([str(skill / "scripts" / "build.py"), "--spec", str(spec), "--out", str(out)]):
-        raise SystemExit(1)
-    print(f"READY {out}")
-    if open_it:
+    rc = _run([str(skill / "scripts" / "build.py"), "--spec", str(spec), "--out", str(out)])
+    if open_it and rc in (0, 2):
         webbrowser.open(out.resolve().as_uri())
+    if rc:
+        raise SystemExit(rc)
 
 
-def cmd_check(path: Path) -> None:
+def cmd_check(path: Path, yes: bool = False) -> None:
     """Check a game or stage page with the shared checker."""
-    raise SystemExit(_run([str(_skill("game") / "scripts" / "check_game.py"), str(path)]))
+    raise SystemExit(_run([str(_skill("game") / "scripts" / "check_game.py"), str(path)] + (["--yes"] if yes else [])))
 
 
 def cmd_render(page: Path, out: Path, yes: bool = False) -> None:
@@ -152,6 +158,7 @@ def main() -> None:
     b.add_argument("--yes", action="store_true", help="the teacher agreed to install the small tool (python-pptx)")
     c = sub.add_parser("check")
     c.add_argument("path", type=Path)
+    c.add_argument("--yes", action="store_true", help="download the optional syntax checker")
     r = sub.add_parser("render")
     r.add_argument("page", type=Path)
     r.add_argument("out", type=Path)
@@ -159,11 +166,15 @@ def main() -> None:
     d = sub.add_parser("doctor")
     d.add_argument("--agent", default="")
     d.add_argument("--json", action="store_true")
+    d.add_argument("--out", type=Path)
+    d.add_argument("--host-skills", nargs="*")
+    for flag in ("web-search", "preview", "share"):
+        d.add_argument(f"--{flag}", choices=("yes", "no", "unknown"), default="unknown")
     a = ap.parse_args()
     if a.cmd == "list":
         cmd_list()
     elif a.cmd == "fire":
-        cmd_fire(a.target, a.content, a.out, a.open, a.mp4)
+        raise SystemExit(cmd_fire(a.target, a.content, a.out, a.open, a.mp4))
     elif a.cmd == "build":
         extra = []
         for flag in ("seed", "review", "purpose", "mood", "style"):
@@ -178,15 +189,17 @@ def main() -> None:
                 extra += ["--yes"]
         cmd_build(a.kind, a.spec, a.out, a.open, extra)
     elif a.cmd == "check":
-        cmd_check(a.path)
+        cmd_check(a.path, a.yes)
     elif a.cmd == "render":
         cmd_render(a.page, a.out, a.yes)
     elif a.cmd == "doctor":
         sys.path.insert(0, str(HERE))
         from doctor import report  # noqa: E402
 
-        info = report(a.agent)
+        info = report(a.agent, output=a.out, host_skills=a.host_skills, web_search=a.web_search,
+                      preview=a.preview, share=a.share)
         print(json.dumps(info, ensure_ascii=False, indent=2) if a.json else info["summary"])
+        raise SystemExit(0 if info["writable"] else 1)
 
 
 if __name__ == "__main__":

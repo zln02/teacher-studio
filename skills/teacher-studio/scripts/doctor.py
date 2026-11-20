@@ -3,7 +3,7 @@
 """Find out what works in this environment and say it in teacher language.
 
 Usage: python3 doctor.py [--agent claude-app|claude-code|codex|other] [--json]
-Writes ~/.teacher-studio/env.json so later turns don't need to probe again.
+Probes the current session without installing tools or changing host settings.
 """
 from __future__ import annotations
 
@@ -14,6 +14,7 @@ import platform
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
@@ -28,7 +29,6 @@ try:
 except ImportError:
     ensure = None
 DOC_SKILLS = {"pptx": "PPT", "docx": "워드", "xlsx": "엑셀", "pdf": "PDF"}
-CACHE = Path.home() / ".teacher-studio" / "env.json"
 NAMES = {"teacher-game": "🎮 수업 게임", "teacher-slides": "🖥 수업 슬라이드", "teacher-motion": "✨ 과목 소개 영상·수업 시작 화면", "teacher-law": "⚖️ 법률 안내", "teacher-class-tools": "🧰 타이머·뽑기·모둠·대진표·점수판", "teacher-data": "📊 엑셀·CSV 분석", "teacher-docs": "📄 공문·가정통신문·한글·워드·PDF"}
 
 
@@ -44,54 +44,52 @@ def guess_agent() -> str:
     return "other"
 
 
-def _has_playwright() -> bool:
-    """True when Python Playwright and its Chromium can actually launch."""
+def _writable(folder: Path) -> bool:
+    """Test a real write without leaving a file or creating the output directory."""
+    parent = folder
+    while not parent.exists() and parent != parent.parent:
+        parent = parent.parent
     try:
-        from playwright.sync_api import sync_playwright
-    except ImportError:
-        return False
-    try:
-        channel = ensure.find_system_browser() if ensure else ""
-        with sync_playwright() as pw:
-            (pw.chromium.launch(channel=channel) if channel else pw.chromium.launch()).close()
-        return True
-    except Exception:
-        return False
-
-
-def official_doc_skills() -> dict:
-    """Which of Claude's official document skills (pptx / docx / xlsx / pdf) are installed in this environment's skill folders."""
-    home = Path.home()
-    roots = [home / ".claude" / "skills", home / ".claude" / "plugins", home / ".codex" / "skills", home / ".agents" / "skills",
-             Path("/mnt/skills"), Path("/mnt/user-data/skills"), SKILLS]
-    found: dict = {k: False for k in DOC_SKILLS}
-    for root in roots:
-        if not root.exists():
-            continue
-        base = len(root.parts)
-        for dirpath, dirs, files in os.walk(root):
-            if len(Path(dirpath).parts) - base > 6:
-                dirs[:] = []
-                continue
-            dirs[:] = [d for d in dirs if d not in (".git", "node_modules", "__pycache__")]
-            name = Path(dirpath).name
-            if name in DOC_SKILLS and "SKILL.md" in files:
-                found[name] = True
-        if all(found.values()):
-            break
-    return found
-
-
-def _codex_network_on() -> bool:
-    """Read-only check of ~/.codex/config.toml for network_access = true (never prints file contents)."""
-    try:
-        text = (Path.home() / ".codex" / "config.toml").read_text(encoding="utf-8", errors="replace")
+        with tempfile.TemporaryFile(dir=parent) as probe:
+            probe.write(b"teacher-studio")
+            probe.flush()
     except OSError:
         return False
-    for line in text.splitlines():
-        key, _, val = line.partition("=")
-        if key.strip() == "network_access" and val.split("#")[0].strip().lower() == "true":
-            return True
+    return True
+
+
+def _command_version(executable: str, flag: str) -> str:
+    try:
+        result = subprocess.run([executable, flag], capture_output=True, text=True,
+                                encoding="utf-8", errors="replace", timeout=5)
+        return result.stdout.strip().splitlines()[0] if result.returncode == 0 and result.stdout.strip() else ""
+    except (OSError, subprocess.TimeoutExpired):
+        return ""
+
+
+def default_output() -> Path:
+    return Path.cwd() / "TeacherStudio"
+
+
+def _browser_ready() -> bool:
+    """Open a page using the same browser candidates as the runtime checks."""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            channel = ensure.find_system_browser() if ensure else ""
+            for candidate in dict.fromkeys((channel, "")):
+                try:
+                    browser = pw.chromium.launch(timeout=5000, **({"channel": candidate} if candidate else {}))
+                    try:
+                        page = browser.new_page()
+                        page.set_content("<title>Teacher Studio</title>", timeout=5000)
+                        return page.title() == "Teacher Studio"
+                    finally:
+                        browser.close()
+                except Exception:
+                    continue
+    except Exception:
+        pass
     return False
 
 
@@ -105,79 +103,90 @@ def _prefs_line() -> str:
         return "확인 못 했어요"
 
 
-def report(agent: str = "") -> dict:
-    """Probe tools, decide capabilities, cache and return them with a Korean summary."""
+def report(agent: str = "", *, output: Path | None = None, host_skills: list[str] | None = None,
+           web_search: str = "unknown", preview: str = "unknown", share: str = "unknown") -> dict:
+    """Probe the shell and record explicitly confirmed host capabilities separately."""
+    record_python()
     agent = agent or guess_agent()
+    output = output or default_output()
+    output = output.resolve()
+    writable = _writable(output)
     node = shutil.which("node")
-    node_ver = subprocess.run([node, "-v"], capture_output=True, text=True, encoding="utf-8", errors="replace").stdout.strip() if node else ""
-    caps = {
-        "agent": agent,
-        "os": platform.system(),
-        "python": sys.version.split()[0],
-        "node": node_ver,
-        "ffmpeg": bool(shutil.which("ffmpeg")) or bool(ensure and ensure.is_present("imageio-ffmpeg")),
-        "playwright": _has_playwright(),
-        "skills": sorted(p.name for p in SKILLS.iterdir() if (p / "SKILL.md").exists()),
-    }
-    preview = {"claude-app": "오른쪽 화면에 바로 떠요", "claude-code": "크롬 창으로 자동으로 열어요", "codex": "크롬 창으로 열어요"}.get(agent, "파일로 저장해 크롬으로 열어요")
-    share = ("오른쪽 위 '게시(Publish)' → 링크·QR" if agent == "claude-app"
-             else "파일을 학교 드라이브에 올리거나 USB로 옮겨요 (링크가 필요하면 Claude 앱에서 '게시')")
-    mp4_ready = caps["playwright"] and caps["ffmpeg"]
-    codex_net = _codex_network_on() if agent == "codex" else None
-    if mp4_ready:
-        video = "MP4 영상 파일까지 바로 만들어요"
-    elif agent in ("claude-code", "codex"):
-        video = "MP4는 처음 요청할 때 필요한 작은 도구(합쳐서 약 80MB, 크롬이 있으면 그걸 써요)를 설치해 드려요 (먼저 물어볼게요)"
-        if agent == "codex" and not codex_net:
-            video += " — 인터넷이 꺼져 있으면 먼저 켜야 해요"
-    else:
-        video = "영상은 화면의 🎥 버튼으로 크롬에서 녹화(.webm)해 받아요 (이 환경에선 MP4 변환 도구를 깔기 어려워요)"
-    if agent == "codex":
-        law = ("최신 법 확인이 가능해요" if codex_net else
-               "⚠️ 인터넷이 꺼져 있어 최신 법 확인·도구 설치가 막힐 수 있어요 — ~/.codex/config.toml에 [sandbox_workspace_write] 아래 network_access = true를 넣고, 웹 검색은 --search(live)로 켜 주세요")
-    elif agent == "claude-app":
-        law = "공식 출처에서 최신 법을 찾아 답해요 (웹 검색이 켜져 있어야 해요)"
-    else:
-        law = "공식 출처에서 최신 법을 찾아 근거와 함께 답해요"
-    check = "끝까지 자동으로 플레이해 보고 점검해요" if caps["playwright"] else "글자·문법 자동 점검까지 해요 (자동 플레이는 없음)"
+    browser = _browser_ready()
     tools = ensure.status() if ensure else {"present": [], "on_first_need": []}
-    caps["tools"] = {"present": [t["name"] for t in tools["present"]], "on_first_need": [t["name"] for t in tools["on_first_need"]],
-                     "ffmpeg": tools.get("ffmpeg", ""), "browser": tools.get("browser", "")}
-    caps["official_doc_skills"] = official_doc_skills()
-    docs = [DOC_SKILLS[k] for k, v in caps["official_doc_skills"].items() if v]
-    doc_line = (f"Claude 공식 문서 스킬({', '.join(docs)})이 있어서 파일 만들기는 그쪽에 맡기고, 디자인·구성·점검은 교사 스튜디오가 얹어요" if docs
-                else "PPT·워드·엑셀·PDF 파일은 공식 문서 스킬이 안 보여서, 처음 필요할 때 작은 도구를 설치해 드려요 (먼저 물어볼게요)")
-    ready = [label for name, label in NAMES.items() if name in caps["skills"]]
-    lines = [
-        "🎉 교사 스튜디오 준비 완료!",
+    shell_network = tools.get("network")
+    ffmpeg_path = shutil.which("ffmpeg")
+    if not ffmpeg_path and ensure and ensure.is_present("imageio-ffmpeg"):
+        ffmpeg_path = ensure.ensure_ffmpeg()["path"]
+    ffmpeg = bool(ffmpeg_path and _command_version(ffmpeg_path, "-version"))
+    siblings = sorted(name for name in NAMES if (SKILLS / name / "SKILL.md").is_file())
+    caps = {
+        "agent": agent, "os": platform.system(), "python": sys.version.split()[0],
+        "python_executable": sys.executable, "node": _command_version(node, "-v") if node else "",
+        "output": str(output), "writable": writable, "playwright": browser, "ffmpeg": ffmpeg,
+        "shell_network": shell_network, "shell_network_host": "pypi.org",
+        "web_search": web_search, "preview": preview, "share": share,
+        "skills": siblings, "host_skills": host_skills,
+        "tools": {"present": [t["name"] for t in tools["present"]],
+                  "on_first_need": [t["name"] for t in tools["on_first_need"]],
+                  "ffmpeg": tools.get("ffmpeg", ""), "browser": tools.get("browser", "")},
+    }
+    ready = [label for name, label in NAMES.items() if name in siblings]
+    docs = [label for name, label in DOC_SKILLS.items() if host_skills is not None and name in host_skills]
+    confirmed = {"yes": "쓸 수 있어요", "no": "이 대화에서는 쓸 수 없어요", "unknown": "아직 확인하지 못했어요"}
+    caps["summary"] = "\n".join([
+        "🎉 교사 스튜디오 준비 상태",
         f"· 지금 쓰는 곳: {({'claude-app': 'Claude 앱/웹', 'claude-code': 'Claude Code', 'codex': 'Codex'}).get(agent, agent)}",
-        f"· 바로 만들 수 있어요: {', '.join(ready) if ready else '(설치된 칸 없음)'}",
-        f"· 결과 보기: {preview}",
-        f"· 영상: {video}",
-        f"· 점검: {check}",
-        f"· 법률 안내: {law}",
-        f"· 나누기: {share}",
-        f"· 문서 파일: {doc_line}",
+        f"· 준비된 자료 도구: {', '.join(ready) or '아직 찾지 못했어요'}",
+        "· 파일 저장: " + ("선택한 위치에 파일을 저장할 수 있어요" if writable else "이 위치에 파일을 저장할 수 없어요"),
+        f"· 대화에서 결과 미리 보기: {confirmed[preview]}",
+        f"· 대화에서 공유 링크 만들기: {confirmed[share]}",
+        "· 영상: " + ("MP4 파일을 만들 수 있어요" if browser and ffmpeg and writable else "MP4를 만들 준비가 아직 되지 않았어요"),
+        "· 점검: " + ("화면을 직접 열어 점검할 수 있어요" if browser else "글자와 파일은 살펴볼 수 있어요. 실제 작동은 아직 확인하지 못했어요"),
+        "· 도구를 받는 곳에 연결: " + confirmed[{True: "yes", False: "no", None: "unknown"}[shell_network]],
+        f"· 대화에서 최신 출처 검색: {confirmed[web_search]}",
+        f"· 이 대화에서 확인한 문서 도구: {', '.join(docs) if docs else '아직 확인한 도구가 없어요'}",
         f"· 내 설정: {_prefs_line()}  (바꾸려면 「설정 바꿔 줘」)",
-        f"· 처음 필요할 때 설치되는 도구: {', '.join(caps['tools']['on_first_need']) or '없음 (모두 준비됨)'}",
-        "· 준비 중: 📄 가정통신문·공문, 📊 PPT 파일, 🎬 영상 편집",
-    ]
-    if not caps["python"].startswith("3"):
-        lines.append("⚠️ 파이썬이 없어 조립 도구 대신 Claude가 직접 파일을 써요 (느려질 수 있어요)")
-    caps["capabilities"] = {"preview": preview, "share": share, "video": video, "check": check, "law": law}
-    caps["summary"] = "\n".join(lines)
-    try:
-        CACHE.parent.mkdir(parents=True, exist_ok=True)
-        CACHE.write_text(json.dumps(caps, ensure_ascii=False, indent=2), encoding="utf-8")
-    except OSError:
-        pass
+    ])
     return caps
 
 
-if __name__ == "__main__":
+def record_python() -> str:
+    """Remember this interpreter's absolute path in ~/.teacher-studio/env.json (other keys kept),
+    so run.cmd / run.sh work later even when `py`/`python3` is not on PATH (e.g. a sandbox)."""
+    home = Path(os.environ.get("TEACHER_STUDIO_HOME") or Path.home() / ".teacher-studio")
+    cache = home / "env.json"
+    try:
+        data = json.loads(cache.read_text(encoding="utf-8"))
+        if not isinstance(data, dict):
+            data = {}
+    except (OSError, ValueError):
+        data = {}
+    if data.get("python_path") == sys.executable:
+        return sys.executable
+    data["python_path"] = sys.executable
+    try:
+        home.mkdir(parents=True, exist_ok=True)
+        cache.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+    except OSError:
+        pass
+    return sys.executable
+
+
+def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--agent", default="")
+    ap.add_argument("--out", type=Path, help="output directory to probe")
+    ap.add_argument("--host-skills", nargs="*", help="skill names observed in the host's active list")
+    for flag in ("web-search", "preview", "share"):
+        ap.add_argument(f"--{flag}", choices=("yes", "no", "unknown"), default="unknown")
     ap.add_argument("--json", action="store_true")
     a = ap.parse_args()
-    info = report(a.agent)
+    info = report(a.agent, output=a.out, host_skills=a.host_skills, web_search=a.web_search,
+                  preview=a.preview, share=a.share)
     print(json.dumps(info, ensure_ascii=False, indent=2) if a.json else info["summary"])
+    return 0 if info["writable"] else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
