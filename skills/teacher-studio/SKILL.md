@@ -54,6 +54,7 @@ Before anything else, scan the whole message for 「알아서」「바로」「�
 | 8 | clear game, video, 10+ slide deck or report (「중2 과학 빛과 파동 방탈출」「30초 우리 반 소개 영상」) | `storyboard`: no pitches. Show the 콘티 (game: question table + screen flow; video: shot list with seconds; deck: slide list) and STOP there. A game or video is never built in the first reply unless line 1 matched | <= 1 |
 | 9 | anything else clear (web app, short deck, document) | `build`: first working file, then 「이대로 쓸까요, 한 군데만 고칠까요?」 | <= 1 |
 Always ask mid-way, even on 「알아서」: before anything irreversible or outward (send, post, publish, delete), on a legal/privacy issue, when the user's own material is needed, after the checker failed twice. Stages and artifacts: `references/pipeline.md`.
+End of every making job = 활용·전달 단계 (teachers: 「수업 활용」): `references/classroom-use.md` + `scripts/deliver.py FILE --use <use>`. Use already said (「TV로 띄울 거야」「단톡방에 올릴 거야」) -> make it, no question; 「알아서」 -> TV/screen + PDF, no question; else ONE use question with 추천 at the very end.
 
 ## While building (no-regret: never worse than the plain model)
 - **Yourself, here**: one file = one conversation. No helper agent, no background task, no planning step the user did not ask for. The skill's one build command is the shortcut.
@@ -97,7 +98,7 @@ Full list: `docs/research/rules-audit-2026-11.md`.
 | `scripts/build_webapp.py` · `check_webapp.py` | web app from a spec + its check (`references/webapp.md`, `assets/webapp/examples/`) |
 | `scripts/direction.py` · `references/direction-step.md` · `ask-first.md` | vague requests: 3 pitches, mood cards, one question round |
 | `scripts/coplan.py` · `references/co-plan.md` | one-page plan / research draft |
-| `scripts/storyboard.py` · `deliver.py` · `references/pipeline.md` · `pipeline-types.md` | 콘티 sheet, 배포 꾸러미, the 6 stages per type |
+| `scripts/storyboard.py` · `deliver.py` · `env_programs.py` · `references/pipeline.md` · `pipeline-types.md` · `classroom-use.md` | 콘티 sheet, 배포·활용 꾸러미 (`--use`), programs on this PC, the 6 stages per type |
 | `scripts/skill_scout.py` · `references/skill-scout.md` · `recommended-skills.json` | other skills: find, verify, log |
 | `scripts/diagnose.py` · `references/vague-fix.md` · `learn-from-reference.md` · `user-colors.md` | complaints, references, the user's colours |
 | `scripts/prefs.py` · `doctor.py` · `references/studio-details.md` | prefs, environment check, ready card, cannot-do table |

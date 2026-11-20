@@ -9,7 +9,7 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 | 3 | 연출·콘티 storyboard | numbered frame sheet | `scripts/storyboard.py spec.json --html out.html` |
 | 4 | 제작 build | the first working file | skill build + checker must PASS |
 | 5 | 수정 fix | the changed file, 2 tweak offers | `vague-fix.md`; max 2 loops |
-| 6 | 배포 deliver | 배포 꾸러미 (size, phone/TV, print, privacy, 출처) | `scripts/deliver.py FILE` |
+| 6 | 배포 deliver = 활용·전달 (teachers: 수업 활용) | 꾸러미: files for the use, how to open them on THIS PC, 2-3 use ideas, privacy, 출처 | `classroom-use.md`; `scripts/deliver.py FILE --use tv\|tablet\|print\|lms\|home\|archive` (general: screen\|share\|sns\|drive) |
 
 ## Pick the checkpoint (first rule that matches; the router line in SKILL.md is the same list)
 | # | The message is | Checkpoint = where the first reply stops | Skips | Questions |
@@ -46,6 +46,7 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 2. **No blanks in the deliverable.** `[대괄호]`, `20XX`, `OO`/`○○`, `000`, 「학교명」 must never ship. Fill them with a plausible stated assumption (today's date and school year, generic 「우리 학교」, 「3학년」) and say the assumption in one line, OR collect the true unknowns in the spec as `"fillins": [...]` and show them as a short **「바꿔 넣을 곳」** list in the final message (name, which slide). The slides review and `pptx_check.py` FAIL on any other leftover.
 3. **A PowerPoint was looked at.** With `.pptx`: report the `pptx_check` result (placeholders, text fit). Show the rendered PNG sheet (`deck.py ... --review DIR` writes it). Real drawing needs LibreOffice (~350MB; ask first, `ensure.py libreoffice`); without it the picture is an APPROXIMATE preview drawn from the shapes: say so in plain words (「대략의 미리보기예요, PowerPoint에서 한 번 열어 보세요」).
 4. A report/data job: say which columns were treated as identifiers and hidden (`teacher-data`).
+5. **How it will be used** (`classroom-use.md`): the use was said -> run `deliver.py FILE --use <use>` and show its 꾸러미 lines; 「알아서」 -> `--use auto` (TV/screen + PDF), no question; otherwise end with ONE question 「어떻게 쓰실 건가요? (추천: …)」 (teacher list or general list; never ask whether the user is a teacher). Programs missing on this PC -> offer with the size, never install silently. Never upload.
 
 ## Rules
 - Plain Korean, no dev terms. Artifacts are shown, not described; Claude app: artifact; Claude Code/Codex: open the file.
