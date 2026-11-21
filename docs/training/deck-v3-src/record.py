@@ -228,40 +228,41 @@ def qa(a, out):
     rep = {"steps": [], "errors": [], "reduced": []}
     with sync_playwright() as p:
         b = launch(p)
-        S = Stage(b, 1920, 1080, start=first)
-        S.adv(0)
-        while True:
-            st = S.state()
-            sl, sp = st["slide"] + 1, st["step"]
-            if sl > last:
-                break
-            # 움직이는 중간에도 넘침이 있는지: 0.15초 간격으로 훑고, 끝 모습에서 한 번 더
-            issues = []
-            for _ in range(int(hold_ms(sl, sp) / 150)):
-                S.adv(150)
-                for x in S.pg.evaluate(BOUNDS):
-                    if x[0] == "edge" and x not in issues:
-                        issues.append(x)
-            S.adv(500)
-            S.pg.evaluate(MARK)
-            end = S.pg.evaluate(BOUNDS)
-            try:
-                clip = S.pg.evaluate("window.__tsClip()")
-            except Exception as e:  # noqa: BLE001  (harness probe crashed: see harness-notes.md)
-                clip = [["probe-crash", str(e)[:120]]]
-            rep["steps"].append({"slide": sl, "step": sp, "during": issues, "end": end, "clip": clip})
-            print(f"  {sl}.{sp}: during {len(issues)} · end {len(end)} · clip {len(clip)}", (json.dumps(issues + end + [c for c in clip if c[1] != "BUTTON"], ensure_ascii=False)[:400] if (issues or end or len(clip) > 2) else ""), flush=True)
-            S.key()
+        S = None if a.reduced_only else Stage(b, 1920, 1080, start=first)
+        if S is not None:
             S.adv(0)
-            if S.state() == st:   # 마지막 장 끝: 더 넘어가지 않아요
-                break
-        # 뒤로 가기: 끝 모습이 바로 맞는지(움직임 없이) → 넘침만 다시
-        for _ in range(6):
-            S.key("ArrowLeft")
-            S.adv(300)
-            rep["steps"].append({"back": S.state(), "end": S.pg.evaluate(BOUNDS)})
-        rep["errors"] += S.errors
-        S.ctx.close()
+            while True:
+                st = S.state()
+                sl, sp = st["slide"] + 1, st["step"]
+                if sl > last:
+                    break
+                # 움직이는 중간에도 넘침이 있는지: 0.15초 간격으로 훑고, 끝 모습에서 한 번 더
+                issues = []
+                for _ in range(int(hold_ms(sl, sp) / 150)):
+                    S.adv(150)
+                    for x in S.pg.evaluate(BOUNDS):
+                        if x[0] == "edge" and x not in issues:
+                            issues.append(x)
+                S.adv(500)
+                S.pg.evaluate(MARK)
+                end = S.pg.evaluate(BOUNDS)
+                try:
+                    clip = S.pg.evaluate("window.__tsClip()")
+                except Exception as e:  # noqa: BLE001  (harness probe crashed: see harness-notes.md)
+                    clip = [["probe-crash", str(e)[:120]]]
+                rep["steps"].append({"slide": sl, "step": sp, "during": issues, "end": end, "clip": clip})
+                print(f"  {sl}.{sp}: during {len(issues)} · end {len(end)} · clip {len(clip)}", (json.dumps(issues + end + [c for c in clip if c[1] != "BUTTON"], ensure_ascii=False)[:400] if (issues or end or len(clip) > 2) else ""), flush=True)
+                S.key()
+                S.adv(0)
+                if S.state() == st:   # 마지막 장 끝: 더 넘어가지 않아요
+                    break
+            # 뒤로 가기: 끝 모습이 바로 맞는지(움직임 없이) → 넘침만 다시
+            for _ in range(6):
+                S.key("ArrowLeft")
+                S.adv(300)
+                rep["steps"].append({"back": S.state(), "end": S.pg.evaluate(BOUNDS)})
+            rep["errors"] += S.errors
+            S.ctx.close()
         # 움직임 줄이기: 끝 모습이 다 보이는지 (0.6초 뒤)
         R = Stage(b, 1280, 720, reduced=True, start=first)
         R.adv(0)
@@ -327,6 +328,7 @@ def main() -> int:
     ap.add_argument("--fps", type=int, default=25)
     ap.add_argument("--size", default="1280x720")
     ap.add_argument("--qa-only", action="store_true")
+    ap.add_argument("--reduced-only", action="store_true", help="QA: only the reduced-motion end frames (fast look at every click)")
     ap.add_argument("--fps-check", action="store_true")
     ap.add_argument("--gpu", action="store_true", help="fps check with the real GPU instead of SwiftShader")
     ap.add_argument("--beats", default="", help="frame:label,... -> motion-beats.png from an existing frames dir")

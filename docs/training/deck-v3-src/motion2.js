@@ -176,6 +176,7 @@
       var hm = q(s, '.hd.hm'); show(hm, true); show(q(hm, '.kicker'), true); MO.wipeSet(q(hm, 'h2'), true);
       qa(s, '.amap .fc').forEach(function (c) { show(c, true); });
       qa(s, '.amap .fi').forEach(function (f) { f.style.transform = st >= 1 ? 'rotateY(180deg)' : ''; });
+      qa(s, '.amap .alines path').forEach(function (p) { p.style.strokeDashoffset = st >= 1 ? 0 : 1; });
     },
     enter: function (s, st) {
       if (st >= 2) { s.classList.remove('map'); FX.v3hx.enter(s, st - 2); return; }
@@ -198,6 +199,7 @@
       if (st === 1) {
         FX.v3map.mapSet(s, 0);
         qa(s, '.amap .fi').forEach(function (f, i) { MO.flip(f, i * TOK.gap * 2); });
+        qa(s, '.amap .alines path').forEach(function (p, i) { MO.draw(p, TOK.m + (i + 1) * TOK.gap * 2, TOK.m, 'out'); });   // 핵(요리사)에서 네 칸으로 선이 이어져요
       } else if (st === 2) {
         FX.v3map.mapSet(s, 1);
         var out = [q(s, '.hd.hm'), q(s, '.amap')];
