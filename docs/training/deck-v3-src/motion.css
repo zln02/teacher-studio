@@ -71,7 +71,7 @@
 .crack.v3 .one em{font-style:normal;color:var(--v-acc);display:inline-block}
 
 /* 6 하네스의 유래 */
-.horsep.v3 .kb{animation:none}
+.horsep.v3 .kb{animation:none;will-change:transform}   /* 사진은 한 번만 그리고 움직임은 합성으로 (느린 PC) */
 .horsep.v3 .mean{animation:none}
 .horsep.v3 .mean .w{color:var(--v-acc)}
 .horsep.v3 .mean em{color:var(--v-acc)}

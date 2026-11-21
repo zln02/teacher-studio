@@ -28,3 +28,8 @@ phase 1 (1~7장)을 모션 그래픽 덱으로 바꾸면서 `skills/teacher-moti
 7. **check_page.py는 게임·STAGE 페이지용**이라 덱에는 맞지 않아요 (문서 머리말도 「game」). 덱 넘침 점검은 record.py의 BOUNDS(무대 가장자리 · 넘침 · 글자 덩어리 겹침)를 썼어요.
 8. **움직임 줄이기 점검이 없음.** record.py가 `reduced_motion="reduce"`로 클릭마다 끝 모습이 다 보이는지 따로 봐요. 스킬 점검기에 넣을 만해요.
 9. **프레임 속도 점검이 없음.** record.py `--fps-check`가 실제 시계로 단계마다 rAF 간격(평균 fps · 가장 긴 프레임 · 50ms 넘는 비율)을 재요.
+10. **ai_look.py(「밤티 검사」)는 파일 전체를 봐요.** deck-v3.html은 v2의 옛 CSS(굵기 900 · 유리 판 등)를 아직 품고 있어서 v2와 똑같이 1/5가 나와요.
+    v3 층(motion.css)만 재는 옵션이 있으면 바꾼 장만 점검할 수 있어요. 37장까지 다 바꾼 뒤 옛 CSS를 걷어 내고 다시 재야 해요.
+11. **느린 PC 점검에서 찾은 것** (record.py --fps-check, 소프트웨어 렌더링 1280x720): 6장 사진이 매 프레임 필터째 다시 그려져 7 fps →
+    `.kb{will-change:transform}` 한 줄로 71 fps. 「큰 사진·필터를 움직일 때는 합성 층으로」를 DESIGN-RULES 움직임 장에 넣을 만해요.
+12. **녹화 함정**: Playwright `clock.pause_at()`을 부팅 뒤에 부르면 시간이 한 번에 건너뛰어 막 시작한 움직임이 끝나 버려요 → 설치 직후(goto 전)에 멈춰 두기.
