@@ -976,11 +976,11 @@
     var pmat = new THREE.PointsMaterial({ color: 0xcfc4ae, size: 0.045, map: dotTex(), transparent: true, depthWrite: false, opacity: 0 });
     var pts = noSh(new THREE.Points(pgeo, pmat)); pts.frustumCulled = false; pts.visible = false; scene.add(pts);   // 스킨 D: 빛 조각은 끄고
     var RM = [['레시피', 'scroll-text'], ['밀키트', 'package'], ['주방도구', 'utensils-crossed'], ['시식', 'thumbs-up'], ['위생 규칙', 'shield-check']].map(function (n, i) {
-      var c = card(1.25, 0.8, P.cool, n[0], null, n[1]); c.userData = { x: (i - 2) * 1.45, t0: 0 }; scene.add(c); return c; });
+      var c = card(1.25, 0.8, P.cool, n[0], null, n[1]); c.userData = { x: (i - 2) * 1.0, t0: 0 }; scene.add(c); return c; });
     var L = [lbl('HARNESS', 'hx', V(0, -0.35, 0.6))];
     var Y = SZ / 2 - 0.02, TI = 0.2 + 2 * 0.2 + 0.42;   // 마지막 글자가 닿는 때
     var CA = V(0, 2.4, 17), CB = V(0, 1.15, 9.6), LK = V(0, 0.95, 0);
-    var S = { scene: scene, camera: cam, labels: L, age: 0, noDrift: true, lightK: 0.6, fx: { bloom: 0.1, blur: 0.5, r: [0.62, 0.5], vig: 0.46 },
+    var S = { scene: scene, camera: cam, labels: L, age: 0, noDrift: true, noBg: true, lightK: 0.6, fx: { bloom: 0.1, blur: 0.5, r: [0.62, 0.5], vig: 0.46 },
       setStep: function (n, snap) { if (snap) S.age = REDUCED ? 99 : 0; },
       finish: function () { S.age = 99; },
       update: function (dt, t, snap) {
@@ -1007,7 +1007,7 @@
         sweepU.value = -6 + Math.max(0, Math.min(1, (A - 1.3) / 0.9)) * 12;
         RM.forEach(function (c, i) {   // 글자가 내려앉은 뒤 모듈이 하나씩 와서 끼워져요 (아래 한 줄)
           var q = Math.max(0, Math.min(1, (A - TI - 0.3 - i * TOK.sec(TOK.gap * 2)) / TOK.sec(TOK.m))), e = 1 - Math.pow(1 - q, 3), k = q >= 1 ? 1 : EZ.spring(q);
-          c.visible = q > 0; c.position.set(c.userData.x, 0.42 + (1 - e) * 1.6, 1.7 + (1 - e) * 2.5); c.rotation.set(-0.35 - (1 - e) * 0.8, 0, 0); c.scale.setScalar(Math.max(0.001, 0.7 + 0.3 * k));
+          c.visible = q > 0; c.position.set(c.userData.x * 1.05, 0.02 + (1 - e) * 1.2, 1.5 + (1 - e) * 2.0); c.rotation.set(-1.05 - (1 - e) * 0.4, 0, 0); c.scale.setScalar(Math.max(0.001, (0.4 + 0.15 * k)));
         });
         S.fx.bloom = 0.1 + (tau > 0 ? 0.22 * Math.exp(-tau * 3) : 0);
         var push = 1 - Math.pow(1 - Math.min(1, A / 2.6), 3);
@@ -1292,16 +1292,16 @@
   /* 스킨 D: 13장 무대 (밝은 나무 부엌 대신 깨끗한 석판 무대 · 같은 자리의 조리대 · 화구) */
   function cleanStage(scene) {
     var Y = -1.2, WZ = -3.4;
-    var wallT = tex(512, 256, function (c, w, h) { var g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#1a1f26'); g.addColorStop(1, '#242b34'); c.fillStyle = g; c.fillRect(0, 0, w, h);
-      var v = c.createRadialGradient(w * 0.55, h * 0.4, 10, w * 0.55, h * 0.4, w * 0.6); v.addColorStop(0, 'rgba(255,190,140,.10)'); v.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = v; c.fillRect(0, 0, w, h); });
+    var wallT = sx(tex(512, 256, function (c, w, h) { var g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#1a1f26'); g.addColorStop(1, '#242b34'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+      var v = c.createRadialGradient(w * 0.55, h * 0.4, 10, w * 0.55, h * 0.4, w * 0.6); v.addColorStop(0, 'rgba(255,190,140,.10)'); v.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = v; c.fillRect(0, 0, w, h); }));
     var wall = noSh(new THREE.Mesh(new THREE.PlaneGeometry(34, 13), Bm(0xffffff, { map: wallT }))); wall.position.set(0, Y + 6.5, WZ); scene.add(wall);
-    var floor = new THREE.Mesh(new THREE.PlaneGeometry(34, 17), M(0x1f252d, { roughness: 0.5, metalness: 0.1 })); floor.rotation.x = -Math.PI / 2; floor.position.set(0, Y, WZ + 8.5); floor.receiveShadow = true; scene.add(floor);
-    var top = rbox(10.4, 2.5, 0.26, 0.12, M(0x3a4350, { roughness: 0.45 })); top.rotation.x = -Math.PI / 2; top.position.set(0, -0.13, 0.1); scene.add(top);
-    var body = rbox(9.9, 1.02, 2.1, 0.1, M(0x232a33, { roughness: 0.7 })); body.position.set(0, Y + 0.51, 0.08); scene.add(body);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(34, 17), M(lin(0x1f252d), { roughness: 0.5, metalness: 0.1 })); floor.rotation.x = -Math.PI / 2; floor.position.set(0, Y, WZ + 8.5); floor.receiveShadow = true; scene.add(floor);
+    var top = rbox(10.4, 2.5, 0.26, 0.12, M(lin(0x3a4350), { roughness: 0.45 })); top.rotation.x = -Math.PI / 2; top.position.set(0, -0.13, 0.1); scene.add(top);
+    var body = rbox(9.9, 1.02, 2.1, 0.1, M(lin(0x232a33), { roughness: 0.7 })); body.position.set(0, Y + 0.51, 0.08); scene.add(body);
     var edge = noSh(new THREE.Mesh(new THREE.BoxGeometry(9.9, 0.03, 0.02), Bm(0xff8a3d))); edge.position.set(0, Y + 1.0, 1.14); scene.add(edge);
     var SVX = -1.5;
-    var stove = rbox(2.0, 1.5, 0.12, 0.1, M(0x14181d, { roughness: 0.3 })); stove.rotation.x = -Math.PI / 2; stove.position.set(SVX, 0.06, 0.2); scene.add(stove);
-    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.05, 10, 32), M(0x4a5462)); ring.rotation.x = Math.PI / 2; ring.position.set(SVX, 0.13, 0.2); scene.add(ring);
+    var stove = rbox(2.0, 1.5, 0.12, 0.1, M(lin(0x14181d), { roughness: 0.3 })); stove.rotation.x = -Math.PI / 2; stove.position.set(SVX, 0.06, 0.2); scene.add(stove);
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.05, 10, 32), M(lin(0x4a5462))); ring.rotation.x = Math.PI / 2; ring.position.set(SVX, 0.13, 0.2); scene.add(ring);
     var fire = noSh(new THREE.Mesh(new THREE.RingGeometry(0.26, 0.48, 32), Bm(0xff7a2a, { transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }))); fire.rotation.x = -Math.PI / 2; fire.position.set(SVX, 0.15, 0.2); scene.add(fire);
     var rimL = new THREE.DirectionalLight(lin(0x5cc8c2), 0.5); rimL.position.set(8, 5, -6); scene.add(rimL);
     var motes = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial()); motes.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3)); motes.visible = false;
