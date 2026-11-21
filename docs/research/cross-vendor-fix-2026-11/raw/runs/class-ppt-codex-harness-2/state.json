@@ -1,0 +1,27 @@
+{
+ "secs": 341,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 8554,
+ "tok": {
+  "input": 1392063,
+  "cached": 1306112,
+  "output": 8554,
+  "reasoning": 572
+ },
+ "turns": 18,
+ "failed_cmds": 6,
+ "is_error": false,
+ "errors": [],
+ "last": "[조선 후기 실학의 등장.pptx](<C:/Users/User/Downloads/xv-eval-work/fix/class-ppt-codex-harness-2/work/조선 후기 실학의 등장.pptx>)를 현재 폴더에 저장했습니다. 중학교 3학년 역사 45분 수업을 기준으로 만든 **편집 가능한 11장**입니다.\n\n실학이 등장한 배경부터 농업 중심 개혁론과 상공업 중심 개혁론의 비교까지 다룹니다. 정약용의 「전론」 읽기, 짝 활동, 확인 퀴즈와 정답 해설을 넣었고, 발표자 노트에 진행 시간과 예시 답안을 담았습니다.\n\n파일 무결성과 글 상자 넘침 점검을 통과했습니다. 화면 배치는 미리보기로 확인했습니다. PowerPoint에서 열고 **F5**를 누르면 수업을 시작할 수 있습니다.",
+ "name": "class-ppt-codex-harness-2",
+ "task": "class-ppt",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "조선 후기 실학의 등장.pptx",
+ "all_files": [
+  "조선 후기 실학의 등장.pptx"
+ ],
+ "opens": true
+}

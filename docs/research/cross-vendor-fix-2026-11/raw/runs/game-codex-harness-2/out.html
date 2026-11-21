@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>한 입의 여행 · 우리 몸의 소화 기관</title>
+<style>
+  :root {
+    color-scheme: light;
+    --paper: #f8f6ef;
+    --ink: #182842;
+    --muted: #486078;
+    --line: #d8dfdb;
+    --teal: #075d53;
+    --mint: #def0e5;
+    --white: #fffef9;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  body { margin: 0; }
+  button { font: inherit; cursor: pointer; color: inherit; }
+  button:focus-visible, summary:focus-visible { outline: 3px solid #064e9b; outline-offset: 4px; }
+  button:disabled { cursor: default; }
+  .wrap { width: min(1330px, calc(100% - 64px)); margin-inline: auto; }
+  header { border-bottom: 1px solid var(--line); }
+  .toolbar { min-height: 78px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .course { display: flex; align-items: center; gap: 12px; font-weight: 850; }
+  .course-mark { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 13px; background: var(--mint); color: var(--teal); }
+  .course-mark svg { width: 23px; height: 23px; }
+  .tools, .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .button { border: 1px solid #b8c8c4; background: var(--white); padding: 10px 15px; border-radius: 12px; min-height: 46px; font-weight: 750; }
+  .button:hover:not(:disabled) { background: #edf2ec; }
+  .button:disabled { opacity: .55; }
+  .primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .primary:hover:not(:disabled) { background: #08493f; }
+  main { padding-block: clamp(24px, 4.2vw, 60px) 40px; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1.48fr) minmax(300px, 1fr); gap: clamp(22px, 3.4vw, 54px); align-items: start; }
+  .lesson { color: var(--teal); font-size: clamp(16px, 1.45vw, 20px); font-weight: 850; margin: 0 0 12px; }
+  h1, h2, p { margin-top: 0; }
+  h1, h2 { line-height: 1.18; letter-spacing: -.065em; word-break: keep-all; }
+  h1 { font-size: clamp(52px, 7.1vw, 110px); margin-bottom: 18px; }
+  h2 { font-size: clamp(30px, 3.25vw, 52px); margin-bottom: 18px; overflow-wrap: anywhere; }
+  .intro { line-height: 1.55; color: var(--muted); font-size: clamp(18px, 2vw, 26px); word-break: keep-all; margin-bottom: 23px; }
+  .intro strong { color: var(--ink); }
+  .stages { display: grid; grid-template-columns: repeat(3, 1fr); list-style: none; margin: 0 0 25px; padding: 0; border-block: 1px solid var(--line); }
+  .stages li { padding: 17px 11px; line-height: 1.35; font-weight: 850; font-size: clamp(15px, 1.55vw, 21px); }
+  .stages li + li { border-left: 1px solid var(--line); }
+  .stages span { display: block; font-size: 14px; color: var(--muted); margin-top: 5px; font-weight: 650; }
+  fieldset { padding: 0; border: 0; margin: 0 0 17px; min-width: 0; }
+  legend { margin-bottom: 9px; font-weight: 850; }
+  .mode { padding: 12px 16px; }
+  .mode[aria-pressed="true"] { background: var(--mint); border-color: var(--teal); color: var(--teal); }
+  .start { min-height: 56px; padding-inline: 27px; font-size: 21px; }
+  .small { color: var(--muted); line-height: 1.5; font-size: 15px; margin: 10px 0 0; }
+  .map { margin: 0; padding: 20px 20px 17px; background: #172841; border-radius: 27px; color: #fff; }
+  .map-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 16px; font-weight: 800; }
+  .map-head span { color: #b9d1df; font-size: 13px; font-weight: 600; }
+  .anatomy { display: block; width: 100%; height: clamp(310px, 33vw, 490px); margin: 0 auto; }
+  .map-label { font-size: 16px; font-weight: 850; fill: #fff; }
+  .map-label path { stroke: #b3c9db; stroke-width: 1.2; fill: none; }
+  .map figcaption { border-top: 1px solid #57728a; padding-top: 12px; color: #d2e4ee; font-size: 14px; line-height: 1.5; }
+  .map.masked .map-label { visibility: hidden; }
+  .map.masked[data-spot="mouth"] .mouth, .map.masked[data-spot="tube"] .tube,
+  .map.masked[data-spot="stomach"] .stomach, .map.masked[data-spot="small"] .small-intestine,
+  .map.masked[data-spot="large"] .large-intestine, .map.masked[data-spot="exit"] .exit { visibility: visible; }
+  .progress { height: 8px; background: #dde6e2; border-radius: 20px; overflow: hidden; margin: 12px 0 22px; }
+  .progress > div { background: var(--teal); height: 100%; }
+  .play-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .play-head .lesson { margin: 0; }
+  #clock { color: var(--ink); font-size: 18px; font-weight: 850; font-variant-numeric: tabular-nums; }
+  .scores { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 19px; }
+  .score { border: 1px solid var(--line); background: var(--white); border-radius: 10px; padding: 7px 11px; font-size: 15px; font-weight: 800; }
+  .score.current { border-color: var(--teal); background: var(--mint); color: var(--teal); }
+  .context { color: var(--muted); margin: -8px 0 15px; line-height: 1.5; font-size: clamp(16px, 1.65vw, 22px); }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .answer { display: flex; align-items: center; gap: 11px; text-align: left; padding: 12px; min-height: 64px; font-size: clamp(18px, 2vw, 28px); line-height: 1.25; word-break: keep-all; overflow-wrap: anywhere; }
+  .chip { display: grid; place-items: center; flex: 0 0 30px; height: 30px; border-radius: 8px; background: #e7eeec; color: var(--teal); font-size: 15px; }
+  .answer.good { background: var(--mint); border-color: var(--teal); }
+  .answer.bad { background: #f9e7de; border-color: #9b4c35; }
+  .route { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 11px; }
+  .slot { padding: 8px 11px; min-width: 59px; background: #edf0e8; border: 1px dashed #96aaa3; border-radius: 10px; font-size: 17px; font-weight: 800; text-align: center; }
+  .order-actions { margin-top: 11px; }
+  .feedback { background: var(--mint); border-left: 4px solid var(--teal); padding: 13px 16px; border-radius: 8px; margin-top: 14px; font-size: clamp(17px, 1.65vw, 22px); line-height: 1.5; }
+  .feedback.missed { background: #f9e7de; border-color: #9b4c35; }
+  .feedback p { margin: 4px 0 0; }
+  .next { margin-top: 12px; }
+  .result-score { font-size: clamp(25px, 3vw, 45px); margin-bottom: 10px; font-weight: 900; color: var(--teal); }
+  .recap { background: var(--mint); padding: 14px 16px; border-radius: 13px; font-size: clamp(16px, 1.6vw, 21px); line-height: 1.6; margin-bottom: 16px; }
+  details { margin-top: 17px; padding-block: 12px; border-top: 1px solid var(--line); }
+  summary { min-height: 44px; display: list-item; cursor: pointer; font-weight: 850; }
+  .review-list { margin-block: 0; padding-left: 24px; line-height: 1.6; }
+  .review-list li { margin-bottom: 10px; }
+  .review-list strong { display: block; }
+  .overlay { position: fixed; z-index: 2; inset: 0; display: grid; place-items: center; padding: 16px; background: #182842a8; }
+  .dialog { width: min(100%, 505px); max-height: 90vh; overflow: auto; background: var(--white); border-radius: 20px; padding: 25px; box-shadow: 0 12px 42px #18284240; }
+  .dialog h2 { font-size: 32px; }
+  .dialog .actions { margin-bottom: 10px; }
+  .timer-setting { padding: 10px 0; font-weight: 750; display: flex; align-items: center; gap: 10px; }
+  .timer-setting input { width: 22px; height: 22px; accent-color: var(--teal); }
+  #screen-note { margin: 0; font-size: 15px; color: var(--muted); }
+  @media (min-width: 901px) { #home { padding-top: 11px; } }
+  @media (max-width: 900px) {
+    .wrap { width: min(100% - 34px, 680px); }
+    .layout { grid-template-columns: 1fr; }
+    .toolbar { flex-wrap: wrap; padding-block: 9px; }
+    .map { width: min(100%, 520px); margin-inline: auto; }
+  }
+  @media (max-width: 400px) {
+    .wrap { width: calc(100% - 24px); }
+    .toolbar .button { padding-inline: 9px; font-size: 14px; }
+    .answer { padding-inline: 8px; gap: 6px; }
+    .chip { flex-basis: 24px; height: 24px; }
+  }
+  @media print {
+    header, .actions, #home, #play, #overlay, #screen-note { display: none !important; }
+    .layout { display: block; }
+    .map { color: #182842; background: #172841; break-inside: avoid; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .map-head { color: white; }
+    .anatomy { height: 320px; }
+    .review-list li { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div id="shell">
+<header>
+  <div class="wrap toolbar">
+    <div class="course">
+      <span class="course-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 13h4l3-7 4 12 2-5h5"/><path d="M4 4h16M4 20h16" opacity=".35"/></svg>
+      </span>
+      <span>초등 6학년 과학</span>
+    </div>
+    <div class="tools">
+      <button class="button" id="sound" type="button" aria-pressed="false">소리 끔</button>
+      <button class="button" id="fullscreen" type="button">전체 화면</button>
+      <button class="button" id="teacher" type="button">선생님 메뉴</button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <p id="screen-note" role="status"></p>
+  <div class="layout">
+    <div>
+      <section id="home" aria-labelledby="title">
+        <p class="lesson">우리 몸의 소화 기관</p>
+        <h1 id="title" tabindex="-1">한 입의 여행</h1>
+        <p class="intro">입에 들어간 한 입은 어디로 갈까요?<br><strong>10문제</strong>를 풀며 음식물이 지나는 길을 따라가요.</p>
+        <ol class="stages">
+          <li>기관의 역할<span>4문제</span></li>
+          <li>음식물의 길<span>2문제</span></li>
+          <li>생활 속 소화<span>4문제</span></li>
+        </ol>
+        <fieldset>
+          <legend>게임 방식</legend>
+          <div class="actions">
+            <button type="button" class="button mode" id="solo" aria-pressed="true">혼자 복습</button>
+            <button type="button" class="button mode" id="teams" aria-pressed="false">두 모둠 대결</button>
+          </div>
+        </fieldset>
+        <button type="button" class="button primary start" id="start">게임 시작 <span aria-hidden="true">→</span></button>
+        <p class="small" id="mode-note">시간 제한 없이 풀어요. 정답 한 문제에 10점이에요.</p>
+      </section>
+      <section id="play" hidden aria-labelledby="question">
+        <div class="play-head"><p class="lesson" id="step"></p><span id="clock"></span></div>
+        <div class="progress" id="progress" role="progressbar" aria-label="문제 진행" aria-valuemin="0"><div id="fill"></div></div>
+        <div class="scores" id="scores" aria-label="점수"></div>
+        <h2 id="question" tabindex="-1"></h2>
+        <p class="context" id="context"></p>
+        <div class="route" id="route" aria-label="선택한 기관 순서" aria-live="polite" hidden></div>
+        <div class="answers" id="answers"></div>
+        <div class="actions order-actions" id="order-actions" hidden>
+          <button class="button" id="undo" type="button">한 칸 지우기</button>
+          <button class="button primary" id="submit" type="button">순서 확인</button>
+        </div>
+        <div class="feedback" id="feedback" role="status" tabindex="-1" hidden></div>
+        <button class="button primary next" id="next" type="button" hidden>다음 문제 →</button>
+      </section>
+      <section id="result" hidden aria-labelledby="result-title">
+        <p class="lesson">복습 결과</p>
+        <h2 id="result-title" tabindex="-1">여행을 마쳤어요</h2>
+        <p class="result-score" id="result-score"></p>
+        <p class="intro" id="result-note"></p>
+        <p class="recap"><strong>음식물이 지나는 길</strong><br>입 → 식도 → 위 → 작은창자 → 큰창자 → 항문</p>
+        <div class="actions">
+          <button class="button primary" id="retry" type="button">놓친 문제 다시 풀기</button>
+          <button class="button" id="home-button" type="button">처음 화면</button>
+        </div>
+        <details id="review"><summary>문제별 정답과 해설</summary><ol class="review-list" id="review-list"></ol></details>
+      </section>
+    </div>
+    <figure class="map" id="map">
+      <div class="map-head">소화 기관 지도 <span>몸의 앞모습</span></div>
+      <svg class="anatomy" viewBox="0 0 380 455" aria-hidden="true">
+        <defs>
+          <pattern id="dots" width="17" height="17" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1" fill="#4a6178"/></pattern>
+        </defs>
+        <rect x="3" y="11" width="374" height="428" rx="22" fill="url(#dots)"/>
+        <path d="M164 113v29c0 8-8 13-29 17l-32 8c-24 7-37 24-42 58L47 422h286l-14-197c-5-34-18-51-42-58l-32-8c-21-4-29-9-29-17v-29Z" fill="#253b56" stroke="#637d95" stroke-width="2"/>
+        <path d="M144 69c0-29 18-47 46-47s46 18 46 47c0 39-19 69-46 69s-46-30-46-69Z" fill="#253b56" stroke="#637d95" stroke-width="2"/>
+        <path d="M107 225 96 422m177-197 11 197" fill="none" stroke="#637d95" stroke-width="2"/>
+        <path d="M187 104c1 13 2 27 3 42s-1 41 4 61" stroke="#f0b264" stroke-width="13" fill="none" stroke-linecap="round"/>
+        <path d="M176 96c6-2 8 1 14 1s10-3 16-1c-5 11-25 13-30 0Z" fill="#ffc37b" stroke="#f8d7a8" stroke-width="2"/>
+        <path d="M192 202c6 13 16 13 19 0 6-21 38-17 48 2 15 28-4 49-24 54-17 5-32-5-45-4-7 1-8 10-11 14l-11-4c4-17 13-23 26-25 14-2 6-13-2-24Z" fill="#f49376" stroke="#ffc3a4" stroke-width="2"/>
+        <path d="M174 258c-10 11-4 23 10 24l43 1c15 0 15 17 0 17l-62 1c-15 0-15 17 0 17h61c16 0 16 17 0 17l-56 1c-16 0-16 17 0 17l45 1c13 0 9 17-4 17h-50" fill="none" stroke="#ffe48b" stroke-width="10" stroke-linecap="round"/>
+        <path d="M155 372c-12-3-15-9-15-21v-70c0-10 7-15 17-15 22 0 49 9 80 0 12-3 22 3 22 15v70c0 17-9 24-31 25-18 0-38 3-38 21v13" fill="none" stroke="#72cabb" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M182 411h16" fill="none" stroke="#b2e9dc" stroke-width="5" stroke-linecap="round"/>
+        <g class="map-label mouth"><path d="M207 100h41l13-9h17"/><text x="285" y="96">입</text></g>
+        <g class="map-label tube"><path d="M180 157h-49l-13-10H83"/><text x="42" y="152">식도</text></g>
+        <g class="map-label stomach"><path d="M260 220h39"/><text x="306" y="225">위</text></g>
+        <g class="map-label large-intestine"><path d="M131 294H88"/><text x="16" y="299">큰창자</text></g>
+        <g class="map-label small-intestine"><path d="M230 328h38l14 10h17"/><text x="305" y="343">작은창자</text></g>
+        <g class="map-label exit"><path d="M179 412h-62"/><text x="76" y="417">항문</text></g>
+      </svg>
+      <figcaption id="map-caption">위치와 생김새를 나타낸 모형이에요.</figcaption>
+    </figure>
+  </div>
+</main>
+</div>
+<div class="overlay" id="overlay" hidden>
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="menu-title">
+    <h2 id="menu-title">선생님 메뉴</h2>
+    <p class="context" id="pause-note">두 모둠 대결에서는 문제마다 차례가 바뀌어요.</p>
+    <label class="timer-setting"><input id="timer-setting" type="checkbox" checked> 두 모둠 대결에 문제당 30초 적용</label>
+    <p class="small">시간이 끝나면 정답과 해설을 보여 줘요. 선생님 메뉴를 열면 시간이 멈춰요.</p>
+    <div class="actions" style="margin-top:16px">
+      <button class="button primary" id="close-menu" type="button">닫기</button>
+      <button class="button" id="reveal" type="button">정답 보기</button>
+      <button class="button" id="restart" type="button">처음 화면</button>
+    </div>
+  </section>
+</div>
+<script>
+  "use strict";
+  // Correct answers and explanations checked against NIDDK, Your Digestive System & How it Works.
+  const questions = [
+    { stage: 0, q: "음식물을 씹고 침과 섞는 곳은 어디인가요?", choices: ["위", "입", "식도", "작은창자"], answer: 1, spot: "mouth",
+      exp: "이가 음식물을 잘게 부수고 침이 음식물과 섞이면서 소화가 시작돼요." },
+    { stage: 0, q: "삼킨 음식물을 위로 보내는 기관은 무엇인가요?", choices: ["작은창자", "큰창자", "기도", "식도"], answer: 3, spot: "tube",
+      exp: "식도의 벽이 움직여 음식물을 위로 밀어 보내요. 기도는 공기가 지나는 길이에요." },
+    { stage: 0, q: "음식물을 위액과 섞어 소화하는 곳은 어디인가요?", choices: ["위", "입", "식도", "큰창자"], answer: 0, spot: "stomach",
+      exp: "위의 벽이 움직여 음식물과 위액을 섞어요. 위액은 음식물이 분해되는 데 도움을 줘요." },
+    { stage: 0, q: "소화된 영양소는 주로 어디에서 흡수되나요?", choices: ["입", "위", "작은창자", "큰창자"], answer: 2, spot: "small",
+      exp: "소화된 영양소는 주로 작은창자의 벽을 지나 몸속으로 들어가요." },
+    { stage: 1, q: "음식물이 입에서 위까지 지나는 길을 이어요.", choices: ["식도", "위", "입"], order: ["입", "식도", "위"], spot: "tube",
+      exp: "입에서 씹어 삼킨 음식물은 식도를 지나 위에 도착해요." },
+    { stage: 1, q: "위 다음부터 몸 밖으로 나갈 때까지의 길을 이어요.", choices: ["큰창자", "항문", "작은창자"], order: ["작은창자", "큰창자", "항문"], spot: "exit",
+      exp: "위에서 작은창자로 넘어간 음식물은 더 소화돼요. 남은 찌꺼기는 큰창자를 지나 항문으로 나가요." },
+    { stage: 2, q: "작은창자에 도착한 음식물은 어떻게 될까요?", context: "점심에 먹은 밥이 위에서 위액과 섞인 뒤 작은창자로 갔어요.", choices: ["새로 나온 위액과 섞여요", "더 잘게 분해돼요", "전부 대변으로 바뀌어요", "위로 돌아가 다시 섞여요"], answer: 1, spot: "small",
+      exp: "음식물은 작은창자에서 여러 소화액과 섞여 더 잘게 분해돼요." },
+    { stage: 2, q: "남은 찌꺼기에서 물을 흡수한 기관은 어디인가요?", context: "작은창자를 나온 찌꺼기가 다음 기관을 지나자 물기가 줄었어요.", choices: ["위", "식도", "입", "큰창자"], answer: 3, spot: "large",
+      exp: "큰창자에서 남은 찌꺼기의 물이 흡수되면 찌꺼기가 대변으로 바뀌어요." },
+    { stage: 2, q: "작은창자에서 영양소가 흡수되면 어떻게 될까요?", context: "점심을 먹고 소화한 뒤, 영양소가 몸 곳곳에 필요해요.", choices: ["혈액을 따라 이동해요", "식도를 따라 돌아가요", "큰창자에 모여요", "위에서 계속 섞여요"], answer: 0, spot: "small",
+      exp: "흡수된 영양소는 혈액을 통해 몸의 여러 곳으로 운반돼요." },
+    { stage: 2, q: "삼키기 전에도 빵의 소화는 시작돼요. 맞나요?", context: "입에서 빵을 씹는 동안 침이 빵과 섞였어요.", choices: ["O · 맞아요", "X · 틀려요"], answer: 0, spot: "mouth",
+      exp: "침은 빵에 들어 있는 녹말을 분해하기 시작해요. 그래서 소화는 음식을 삼키기 전부터 시작돼요." }
+  ];
+
+  const el = id => document.getElementById(id);
+  const stages = ["기관의 역할", "음식물의 길", "생활 속 소화"];
+  const teamNames = ["토끼 모둠", "여우 모둠"];
+  let mode = "solo";
+  let playingTeams = false;
+  let sequence = [];
+  let records = [];
+  let points = [0, 0];
+  let index = 0;
+  let selected = [];
+  let locked = false;
+  let soundOn = false;
+  let audio;
+  let deadline = 0;
+  let remaining = 0;
+  let ticker = 0;
+  let screen = "home";
+
+  function show(name) {
+    screen = name;
+    ["home", "play", "result"].forEach(id => { el(id).hidden = id !== name; });
+    el("map").classList.toggle("masked", name === "play");
+    el("map").removeAttribute("data-spot");
+    el("map-caption").textContent = name === "play"
+      ? "정답을 확인하면 관련 기관 이름이 나타나요."
+      : "위치와 생김새를 나타낸 모형이에요.";
+  }
+
+  function setMode(value) {
+    mode = value;
+    el("solo").setAttribute("aria-pressed", String(mode === "solo"));
+    el("teams").setAttribute("aria-pressed", String(mode === "teams"));
+    el("mode-note").textContent = mode === "solo"
+      ? "시간 제한 없이 풀어요. 정답 한 문제에 10점이에요."
+      : "두 모둠이 번갈아 5문제씩 풀어요. 정답 한 문제에 10점이에요.";
+  }
+
+  function pauseClock() {
+    if (ticker) {
+      remaining = Math.max(0, deadline - Date.now());
+      window.clearInterval(ticker);
+      ticker = 0;
+    }
+  }
+
+  function updateClock() {
+    const seconds = Math.ceil(Math.max(0, deadline - Date.now()) / 1000);
+    el("clock").textContent = seconds + "초";
+    if (!seconds) finishAnswer(null, "시간이 끝났어요", false);
+  }
+
+  function resumeClock() {
+    if (screen !== "play" || locked || !playingTeams || !el("timer-setting").checked) {
+      el("clock").textContent = "";
+      return;
+    }
+    deadline = Date.now() + remaining;
+    ticker = window.setInterval(updateClock, 100);
+    updateClock();
+  }
+
+  function start(list, teamPlay) {
+    pauseClock();
+    sequence = list.slice();
+    playingTeams = teamPlay;
+    records = [];
+    points = [0, 0];
+    index = 0;
+    show("play");
+    renderQuestion();
+  }
+
+  function renderScores() {
+    const labels = playingTeams ? teamNames : ["내 점수"];
+    el("scores").replaceChildren();
+    labels.forEach((label, i) => {
+      const item = document.createElement("span");
+      item.className = "score" + (playingTeams && i === index % 2 ? " current" : "");
+      item.textContent = label + " " + points[i] + "점" + (playingTeams && i === index % 2 ? " · 차례" : "");
+      el("scores").appendChild(item);
+    });
+  }
+
+  function renderQuestion() {
+    const question = questions[sequence[index]];
+    locked = false;
+    selected = [];
+    remaining = 30000;
+    el("step").textContent = stages[question.stage] + " · " + (index + 1) + " / " + sequence.length;
+    el("progress").setAttribute("aria-valuemax", sequence.length);
+    el("progress").setAttribute("aria-valuenow", index + 1);
+    el("fill").style.width = (index + 1) * 100 / sequence.length + "%";
+    el("question").textContent = question.q;
+    el("context").textContent = question.order ? "기관을 지나는 순서대로 눌러요." : question.context || "";
+    el("context").hidden = !el("context").textContent;
+    el("feedback").hidden = true;
+    el("next").hidden = true;
+    el("route").hidden = !question.order;
+    el("order-actions").hidden = !question.order;
+    el("map").removeAttribute("data-spot");
+    el("answers").replaceChildren();
+    question.choices.forEach((choice, i) => {
+      const button = document.createElement("button");
+      const chip = document.createElement("span");
+      button.className = "button answer";
+      button.type = "button";
+      chip.className = "chip";
+      chip.textContent = i + 1;
+      chip.setAttribute("aria-hidden", "true");
+      button.append(chip, document.createTextNode(choice));
+      button.addEventListener("click", () => {
+        if (question.order) {
+          selected.push(i);
+          drawOrder();
+          const nextChoice = el("answers").querySelector("button:not(:disabled)");
+          (nextChoice || el("submit")).focus();
+        } else {
+          finishAnswer(i);
+        }
+      });
+      el("answers").appendChild(button);
+    });
+    if (question.order) drawOrder();
+    renderScores();
+    el("question").focus();
+    resumeClock();
+  }
+
+  function drawOrder() {
+    const question = questions[sequence[index]];
+    el("route").replaceChildren();
+    question.order.forEach((part, i) => {
+      const cell = document.createElement("span");
+      cell.className = "slot";
+      cell.textContent = (i + 1) + ". " + (i < selected.length ? question.choices[selected[i]] : "빈칸");
+      el("route").appendChild(cell);
+    });
+    Array.from(el("answers").children).forEach((button, i) => {
+      button.disabled = locked || selected.includes(i);
+    });
+    el("undo").disabled = locked || selected.length === 0;
+    el("submit").disabled = locked || selected.length !== question.order.length;
+  }
+
+  function answerText(question) {
+    return question.order ? question.order.join(" → ") : question.choices[question.answer];
+  }
+
+  function playSound(correct) {
+    if (!soundOn) return;
+    try {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      audio = audio || new Audio();
+      if (audio.state === "suspended") audio.resume().catch(() => {});
+      const tone = audio.createOscillator();
+      const volume = audio.createGain();
+      tone.frequency.value = correct ? 620 : 380;
+      volume.gain.setValueAtTime(.08, audio.currentTime);
+      volume.gain.exponentialRampToValueAtTime(.001, audio.currentTime + .18);
+      tone.connect(volume).connect(audio.destination);
+      tone.start();
+      tone.stop(audio.currentTime + .19);
+    } catch (error) {
+      // Audio is optional. The question feedback is always displayed.
+    }
+  }
+
+  function finishAnswer(choice, message, count = true) {
+    if (locked || screen !== "play") return;
+    locked = true;
+    pauseClock();
+    const question = questions[sequence[index]];
+    const chosen = question.order ? selected.map(i => question.choices[i]) : [];
+    const correct = count && (question.order
+      ? question.order.every((part, i) => part === chosen[i])
+      : choice === question.answer);
+    records.push({ id: sequence[index], correct });
+    if (correct) points[playingTeams ? index % 2 : 0] += 10;
+    if (question.order) {
+      drawOrder();
+      el("order-actions").hidden = true;
+    } else {
+      Array.from(el("answers").children).forEach((button, i) => {
+        button.disabled = true;
+        if (i === question.answer) {
+          button.classList.add("good");
+          button.firstChild.textContent = "✓";
+        } else if (i === choice) {
+          button.classList.add("bad");
+          button.firstChild.textContent = "×";
+        }
+      });
+    }
+    const feedback = el("feedback");
+    const heading = document.createElement("strong");
+    const explanation = document.createElement("p");
+    heading.textContent = (message || (correct ? "정답이에요 · +10점" : "정답을 확인해요")) + " · " + answerText(question);
+    explanation.textContent = question.exp;
+    feedback.classList.toggle("missed", !correct);
+    feedback.replaceChildren(heading, explanation);
+    feedback.hidden = false;
+    if (question.order && correct) {
+      el("map").classList.remove("masked");
+      el("map-caption").textContent = "지도에서 방금 이은 길을 찾아보세요.";
+    } else {
+      el("map").dataset.spot = question.spot;
+    }
+    el("next").textContent = index + 1 === sequence.length ? "결과 보기 →" : "다음 문제 →";
+    el("next").hidden = false;
+    renderScores();
+    playSound(correct);
+    el("next").focus();
+  }
+
+  function showResult() {
+    show("result");
+    const hits = records.filter(record => record.correct).length;
+    el("result-score").textContent = playingTeams
+      ? teamNames.map((name, i) => name + " " + points[i] + "점").join(" · ")
+      : sequence.length + "문제 중 " + hits + "문제 정답";
+    el("result-note").textContent = playingTeams
+      ? (points[0] === points[1] ? "두 모둠이 같은 점수를 얻었어요." : "우승 모둠 · " + teamNames[points[0] > points[1] ? 0 : 1])
+      : hits === sequence.length ? "모든 문제를 맞혔어요." : "놓친 문제는 한 번 더 풀어 보세요.";
+    el("retry").hidden = hits === sequence.length;
+    el("review").open = false;
+    el("review-list").replaceChildren();
+    records.forEach(record => {
+      const question = questions[record.id];
+      const item = document.createElement("li");
+      const title = document.createElement("strong");
+      title.textContent = (record.correct ? "맞힘 · " : "복습 · ") + question.q;
+      item.append(title, document.createTextNode(answerText(question) + " · " + question.exp));
+      el("review-list").appendChild(item);
+    });
+    el("result-title").focus();
+  }
+
+  function goHome() {
+    pauseClock();
+    show("home");
+    el("title").focus();
+  }
+
+  function openMenu() {
+    pauseClock();
+    el("shell").setAttribute("aria-hidden", "true");
+    el("overlay").hidden = false;
+    el("pause-note").textContent = screen === "play"
+      ? "게임이 잠시 멈췄어요." : "두 모둠 대결에서는 문제마다 차례가 바뀌어요.";
+    el("reveal").disabled = screen !== "play" || locked;
+    el("restart").disabled = screen === "home";
+    el("close-menu").focus();
+  }
+
+  function closeMenu(resume = true) {
+    el("overlay").hidden = true;
+    el("shell").removeAttribute("aria-hidden");
+    el("teacher").focus();
+    if (resume) resumeClock();
+  }
+
+  async function toggleFullscreen() {
+    const note = el("screen-note");
+    note.textContent = "";
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch (error) {
+      note.textContent = "전체 화면은 브라우저 메뉴에서도 켤 수 있어요.";
+    }
+  }
+
+  el("solo").addEventListener("click", () => setMode("solo"));
+  el("teams").addEventListener("click", () => setMode("teams"));
+  el("start").addEventListener("click", () => start(questions.map((question, i) => i), mode === "teams"));
+  el("undo").addEventListener("click", () => {
+    selected.pop();
+    drawOrder();
+    if (el("undo").disabled) el("answers").firstChild.focus();
+  });
+  el("submit").addEventListener("click", () => finishAnswer(null));
+  el("next").addEventListener("click", () => {
+    if (index + 1 === sequence.length) showResult();
+    else {
+      index += 1;
+      el("map").classList.add("masked");
+      el("map-caption").textContent = "정답을 확인하면 관련 기관 이름이 나타나요.";
+      renderQuestion();
+    }
+  });
+  el("retry").addEventListener("click", () => start(records.filter(record => !record.correct).map(record => record.id), false));
+  el("home-button").addEventListener("click", goHome);
+  el("sound").addEventListener("click", () => {
+    soundOn = !soundOn;
+    el("sound").textContent = soundOn ? "소리 켬" : "소리 끔";
+    el("sound").setAttribute("aria-pressed", String(soundOn));
+    if (soundOn) playSound(true);
+  });
+  el("fullscreen").addEventListener("click", toggleFullscreen);
+  document.addEventListener("fullscreenchange", () => {
+    el("fullscreen").textContent = document.fullscreenElement ? "전체 화면 끄기" : "전체 화면";
+  });
+  el("teacher").addEventListener("click", openMenu);
+  el("close-menu").addEventListener("click", () => closeMenu());
+  el("reveal").addEventListener("click", () => {
+    closeMenu(false);
+    finishAnswer(null, "선생님이 공개한 정답", false);
+  });
+  el("restart").addEventListener("click", () => {
+    closeMenu(false);
+    goHome();
+  });
+  document.addEventListener("keydown", event => {
+    if (!el("overlay").hidden) {
+      if (event.key === "Escape") closeMenu();
+      if (event.key === "Tab") {
+        const controls = el("overlay").querySelectorAll("button:not(:disabled), input");
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+      return;
+    }
+    if (event.altKey || event.ctrlKey || event.metaKey || event.repeat) return;
+    if (event.key.toLowerCase() === "f") toggleFullscreen();
+  });
+</script>
+</body>
+</html>

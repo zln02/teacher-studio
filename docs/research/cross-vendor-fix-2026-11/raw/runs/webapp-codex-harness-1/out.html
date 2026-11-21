@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경우의 수 실험실</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink:#17283d; --muted:#506077; --paper:#f3f6fa; --white:#fff;
+  --line:#dce5ee; --navy:#172c46; --teal:#08665b; --mint:#dbf2e9;
+  --pale:#edf8f3; --wrong:#923e21; --warm:#fff3e9;
+}
+* {box-sizing:border-box}
+html {font-size:100%}
+html.projector {font-size:125%}
+body {margin:0;color:var(--ink);background:var(--paper);font-family:system-ui,"Malgun Gothic",sans-serif;line-height:1.55;word-break:keep-all;overflow-wrap:anywhere}
+button,input,select {font:inherit;color:inherit}
+button {cursor:pointer}
+button,input,select,summary,a {-webkit-tap-highlight-color:transparent}
+:focus-visible {outline:3px solid #157e70;outline-offset:3px}
+[hidden] {display:none!important}
+h1,h2,h3,p {margin:0}
+h1,h2,h3 {line-height:1.24;letter-spacing:-.035em}
+.skip {position:absolute;left:1rem;top:.5rem;transform:translateY(-200%);padding:.5rem 1rem;background:white;color:var(--ink);z-index:5}
+.skip:focus {transform:none}
+.top {background:var(--navy);color:white}
+.top-inner {max-width:91rem;margin:auto;min-height:4.5rem;padding:.75rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.brand {display:flex;align-items:center;gap:.75rem;font-weight:750;font-size:1.125rem}
+.logo {display:grid;place-items:center;width:2.25rem;height:2.25rem;border-radius:.625rem;background:#aee4d4;color:var(--navy);font-size:1.5rem;line-height:1}
+.top-actions,.actions,.segmented,.tokens,.chips {display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.top button {border:1px solid #667b95;border-radius:.5rem;background:transparent;color:white;padding:.4375rem .75rem;font-size:.875rem;font-weight:650}
+.top button:hover,.top button[aria-pressed=true] {background:#294863}
+.top button:focus-visible {outline-color:#aee4d4}
+.shell {max-width:91rem;margin:auto;display:grid;grid-template-columns:14.25rem minmax(0,1fr);gap:2rem;padding:1.75rem 2rem 2.5rem}
+.sidebar {min-width:0}
+.nav-label {font-size:.8125rem;font-weight:750;color:var(--muted);margin:.375rem 0 .75rem .5rem}
+nav {display:grid;gap:.375rem}
+.nav-item {text-align:left;display:grid;grid-template-columns:1.875rem minmax(0,1fr) auto;align-items:center;gap:.625rem;width:100%;min-height:3rem;padding:.5rem;border:1px solid transparent;background:none;border-radius:.625rem;font-weight:650;font-size:.9375rem}
+.nav-item:hover {background:#e8eef5}
+.nav-item[aria-current=step] {background:white;border-color:#cbdadf;color:#085d53}
+.nav-number {display:grid;place-items:center;min-height:1.875rem;border-radius:.375rem;background:#e5edf5;color:#3d526b;font-size:.8125rem;font-variant-numeric:tabular-nums}
+.nav-item[aria-current=step] .nav-number {background:var(--teal);color:white}
+.nav-done {color:var(--teal)}
+.track {margin:1.25rem .5rem 0;border-top:1px solid var(--line);padding-top:1rem}
+.track-row {display:flex;justify-content:space-between;gap:.5rem;font-size:.875rem;color:var(--muted);font-weight:650}
+progress {display:block;width:100%;height:.5rem;margin-top:.625rem;border:0;background:#dfe7ef;border-radius:1rem;overflow:hidden;accent-color:var(--teal)}
+progress::-webkit-progress-bar {background:#dfe7ef}
+progress::-webkit-progress-value {background:var(--teal);border-radius:1rem}
+main {min-width:0}
+.hero {min-height:9.25rem;position:relative;overflow:hidden;border:1px solid #c7e3d8;border-radius:1rem;background:var(--mint);padding:1.375rem 1.625rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.hero-text {min-width:0}
+.kicker {font-size:.8125rem;font-weight:750;color:#245b51;margin-bottom:.375rem}
+.hero h1 {font-size:clamp(1.85rem,4.5vw,3rem);font-weight:780}
+.hero p:last-child {margin-top:.5rem;color:#315a56;font-weight:550}
+.hero-figure {flex:0 0 10.5rem;display:grid;grid-template-columns:3.125rem 1fr 3.125rem;grid-template-rows:repeat(2,2.25rem);align-items:center;justify-items:center;margin-right:.5rem;color:#146457;font-weight:750;font-size:1.25rem}
+.hero-figure span {display:grid;place-items:center;width:2.125rem;height:2.125rem;border:1px solid #79aa9c;background:#f5fcf9;border-radius:.5rem}
+.hero-figure span:first-child {grid-row:1 / 3;grid-column:1}
+.hero-figure span:nth-child(2) {grid-row:1;grid-column:3}
+.hero-figure span:nth-child(3) {grid-row:2;grid-column:3}
+.hero-figure i {width:100%;height:50%;border-left:2px solid #619888;border-right:2px solid #619888;grid-column:2}
+.hero-figure i:nth-of-type(1) {align-self:end;grid-row:1;border-top:2px solid #619888;border-radius:.5rem 0 0 0}
+.hero-figure i:nth-of-type(2) {align-self:start;grid-row:2;border-bottom:2px solid #619888;border-radius:0 0 0 .5rem}
+.scenarios {margin:1rem 0;display:flex;align-items:center;gap:.5rem .75rem;flex-wrap:wrap}
+.scenarios label {font-size:.875rem;font-weight:700;color:var(--muted)}
+select {max-width:100%;min-height:2.5rem;background:white;border:1px solid #abbccc;border-radius:.5rem;padding:.3125rem .625rem}
+.workspace {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.22fr);gap:1rem;align-items:stretch}
+.card {border:1px solid var(--line);border-radius:.875rem;background:white;min-width:0;padding:1.25rem}
+.card h2 {font-size:1.25rem}
+.card-top {display:flex;justify-content:space-between;align-items:center;gap:.625rem;flex-wrap:wrap;margin-bottom:.625rem}
+.card p,.card li {font-size:.9375rem}
+.stem {margin-bottom:1rem}
+fieldset {padding:0;border:0;margin:0 0 .875rem;min-width:0}
+legend {padding:0;margin-bottom:.375rem;font-size:.875rem;font-weight:750}
+.token,.secondary,.view-button,.answer-option {background:white;border:1px solid #aebfd0;border-radius:.5rem;padding:.4375rem .75rem;font-weight:650;min-height:2.5rem;font-size:.9375rem}
+.token:hover,.secondary:hover,.view-button:hover,.answer-option:hover {background:#edf4f9;border-color:#7b9aa8}
+.token[aria-pressed=true],.view-button[aria-pressed=true],.answer-option[aria-pressed=true] {background:var(--mint);border-color:#268879;color:#0b554b}
+.token:disabled {opacity:.5;cursor:default}
+.primary {background:var(--teal);color:white;border:1px solid var(--teal);border-radius:.5rem;padding:.5rem .875rem;font-weight:750;min-height:2.625rem;font-size:.9375rem}
+.primary:hover {background:#074f47}
+.status {min-height:2.875rem;margin:.625rem 0;color:var(--muted)}
+.status.good {color:var(--teal)}
+.status.error {color:var(--wrong)}
+.count {border-radius:.375rem;padding:.25rem .5rem;font-size:.875rem;font-weight:750;color:#0c5b50;background:var(--pale);font-variant-numeric:tabular-nums}
+.segmented {margin-bottom:.875rem;gap:.375rem}
+.view-button {padding:.25rem .625rem;min-height:2.125rem;font-size:.875rem}
+table {border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed;font-size:.875rem;border:1px solid var(--line);border-radius:.625rem;overflow:hidden}
+caption {text-align:left;padding-bottom:.375rem;color:var(--muted);font-size:.8125rem}
+th,td {text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line);padding:.4375rem .1875rem;height:2.875rem}
+th {background:#f1f5f9;font-weight:700}
+tr:last-child td,tr:last-child th[scope=row] {border-bottom:0}
+tr > :last-child {border-right:0}
+td {background:#fafcfe;color:var(--muted)}
+td.marked {background:var(--pale);color:var(--teal);font-weight:750}
+td.missing {background:var(--warm);color:var(--wrong);font-weight:650}
+.legend {color:var(--muted);margin-top:.625rem}
+.tree {border-left:2px solid #b3c4d4;padding-left:.875rem;margin:.625rem 0;display:grid;gap:.625rem}
+.branch {position:relative;display:grid;grid-template-columns:minmax(3.25rem,auto) minmax(0,1fr);gap:.5rem;align-items:start}
+.branch::before {content:"";position:absolute;left:-.875rem;top:1rem;width:.625rem;border-top:2px solid #b3c4d4}
+.branch-root {font-weight:750;padding:.25rem .375rem}
+.leaf {font-size:.8125rem;background:#edf3f8;border-radius:.375rem;padding:.25rem .4375rem;color:#3e526b}
+.leaf.marked {background:var(--pale);color:var(--teal);font-weight:700}
+.leaf.missing {background:var(--warm);color:var(--wrong)}
+.group-list {list-style:none;margin:.625rem 0 0;padding:0;display:grid;gap:.625rem}
+.group-list li {border:1px solid var(--line);border-radius:.5rem;padding:.625rem}
+.group-list strong {display:block;margin-bottom:.375rem}
+.feedback {margin-top:.75rem;border-left:3px solid #278371;background:var(--pale);padding:.625rem .875rem;border-radius:0 .5rem .5rem 0}
+.feedback.error {background:var(--warm);border-color:#b66445;color:var(--wrong)}
+.feedback p + p {margin-top:.375rem}
+.bottom {margin-top:1rem;display:flex;justify-content:flex-end;gap:.625rem;flex-wrap:wrap}
+.practice {margin-top:1rem;max-width:53rem}
+.practice h2 {margin-bottom:.625rem}
+.practice .card-top h2 {margin:0}
+.practice fieldset {margin-top:1rem}
+.practice .options {display:flex;flex-wrap:wrap;gap:.5rem}
+.practice .options button {min-width:4rem}
+.practice .jump {margin-top:1rem;border-top:1px solid var(--line);padding-top:.875rem;display:flex;justify-content:space-between;gap:.625rem;flex-wrap:wrap}
+.teacher {margin-top:1rem;background:#fff;border:1px solid var(--line);border-radius:.625rem;padding:.625rem .875rem;color:var(--muted);font-size:.875rem}
+.teacher summary {cursor:pointer;font-weight:700;color:var(--ink);width:fit-content}
+.teacher h2 {font-size:1rem;margin:.75rem 0 .375rem}
+.teacher ul,.teacher ol {margin:.375rem 0;padding-left:1.25rem}
+.teacher li + li {margin-top:.375rem}
+dialog {width:min(30rem,calc(100% - 2rem));border:1px solid var(--line);border-radius:.875rem;padding:1.25rem;color:var(--ink);background:white}
+dialog::backdrop {background:#172c4680}
+dialog h2 {font-size:1.25rem}
+dialog p {margin:.625rem 0 1rem}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:66rem) {
+  .shell {grid-template-columns:11.5rem minmax(0,1fr);gap:1rem;padding:1rem}
+  .top-inner {padding:.75rem 1rem}
+  .card {padding:1rem}
+}
+@media(max-width:49rem) {
+  .shell {grid-template-columns:minmax(0,1fr)}
+  nav {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .nav-label {margin:0 0 .375rem}
+  .track {display:none}
+  .workspace {grid-template-columns:minmax(0,1fr)}
+  .hero {min-height:0}
+}
+@media(max-width:34rem) {
+  .hero {padding:1rem}
+  .hero-figure {display:none}
+  .top-inner {gap:.5rem}
+  .nav-item {font-size:.875rem}
+}
+.challenge-fields {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.75rem}
+.challenge-fields label {display:block;font-size:.875rem;font-weight:700;margin-bottom:.25rem}
+.field-control {display:flex;align-items:center;gap:.375rem}
+.field-control input {min-width:0;width:4rem;max-width:calc(100% - 1.5rem);min-height:2.625rem;border:1px solid #aebfd0;border-radius:.5rem;padding:.375rem .5rem;background:white}
+.field-control input[aria-invalid=true] {border:2px solid var(--wrong)}
+@media(max-width:24rem) {.challenge-fields {grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">활동으로 건너뛰기</a>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand"><span class="logo" aria-hidden="true">⋔</span>경우의 수 실험실</div>
+    <div class="top-actions">
+      <button id="projector" type="button" aria-pressed="false" title="단축키 P">큰 화면</button>
+      <button id="reset" type="button">처음으로</button>
+    </div>
+  </div>
+</header>
+<div class="shell">
+  <aside class="sidebar">
+    <p class="nav-label" id="nav-label">학습 활동</p>
+    <nav id="navigation" aria-labelledby="nav-label"></nav>
+    <div class="track">
+      <div class="track-row"><span>활동 완료</span><span id="progress-text">0 / 6</span></div>
+      <progress id="progress" max="6" value="0" aria-label="완료한 활동"></progress>
+    </div>
+  </aside>
+  <main id="main" tabindex="-1">
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-text">
+        <p class="kicker">중학교 2학년 · 수학</p>
+        <h1 id="title" tabindex="-1">표와 수형도로 세기</h1>
+        <p id="intro">같은 경우를 한 번씩만 기록해요.</p>
+      </div>
+      <div class="hero-figure" aria-hidden="true"><span>1</span><span>가</span><span>나</span><i></i><i></i></div>
+    </section>
+    <div id="activity"></div>
+    <details class="teacher">
+      <summary>수업 안내</summary>
+      <h2>수업 중 확인 · 약 37분</h2>
+      <p>준비물은 화면과 필기 도구예요. 교실 화면에서는 각 선택 전에 학생들이 종이에 먼저 적고 짝과 비교하게 해요.</p>
+      <ol>
+        <li><strong>도입 3분.</strong> 첫 활동의 옷차림을 보고 몇 가지가 나올지 예상해요.</li>
+        <li><strong>탐구 20분.</strong> 활동 1~4에 5분씩 써요. 표나 수형도를 채우고, 더하는 때와 곱하는 때를 각 예와 연결해 말해요. 빠르게 끝낸 학생은 다른 상황으로 바꿔 비교해요.</li>
+        <li><strong>연습 8분.</strong> 한 문제씩 풀고 식의 이유를 짝에게 설명해요. 같은 답을 골랐더라도 어떤 경우를 세었는지 물어요.</li>
+        <li><strong>도전과 정리 6분.</strong> 십의 자리별로 경우를 나눠 계산해요. 처음 예상한 옷차림의 수를 표와 수형도에서 각각 어떻게 확인했는지 한 문장으로 적어요.</li>
+      </ol>
+      <h2>수업 전 확인</h2>
+      <p>파일을 더블클릭해 첫 활동에서 셔츠와 청바지를 골라 기록해요. 표에 ✓가 생기는지 확인해요. <strong>큰 화면</strong>이나 <strong>P</strong>로 글자를 키우고 <strong>처음으로</strong>로 기록을 지워요.</p>
+      <p>이 파일은 입력한 경우와 연습 답을 바로 확인해요. 진행 기록은 열린 화면에서만 유지돼요. 수업에 쓰는 교과서와 활동 순서 및 용어를 비교해 주세요.</p>
+      <details>
+        <summary>정답과 확인할 생각</summary>
+        <ul>
+          <li><strong>표와 수형도.</strong> 옷차림 6가지, 표지 6가지. 표의 한 칸과 수형도의 한 끝이 같은 경우인지 짚어요.</li>
+          <li><strong>합의 법칙.</strong> 간식 5가지, 동아리 6가지. 각 선택이 어느 한 묶음에만 속하는지 확인해요.</li>
+          <li><strong>곱의 법칙.</strong> 도시락 8가지, 등굣길 9가지. 첫 선택을 하나 고정했을 때 이어지는 모든 선택을 세어요.</li>
+          <li><strong>대표 유형.</strong> 회장과 부회장 6가지, 두 사람 고르기 3가지, 두 자리 수 4가지. 자리를 바꿔도 같은 경우인지, 0이 십의 자리에 올 수 있는지 물어요.</li>
+          <li><strong>연습.</strong> 지도와 스티커 8가지 · 음료 9가지 · 버스와 도보 6가지 · 발표 순서 12가지 · 대표 3가지 · 두 자리 수 6가지.</li>
+          <li><strong>도전.</strong> 십의 자리가 1이면 10, 12, 14로 3가지예요. 2 또는 4이면 각각 2가지예요. 모두 7가지예요.</li>
+        </ul>
+      </details>
+    </details>
+  </main>
+</div>
+<dialog id="reset-dialog" aria-labelledby="reset-title">
+  <h2 id="reset-title">처음으로 돌아가기</h2>
+  <p>이 화면에서 기록한 경우와 연습 답을 모두 지워요.</p>
+  <form method="dialog" class="actions">
+    <button class="secondary" value="cancel" autofocus>계속하기</button>
+    <button class="primary" value="reset">기록 지우기</button>
+  </form>
+</dialog>
+<noscript>브라우저에서 자바스크립트를 켜면 활동을 이용할 수 있어요.</noscript>
+<script>
+"use strict";
+
+const people = ["가", "나", "다"];
+const lessons = [
+  {
+    title: "표와 수형도로 세기", nav: "표와 수형도", intro: "같은 경우를 한 번씩만 기록해요.",
+    scenarios: [
+      {name:"옷차림 고르기", stem:"상의 2벌과 하의 3벌이 있어요. 상의와 하의를 한 벌씩 골라 옷차림을 만들어요.",
+        left:"상의", right:"하의", a:["셔츠","후드"], b:["청바지","반바지","면바지"],
+        hint:"셔츠를 고정하고 하의 세 벌을 차례대로 골라요. 그다음 후드로 바꿔요.",
+        why:"표의 한 칸은 상의와 하의 한 벌씩을 나타내요. 수형도(선으로 선택을 이어 그린 그림)에서는 가지 하나의 끝이 같은 옷차림을 나타내요."},
+      {name:"표지 꾸미기", stem:"표지에 도형 하나와 색 하나를 골라요. 도형은 3종류, 색은 2종류예요.",
+        left:"도형", right:"색", a:["원","별","삼각형"], b:["파랑","초록"],
+        hint:"도형 하나를 정하고 그 도형에 두 색을 모두 써 봐요.",
+        why:"도형을 하나 고정하면 가능한 색이 2가지예요. 표의 각 행과 수형도의 각 첫 가지에서 같은 두 경우를 확인할 수 있어요."}
+    ]
+  },
+  {
+    title:"합의 법칙", nav:"합의 법칙", intro:"서로 겹치지 않는 묶음에서 하나만 골라요.",
+    scenarios:[
+      {name:"간식 하나 고르기", kind:"sum", stem:"과일 2종류와 빵 3종류가 있어요. 둘 중 한 묶음에서 간식 하나만 골라요.",
+        left:"과일", right:"빵", a:["사과","바나나"], b:["모닝빵","크루아상","식빵"],
+        hint:"사과와 식빵을 함께 고르면 간식이 두 개예요. 간식 하나를 경우 하나로 기록해요.",
+        why:"과일 2가지와 빵 3가지가 서로 겹치지 않아요. 둘 중 하나를 고르므로 2 + 3 = 5가지예요."},
+      {name:"동아리 하나 고르기", kind:"sum", stem:"예술 동아리 4개와 체육 동아리 2개가 있어요. 가입할 동아리를 하나 골라요.",
+        left:"예술", right:"체육", a:["미술","합창","연극","사진"], b:["배구","농구"],
+        hint:"예술 동아리부터 세고, 이어서 체육 동아리를 세어요.",
+        why:"예술과 체육 두 묶음에 동시에 속하는 동아리가 없어요. 4 + 2 = 6가지예요."}
+    ]
+  },
+  {
+    title:"곱의 법칙", nav:"곱의 법칙", intro:"한 선택에 이어질 다음 선택을 빠짐없이 세어요.",
+    scenarios:[
+      {name:"도시락 고르기", stem:"주먹밥 2종류와 반찬 4종류가 있어요. 주먹밥과 반찬을 하나씩 골라요.",
+        left:"주먹밥", right:"반찬", a:["참치","채소"], b:["달걀","김","오이","두부"],
+        hint:"참치 주먹밥에 붙는 가지를 먼저 다 기록해요.",
+        why:"참치 주먹밥에도, 채소 주먹밥에도 반찬 4종류를 모두 고를 수 있어요. 4 + 4 = 2 × 4 = 8가지예요."},
+      {name:"등굣길 고르기", stem:"집에서 공원까지 3길, 공원에서 학교까지 3길이 있어요. 공원을 거쳐 학교에 가요.",
+        left:"집에서 공원", right:"공원에서 학교", a:["길 A","길 B","길 C"], b:["길 1","길 2","길 3"],
+        hint:"집에서 공원까지 갈 길을 하나 고정하고 나머지 길을 세어요.",
+        why:"첫 길 3가지 각각에 두 번째 길 3가지가 이어져요. 3 + 3 + 3 = 3 × 3 = 9가지예요."}
+    ]
+  },
+  {
+    title:"대표 유형", nav:"대표 유형", intro:"자리, 순서, 중복 조건이 경우의 수를 바꿔요.",
+    scenarios:[
+      {name:"회장과 부회장 정하기", kind:"roles", stem:"후보 가, 나, 다 중 회장과 부회장을 한 명씩 정해요. 한 후보가 두 역할을 맡을 수 없어요.",
+        left:"회장", right:"부회장", a:people, b:people,
+        hint:"가가 회장인 경우를 다 기록한 뒤, 나가 회장인 경우를 기록해요.",
+        why:"가가 회장이고 나가 부회장인 경우와 역할을 바꾼 경우는 달라요. 회장 3명 각각에 부회장 후보가 2명씩 있어 3 × 2 = 6가지예요."},
+      {name:"두 사람 고르기", kind:"pair", stem:"후보 가, 나, 다 중 같은 역할을 맡을 대표 2명을 골라요.",
+        left:"첫 번째로 고를 후보", right:"두 번째로 고를 후보", a:people, b:people,
+        hint:"가와 나를 기록했다면 나와 가도 같은 두 사람인지 확인해요.",
+        why:"고른 순서를 바꿔도 같은 두 사람이에요. (가, 나), (가, 다), (나, 다)로 3가지예요."},
+      {name:"두 자리 수 만들기", kind:"digits", stem:"숫자 카드 0, 1, 2로 두 자리 자연수를 만들어요. 각 카드는 한 번씩만 써요.",
+        left:"십의 자리", right:"일의 자리", a:["0","1","2"], b:["0","1","2"],
+        hint:"십의 자리에는 1이나 2를 골라요. 일의 자리에는 남은 카드 중 하나를 골라요.",
+        why:"0은 십의 자리에 올 수 없어요. 십의 자리 1에는 10, 12가, 십의 자리 2에는 20, 21이 나와 2 × 2 = 4가지예요."}
+    ]
+  },
+  {title:"문제로 확인하기",nav:"연습 문제",intro:"답을 고르고 어떤 경우를 세었는지 확인해요."},
+  {title:"도전 · 짝수 만들기",nav:"도전 문제",intro:"선택에 따라 이어지는 경우의 수가 다를 때를 다뤄요."}
+];
+
+const questions = [
+  {title:"표에서 한 줄 세기", stem:"지도 2종류와 스티커 4종류가 있어요. 각각 하나씩 고르는 방법은 몇 가지예요?",
+    options:[6,8,4], answer:8, hint:"지도 한 종류를 고정하고 가능한 스티커를 세어요.",
+    why:"지도마다 스티커를 4가지씩 고를 수 있어 4 + 4 = 8가지예요.",
+    wrong:{6:"6은 지도와 스티커를 합친 물건의 수예요.",4:"4는 지도 한 종류에 이어지는 경우의 수예요."}},
+  {title:"한 묶음에서 고르기", stem:"요구르트 4종류와 주스 5종류 중 음료 하나만 골라요. 몇 가지예요?",
+    options:[20,5,9], answer:9, hint:"고를 수 있는 음료들을 한 줄로 늘어놓는다고 생각해요.",
+    why:"두 묶음이 겹치지 않고 음료 하나만 고르므로 4 + 5 = 9가지예요.",
+    wrong:{20:"20은 요구르트와 주스를 하나씩 고를 때 나오는 수예요.",5:"5에는 주스만 들어 있어요."}},
+  {title:"두 선택 이어 붙이기", stem:"집에서 정류장까지 걸어가는 길이 3개예요. 정류장에서 학교까지 버스 노선이 2개일 때, 걸어가서 버스를 타는 방법은 몇 가지예요?",
+    options:[6,5,3], answer:6, hint:"걸어가는 길 하나마다 버스가 몇 가지 이어지는지 세어요.",
+    why:"걸어가는 길마다 버스 2개를 고를 수 있어 3 × 2 = 6가지예요.",
+    wrong:{5:"5는 걷는 길과 버스 노선 자체를 각각 세어 더한 수예요.",3:"3은 정류장까지 가는 경우만 센 수예요."}},
+  {title:"발표 순서 정하기", stem:"네 모둠 중 서로 다른 두 모둠을 골라 첫 발표와 둘째 발표를 맡겨요. 몇 가지예요?",
+    options:[6,16,12], answer:12, hint:"첫 발표를 한 모둠으로 정한 다음 둘째 발표가 가능한 모둠을 세어요.",
+    why:"첫 발표는 4가지, 둘째 발표는 남은 3가지라서 4 × 3 = 12가지예요.",
+    wrong:{6:"6은 두 모둠을 고르고 발표 순서를 무시했을 때의 수예요.",16:"16에는 한 모둠이 두 번 발표하는 경우가 들어 있어요."}},
+  {title:"같은 역할로 고르기", stem:"서로 다른 세 모둠 중 부스를 맡을 두 모둠을 골라요. 두 모둠은 같은 역할을 맡아요. 몇 가지예요?",
+    options:[3,6,9], answer:3, hint:"1모둠과 2모둠을 2모둠과 1모둠으로 바꿔 읽어 보세요.",
+    why:"두 모둠을 읽는 순서를 바꿔도 같은 짝이에요. 1·2, 1·3, 2·3의 3가지예요.",
+    wrong:{6:"6은 같은 두 모둠을 순서만 바꿔 두 번씩 센 수예요.",9:"9에는 같은 모둠을 두 번 고른 경우도 들어 있어요."}},
+  {title:"0을 포함한 카드", stem:"0, 3, 5, 7 카드에서 두 장을 골라 두 자리 자연수를 만들어요. 일의 자리가 홀수인 수는 몇 개예요?",
+    options:[9,6,12], answer:6, unit:"개", hint:"십의 자리에 3을 놓고, 일의 자리에 남은 홀수 카드만 놓아 봐요.",
+    why:"십의 자리는 3, 5, 7 중 하나예요. 일의 자리에는 남은 홀수 카드 2장이 올 수 있어 3 × 2 = 6개예요.",
+    wrong:{9:"9에는 일의 자리에 0이 놓인 수가 들어 있어요.",12:"12에는 십의 자리나 일의 자리에 0이 놓인 경우가 들어 있어요."}}
+];
+
+const $ = id => document.getElementById(id);
+const activity = $("activity");
+const navigation = $("navigation");
+let stage = 0;
+let model = newSession();
+
+function newSession() {
+  return {
+    scenario: [0,0,0,0],
+    boards: lessons.slice(0,4).map(lesson => lesson.scenarios.map(() => ({
+      left:"", right:"", records:new Set(), view:"table", hint:false, checked:false,
+      message:"", tone:"", finished:false
+    }))),
+    question:0,
+    answers:questions.map(() => ({choice:null, hint:false, solved:false})),
+    challenge:{values:["","",""], hint:false, checked:false, solved:false, message:"", fields:[]}
+  };
+}
+
+function completion() {
+  return model.boards.map(group => group.some(board => board.finished))
+    .concat(model.answers.every(answer => answer.solved), model.challenge.solved);
+}
+
+function updateProgress() {
+  const completed = completion();
+  navigation.querySelectorAll("button").forEach((button,index) => {
+    button.querySelector(".nav-done").textContent = completed[index] ? "✓" : "";
+    button.querySelector(".nav-done").setAttribute("aria-label", completed[index] ? "완료" : "");
+  });
+  const total = completed.filter(Boolean).length;
+  $("progress").value = total;
+  $("progress-text").textContent = total + " / " + lessons.length;
+}
+
+function show(stageIndex, moveFocus) {
+  stage = stageIndex;
+  lessons.forEach((lesson,index) => {
+    const button = navigation.children[index];
+    if (index === stage) button.setAttribute("aria-current","step");
+    else button.removeAttribute("aria-current");
+  });
+  $("title").textContent = lessons[stage].title;
+  $("intro").textContent = lessons[stage].intro;
+  if (stage < 4) paintBoard();
+  else if (stage === 4) paintPractice();
+  else paintChallenge();
+  updateProgress();
+  if (moveFocus) {
+    $("title").focus({preventScroll:true});
+    window.scrollTo(0,0);
+  }
+}
+
+function pairAllowed(problem, a, b) {
+  if (problem.kind === "digits") return a !== "0" && a !== b;
+  if (problem.kind === "roles" || problem.kind === "pair") return a !== b;
+  return true;
+}
+
+function caseKey(problem,a,b) {
+  if (problem.kind === "pair") return [a,b].sort().join("|");
+  return a + "|" + b;
+}
+
+function allCases(problem) {
+  if (problem.kind === "sum") {
+    return problem.a.map(name => caseKey(problem,problem.left,name))
+      .concat(problem.b.map(name => caseKey(problem,problem.right,name)));
+  }
+  const keys = new Set();
+  problem.a.forEach(a => problem.b.forEach(b => {
+    if (pairAllowed(problem,a,b)) keys.add(caseKey(problem,a,b));
+  }));
+  return Array.from(keys);
+}
+
+function asTokens(values, selected, attr, disabled) {
+  return values.map(value => '<button type="button" class="token" ' + attr + '="' + value +
+    '" aria-pressed="' + (selected === value) + '"' + (disabled && disabled(value) ? " disabled" : "") +
+    '>' + value + '</button>').join("");
+}
+
+function paintBoard() {
+  const lesson = lessons[stage];
+  const index = model.scenario[stage];
+  const problem = lesson.scenarios[index];
+  const board = model.boards[stage][index];
+  const sum = problem.kind === "sum";
+  const rightOptions = sum ? (board.left === problem.left ? problem.a : board.left ? problem.b : []) : problem.b;
+  const hinted = board.hint ? '<div class="feedback"><p><strong>힌트</strong> ' + problem.hint + '</p></div>' : "";
+  activity.innerHTML = '<div class="scenarios"><label for="scenario">상황 바꾸기</label><select id="scenario">' +
+    lesson.scenarios.map((item,i) => '<option value="' + i + '"' + (i === index ? " selected" : "") + '>' + item.name + '</option>').join("") +
+    '</select></div><div class="workspace"><section class="card" aria-labelledby="task-title">' +
+    '<div class="card-top"><h2 id="task-title">경우 만들기</h2></div><p class="stem">' + problem.stem + '</p>' +
+    '<fieldset><legend>' + (sum ? "묶음" : problem.left) + '</legend><div class="tokens">' +
+    asTokens(sum ? [problem.left,problem.right] : problem.a,board.left,"data-left",value => problem.kind === "digits" && value === "0") +
+    '</div></fieldset><fieldset><legend>' + (sum ? "고를 항목" : problem.right) + '</legend><div class="tokens">' +
+    (rightOptions.length ? asTokens(rightOptions,board.right,"data-right",null) : '<p>먼저 묶음을 골라요.</p>') +
+    '</div></fieldset><div class="actions"><button class="primary" id="add" type="button">경우 기록</button>' +
+    '<button class="secondary" id="check" type="button">빠짐 확인</button><button class="secondary" id="hint" type="button" aria-pressed="' + board.hint + '">힌트</button></div>' +
+    '<p id="board-message" class="status ' + board.tone + '" role="status">' + (board.message || (sum ? "묶음과 그 안의 항목을 골라 기록해요." : "항목을 하나씩 골라 기록해요.")) + '</p>' + hinted +
+    '</section><section class="card" aria-labelledby="record-title"><div class="card-top"><h2 id="record-title">기록판</h2><span class="count" id="record-count">' +
+    board.records.size + '가지 기록</span></div>' +
+    (sum ? "" : '<div class="segmented" aria-label="기록판 보기"><button id="table-view" type="button" class="view-button" aria-pressed="' + (board.view === "table") + '">표</button>' +
+      '<button id="tree-view" type="button" class="view-button" aria-pressed="' + (board.view === "tree") + '">수형도</button></div>') +
+    '<div id="record"></div><div id="board-explain"></div></section></div>' +
+    '<div class="bottom"><button class="secondary" id="clear-board" type="button">이 상황 다시 하기</button><button class="primary" id="next-stage" type="button">다음 활동 <span aria-hidden="true">→</span></button></div>';
+  paintRecord(problem,board);
+  bindBoard(problem,board);
+}
+
+function cellState(problem,board,a,b) {
+  if (!pairAllowed(problem,a,b)) return {style:"", text:"—", label:"조건에 맞지 않음"};
+  const recorded = board.records.has(caseKey(problem,a,b));
+  if (recorded) return {style:"marked", text:"✓", label:"기록함"};
+  if (board.checked) return {style:"missing", text:"빈칸", label:"빠진 경우"};
+  return {style:"", text:"·", label:"기록 전"};
+}
+
+function paintRecord(problem,board) {
+  const sum = problem.kind === "sum";
+  if (sum) {
+    $("record").innerHTML = '<ul class="group-list">' + [[problem.left,problem.a],[problem.right,problem.b]].map(pair =>
+      '<li><strong>' + pair[0] + '</strong><div class="chips">' + pair[1].map(item => {
+        const hit = board.records.has(caseKey(problem,pair[0],item));
+        return '<span class="leaf ' + (hit ? "marked" : board.checked ? "missing" : "") +
+          '">' + item + (hit ? " ✓" : board.checked ? " · 빠짐" : "") + '</span>';
+      }).join("") + '</div></li>').join("") + '</ul>';
+  } else if (board.view === "table") {
+    $("record").innerHTML = '<table><caption>' + problem.left + '별 ' + problem.right + ' 기록</caption><thead><tr><th scope="col">' + problem.left +
+      '</th>' + problem.b.map(b => '<th scope="col">' + b + '</th>').join("") + '</tr></thead><tbody>' +
+      problem.a.map(a => '<tr><th scope="row">' + a + '</th>' + problem.b.map(b => {
+        const cell = cellState(problem,board,a,b);
+        return '<td class="' + cell.style + '"><span aria-hidden="true">' + cell.text +
+          '</span><span class="sr-only">' + cell.label + '</span></td>';
+      }).join("") + '</tr>').join("") + '</tbody></table>';
+  } else {
+    $("record").innerHTML = '<p class="legend">' + problem.left + '에서 ' + problem.right + '로 뻗는 가지를 읽어요.</p><div class="tree">' +
+      problem.a.map(a => {
+        const allowed = problem.b.filter(b => pairAllowed(problem,a,b));
+        return '<div class="branch"><span class="branch-root">' + a + '</span><div class="chips">' +
+          (allowed.length ? allowed.map(b => {
+            const cell = cellState(problem,board,a,b);
+            return '<span class="leaf ' + cell.style + '">' + b +
+              (cell.style === "marked" ? " ✓" : cell.style === "missing" ? " · 빠짐" : "") + '</span>';
+          }).join("") : '<span class="leaf">가능한 ' + problem.right + ' 없음</span>') + '</div></div>';
+      }).join("") + '</div>';
+  }
+  if (problem.kind === "pair") {
+    $("record").insertAdjacentHTML("beforeend",'<p class="legend">같은 두 사람은 고른 순서를 바꿔도 한 경우예요. 두 방향에 함께 표시돼요.</p>');
+  } else if (!sum && board.view === "table" && problem.kind) {
+    $("record").insertAdjacentHTML("beforeend",'<p class="legend">— 표시는 조건에 맞지 않는 칸이에요.</p>');
+  }
+  $("record-count").textContent = board.records.size + "가지 기록";
+  $("board-explain").innerHTML = board.finished ?
+    '<div class="feedback"><p><strong>모두 ' + allCases(problem).length + '가지</strong></p><p>' + problem.why + '</p></div>' : "";
+}
+
+function bindBoard(problem,board) {
+  function message(text,tone) {
+    board.message = text;
+    board.tone = tone || "";
+    $("board-message").className = "status " + board.tone;
+    $("board-message").textContent = text;
+  }
+  function pick(selector,value) {
+    activity.querySelectorAll(selector).forEach(button => {
+      button.setAttribute("aria-pressed",button.getAttribute(selector.slice(1,-1)) === value);
+    });
+  }
+  $("scenario").addEventListener("change",event => {
+    model.scenario[stage] = Number(event.target.value);
+    paintBoard();
+    $("scenario").focus();
+  });
+  activity.querySelectorAll("[data-left]").forEach(button => button.addEventListener("click",() => {
+    const value = button.dataset.left;
+    if (problem.kind === "sum" && board.left !== value) {
+      board.left = value;
+      board.right = "";
+      paintBoard();
+      Array.from(activity.querySelectorAll("[data-left]")).find(item => item.dataset.left === value).focus();
+    } else {
+      board.left = value;
+      pick("[data-left]",value);
+    }
+  }));
+  activity.querySelectorAll("[data-right]").forEach(button => button.addEventListener("click",() => {
+    board.right = button.dataset.right;
+    pick("[data-right]",board.right);
+  }));
+  $("add").addEventListener("click",() => {
+    if (!board.left || !board.right) {
+      message(problem.kind === "sum" ? "묶음과 그 안의 항목을 먼저 골라요." : "두 항목을 먼저 골라요.","error");
+      return;
+    }
+    if (problem.kind !== "sum" && !pairAllowed(problem,board.left,board.right)) {
+      message(problem.kind === "digits" ? "같은 카드를 두 번 쓸 수 없어요. 일의 자리를 다시 골라요." :
+        "같은 후보를 두 번 고를 수 없어요. 서로 다른 후보를 골라요.","error");
+      return;
+    }
+    const key = caseKey(problem,board.left,board.right);
+    const description = problem.kind === "sum" ? board.right :
+      problem.kind === "digits" ? board.left + board.right : board.left + " · " + board.right;
+    if (board.records.has(key)) {
+      message(description + " — 이미 기록한 경우예요.","error");
+      return;
+    }
+    board.records.add(key);
+    message(description + " 기록 완료. 지금까지 " + board.records.size + "가지예요.","good");
+    paintRecord(problem,board);
+  });
+  $("check").addEventListener("click",() => {
+    const left = allCases(problem).length - board.records.size;
+    board.checked = true;
+    if (left === 0) {
+      board.finished = true;
+      message("빠진 경우가 없어요. 기록판에서 세는 방법을 확인해요.","good");
+    } else {
+      message("아직 " + left + "가지가 빠졌어요. 기록판에서 찾아 기록해요.","error");
+    }
+    paintRecord(problem,board);
+    updateProgress();
+  });
+  $("hint").addEventListener("click",() => {
+    board.hint = !board.hint;
+    paintBoard();
+    $("hint").focus();
+  });
+  ["table","tree"].forEach(view => {
+    const button = $(view + "-view");
+    if (!button) return;
+    button.addEventListener("click",() => {
+      board.view = view;
+      $("table-view").setAttribute("aria-pressed",view === "table");
+      $("tree-view").setAttribute("aria-pressed",view === "tree");
+      paintRecord(problem,board);
+    });
+  });
+  $("clear-board").addEventListener("click",() => {
+    Object.assign(board,{left:"",right:"",records:new Set(),hint:false,checked:false,message:"이 상황의 기록을 지웠어요.",tone:"",finished:false});
+    paintBoard();
+    updateProgress();
+    $("clear-board").focus();
+  });
+  $("next-stage").addEventListener("click",() => show(stage + 1,true));
+}
+
+function paintPractice() {
+  const index = model.question;
+  const question = questions[index];
+  const answer = model.answers[index];
+  activity.innerHTML = '<section class="card practice" aria-labelledby="practice-title">' +
+    '<div class="card-top"><h2 id="practice-title" tabindex="-1">' + question.title + '</h2><span class="count" id="practice-count"></span></div><p>' + question.stem + '</p>' +
+    '<fieldset><legend>답 고르기</legend><div class="options">' + question.options.map(value =>
+      '<button class="answer-option" type="button" data-answer="' + value + '" aria-pressed="' + (answer.choice === value) +
+      '">' + value + (question.unit || "가지") + '</button>').join("") + '</div></fieldset>' +
+    '<div class="actions"><button class="secondary" id="practice-hint" type="button" aria-pressed="' + answer.hint + '">힌트</button></div>' +
+    '<div id="practice-feedback" role="status"></div>' +
+    '<div class="jump"><button class="secondary" id="previous-question" type="button"' + (index === 0 ? ' hidden' : '') +
+    '>이전 문제</button><button class="primary" id="next-question" type="button">' +
+    (index === questions.length - 1 ? "도전 문제" : "다음 문제") + ' <span aria-hidden="true">→</span></button></div></section>';
+  paintPracticeFeedback(question,answer);
+  activity.querySelectorAll("[data-answer]").forEach(button => button.addEventListener("click",() => {
+    answer.choice = Number(button.dataset.answer);
+    if (answer.choice === question.answer) answer.solved = true;
+    activity.querySelectorAll("[data-answer]").forEach(item => {
+      item.setAttribute("aria-pressed",Number(item.dataset.answer) === answer.choice);
+    });
+    paintPracticeFeedback(question,answer);
+    updateProgress();
+  }));
+  $("practice-hint").addEventListener("click",() => {
+    answer.hint = !answer.hint;
+    $("practice-hint").setAttribute("aria-pressed",answer.hint);
+    paintPracticeFeedback(question,answer);
+  });
+  $("previous-question").addEventListener("click",() => goToQuestion(index - 1));
+  $("next-question").addEventListener("click",() => {
+    if (index === questions.length - 1) show(5,true);
+    else goToQuestion(index + 1);
+  });
+}
+
+function paintPracticeFeedback(question,answer) {
+  const correct = answer.choice === question.answer;
+  const hint = answer.hint ? '<div class="feedback"><p><strong>힌트</strong> ' + question.hint + '</p></div>' : "";
+  const result = answer.choice === null ? "" : '<div class="feedback' + (correct ? "" : " error") +
+    '"><p><strong>' + (correct ? "맞았어요." : "정답은 " + question.answer + (question.unit || "가지") + "예요.") +
+    '</strong> ' + question.why + '</p>' + (correct ? "" : "<p>" + question.wrong[answer.choice] + "</p>") + "</div>";
+  $("practice-count").textContent = (model.question + 1) + " / " + questions.length +
+    " 문제 · " + model.answers.filter(item => item.solved).length + "개 해결";
+  $("practice-feedback").innerHTML = hint + result;
+}
+
+function goToQuestion(index) {
+  model.question = index;
+  paintPractice();
+  $("practice-title").focus();
+}
+
+const tens = [1,2,4];
+const evenCards = [0,2,4];
+const outcomes = tens.map(ten => evenCards.filter(one => ten !== one).map(one => 10 * ten + one));
+
+function paintChallenge() {
+  const challenge = model.challenge;
+  activity.innerHTML = '<section class="card practice" aria-labelledby="challenge-title">' +
+    '<h2 id="challenge-title">십의 자리별로 세기</h2>' +
+    '<p>숫자 카드 0, 1, 2, 4로 두 자리 짝수를 만들어요. 각 카드는 한 번씩만 써요.</p>' +
+    '<form id="challenge-form" autocomplete="off" novalidate><fieldset><legend>십의 자리별로 가능한 수의 개수를 적어요.</legend>' +
+    '<div class="challenge-fields">' + tens.map((ten,index) => '<div><label for="ten-' + index + '">십의 자리 ' + ten +
+      '</label><div class="field-control"><input id="ten-' + index +
+      '" name="count-' + index + '" inputmode="numeric" maxlength="2" autocomplete="off" aria-describedby="challenge-feedback"><span>개</span></div></div>').join("") +
+    '</div></fieldset><div class="actions"><button class="primary" type="submit">개수 확인</button>' +
+    '<button class="secondary" id="challenge-hint" type="button" aria-pressed="' + challenge.hint + '">힌트</button></div></form>' +
+    '<div id="challenge-feedback" role="status"></div></section>' +
+    '<div class="bottom"><button id="back-to-first" class="secondary" type="button">첫 활동 돌아보기</button></div>';
+  tens.forEach((_,index) => {
+    const field = $("ten-" + index);
+    field.value = challenge.values[index];
+    field.addEventListener("input",event => {
+      challenge.values[index] = event.target.value;
+      challenge.checked = false;
+      paintChallengeFeedback();
+    });
+  });
+  $("challenge-form").addEventListener("submit",event => {
+    event.preventDefault();
+    const values = challenge.values.map(value => value.trim());
+    const invalid = values.findIndex(value => !/^[0-4]$/.test(value));
+    challenge.checked = true;
+    if (invalid !== -1) {
+      challenge.message = "세 칸에 각각 0부터 4까지의 정수를 하나씩 적어요.";
+      challenge.fields = [invalid];
+    } else {
+      challenge.fields = values.map((value,index) => Number(value) === outcomes[index].length ? -1 : index)
+        .filter(index => index !== -1);
+      if (challenge.fields.length) {
+        challenge.message = "십의 자리가 " + challenge.fields.map(index => tens[index]).join(", ") +
+          "인 경우를 다시 세어요. 일의 자리가 짝수이고 두 카드가 서로 달라야 해요.";
+      } else {
+        challenge.message = "";
+        challenge.solved = true;
+      }
+    }
+    paintChallengeFeedback();
+    updateProgress();
+  });
+  $("challenge-hint").addEventListener("click",() => {
+    challenge.hint = !challenge.hint;
+    $("challenge-hint").setAttribute("aria-pressed",challenge.hint);
+    paintChallengeFeedback();
+  });
+  $("back-to-first").addEventListener("click",() => show(0,true));
+  paintChallengeFeedback();
+}
+
+function paintChallengeFeedback() {
+  const challenge = model.challenge;
+  tens.forEach((_,index) => $("ten-" + index).setAttribute("aria-invalid",challenge.checked && challenge.fields.includes(index)));
+  const hint = challenge.hint ? '<div class="feedback"><p><strong>힌트</strong> 일의 자리에는 0, 2, 4 중 아직 쓰지 않은 카드가 와요. 십의 자리에 2를 놓았으면 일의 자리에서 2를 빼요.</p></div>' : "";
+  let result = "";
+  if (challenge.checked && challenge.message) {
+    result = '<div class="feedback error"><p>' + challenge.message + '</p></div>';
+  } else if (challenge.checked) {
+    const lengths = outcomes.map(group => group.length);
+    const total = lengths.reduce((sum,length) => sum + length,0);
+    result = '<div class="feedback"><p><strong>' + lengths.join(" + ") + " = " + total +
+      '개</strong> 십의 자리별로 나눈 세 묶음은 서로 겹치지 않아요.</p><p>' +
+      outcomes.map((group,index) => tens[index] + "로 시작하는 수는 " + group.join(", ")).join(" · ") +
+      '</p><p>처음 예상한 옷차림의 수를 표와 수형도에서 어떻게 확인했는지 한 문장으로 설명해요.</p></div>';
+  }
+  $("challenge-feedback").innerHTML = hint + result;
+}
+
+lessons.forEach((lesson,index) => {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "nav-item";
+  button.innerHTML = '<span class="nav-number" aria-hidden="true">0' + (index + 1) +
+    '</span><span>' + lesson.nav + '</span><span class="nav-done"></span>';
+  button.addEventListener("click",() => show(index,true));
+  navigation.appendChild(button);
+});
+
+function toggleProjector() {
+  const on = document.documentElement.classList.toggle("projector");
+  $("projector").setAttribute("aria-pressed",on);
+}
+$("projector").addEventListener("click",toggleProjector);
+document.addEventListener("keydown",event => {
+  if (event.key.toLowerCase() === "p" && !event.ctrlKey && !event.metaKey && !event.altKey &&
+      !event.repeat && !event.target.closest("input, textarea, select, [contenteditable]") && !$("reset-dialog").open) {
+    toggleProjector();
+  }
+});
+const resetDialog = $("reset-dialog");
+$("reset").addEventListener("click",() => {
+  resetDialog.returnValue = "";
+  resetDialog.showModal();
+});
+resetDialog.addEventListener("close",() => {
+  if (resetDialog.returnValue !== "reset") return;
+  model = newSession();
+  show(0,true);
+});
+show(0,false);
+</script>
+</body>
+</html>
+

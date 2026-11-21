@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>배드민턴 월례 대회</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg: #111b1a;
+  --panel: #1a2826;
+  --line: #415853;
+  --ink: #f3f7f5;
+  --muted: #b7cbc4;
+  --mint: #afdfc6;
+  --sand: #f1c492;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.5 "Malgun Gothic", sans-serif; word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+[hidden] { display: none !important; }
+h1, h2, h3, p { margin: 0; }
+button, select, textarea { font: inherit; }
+button, select {
+  min-height: 44px; padding: 8px 12px; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--panel); color: var(--ink);
+}
+button { cursor: pointer; }
+button:hover:not(:disabled) { border-color: var(--mint); }
+button:disabled { opacity: .62; cursor: default; }
+:focus-visible { outline: 3px solid var(--sand); outline-offset: 3px; }
+.primary { color: #111b1a; background: var(--mint); border-color: var(--mint); font-weight: 700; }
+.shell { width: min(1440px, 100%); margin: auto; padding: 24px clamp(12px, 4vw, 60px) 40px; }
+.mast { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+.mast h1 { font-size: clamp(24px, 4vw, 42px); letter-spacing: -.055em; }
+.tools, .actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.tools button { font-size: 14px; }
+.setup { margin: 24px 0; }
+summary { cursor: pointer; font-size: 20px; font-weight: 700; padding: 8px 0; }
+.setup-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 12px; }
+.setup label { display: block; font-weight: 700; margin: 0 0 8px; }
+textarea { width: 100%; min-height: 128px; padding: 12px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; resize: vertical; }
+.setup p, .note { color: var(--muted); font-size: 14px; margin-top: 8px; }
+.setup .actions { margin-top: 16px; }
+#error { color: var(--sand); font-weight: 700; }
+.board {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 16px;
+  padding: clamp(12px, 3vw, 32px); margin: 24px 0;
+}
+.board-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.match-label { color: var(--mint); font-size: clamp(17px, 2.4vw, 24px); }
+.board-msg { margin: 8px 0 12px; color: var(--ink); font-size: clamp(16px, 2.5vw, 22px); }
+.score-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(8px, 2.4vw, 24px); }
+.side { --team: var(--mint); text-align: center; min-width: 0; border-top: 4px solid var(--team); padding: 12px 4px 4px; }
+.side + .side { --team: var(--sand); }
+.side h3 { font-size: clamp(16px, 3.4vw, 40px); line-height: 1.25; }
+.points { font: 700 clamp(64px, 16vw, 204px)/1.03 Arial, sans-serif; font-variant-numeric: tabular-nums; letter-spacing: -.045em; color: var(--team); }
+.games { font-weight: 700; margin-bottom: 12px; }
+.point { width: min(100%, 240px); min-height: 64px; font-size: 22px; background: var(--team); color: var(--bg); border-color: var(--team); font-weight: 700; }
+.board-foot { margin-top: 20px; border-top: 1px solid var(--line); padding-top: 12px; }
+.board-foot .note { margin-top: 12px; }
+.bracket-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+#progress { color: var(--muted); }
+#champion { color: var(--mint); font-size: 24px; font-weight: 700; margin: 8px 0; }
+.rounds { display: grid; grid-template-columns: repeat(var(--round-count), minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.round { min-width: 0; }
+.round h3 { border-bottom: 1px solid var(--line); padding-bottom: 8px; margin: 0 0 8px; font-size: 18px; }
+.match {
+  display: block; width: 100%; text-align: left; padding: 8px; margin-bottom: 8px;
+  overflow-wrap: anywhere;
+}
+.match[aria-pressed="true"] { border-color: var(--mint); background: #283d36; }
+.match-meta, .match-team, .match-games { display: flex; justify-content: space-between; gap: 4px; }
+.match-meta, .match-games { color: var(--muted); font-size: 13px; }
+.match-games { display: block; }
+.match-team { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 4px; }
+.match-team strong { flex: 0 0 auto; }
+.winner { color: var(--mint); font-weight: 700; }
+.advance { display: block; margin-top: 4px; color: var(--muted); font-size: 13px; }
+.board:fullscreen { margin: 0; overflow: auto; border-radius: 0; display: flex; flex-direction: column; justify-content: safe center; }
+[data-motion="on"] .points.bump { animation: bump 160ms ease-out; }
+@keyframes bump { 50% { transform: scale(1.05); } }
+@media (prefers-reduced-motion: reduce) { .points { animation: none !important; } }
+@media (max-width: 840px) { .rounds { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) {
+  .setup-grid, .rounds { grid-template-columns: minmax(0, 1fr); }
+  .point { min-height: 52px; }
+}
+@page { size: A4 landscape; margin: 12mm; }
+@media print {
+  :root { color-scheme: light; }
+  body, .match, .match[aria-pressed="true"] { color: #101010; background: white; }
+  .shell { width: 100%; padding: 0; }
+  .only-screen, .board, .setup { display: none !important; }
+  .mast { padding-bottom: 8px; margin-bottom: 12px; }
+  .mast h1 { font-size: 22pt; }
+  .rounds { grid-template-columns: repeat(var(--round-count), minmax(0, 1fr)); gap: 8px; }
+  .match { font-size: 10pt; color: #101010; border-color: #777; break-inside: avoid; }
+  .round h3 { font-size: 12pt; }
+  #champion, #progress, .match-meta, .match-games, .winner, .advance { color: #101010; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="mast">
+    <h1>배드민턴 월례 대회</h1>
+    <div class="tools only-screen">
+      <button id="motion" type="button" aria-pressed="false">효과 줄이기</button>
+      <button id="sound" type="button" aria-pressed="true">소리 끄기</button>
+      <button id="print" type="button" disabled>대진표 인쇄</button>
+    </div>
+  </header>
+  <details id="setup" class="setup" open>
+    <summary>참가 팀과 경기 방식</summary>
+    <div class="setup-grid">
+      <div>
+        <label for="teams">참가 팀 (2~32팀)</label>
+        <textarea id="teams" rows="4" autocomplete="off" placeholder="예시&#10;셔틀 A&#10;셔틀 B" aria-describedby="team-help"></textarea>
+        <p id="team-help">팀 이름을 한 줄에 하나씩 입력해 주세요.</p>
+      </div>
+      <div>
+        <label for="rules">경기 방식</label>
+        <select id="rules" autocomplete="off">
+          <option value="21-2">21점 · 3게임 2선승</option>
+          <option value="21-1">21점 · 단판</option>
+          <option value="15-2">15점 · 3게임 2선승</option>
+          <option value="15-1">15점 · 단판</option>
+        </select>
+        <p>동점 연장에서는 2점 차로 이겨야 합니다.<br>21점제는 최대 30점, 15점제는 최대 21점입니다.</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="primary" id="draw" type="button">무작위 대진 만들기</button>
+    </div>
+    <p id="error" role="alert" hidden></p>
+  </details>
+  <section id="board" class="board" aria-labelledby="match-label" hidden>
+    <div class="board-head">
+      <h2 id="match-label" class="match-label" tabindex="-1">점수판</h2>
+      <button id="full" type="button">점수판 전체화면</button>
+    </div>
+    <p id="message" class="board-msg" role="status"></p>
+    <div class="score-grid">
+      <div class="side">
+        <h3 id="team-0"></h3>
+        <div id="point-0" class="points"></div>
+        <p id="games-0" class="games"></p>
+        <button id="add-0" class="point" type="button">+1점</button>
+      </div>
+      <div class="side">
+        <h3 id="team-1"></h3>
+        <div id="point-1" class="points"></div>
+        <p id="games-1" class="games"></p>
+        <button id="add-1" class="point" type="button">+1점</button>
+      </div>
+    </div>
+    <div class="board-foot">
+      <div class="actions">
+        <button id="undo" type="button">마지막 득점 취소</button>
+        <button id="next" class="primary" type="button" hidden>다음 경기 열기</button>
+      </div>
+      <p id="game-log" class="note"></p>
+      <p class="note">단축키 <kbd>1</kbd> 왼쪽 득점 · <kbd>2</kbd> 오른쪽 득점 · <kbd>U</kbd> 취소</p>
+    </div>
+  </section>
+  <section id="bracket" aria-labelledby="bracket-label" hidden>
+    <div class="bracket-head">
+      <h2 id="bracket-label">대진표</h2>
+      <p id="progress"></p>
+    </div>
+    <p id="champion" role="status" hidden></p>
+    <div id="rounds" class="rounds"></div>
+    <p class="note only-screen">경기 카드를 선택하면 점수판이 열립니다. 대진과 점수는 이 화면을 열어 둔 동안 유지됩니다.</p>
+  </section>
+</main>
+<script>
+"use strict";
+
+function shuffle(items) {
+  for (let index = items.length - 1; index > 0; index--) {
+    const other = Math.floor(Math.random() * (index + 1));
+    [items[index], items[other]] = [items[other], items[index]];
+  }
+  return items;
+}
+
+function makeBracket(teams) {
+  const size = 2 ** Math.ceil(Math.log2(teams.length));
+  const shuffled = shuffle(teams.slice());
+  // Spread empty slots across the bracket before randomly drawn teams take their places.
+  let slots = [1, 2];
+  while (slots.length < size) {
+    const nextSize = slots.length * 2;
+    slots = slots.reduce((order, slot) => order.concat(slot, nextSize + 1 - slot), []);
+  }
+  const rounds = [];
+  let inputs = slots.map(slot => shuffled[slot - 1] || null);
+  let id = 0;
+  while (inputs.length > 1) {
+    const round = [];
+    for (let i = 0; i < inputs.length; i += 2) {
+      const sources = inputs.slice(i, i + 2);
+      const match = {id: ++id, size: inputs.length, sources, history: [], parent: null};
+      sources.forEach(source => {
+        if (source && typeof source === "object") source.parent = match;
+      });
+      round.push(match);
+    }
+    rounds.push(round);
+    inputs = round;
+  }
+  return rounds;
+}
+
+function scoreMatch(history, rules) {
+  const games = [0, 0];
+  const finished = [];
+  let points = [0, 0];
+  let winner = -1;
+  let gameOver = false;
+  for (const side of history) {
+    if (gameOver) points = [0, 0];
+    points[side]++;
+    const score = points[side];
+    gameOver = score === rules.cap || (score >= rules.target && score - points[1 - side] >= 2);
+    if (gameOver) {
+      finished.push(points.slice());
+      games[side]++;
+      if (games[side] === rules.wins) {
+        winner = side;
+        break;
+      }
+    }
+  }
+  return {points, games, finished, gameOver, winner};
+}
+
+function getMatch(match, rules) {
+  const teams = match.sources.map(source => {
+    if (!source || typeof source === "string") return source;
+    return getMatch(source, rules).winner;
+  });
+  const bye = match.sources.includes(null);
+  const ready = teams.every(Boolean);
+  const score = scoreMatch(match.history, rules);
+  const winner = bye ? teams.find(Boolean) : teams[score.winner];
+  return {teams, bye, ready, score, winner};
+}
+
+function canUndo(match, rules) {
+  return match.history.length > 0 &&
+    (!getMatch(match, rules).winner || !match.parent || match.parent.history.length === 0);
+}
+
+function parseTeams(value) {
+  const teams = value.split(/\r?\n/).map(team => team.trim()).filter(Boolean);
+  if (teams.length < 2 || teams.length > 32) throw new Error("참가 팀은 2~32팀을 입력해 주세요.");
+  if (teams.some(team => Array.from(team).length > 32)) throw new Error("팀 이름은 32자까지 입력해 주세요.");
+  const keys = teams.map(team => team.normalize("NFKC").replace(/\s+/g, " ").toLowerCase());
+  if (new Set(keys).size !== teams.length) throw new Error("겹치는 팀 이름을 구분해 주세요.");
+  return teams;
+}
+
+const $ = id => document.getElementById(id);
+const set = (id, value) => { $(id).textContent = value; };
+const roundName = size => size === 2 ? "결승" : size === 4 ? "준결승" : size + "강";
+const ruleName = rules => rules.target + "점 · " + (rules.wins === 1 ? "단판" : "3게임 2선승");
+const showGames = games => games.map(points => points.join("–")).join(" / ");
+let rounds = [];
+let rules;
+let selected;
+let teamCount = 0;
+let reduced = false;
+let muted = true;
+let audioContext;
+
+function nextMatch() {
+  const available = match => {
+    const view = getMatch(match, rules);
+    return match !== selected && view.ready && !view.winner;
+  };
+  return rounds.flat().find(available);
+}
+
+function renderBracket() {
+  const root = $("rounds");
+  const focused = root.contains(document.activeElement) ? document.activeElement.dataset.match : null;
+  const final = rounds[rounds.length - 1][0];
+  const champion = getMatch(final, rules).winner;
+  const all = rounds.flat();
+  const completed = all.filter(match => {
+    const view = getMatch(match, rules);
+    return view.winner && !view.bye;
+  }).length;
+  set("progress", teamCount + "팀 · " + completed + "/" + (teamCount - 1) + "경기 완료 · " + ruleName(rules));
+  $("champion").hidden = !champion;
+  set("champion", champion ? "우승 · " + champion : "");
+  root.style.setProperty("--round-count", rounds.length);
+  root.textContent = "";
+  for (const round of rounds) {
+    const column = document.createElement("section");
+    column.className = "round";
+    const heading = document.createElement("h3");
+    heading.textContent = roundName(round[0].size);
+    column.append(heading);
+    for (const match of round) {
+      const view = getMatch(match, rules);
+      const card = document.createElement(view.ready ? "button" : "div");
+      card.className = "match";
+      if (view.ready) {
+        card.type = "button";
+        card.dataset.match = match.id;
+        card.setAttribute("aria-pressed", String(match === selected));
+        card.addEventListener("click", () => openMatch(match, true));
+      }
+      const meta = document.createElement("span");
+      meta.className = "match-meta";
+      const status = view.bye ? "부전승" : view.winner ? "완료" : match.history.length ? "진행 중" : view.ready ? "경기 가능" : "대기";
+      meta.textContent = match.id + "경기 · " + status;
+      card.append(meta);
+      view.teams.forEach((team, side) => {
+        const line = document.createElement("span");
+        line.className = "match-team";
+        const from = match.sources[side];
+        const name = document.createElement("span");
+        name.textContent = team || (from ? from.id + "경기 승자" : "부전승 자리");
+        if (team && team === view.winner) {
+          name.className = "winner";
+          if (!view.bye) name.textContent += " (승)";
+        }
+        line.append(name);
+        if (match.history.length) {
+          const result = document.createElement("strong");
+          result.textContent = view.score.games[side];
+          line.append(result);
+        }
+        card.append(line);
+      });
+      if (view.score.finished.length) {
+        const games = document.createElement("span");
+        games.className = "match-games";
+        games.textContent = showGames(view.score.finished);
+        card.append(games);
+      }
+      if (match.parent) {
+        const advance = document.createElement("span");
+        advance.className = "advance";
+        advance.textContent = "승자 " + match.parent.id + "경기로";
+        card.append(advance);
+      }
+      column.append(card);
+    }
+    root.append(column);
+  }
+  if (focused) {
+    const card = root.querySelector('[data-match="' + focused + '"]');
+    if (card) card.focus({preventScroll: true});
+  }
+}
+
+function renderBoard() {
+  const view = getMatch(selected, rules);
+  const score = view.score;
+  const game = score.finished.length + (score.gameOver ? 0 : 1);
+  const label = roundName(selected.size) + " · " + selected.id + "경기 · " + game + "게임";
+  set("match-label", label);
+  let message = score.winner >= 0 ? "경기 종료 · " + view.winner + " 승리" : ruleName(rules);
+  if (score.gameOver && score.winner < 0) {
+    message = game + "게임 종료 · 다음 득점부터 " + (game + 1) + "게임";
+  } else if (!score.gameOver && score.points.every(point => point >= rules.target - 1)) {
+    message = "연장 · 2점 차 또는 " + rules.cap + "점 선취";
+  }
+  set("message", message + " · " + score.points.join(" 대 "));
+  view.teams.forEach((team, side) => {
+    set("team-" + side, team);
+    set("point-" + side, score.points[side]);
+    set("games-" + side, score.games[side] + "게임 승");
+    const button = $("add-" + side);
+    button.disabled = score.winner >= 0;
+    button.setAttribute("aria-label", team + " 1점 추가");
+  });
+  const undo = canUndo(selected, rules);
+  $("undo").disabled = !undo;
+  const result = score.finished.length ? "게임 결과 " + showGames(score.finished) : "";
+  const locked = view.winner && selected.parent && selected.parent.history.length > 0;
+  set("game-log", [result, locked ? "다음 라운드 득점을 모두 취소한 뒤 이 경기 점수를 고칠 수 있습니다." : ""].filter(Boolean).join(" · "));
+  $("next").hidden = !(view.winner && nextMatch());
+}
+
+function openMatch(match, focus) {
+  if (!match || !getMatch(match, rules).ready) return;
+  selected = match;
+  renderBoard();
+  renderBracket();
+  if (focus) $("match-label").focus();
+}
+
+function playTone() {
+  if (muted) return;
+  try {
+    const Audio = window.AudioContext || window.webkitAudioContext;
+    if (!Audio) return;
+    if (!audioContext) audioContext = new Audio();
+    audioContext.resume().catch(() => {});
+    const time = audioContext.currentTime;
+    const tone = audioContext.createOscillator();
+    const volume = audioContext.createGain();
+    tone.frequency.value = 660;
+    volume.gain.setValueAtTime(0.10, time);
+    volume.gain.exponentialRampToValueAtTime(0.001, time + 0.22);
+    tone.connect(volume);
+    volume.connect(audioContext.destination);
+    tone.start(time);
+    tone.stop(time + 0.24);
+  } catch (error) {
+    return;
+  }
+}
+
+function addPoint(side) {
+  if (!selected || getMatch(selected, rules).winner) return;
+  selected.history.push(side);
+  renderBoard();
+  renderBracket();
+  const points = $("point-" + side);
+  points.classList.remove("bump");
+  if (!reduced) requestAnimationFrame(() => requestAnimationFrame(() => points.classList.add("bump")));
+  const view = getMatch(selected, rules);
+  if (view.score.gameOver) playTone();
+  if (view.winner && document.activeElement === document.body) {
+    const control = $("next").hidden ? $("undo") : $("next");
+    control.focus();
+  }
+}
+
+function undoPoint() {
+  if (!selected || !canUndo(selected, rules)) return;
+  selected.history.pop();
+  renderBoard();
+  renderBracket();
+  if (document.activeElement === document.body) $("match-label").focus();
+}
+
+$("draw").addEventListener("click", () => {
+  let teams;
+  try {
+    teams = parseTeams($("teams").value);
+  } catch (error) {
+    set("error", error.message);
+    $("error").hidden = false;
+    $("teams").focus();
+    return;
+  }
+  $("error").hidden = true;
+  if (rounds.length && !window.confirm("기존 대진과 점수를 지우고 새 대진을 만들까요?")) return;
+  const [target, wins] = $("rules").value.split("-").map(Number);
+  rules = {target, wins, cap: target === 21 ? 30 : 21};
+  teamCount = teams.length;
+  rounds = makeBracket(teams);
+  selected = undefined;
+  $("setup").open = false;
+  $("bracket").hidden = false;
+  $("board").hidden = false;
+  $("print").disabled = false;
+  openMatch(nextMatch(), true);
+});
+
+$("teams").addEventListener("input", () => { $("error").hidden = true; });
+$("add-0").addEventListener("click", () => addPoint(0));
+$("add-1").addEventListener("click", () => addPoint(1));
+$("undo").addEventListener("click", undoPoint);
+$("next").addEventListener("click", () => openMatch(nextMatch(), true));
+$("print").addEventListener("click", () => window.print());
+$("motion").addEventListener("click", () => {
+  reduced = !reduced;
+  document.body.dataset.motion = reduced ? "off" : "on";
+  $("motion").setAttribute("aria-pressed", String(reduced));
+});
+$("sound").addEventListener("click", () => {
+  muted = !muted;
+  $("sound").setAttribute("aria-pressed", String(muted));
+  if (!muted) playTone();
+});
+$("full").addEventListener("click", async () => {
+  try {
+    if (document.fullscreenElement) await document.exitFullscreen();
+    else await $("board").requestFullscreen();
+  } catch (error) {
+    set("message", "전체화면을 열 수 없습니다. 브라우저의 전체화면 기능을 사용해 주세요.");
+  }
+});
+document.addEventListener("fullscreenchange", () => {
+  set("full", document.fullscreenElement ? "전체화면 닫기" : "점수판 전체화면");
+});
+document.addEventListener("keydown", event => {
+  if (!selected || event.repeat || event.isComposing || event.altKey || event.ctrlKey || event.metaKey ||
+      /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName)) return;
+  if (event.key === "1") addPoint(0);
+  if (event.key === "2") addPoint(1);
+  if (event.key.toLowerCase() === "u") undoPoint();
+});
+document.body.dataset.motion = "on";
+</script>
+</body>
+</html>

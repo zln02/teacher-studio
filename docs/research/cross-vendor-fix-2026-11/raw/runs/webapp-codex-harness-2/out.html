@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#172825">
+<title>경우의 수 실험실</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f7f6f0;
+    --paper: #fffefa;
+    --ink: #182925;
+    --muted: #52625a;
+    --line: #dfE3d7;
+    --green: #255746;
+    --dark: #1d302a;
+    --darkest: #172825;
+    --mint: #cde7cf;
+    --yellow: #f5d77e;
+    --radius: 1.25rem;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+    line-height: 1.55;
+    color: var(--ink);
+    background: var(--bg);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  button, input { font: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; }
+  button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visible {
+    outline: 3px solid #b57522;
+    outline-offset: 4px;
+  }
+  h1, h2, h3, p { margin: 0; }
+  [hidden] { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .skip { position: absolute; top: -5rem; left: 1rem; background: white; padding: .75rem; z-index: 10; }
+  .skip:focus { top: .5rem; }
+  .wrap { width: min(75rem, calc(100% - 4rem)); margin-inline: auto; }
+  .top { background: var(--darkest); color: white; border-bottom: 1px solid #3a4c42; }
+  .top .wrap { min-height: 4.25rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+  .brand { display: flex; align-items: center; gap: .7rem; font-weight: 800; white-space: nowrap; }
+  .mark { display: grid; grid-template-columns: repeat(2, .36rem); gap: .17rem; padding: .48rem; border: 1px solid #647169; border-radius: .45rem; }
+  .mark i { width: .36rem; height: .36rem; background: #c4d7c7; border-radius: .08rem; }
+  .mark i:last-child { background: var(--yellow); }
+  .screen, .dark-button { color: #f4f7ec; background: transparent; border: 1px solid #64776b; border-radius: .55rem; padding: .44rem .75rem; font-weight: 700; }
+  .screen[aria-pressed="true"] { color: var(--ink); background: var(--yellow); }
+  .hero { background: var(--darkest); color: #f7f8ef; overflow: hidden; }
+  .hero .wrap { position: relative; padding-block: 2.15rem 2.5rem; isolation: isolate; }
+  .hero .eyebrow { color: #a9cdb6; }
+  .eyebrow { font-size: .81rem; line-height: 1.45; font-weight: 800; letter-spacing: .045em; color: var(--green); }
+  h1 { font-size: clamp(2.05rem, 5vw, 3.45rem); font-weight: 900; letter-spacing: -.065em; line-height: 1.2; margin: .35rem 0 .55rem; }
+  .hero p { color: #d0ddd2; }
+  .hero-art { position: absolute; pointer-events: none; z-index: -1; inset: 0 0 0 auto; width: 43%; opacity: .9; background-image: linear-gradient(90deg, var(--darkest), transparent 20%, transparent 89%, var(--darkest)), radial-gradient(#64796b 1px, transparent 1px); background-size: auto, 1.15rem 1.15rem; }
+  .orbit { position: absolute; width: 16rem; height: 5rem; top: 2.45rem; right: 2.5rem; border: 1px solid #879c89; border-radius: 50%; transform: rotate(-17deg); }
+  .orbit:nth-child(2) { transform: rotate(17deg); }
+  .orbit:nth-child(3) { transform: rotate(0); }
+  .orbit::before, .orbit::after { content: ""; position: absolute; width: .64rem; height: .64rem; border-radius: 50%; background: #bedac4; left: 17%; top: 10%; }
+  .orbit::after { left: 77%; top: 86%; background: var(--yellow); }
+  main.wrap { padding-block: 1.4rem 2.2rem; }
+  .nav { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; margin-bottom: 1.35rem; }
+  .nav button { display: flex; min-height: 3.25rem; align-items: center; justify-content: center; gap: .55rem; color: var(--muted); background: var(--paper); border: 1px solid var(--line); border-radius: .7rem; font-weight: 800; padding: .5rem; }
+  .nav button[aria-current="step"] { color: #f4f8ef; background: var(--green); border-color: var(--green); }
+  .step-num { border-radius: .38rem; background: #edf0e9; color: #385449; min-width: 1.5rem; padding: .13rem .29rem; font-size: .76rem; }
+  .nav button[aria-current="step"] .step-num { color: var(--ink); background: var(--mint); }
+  .columns { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 1.15rem; align-items: start; }
+  .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.45rem; min-width: 0; }
+  .board { color: #f3f6ec; background: var(--dark); border-color: var(--dark); box-shadow: 0 8px 18px #14251d12; }
+  .board .eyebrow, .board .muted { color: #bdd0c3; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.25; letter-spacing: -.045em; margin: .27rem 0 .45rem; }
+  h3 { font-size: 1.17rem; line-height: 1.3; letter-spacing: -.025em; }
+  .muted { color: var(--muted); }
+  .setup { display: grid; gap: 1rem; margin-top: 1.2rem; }
+  fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+  legend { margin-bottom: .4rem; padding: 0; font-weight: 800; }
+  .options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .45rem; }
+  .options.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pick { position: relative; display: block; }
+  .pick input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .pick span { display: grid; min-height: 2.75rem; place-items: center; text-align: center; padding: .45rem .15rem; background: #f3f5ee; border: 1px solid #dce3d6; border-radius: .55rem; font-weight: 700; overflow-wrap: anywhere; }
+  .pick input:checked + span { background: #dcebd9; border-color: #53846b; color: #1f4b3a; box-shadow: inset 0 0 0 1px #53846b; }
+  .pick input:focus-visible + span { outline: 3px solid #b57522; outline-offset: 2px; }
+  .action, .secondary { min-height: 2.8rem; border: 1px solid transparent; border-radius: .55rem; padding: .48rem .82rem; font-weight: 800; }
+  .action { background: var(--yellow); color: #342c1b; }
+  .action:hover { background: #f0c967; }
+  .secondary { background: #edf1e9; color: #254b3c; border-color: #d9e1d5; }
+  .secondary:hover { background: #e1ecdd; }
+  .record { width: 100%; }
+  .feedback { padding: .56rem .74rem; border-radius: .5rem; background: #edf4eb; color: #244c37; overflow-wrap: anywhere; }
+  .feedback:empty { display: none; }
+  .feedback[data-tone="retry"] { color: #6f331c; background: #fbecdf; }
+  .board-top { display: flex; align-items: flex-start; justify-content: space-between; gap: .65rem; margin-bottom: .85rem; }
+  .count { flex: none; display: flex; align-items: baseline; gap: .3rem; color: #fae5a5; font-weight: 800; }
+  .count strong { font-size: 2rem; line-height: 1; font-variant-numeric: tabular-nums; }
+  .switch { display: flex; align-items: center; flex-wrap: wrap; gap: .34rem; }
+  .switch button { min-height: 2.55rem; color: #dce9dd; background: #2a3e34; border: 1px solid #537062; border-radius: .45rem; padding: .36rem .7rem; font-weight: 700; }
+  .switch button[aria-pressed="true"] { background: var(--mint); color: var(--dark); border-color: var(--mint); }
+  .visual { min-height: 11.6rem; margin: .78rem 0; }
+  table { width: calc(100% + .68rem); table-layout: fixed; border-collapse: separate; border-spacing: .34rem; margin-left: -.34rem; text-align: center; }
+  th, td { padding: .36rem .12rem; border-radius: .44rem; overflow-wrap: anywhere; }
+  th { background: #33483c; font-size: .85rem; font-weight: 700; }
+  td { height: 2.18rem; border: 1px dashed #6b8173; color: #c4d3c8; }
+  td.found { background: var(--mint); border: 1px solid var(--mint); color: #203a2b; font-weight: 800; }
+  .tree { list-style: none; margin: .64rem 0 0; padding: 0 0 0 .55rem; border-left: 2px solid #60796a; display: grid; gap: .35rem; }
+  .tree > li { display: grid; grid-template-columns: minmax(3.3rem, .72fr) minmax(0, 1.65fr); align-items: center; gap: .65rem; }
+  .branch { min-width: 0; position: relative; text-align: center; padding: .25rem .15rem; background: #33483c; border-radius: .4rem; font-weight: 700; }
+  .branch::before { position: absolute; content: ""; width: .55rem; left: -.55rem; top: 50%; border-top: 2px solid #60796a; }
+  .leaves { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .26rem; padding: 0 0 0 .4rem; border-left: 1px solid #60796a; list-style: none; }
+  .leaves li { color: #ceddd1; border: 1px dashed #6b8173; border-radius: .34rem; padding: .25rem .14rem; text-align: center; overflow-wrap: anywhere; }
+  .leaves li.found { background: var(--mint); color: #203a2b; border: 1px solid var(--mint); }
+  .board-actions { margin-top: .9rem; display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+  .hint { margin-top: .65rem; color: #f4e0a5; }
+  .activity-footer { display: flex; justify-content: space-between; align-items: center; gap: .7rem; flex-wrap: wrap; margin-top: 1rem; }
+  .lesson-controls { display: grid; gap: 1.05rem; margin-top: 1.05rem; }
+  .scenario-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
+  .scenario-actions button { min-height: 2.8rem; border: 1px solid var(--line); color: #254b3c; background: #eff2ea; border-radius: .55rem; font-weight: 800; padding: .35rem; }
+  .scenario-actions button[aria-pressed="true"] { border-color: #53846b; background: #dcebd9; }
+  [data-operation][aria-pressed="true"] { border-color: #53846b; background: #dcebd9; }
+  .rule-groups { display: grid; gap: .65rem; margin-top: .8rem; }
+  .rule-group { background: #31463a; border: 1px solid #50685a; padding: .72rem; border-radius: .55rem; }
+  .rule-group strong { display: block; margin-bottom: .34rem; }
+  .rule-chips { display: flex; flex-wrap: wrap; gap: .35rem; list-style: none; margin: 0; padding: 0; }
+  .rule-chips li { background: #e1efdf; color: #233e30; border-radius: .4rem; padding: .24rem .55rem; }
+  .quiz-status { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; }
+  progress { width: 100%; height: .56rem; accent-color: var(--green); margin: .65rem 0 .85rem; }
+  .question-text { font-size: 1.08rem; }
+  .quiz-form { margin-top: .95rem; }
+  .answer-row { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+  .number { width: 6rem; min-height: 2.8rem; border: 1px solid #889c8d; border-radius: .5rem; padding: .35rem .55rem; background: white; color: var(--ink); }
+  .quiz-form .feedback { margin-top: .65rem; }
+  .quiz-nav { display: flex; gap: .55rem; justify-content: space-between; margin-top: 1.15rem; }
+  button:disabled { opacity: .55; }
+  .help-heading { margin-bottom: .5rem; }
+  .help-area { margin-top: .95rem; }
+  .recap { margin-top: 1rem; }
+  .guide { margin-top: 1.45rem; border-top: 1px solid var(--line); padding-top: .75rem; color: var(--muted); }
+  .guide summary { color: var(--green); font-weight: 800; cursor: pointer; }
+  .guide p { margin-block: .55rem; }
+  .guide ul { padding-left: 1.3rem; margin-block: .55rem .1rem; }
+  .projector { font-size: 123%; }
+  @media (max-width: 54rem) {
+    .columns { grid-template-columns: 1fr; }
+    .hero-art { opacity: .55; }
+  }
+  @media (max-width: 34rem) {
+    .wrap { width: calc(100% - 1.5rem); }
+    .hero .wrap { padding-block: 1.55rem 1.8rem; }
+    .hero p { max-width: 22rem; }
+    .hero-art { display: none; }
+    .nav { gap: .32rem; margin-bottom: .85rem; }
+    .nav button { font-size: .86rem; gap: .28rem; padding-inline: .16rem; }
+    .step-num { min-width: 1.12rem; padding-inline: .12rem; }
+    .card { padding: .95rem; }
+    .columns { gap: .75rem; }
+  }
+  @media print {
+    :root, .projector { font-size: 10pt; background: white; }
+    .wrap { width: 100%; }
+    .top, .nav, .screen, .hero-art, button, .skip { display: none; }
+    .hero, .board { color: var(--ink); background: white; }
+    .hero p, .hero .eyebrow, .board .eyebrow, .board .muted, .count, .hint { color: var(--ink); }
+    .columns { grid-template-columns: 1fr 1fr; }
+    .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">활동으로 건너뛰기</a>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>수학 실험실</div>
+    <button type="button" class="screen" id="projector" aria-pressed="false" aria-keyshortcuts="P">큰 화면 <span aria-hidden="true">· P</span></button>
+  </div>
+</header>
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-art" aria-hidden="true"><i class="orbit"></i><i class="orbit"></i><i class="orbit"></i></div>
+    <p class="eyebrow">중학교 2학년 수학</p>
+    <h1>경우의 수 실험실</h1>
+    <p>가능한 결과를 직접 만들고, 빠짐없이 세는 방법을 찾아보세요.</p>
+  </div>
+</div>
+<main class="wrap" id="main" tabindex="-1">
+  <nav class="nav" aria-label="학습 단계">
+    <button type="button" data-go="explore" aria-current="step"><span class="step-num" aria-hidden="true">1</span>직접 세기</button>
+    <button type="button" data-go="rules"><span class="step-num" aria-hidden="true">2</span>법칙 찾기</button>
+    <button type="button" data-go="quiz"><span class="step-num" aria-hidden="true">3</span>문제 풀기</button>
+  </nav>
+
+  <section id="explore" aria-labelledby="explore-title">
+    <div class="columns">
+      <article class="card">
+        <p class="eyebrow">탐구 · 간식 세트</p>
+        <h2 id="explore-title" tabindex="-1">간식과 음료를 하나씩</h2>
+        <p class="muted">간식 3가지와 음료 2가지가 있어요. 서로 다른 세트를 하나씩 만들어 기록해 보세요.</p>
+        <form class="setup" id="combo-form" autocomplete="off">
+          <fieldset>
+            <legend>간식</legend>
+            <div class="options">
+              <label class="pick"><input type="radio" name="snack" value="0" checked><span>샌드위치</span></label>
+              <label class="pick"><input type="radio" name="snack" value="1"><span>주먹밥</span></label>
+              <label class="pick"><input type="radio" name="snack" value="2"><span>머핀</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>음료</legend>
+            <div class="options two">
+              <label class="pick"><input type="radio" name="drink" value="0" checked><span>우유</span></label>
+              <label class="pick"><input type="radio" name="drink" value="1"><span>주스</span></label>
+            </div>
+          </fieldset>
+          <button type="submit" class="action record">선택한 세트 기록하기</button>
+          <p class="feedback" id="combo-message" role="status" aria-live="polite"></p>
+        </form>
+      </article>
+      <article class="card board">
+        <div class="board-top">
+          <div><p class="eyebrow">기록판</p><h2>세트를 빠짐없이</h2></div>
+          <p class="count" id="count-label" aria-label="기록한 세트 0가지"><strong id="count">0</strong>가지</p>
+        </div>
+        <div class="switch" role="group" aria-label="기록판 보기">
+          <button type="button" id="table-toggle" aria-pressed="true" aria-controls="matrix-view">표로 보기</button>
+          <button type="button" id="tree-toggle" aria-pressed="false" aria-controls="tree-view">수형도로 보기</button>
+        </div>
+        <div class="visual" id="matrix-view"></div>
+        <div class="visual" id="tree-view" hidden></div>
+        <p class="muted" id="board-note">선택한 세트가 표에서 만나는 한 칸을 채워요.</p>
+        <p class="hint" id="combo-hint" role="status" hidden></p>
+        <div class="board-actions">
+          <button type="button" class="dark-button" id="hint-combo" aria-expanded="false" aria-controls="combo-hint">힌트</button>
+          <button type="button" class="dark-button" id="reset-combo">기록 지우기</button>
+        </div>
+      </article>
+    </div>
+    <div class="activity-footer">
+      <p class="muted">표의 한 칸과 수형도의 가지 끝 하나는 각각 세트 한 가지를 뜻해요.</p>
+      <button type="button" class="secondary" data-go="rules">법칙 찾기로</button>
+    </div>
+  </section>
+
+  <section id="rules" aria-labelledby="rules-title" hidden>
+    <div class="columns">
+      <article class="card">
+        <p class="eyebrow">탐구 · 상황 비교</p>
+        <h2 id="rules-title" tabindex="-1">더할까, 곱할까</h2>
+        <p class="muted">두 상황에서 가능한 결과를 살펴보고 알맞은 식을 골라 보세요.</p>
+        <div class="lesson-controls">
+          <div class="scenario-actions" role="group" aria-label="비교할 상황">
+            <button type="button" data-rule="sum" aria-pressed="true">이동 수단</button>
+            <button type="button" data-rule="product" aria-pressed="false">이동 경로</button>
+          </div>
+          <div><h3 id="scenario-title"></h3><p class="muted" id="scenario-text"></p></div>
+          <fieldset>
+            <legend>알맞은 식 고르기</legend>
+            <div class="options two">
+              <button type="button" class="secondary" data-operation="sum" aria-pressed="false">3 + 2</button>
+              <button type="button" class="secondary" data-operation="product" aria-pressed="false">3 × 2</button>
+            </div>
+          </fieldset>
+          <p class="feedback" id="rule-message" role="status"></p>
+        </div>
+      </article>
+      <article class="card board">
+        <p class="eyebrow">가능한 결과</p>
+        <h2 id="rule-visual-title"></h2>
+        <p class="muted" id="rule-visual-note"></p>
+        <div class="rule-groups" id="rule-groups"></div>
+      </article>
+    </div>
+    <div class="activity-footer">
+      <button type="button" class="secondary" data-go="explore">직접 세기로</button>
+      <button type="button" class="secondary" data-go="quiz">문제 풀기로</button>
+    </div>
+  </section>
+
+  <section id="quiz" aria-labelledby="quiz-title" hidden>
+    <div class="columns">
+      <article class="card">
+        <div class="quiz-status"><p class="eyebrow" id="quiz-position"></p><p class="muted" id="quiz-solved"></p></div>
+        <progress id="quiz-progress" max="6" value="0" aria-label="해결한 문제 수"></progress>
+        <h2 id="quiz-title" tabindex="-1"></h2>
+        <p class="question-text" id="quiz-text"></p>
+        <form class="quiz-form" id="quiz-form" autocomplete="off" novalidate>
+          <label for="quiz-answer"><strong>경우의 수</strong></label>
+          <div class="answer-row">
+            <input class="number" id="quiz-answer" type="text" inputmode="numeric" autocomplete="off" maxlength="10">
+            <span>가지</span>
+            <button type="submit" class="action">답 확인</button>
+          </div>
+          <p class="feedback" id="quiz-message" role="status"></p>
+        </form>
+        <div class="quiz-nav">
+          <button type="button" class="secondary" id="prev-question">이전 문제</button>
+          <button type="button" class="secondary" id="next-question">다음 문제</button>
+        </div>
+        <p class="feedback recap" id="quiz-recap" role="status" hidden></p>
+      </article>
+      <article class="card board">
+        <p class="eyebrow">문제 풀이</p>
+        <h2 class="help-heading">생각할 단서</h2>
+        <p class="muted">막히면 힌트를 열고, 답을 확인한 뒤 계산 과정도 비교해 보세요.</p>
+        <div class="board-actions">
+          <button type="button" class="dark-button" id="hint-quiz" aria-expanded="false" aria-controls="quiz-hint">힌트 보기</button>
+          <button type="button" class="dark-button" id="solution-quiz" aria-expanded="false" aria-controls="quiz-solution">풀이 보기</button>
+        </div>
+        <p class="hint help-area" id="quiz-hint" hidden></p>
+        <p class="hint help-area" id="quiz-solution" hidden></p>
+      </article>
+    </div>
+    <div class="activity-footer"><button type="button" class="secondary" data-go="rules">법칙 찾기로</button></div>
+  </section>
+
+  <details class="guide">
+    <summary>교사용 진행 안내</summary>
+    <p>20분 활동으로 구성했어요. 교실 화면에서는 상단의 <strong>큰 화면</strong>을 누르세요. 학생은 기기에서 직접 조작하거나 공책에 표와 식을 기록해도 좋아요.</p>
+    <ul>
+      <li>5분 · 간식 세트를 기록하고, 표의 한 칸이 수형도의 어느 가지 끝에 해당하는지 설명해요.</li>
+      <li>5분 · 이동 수단과 이동 경로를 비교하고, 각각 왜 더하거나 곱하는지 말해요.</li>
+      <li>8분 · 확인 문제 1~5를 풀어요. 먼저 끝낸 학생은 도전 문제의 결과를 두 묶음으로 나눠 봐요.</li>
+      <li>2분 · 출구 질문으로 “두 선택을 언제 더하고 언제 곱하나요?”에 예를 들어 답해요.</li>
+    </ul>
+    <p><strong>정답</strong> 간식 세트 6가지 · 이동 수단 5가지 · 이동 경로 6가지 · 문제 1~6번은 순서대로 6, 9, 12, 6, 6, 10가지.</p>
+    <p>프로그램은 파일을 연 기기에서 선택을 기록하고 입력한 답을 채점해요.</p>
+  </details>
+</main>
+<script>
+  'use strict';
+
+  const el = id => document.getElementById(id);
+  const all = selector => Array.from(document.querySelectorAll(selector));
+  const snacks = ['샌드위치', '주먹밥', '머핀'];
+  const drinks = ['우유', '주스'];
+  const combos = new Set();
+  const comboForm = el('combo-form');
+  let boardView = 'table';
+
+  function feedback(id, message, retry) {
+    const target = el(id);
+    target.dataset.tone = retry ? 'retry' : 'ok';
+    target.textContent = message;
+  }
+
+  function expand(buttonId, panelId, show) {
+    el(buttonId).setAttribute('aria-expanded', String(show));
+    el(panelId).hidden = !show;
+  }
+
+  function switchPanel(buttonId, panelId) {
+    expand(buttonId, panelId, el(panelId).hidden);
+  }
+
+  function comboKey(snack, drink) {
+    return snack + '-' + drink;
+  }
+
+  function renderCombos() {
+    const header = drinks.map(drink => '<th scope="col">' + drink + '</th>').join('');
+    const rows = snacks.map((snack, i) => {
+      const cells = drinks.map((drink, j) => {
+        const found = combos.has(comboKey(i, j));
+        return found ? '<td class="found"><span aria-hidden="true">✓</span><span class="sr-only">기록됨</span></td>'
+          : '<td><span aria-hidden="true">·</span><span class="sr-only">아직 기록 안 됨</span></td>';
+      }).join('');
+      return '<tr><th scope="row">' + snack + '</th>' + cells + '</tr>';
+    }).join('');
+    el('matrix-view').innerHTML = '<table aria-label="간식과 음료 세트 기록표"><thead><tr><th scope="col">간식 ＼ 음료</th>'
+      + header + '</tr></thead><tbody>' + rows + '</tbody></table>';
+    el('tree-view').innerHTML = '<ul class="tree" aria-label="간식에서 음료로 뻗는 수형도">'
+      + snacks.map((snack, i) => {
+        const leaves = drinks.map((drink, j) => {
+          const found = combos.has(comboKey(i, j));
+          const state = found ? '기록됨' : '아직 기록 안 됨';
+          return '<li class="' + (found ? 'found' : '') + '">' + drink
+            + (found ? ' <span aria-hidden="true">✓</span>' : '')
+            + '<span class="sr-only"> ' + state + '</span></li>';
+        }).join('');
+        return '<li><span class="branch">' + snack + '</span><ul class="leaves">' + leaves + '</ul></li>';
+      }).join('') + '</ul>';
+    el('count').textContent = combos.size;
+    el('count-label').setAttribute('aria-label', '기록한 세트 ' + combos.size + '가지');
+    el('board-note').textContent = combos.size === snacks.length * drinks.length
+      ? '모든 결과를 기록했어요. 간식마다 음료 2가지씩이므로 3 × 2 = 6가지예요.'
+      : boardView === 'table' ? '선택한 세트가 표에서 만나는 한 칸을 채워요.'
+      : '수형도는 선택을 가지로 나타낸 그림이에요. 간식마다 음료 두 가지로 가지가 뻗어요.';
+  }
+
+  function setBoardView(view) {
+    boardView = view;
+    const showTable = view === 'table';
+    el('matrix-view').hidden = !showTable;
+    el('tree-view').hidden = showTable;
+    el('table-toggle').setAttribute('aria-pressed', String(showTable));
+    el('tree-toggle').setAttribute('aria-pressed', String(!showTable));
+    renderCombos();
+  }
+
+  comboForm.addEventListener('submit', event => {
+    event.preventDefault();
+    const values = new FormData(comboForm);
+    const snack = Number(values.get('snack'));
+    const drink = Number(values.get('drink'));
+    const key = comboKey(snack, drink);
+    const pair = snacks[snack] + ' + ' + drinks[drink];
+    if (combos.has(key)) {
+      feedback('combo-message', pair + '는 이미 기록했어요. 다른 세트를 골라 보세요.', true);
+      return;
+    }
+    combos.add(key);
+    feedback('combo-message', pair + ' 기록 완료. 지금까지 ' + combos.size + '가지예요.');
+    renderCombos();
+  });
+
+  el('table-toggle').addEventListener('click', () => setBoardView('table'));
+  el('tree-toggle').addEventListener('click', () => setBoardView('tree'));
+  el('hint-combo').addEventListener('click', () => switchPanel('hint-combo', 'combo-hint'));
+  el('combo-hint').textContent = '한 간식을 고른 채 음료를 하나씩 바꿔 보세요. 두 음료를 모두 기록했다면 다음 간식으로 넘어가세요.';
+  el('reset-combo').addEventListener('click', () => {
+    combos.clear();
+    comboForm.reset();
+    setBoardView('table');
+    expand('hint-combo', 'combo-hint', false);
+    feedback('combo-message', '기록을 지웠어요. 다시 세트를 만들어 보세요.');
+  });
+
+  const situations = {
+    sum: {
+      title: '버스 또는 지하철',
+      text: '박물관까지 버스 3개 노선과 지하철 2개 노선 중 하나를 골라요.',
+      visual: '노선 하나 고르기',
+      note: '버스를 고르는 경우와 지하철을 고르는 경우를 묶어 보세요.',
+      groups: [['버스', ['1번', '2번', '3번']], ['지하철', ['A선', 'B선']]],
+      reason: '합의 법칙 · 두 묶음이 겹치지 않고 그중 하나를 고르므로 3 + 2 = 5가지예요.',
+      hint: '버스와 지하철을 함께 타는 상황인지 살펴보세요. 이 상황에서는 노선 하나만 골라요.'
+    },
+    product: {
+      title: '도서관을 거쳐 체육관으로',
+      text: '출발지에서 도서관까지 3개 길이 있고, 도서관에서 체육관까지 2개 길이 있어요. 각 구간에서 길 하나를 골라요.',
+      visual: '앞길과 뒷길 잇기',
+      note: '첫 구간의 길마다 둘째 구간에서 이어 갈 길을 모두 표시했어요.',
+      groups: [['첫 구간 A', ['A → 가', 'A → 나']], ['첫 구간 B', ['B → 가', 'B → 나']], ['첫 구간 C', ['C → 가', 'C → 나']]],
+      reason: '곱의 법칙 · 첫 구간의 길 3가지 각각에 둘째 구간의 길 2가지가 이어지므로 3 × 2 = 6가지예요.',
+      hint: '첫 구간에서 A 길을 골랐다고 생각해 보세요. A 다음에 가 길과 나 길을 모두 선택할 수 있어요.'
+    }
+  };
+  let situation = 'sum';
+  const ruleAnswers = {};
+
+  function showRule() {
+    const rule = situations[situation];
+    all('[data-rule]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.rule === situation));
+    });
+    el('scenario-title').textContent = rule.title;
+    el('scenario-text').textContent = rule.text;
+    el('rule-visual-title').textContent = rule.visual;
+    el('rule-visual-note').textContent = rule.note;
+    el('rule-groups').innerHTML = rule.groups.map(group => {
+      const entries = group[1].map(entry => '<li>' + entry + '</li>').join('');
+      return '<div class="rule-group"><strong>' + group[0] + '</strong><ul class="rule-chips">' + entries + '</ul></div>';
+    }).join('');
+    const answer = ruleAnswers[situation];
+    all('[data-operation]').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.operation === answer));
+    });
+    const correct = answer === situation;
+    const message = correct ? rule.reason : '다시 골라 보세요. ' + rule.hint;
+    feedback('rule-message', answer ? message : '', Boolean(answer && !correct));
+  }
+
+  all('[data-rule]').forEach(button => button.addEventListener('click', () => {
+    situation = button.dataset.rule;
+    showRule();
+  }));
+  all('[data-operation]').forEach(button => button.addEventListener('click', () => {
+    ruleAnswers[situation] = button.dataset.operation;
+    showRule();
+  }));
+
+  const questions = [
+    {
+      title: '두 주사위의 합',
+      stem: '빨간 주사위와 파란 주사위를 한 번씩 던져요. 두 눈의 합이 7이 되는 경우는 몇 가지인가요?',
+      answer: 6,
+      hint: '빨간 주사위가 1일 때 파란 주사위는 6이어야 해요. 빨간 눈을 2부터 6까지 바꾸어 보세요.',
+      solution: '빨간 눈 1, 2, 3, 4, 5, 6에 파란 눈 6, 5, 4, 3, 2, 1이 각각 하나씩 대응해요. 모두 6가지예요.'
+    },
+    {
+      title: '체험 하나 고르기',
+      stem: '과학 체험 4가지와 미술 체험 5가지 중 체험 하나만 골라요. 고르는 방법은 몇 가지인가요?',
+      answer: 9,
+      hint: '과학과 미술에서 하나씩 고르는지, 두 분야에서 통틀어 하나를 고르는지 확인해요.',
+      solution: '과학을 고르는 4가지와 미술을 고르는 5가지가 서로 겹치지 않아요. 4 + 5 = 9가지예요.'
+    },
+    {
+      title: '공연의 두 순서',
+      stem: '시작 곡 후보 3곡과 마무리 곡 후보 4곡이 있어요. 각 후보에서 한 곡씩 고르는 방법은 몇 가지인가요?',
+      answer: 12,
+      hint: '시작 곡을 하나로 정해 두세요. 그때 고를 수 있는 마무리 곡은 몇 곡인가요?',
+      solution: '시작 곡 3곡 각각에 마무리 곡 4곡을 짝지을 수 있어요. 3 × 4 = 12가지예요.'
+    },
+    {
+      title: '회장과 부회장',
+      stem: '후보 A, B, C 중 회장과 부회장을 한 명씩 뽑아요. 한 사람이 두 자리를 맡을 수 없을 때 몇 가지인가요?',
+      answer: 6,
+      hint: 'A가 회장이라면 부회장 후보는 몇 명 남나요? A와 B가 자리를 바꾸면 다른 결과예요.',
+      solution: '회장으로 3명 중 한 명을 뽑으면 부회장으로 2명 중 한 명을 뽑아요. 3 × 2 = 6가지예요.'
+    },
+    {
+      title: '두 명으로 이루어진 모둠',
+      stem: '후보 A, B, C, D 중 역할 구분 없이 두 명을 뽑아요. 뽑는 순서를 따지지 않을 때 몇 가지인가요?',
+      answer: 6,
+      hint: 'A와 B를 뽑는 결과는 B와 A를 뽑는 결과와 같아요. A가 들어간 짝부터 적어 보세요.',
+      solution: '가능한 짝은 AB, AC, AD, BC, BD, CD예요. 순서대로 세면 4 × 3에서 같은 짝을 두 번씩 세므로 12 ÷ 2 = 6가지예요.'
+    },
+    {
+      title: '도전 · 두 자리 짝수',
+      stem: '0, 1, 2, 3, 4 중 서로 다른 두 숫자를 골라 두 자리 짝수를 만들어요. 몇 가지인가요?',
+      answer: 10,
+      hint: '일의 자리에 0이 올 때와 2 또는 4가 올 때를 나누세요. 십의 자리에 0이 올 수 있는지도 확인해요.',
+      solution: '일의 자리가 0이면 십의 자리는 4가지예요. 일의 자리가 2나 4이면 십의 자리에서 0과 이미 쓴 숫자를 빼므로 각각 3가지예요. 4 + 3 + 3 = 10가지예요.'
+    }
+  ];
+  const responses = questions.map(() => ({ input: '', message: '', retry: false, solved: false, hint: false, solution: false }));
+  let questionIndex = 0;
+  const quizAnswer = el('quiz-answer');
+
+  function updateProgress() {
+    const solved = responses.filter(response => response.solved).length;
+    el('quiz-progress').value = solved;
+    el('quiz-solved').textContent = solved + '문제 해결';
+    const allSolved = solved === questions.length;
+    el('quiz-recap').hidden = !allSolved;
+    el('quiz-recap').textContent = allSolved ? '모든 문제를 해결했어요. 회장과 부회장을 뽑는 문제와 두 명을 뽑는 문제에서 순서가 어떻게 다른지 설명해 보세요.' : '';
+  }
+
+  function renderQuestion() {
+    const question = questions[questionIndex];
+    const response = responses[questionIndex];
+    el('quiz-position').textContent = '문제 ' + (questionIndex + 1) + ' / ' + questions.length;
+    el('quiz-title').textContent = question.title;
+    el('quiz-text').textContent = question.stem;
+    el('quiz-hint').textContent = question.hint;
+    el('quiz-solution').textContent = question.solution;
+    quizAnswer.value = response.input;
+    feedback('quiz-message', response.message, response.retry);
+    expand('hint-quiz', 'quiz-hint', response.hint);
+    expand('solution-quiz', 'quiz-solution', response.solution);
+    el('prev-question').disabled = questionIndex === 0;
+    el('next-question').disabled = questionIndex === questions.length - 1;
+    updateProgress();
+  }
+
+  quizAnswer.addEventListener('input', () => {
+    const response = responses[questionIndex];
+    response.input = quizAnswer.value;
+    response.message = '';
+    feedback('quiz-message', '');
+  });
+  el('quiz-form').addEventListener('submit', event => {
+    event.preventDefault();
+    const question = questions[questionIndex];
+    const response = responses[questionIndex];
+    const value = quizAnswer.value.trim();
+    const valid = /^\d+$/.test(value);
+    const correct = valid && Number(value) === question.answer;
+    response.input = quizAnswer.value;
+    response.retry = !correct;
+    if (!valid) {
+      response.message = '경우의 수를 0 이상의 정수로 입력해 주세요.';
+    } else if (correct) {
+      response.solved = true;
+      response.message = '맞았어요. ' + question.solution;
+    } else {
+      response.message = '다시 세어 보세요. ' + question.hint;
+    }
+    feedback('quiz-message', response.message, response.retry);
+    updateProgress();
+  });
+  el('hint-quiz').addEventListener('click', () => {
+    switchPanel('hint-quiz', 'quiz-hint');
+    responses[questionIndex].hint = !el('quiz-hint').hidden;
+  });
+  el('solution-quiz').addEventListener('click', () => {
+    switchPanel('solution-quiz', 'quiz-solution');
+    responses[questionIndex].solution = !el('quiz-solution').hidden;
+  });
+
+  function moveQuestion(offset) {
+    questionIndex += offset;
+    renderQuestion();
+    el('quiz-title').focus();
+  }
+  el('prev-question').addEventListener('click', () => moveQuestion(-1));
+  el('next-question').addEventListener('click', () => moveQuestion(1));
+
+  const stages = ['explore', 'rules', 'quiz'];
+  all('[data-go]').forEach(button => button.addEventListener('click', () => {
+    const stage = button.dataset.go;
+    stages.forEach(id => { el(id).hidden = id !== stage; });
+    all('.nav [data-go]').forEach(tab => {
+      if (tab.dataset.go === stage) tab.setAttribute('aria-current', 'step');
+      else tab.removeAttribute('aria-current');
+    });
+    el(stage + '-title').focus({ preventScroll: true });
+    el('main').scrollIntoView({ block: 'nearest' });
+  }));
+
+  function toggleProjector() {
+    const active = document.documentElement.classList.toggle('projector');
+    el('projector').setAttribute('aria-pressed', String(active));
+  }
+  el('projector').addEventListener('click', toggleProjector);
+  document.addEventListener('keydown', event => {
+    if (event.key.toLowerCase() === 'p' && !event.repeat && !event.ctrlKey && !event.altKey
+        && !event.metaKey && !event.target.closest('input, textarea, [contenteditable]')) {
+      toggleProjector();
+    }
+  });
+
+  renderCombos();
+  showRule();
+  renderQuestion();
+</script>
+</body>
+</html>

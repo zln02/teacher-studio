@@ -1,0 +1,10 @@
+{
+ "check_game-1": {
+  "rc": 1,
+  "out": "PASS file size 29 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nPASS no optional chaining ?. (old Chrome)\nPASS no nullish ?? (old Chrome)\nPASS no replaceAll (old Chrome)\nPASS no .at() (old Chrome)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nFAIL no alert/prompt/confirm blocks the game (2 found)\nPASS no aspect-ratio (old Chrome)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nPASS GAME.items has 0 entries\nPASS ES2017 syntax: 1 inline script(s)\nSKIP browser opening check could not finish: Page.wait_for_function: Timeout 5000ms exceeded.\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\nPASS 밤티 검사 통과: 전문 디자이너 기준 5/5 (글꼴·색·표면·여백·절제)\n\nRESULT: FAIL (7 fail, 1 unchecked, 0 warn)\n"
+ },
+ "check_webapp-1": {
+  "rc": 1,
+  "out": "PASS no outside address: works offline\nPASS script syntax ES2017 (no ?. / ??)\nPASS no network or storage API\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 29 KB\nPASS example-likeness: not a copy of a shipped example (2 compared)\nPASS ES2017 syntax: 1 inline script(s)\nFAIL [1600x900] low text contrast: 1.1:1 +1점\nFAIL [projector] low text contrast: 1.1:1 +1점\nFAIL no reset button (#wa-reset)\nPASS clicked 0 part(s)\nFAIL [phone 390] low text contrast: 1.1:1 +1점\nPASS no JS errors\nPASS no outside requests while running\ncheck: FAIL (4 fail, 0 unchecked)\n"
+ }
+}

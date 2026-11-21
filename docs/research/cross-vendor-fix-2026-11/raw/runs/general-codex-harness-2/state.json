@@ -1,0 +1,29 @@
+{
+ "secs": 290,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 12731,
+ "tok": {
+  "input": 394274,
+  "cached": 345216,
+  "output": 12731,
+  "reasoning": 871
+ },
+ "turns": 14,
+ "failed_cmds": 1,
+ "is_error": false,
+ "errors": [],
+ "last": "월례 배드민턴 대회용 **대진표와 점수판**을 지금 폴더에 저장했습니다.\n\n- [대진표·점수판 열기](<C:/Users/User/Downloads/xv-eval-work/fix/general-codex-harness-2/work/월례배드민턴.html>) — 더블클릭하면 인터넷 없이 열립니다. **참가팀·경기 방식**에서 2~16팀을 입력하고 추첨하세요. 대진표에서 경기를 선택한 뒤 `A`와 `L`로 득점, `U`로 되돌리기를 할 수 있습니다. 승리 팀은 다음 라운드에 자동으로 올라갑니다.\n- [인쇄용 대진표 PDF](<C:/Users/User/Downloads/xv-eval-work/fix/general-codex-harness-2/work/월례배드민턴-인쇄용-대진표.pdf>) — 손으로 기록할 수 있는 8팀용 A4 한 장입니다. 실제 추첨 결과는 화면의 **대진표 인쇄**로 출력할 수 있습니다.\n\n기본값은 **8팀 복식 토너먼트, 21점제 3게임 2선승**입니다. 15점제와 단판으로도 바꿀 수 있습니다. 새로고침하면 예시 대진으로 돌아갑니다.\n\n득점 상한, 부전승, 승자 진출, 되돌리기를 검증했습니다. 이 환경에서는 브라우저 화면을 직접 열어 확인하지 못했습니다.",
+ "name": "general-codex-harness-2",
+ "task": "general",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "월례배드민턴.html",
+ "all_files": [
+  "월례배드민턴-인쇄용-대진표.pdf",
+  "월례배드민턴.html"
+ ],
+ "opens": true,
+ "general_fixed": true
+}

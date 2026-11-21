@@ -1,0 +1,40 @@
+{
+ "secs": 228,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 6219,
+ "tok": {
+  "input": 1104088,
+  "cached": 1039488,
+  "output": 6219,
+  "reasoning": 702
+ },
+ "turns": 13,
+ "failed_cmds": 3,
+ "is_error": false,
+ "errors": [],
+ "last": "[조선 후기 실학의 등장.pptx](<C:/Users/User/Downloads/xv-eval-work/fix/class-ppt-codex-harness-2/work/조선 후기 실학의 등장.pptx>)를 현재 폴더에 저장했습니다.\n\n중학교 3학년 **45분 수업용으로 총 11장**을 구성했습니다. 실학의 등장 배경, 농업·상공업 중심 개혁론 비교, 박제가의 『북학의』 읽기, 짝 활동, 확인 문제와 정답을 담았습니다. 발표자 노트에 진행 시간과 예시 답안도 넣었습니다.\n\n글상자와 도형 배치 검사를 통과했고 밑그림 미리보기를 확인했습니다. 실제 PowerPoint 화면은 이 환경에서 직접 열어 확인하지 못했습니다. PowerPoint에서 파일을 열고 **F5**를 누르면 수업 화면이 시작됩니다.",
+ "name": "class-ppt-codex-harness-2",
+ "task": "class-ppt",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "조선 후기 실학의 등장.pptx",
+ "all_files": [
+  ".lesson-build\\deck.json",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-01.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-02.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-03.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-04.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-05.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-06.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-07.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-08.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-09.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-10.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-11.png",
+  ".lesson-build\\review\\조선 후기 실학의 등장-sketch-sheet.png",
+  "조선 후기 실학의 등장.pptx"
+ ],
+ "opens": true
+}

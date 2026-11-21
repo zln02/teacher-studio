@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "general",
+ "run": 1,
+ "pass_": 2,
+ "mapping": {
+  "A": "claude-harness",
+  "B": "codex-bare",
+  "C": "claude-bare",
+  "D": "codex-harness"
+ },
+ "result": {
+  "A": {
+   "content": 3,
+   "design": 4,
+   "readability": 4,
+   "fit": 3,
+   "note": "Large text and a warm, tidy design make it easy to read, and the screen captures show the roster and team-name edit boxes. The bracket shows only team numbers with '...' placeholders, and the scoreboard adds cumulative +1/+2/+5 points per team, which doesn't match how badminton matches are scored."
+  },
+  "B": {
+   "content": 5,
+   "design": 5,
+   "readability": 3,
+   "fit": 5,
+   "note": "It shows a quarterfinal-to-final bracket with sample pairs and results, plus a court scoreboard for the match in progress (14:11) and the 21-point rule. It is detailed and polished, but the text is very small."
+  },
+  "C": {
+   "content": 4,
+   "design": 3,
+   "readability": 3,
+   "fit": 4,
+   "note": "It has tournament settings and a full round-robin schedule over 2 courts and 7 rounds, with score boxes, so it could be used as is. The design is plain and the tables are long with small text."
+  },
+  "D": {
+   "content": 2,
+   "design": 3,
+   "readability": 3,
+   "fit": 2,
+   "note": "The scoreboard and settings layout is tidy. The bracket is an empty placeholder until teams are entered, and pressing the buttons changed almost nothing on screen, so the bracket itself was never shown."
+  },
+  "ranking": [
+   "B",
+   "C",
+   "A",
+   "D"
+  ]
+ },
+ "cost": 0.26445260000000004,
+ "secs": 18,
+ "raw": "{\"A\":{\"content\":3,\"design\":4,\"readability\":4,\"fit\":3,\"note\":\"Large text and a warm, tidy design make it easy to read, and the screen captures show the roster and team-name edit boxes. The bracket shows only team numbers with '...' placeholders, and the scoreboard adds cumulative +1/+2/+5 points per team, which doesn't match how badminton matches are scored.\"},\"B\":{\"content\":5,\"design\":5,\"readability\":3,\"fit\":5,\"note\":\"It shows a quarterfinal-to-final bracket with sample pairs and results, plus a court scoreboard for the match in progress (14:11) and the 21-point rule. It is detailed and polished, but the text is very small.\"},\"C\":{\"content\":4,\"design\":3,\"readability\":3,\"fit\":4,\"note\":\"It has tournament settings and a full round-robin schedule over 2 courts and 7 rounds, with score boxes, so it could be used as is. The design is plain and the tables are long with small text.\"},\"D\":{\"content\":2,\"design\":3,\"readability\":3,\"fit\":2,\"note\":\"The scoreboard and settings layout is tidy. The bracket is an empty placeholder until teams are entered, and pressing the buttons changed almost nothing on screen, so the bracket itself was never shown.\"},\"ranking\":[\"B\",\"C\",\"A\",\"D\"]}"
+}

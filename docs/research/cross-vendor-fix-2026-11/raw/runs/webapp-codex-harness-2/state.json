@@ -1,0 +1,27 @@
+{
+ "secs": 311,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 14174,
+ "tok": {
+  "input": 372907,
+  "cached": 333952,
+  "output": 14174,
+  "reasoning": 730
+ },
+ "turns": 10,
+ "failed_cmds": 2,
+ "is_error": false,
+ "errors": [],
+ "last": "중학교 2학년 수학 [경우의 수 실험실.html](<C:/Users/User/Downloads/xv-eval-work/fix/webapp-codex-harness-2/work/경우의 수 실험실.html>)을 현재 폴더에 저장했습니다. 파일을 더블클릭하면 인터넷 없이 열립니다. 교실 TV나 프로젝터에서는 **큰 화면** 버튼을 누르세요.\n\n- **직접 세기** — 간식과 음료를 골라 기록하고, 같은 결과를 표와 수형도로 비교합니다.\n- **법칙 찾기** — 이동 수단과 이동 경로를 비교하며 언제 더하고 언제 곱하는지 확인합니다.\n- **문제 풀기** — 확인 문제 5개와 도전 문제 1개를 풀고, 답을 입력하면 바로 피드백을 받습니다.\n\n20분 활동을 기준으로 교사용 진행 안내와 정답표를 넣었습니다. 문항 정답, 오프라인 구성, 스크립트 문법을 확인했습니다. 이 환경에서는 브라우저 화면을 직접 열어 확인하지 못했습니다.",
+ "name": "webapp-codex-harness-2",
+ "task": "webapp",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "경우의 수 실험실.html",
+ "all_files": [
+  "경우의 수 실험실.html"
+ ],
+ "opens": true
+}

@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "hwpx-notice",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-bare",
+  "B": "codex-harness",
+  "C": "claude-bare",
+  "D": "claude-harness"
+ },
+ "result": {
+  "A": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "Clean structure: overview table, supplies, safety notes and a reply slip in a compact single page. Key details such as date, venue and deadline are left as placeholders, and an empty box sits unexplained at the top."
+  },
+  "B": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "The newsletter format and the schedule table are neat. Date, venue, cost and contact are all placeholders, there is no reply slip, and the visible draft label ('교사 초안·배포 전 확인') means it cannot go out as is."
+  },
+  "C": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 5,
+   "note": "Very complete: concrete overview, a per-class schedule table, supplies, detailed precautions, contacts and a consent reply slip are all filled in. Only the phone numbers and school name are placeholders, and it is nearly ready to send."
+  },
+  "D": {
+   "content": 4,
+   "design": 3,
+   "readability": 3,
+   "fit": 4,
+   "note": "Concrete details throughout: dates, per-class departure and return times, a cost note and a reply deadline. The left column of the reply form wraps awkwardly, and the school name '우리 학교' is not a real name."
+  },
+  "ranking": [
+   "C",
+   "D",
+   "A",
+   "B"
+  ]
+ },
+ "cost": 0.2795182,
+ "secs": 18,
+ "raw": "{\"A\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"Clean structure: overview table, supplies, safety notes and a reply slip in a compact single page. Key details such as date, venue and deadline are left as placeholders, and an empty box sits unexplained at the top.\"},\"B\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"The newsletter format and the schedule table are neat. Date, venue, cost and contact are all placeholders, there is no reply slip, and the visible draft label ('교사 초안·배포 전 확인') means it cannot go out as is.\"},\"C\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":5,\"note\":\"Very complete: concrete overview, a per-class schedule table, supplies, detailed precautions, contacts and a consent reply slip are all filled in. Only the phone numbers and school name are placeholders, and it is nearly ready to send.\"},\"D\":{\"content\":4,\"design\":3,\"readability\":3,\"fit\":4,\"note\":\"Concrete details throughout: dates, per-class departure and return times, a cost note and a reply deadline. The left column of the reply form wraps awkwardly, and the school name '우리 학교' is not a real name.\"},\"ranking\":[\"C\",\"D\",\"A\",\"B\"]}"
+}

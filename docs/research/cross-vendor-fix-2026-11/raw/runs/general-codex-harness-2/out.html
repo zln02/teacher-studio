@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>월례 배드민턴 · 대진표와 점수판</title>
+<style>
+  :root {
+    --bg:#101d1b; --panel:#182825; --card:#20322e; --line:#405650;
+    --text:#f4f7f2; --muted:#bbc9c1; --primary:#d6ebae; --secondary:#ffd3a3;
+    font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;
+    color:var(--text); background:var(--bg); line-height:1.5; word-break:keep-all;
+  }
+  *, *::before, *::after { box-sizing:border-box; }
+  body { margin:0; }
+  button,select,textarea { font:inherit; }
+  button,select {
+    min-height:44px; border:1px solid var(--line); border-radius:8px;
+    background:var(--card); color:var(--text); padding:8px 12px;
+  }
+  button { cursor:pointer; font-weight:700; }
+  button:hover:not(:disabled) { border-color:var(--primary); }
+  button:disabled { opacity:.48; cursor:default; }
+  :focus-visible { outline:3px solid var(--secondary); outline-offset:3px; }
+  h1,h2,h3,p { margin:0; }
+  .wrap { max-width:1680px; padding:24px 32px; margin:auto; }
+  .mast { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; padding-bottom:20px; border-bottom:1px solid var(--line); }
+  .mast-title { display:flex; align-items:center; gap:16px; }
+  .court { width:44px; height:32px; border:2px solid var(--primary); border-radius:3px; position:relative; flex:none; }
+  .court::before,.court::after { content:""; position:absolute; background:var(--primary); }
+  .court::before { inset:0 auto 0 calc(50% - 1px); width:2px; }
+  .court::after { inset:calc(50% - 1px) 0 auto; height:2px; }
+  h1 { font-size:clamp(1.35rem,2.7vw,2.25rem); letter-spacing:-.045em; line-height:1.2; }
+  .toolbar,.actions,.board-tools,.options { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  .toolbar button,.board-tools button { font-size:.875rem; }
+  .primary { background:var(--primary); border-color:var(--primary); color:#172419; }
+  .primary:hover:not(:disabled) { background:#e7f3ce; }
+  .layout { display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); align-items:start; gap:20px; margin-top:20px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:16px; min-width:0; }
+  .board { padding:20px; }
+  .panel-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px 12px; }
+  h2 { font-size:1.25rem; letter-spacing:-.02em; }
+  .minor { color:var(--muted); font-size:.875rem; }
+  .match-header { text-align:center; padding:24px 0 16px; }
+  #match-title { font-size:clamp(1.25rem,2.6vw,2rem); line-height:1.2; margin-top:4px; }
+  .status { color:var(--primary); font-weight:700; min-height:24px; margin-top:8px; }
+  .sides { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  .side {
+    --accent:var(--primary); text-align:center; background:#1b3029; border:1px solid #496255;
+    border-top:3px solid var(--accent); border-radius:12px; padding:12px; display:flex;
+    flex-direction:column; align-items:stretch; min-width:0;
+  }
+  .side.right { --accent:var(--secondary); background:#322d26; border-color:#665849; border-top-color:var(--accent); }
+  .team {
+    font-size:clamp(1rem,2.4vw,1.75rem); font-weight:800; color:var(--accent);
+    overflow-wrap:anywhere; min-height:2.6em; display:grid; place-items:center; line-height:1.25;
+  }
+  .score {
+    font-size:clamp(4.25rem,10vw,10rem); font-weight:800; font-variant-numeric:tabular-nums;
+    line-height:1; letter-spacing:-.07em; margin:0 0 8px; padding-right:.07em;
+  }
+  .score.bump { animation:bump 160ms ease-out; }
+  @keyframes bump { 50% { transform:scale(1.045); } }
+  @media (prefers-reduced-motion:reduce) { .score.bump { animation:none; } }
+  .reduce .score.bump { animation:none; }
+  .games { font-weight:700; margin:0 0 12px; color:var(--muted); }
+  .point { margin-top:auto; min-height:64px; background:var(--accent); color:#1b211b; border-color:var(--accent); font-size:1.4rem; }
+  .point:hover:not(:disabled) { filter:brightness(1.09); }
+  kbd { font:inherit; font-size:.75em; padding:2px 5px; margin-inline-start:4px; border:1px solid currentColor; border-radius:4px; }
+  .board-tools { margin-top:12px; }
+  #next-game { margin-inline-start:auto; }
+  .record { display:flex; flex-wrap:wrap; gap:8px 16px; padding-top:12px; margin-top:12px; border-top:1px solid var(--line); }
+  #notice { color:var(--secondary); margin-top:8px; }
+  #notice:empty { display:none; }
+  .bracket { padding:20px; }
+  .bracket .panel-head { margin-bottom:12px; }
+  .bracket h3 { font-size:.875rem; color:var(--muted); padding-block:0 8px; text-align:center; }
+  .bracket-scroll { overflow-x:auto; padding:4px; }
+  .rounds { display:grid; grid-template-columns:repeat(var(--depth), minmax(100px,1fr)); gap:12px; }
+  .round { display:flex; flex-direction:column; min-width:0; }
+  .matches { min-height:calc(var(--rows) * 88px); flex:1; display:grid; grid-auto-rows:1fr; padding:0; margin:0; list-style:none; }
+  .matches li { display:grid; align-items:center; position:relative; min-width:0; padding-block:4px; }
+  .round:not(:last-child) li::after { content:""; position:absolute; left:100%; width:7px; border-right:1px solid var(--line); pointer-events:none; }
+  .round:not(:last-child) li:nth-child(odd)::after { top:50%; bottom:0; border-top:1px solid var(--line); }
+  .round:not(:last-child) li:nth-child(even)::after { top:0; bottom:50%; border-bottom:1px solid var(--line); }
+  .round:not(:first-child) li::before { content:""; position:absolute; top:50%; right:100%; width:6px; border-top:1px solid var(--line); }
+  .match { text-align:left; min-width:0; width:100%; padding:6px 8px; background:var(--card); font-size:.875rem; }
+  .match[aria-pressed="true"] { border-color:var(--primary); background:#2a3e31; }
+  .match[aria-disabled="true"] { cursor:default; }
+  .match[aria-disabled="true"]:hover { border-color:var(--line); }
+  .match-state { color:var(--muted); display:block; font-weight:500; font-size:.75rem; }
+  .match[aria-pressed="true"] .match-state,.victor { color:var(--primary); }
+  .entry { display:flex; justify-content:space-between; align-items:baseline; gap:4px; }
+  .entry-name { overflow-wrap:anywhere; min-width:0; }
+  .winner { padding-top:12px; margin-top:8px; border-top:1px solid var(--line); color:var(--primary); font-size:1.15rem; font-weight:800; overflow-wrap:anywhere; }
+  .winner:empty { display:none; }
+  dialog { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:16px; padding:20px; width:min(560px,calc(100% - 32px)); max-height:90vh; overflow:auto; }
+  dialog::backdrop { background:#07110fbb; }
+  .settings h2 { margin-bottom:12px; }
+  .settings label { display:block; font-weight:700; margin-bottom:4px; }
+  textarea { width:100%; display:block; resize:vertical; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:8px; padding:8px 12px; }
+  .options { gap:12px; margin-top:12px; }
+  .actions { margin-top:12px; }
+  .settings .minor { margin-top:8px; }
+  #setup-message { color:var(--secondary); }
+  #setup-message:empty { display:none; }
+  .foot { margin-top:16px; }
+  #print-note { display:none; }
+  @media (max-width:1000px) {
+    .layout { grid-template-columns:1fr; }
+    .score { font-size:clamp(5rem,18vw,11rem); }
+  }
+  @media (max-width:540px) {
+    .wrap { padding:12px; }
+    .panel,.settings { padding:12px; }
+    .team { font-size:clamp(1rem,5vw,1.5rem); }
+    .side { padding:8px; }
+    .point { min-height:56px; }
+    .match-header { padding-top:16px; }
+    .score { font-size:clamp(4rem,19vw,8rem); }
+  }
+  @page { size:A4 landscape; margin:12mm; }
+  @media print {
+    :root { --text:#172321; --muted:#384a41; --primary:#214f32; --line:#9baaa2; --panel:white; --card:white; color-scheme:light; background:white; }
+    .wrap { padding:0; max-width:none; }
+    .toolbar,.board,.foot,.court,dialog,dialog::backdrop { display:none !important; }
+    .mast { padding-bottom:8px; }
+    h1 { font-size:22pt; }
+    .layout { display:block; margin-top:12px; }
+    .bracket { padding:0; border:0; }
+    .bracket-scroll { overflow:visible; padding:0; }
+    .rounds { grid-template-columns:repeat(var(--depth), minmax(0,1fr)); }
+    .matches { min-height:calc(var(--rows) * 64px); }
+    .match { font-size:10pt; padding:4px 8px; min-height:0; break-inside:avoid; }
+    .match[aria-pressed="true"] { border-color:var(--line); background:white; }
+    .match-state { font-size:8pt; }
+    #print-note { display:block; margin-top:12px; font-size:10pt; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="mast">
+    <div class="mast-title"><span class="court" aria-hidden="true"></span><h1>월례 배드민턴 대회</h1></div>
+    <div class="toolbar" aria-label="대회 도구">
+      <button type="button" class="primary" id="open-settings">참가팀·경기 방식</button>
+      <button type="button" id="fullscreen">전체 화면</button>
+      <button type="button" id="print">대진표 인쇄</button>
+    </div>
+  </header>
+  <main class="layout">
+    <section class="panel board" aria-labelledby="board-heading">
+      <div class="panel-head"><h2 id="board-heading">점수판</h2><p class="minor" id="rules"></p></div>
+      <div class="match-header">
+        <p class="minor" id="game-label"></p>
+        <h3 id="match-title"></h3>
+        <p class="status" id="match-status" role="status"></p>
+      </div>
+      <div class="sides">
+        <div class="side">
+          <div class="team" id="team-0"></div>
+          <div class="score" id="score-0" aria-label="왼쪽 팀 점수">0</div>
+          <p class="games" id="games-0"></p>
+          <button class="point" type="button" id="point-0">+1점 <kbd>A</kbd></button>
+        </div>
+        <div class="side right">
+          <div class="team" id="team-1"></div>
+          <div class="score" id="score-1" aria-label="오른쪽 팀 점수">0</div>
+          <p class="games" id="games-1"></p>
+          <button class="point" type="button" id="point-1">+1점 <kbd>L</kbd></button>
+        </div>
+      </div>
+      <div class="board-tools">
+        <button type="button" id="undo">되돌리기 <kbd>U</kbd></button>
+        <button type="button" id="reset">경기 초기화</button>
+        <button type="button" class="primary" id="next-game" hidden>다음 게임</button>
+      </div>
+      <div class="record"><strong>게임별 점수</strong><p id="game-record">—</p></div>
+      <p class="minor" id="notice" role="status"></p>
+    </section>
+    <section class="panel bracket" aria-labelledby="bracket-heading">
+      <div class="panel-head"><h2 id="bracket-heading">대진표</h2><p class="minor" id="progress"></p></div>
+      <div class="bracket-scroll" tabindex="0" aria-label="대진표 가로 스크롤">
+        <div class="rounds" id="rounds"></div>
+      </div>
+      <p class="winner" id="champion" role="status"></p>
+      <p id="print-note">경기별 숫자는 이긴 게임 수입니다.</p>
+    </section>
+  </main>
+  <footer class="foot panel-head">
+    <p class="minor">경기를 선택하면 점수판이 열립니다. 새로고침하면 예시 대진으로 돌아갑니다.</p>
+    <div class="toolbar">
+      <button type="button" id="motion" aria-pressed="false">효과 줄이기</button>
+      <button type="button" id="sound" aria-pressed="false">소리 켜기</button>
+    </div>
+  </footer>
+</div>
+<dialog id="settings" class="settings" aria-labelledby="settings-title">
+  <h2 id="settings-title">참가팀·경기 방식</h2>
+  <label for="teams-input">팀 이름</label>
+  <textarea id="teams-input" rows="8" autocomplete="off" spellcheck="false" aria-describedby="team-help"></textarea>
+  <p class="minor" id="team-help">2~16팀을 한 줄에 한 팀씩 입력하세요. 팀 이름은 18자까지 입력할 수 있습니다.</p>
+  <div class="options">
+    <div>
+      <label for="target">게임 목표 점수</label>
+      <select id="target" autocomplete="off"><option value="21">21점 · 상한 30점</option><option value="15">15점 · 상한 21점</option></select>
+    </div>
+    <div>
+      <label for="format">경기 방식</label>
+      <select id="format" autocomplete="off"><option value="2">3게임 2선승</option><option value="1">1게임 단판</option></select>
+    </div>
+  </div>
+  <p class="minor">동점 연장에서는 2점 차로 이깁니다. 상한 점수에 먼저 도달하면 게임이 끝납니다.</p>
+  <p class="minor" id="setup-message" role="alert"></p>
+  <div class="actions">
+    <button class="primary" type="button" id="draw">무작위 추첨</button>
+    <button type="button" id="ordered">입력 순서로 배정</button>
+    <button type="button" id="close-settings">닫기</button>
+  </div>
+</dialog>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const make = (tag, className, content) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (content !== undefined) element.textContent = content;
+    return element;
+  };
+  const settings = $('settings');
+  const exampleTeams = Array.from({length:8}, (_, index) => (index + 1) + '팀');
+  let teams = exampleTeams.slice();
+  let rounds = [];
+  let active;
+  let target = 21;
+  let needed = 2;
+  let example = true;
+  let message = '';
+  let audio;
+  let soundOn = false;
+  const cap = () => target === 21 ? 30 : 21;
+  const blank = () => ({points:[0,0], wins:[0,0], games:[], phase:'play'});
+
+  function shuffled(entries) {
+    const result = entries.slice();
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+    return result;
+  }
+
+  function build(entries) {
+    const depth = Math.ceil(Math.log2(entries.length));
+    const pairs = Math.pow(2, depth - 1);
+    const byes = pairs * 2 - entries.length;
+    // Alternate the walk-order halves to spread first-round byes across the bracket.
+    const pairOrder = Array.from({length:pairs}, (_, index) => {
+      let value = index;
+      let reversed = 0;
+      for (let bit = 0; bit < depth - 1; bit++) {
+        reversed = reversed * 2 + value % 2;
+        value = Math.floor(value / 2);
+      }
+      return reversed;
+    });
+    const free = new Set(pairOrder.slice(0, byes));
+    rounds = [];
+    let entry = 0;
+    let number = 0;
+    for (let level = 0, count = pairs; level < depth; level++, count /= 2) {
+      const round = [];
+      for (let index = 0; index < count; index++) {
+        const bye = level === 0 && free.has(index);
+        const initial = level === 0 ? [entries[entry++], bye ? null : entries[entry++]] : null;
+        round.push({
+          level, index, key:level + '-' + index, number:bye ? null : ++number,
+          bye, initial, state:blank(), history:[]
+        });
+      }
+      rounds.push(round);
+    }
+    active = rounds[0].find(match => !match.bye);
+    message = '';
+    render();
+  }
+
+  function participants(match) {
+    if (match.initial) return match.initial;
+    const previous = rounds[match.level - 1];
+    return [winner(previous[match.index * 2]), winner(previous[match.index * 2 + 1])];
+  }
+
+  function winner(match) {
+    if (match.bye) return match.initial[0];
+    if (match.state.phase !== 'finished') return null;
+    return participants(match)[match.state.wins[0] === needed ? 0 : 1];
+  }
+
+  function roundName(level) {
+    return ['결승','준결승','8강','16강'][rounds.length - 1 - level];
+  }
+
+  function renderBracket() {
+    const host = $('rounds');
+    const focusedKey = host.contains(document.activeElement) ? document.activeElement.dataset.key : null;
+    host.style.setProperty('--depth', rounds.length);
+    host.style.setProperty('--rows', rounds[0].length);
+    const fragment = document.createDocumentFragment();
+    let focusTarget;
+    let completed = 0;
+    rounds.forEach((round, level) => {
+      const column = make('div','round');
+      column.append(make('h3','',roundName(level)));
+      const list = make('ol','matches');
+      round.forEach(match => {
+        const names = participants(match);
+        const won = winner(match);
+        const ready = names.every(Boolean);
+        const isActive = match === active;
+        const state = match.state;
+        const item = make('li');
+        const button = make('button','match');
+        button.type = 'button';
+        button.dataset.key = match.key;
+        button.setAttribute('aria-pressed', String(isActive));
+        button.setAttribute('aria-disabled', String(!ready));
+        if (!ready) button.tabIndex = -1;
+        if (state.phase === 'finished') completed++;
+        const status = match.bye ? '부전승' : (match.number + '경기 · ' + (
+          state.phase === 'finished' ? '종료' : isActive ? '선택됨' : match.history.length ? '진행 중' : ready ? '경기 가능' : '대기'
+        ));
+        button.append(make('span','match-state',status));
+        names.forEach((name, index) => {
+          const entry = make('span', 'entry' + (name && won === name ? ' victor' : ''));
+          const previous = level > 0 ? rounds[level - 1][match.index * 2 + index] : null;
+          const label = name || (match.bye ? '상대 없음' : previous.number + '경기 승자');
+          entry.append(make('span','entry-name', label));
+          const score = name && won === name ? '승' : state.phase === 'finished' ? '패' : '';
+          const result = match.bye ? score : ready && match.history.length ? state.wins[index] + (score ? ' ' + score : '') : '';
+          if (result) entry.append(make('span','',result));
+          button.append(entry);
+        });
+        button.addEventListener('click', () => {
+          if (!ready) return;
+          active = match;
+          message = '';
+          render();
+          if (window.innerWidth <= 1000) $('match-title').scrollIntoView({block:'center'});
+        });
+        if (match.key === focusedKey && ready) focusTarget = button;
+        item.append(button);
+        list.append(item);
+      });
+      column.append(list);
+      fragment.append(column);
+    });
+    host.replaceChildren(fragment);
+    if (focusTarget) focusTarget.focus({preventScroll:true});
+    const progress = (example ? '예시 · ' : '') + teams.length + '팀 · ' + completed + '/' + (teams.length - 1) + '경기 종료';
+    $('progress').textContent = progress;
+    const champion = winner(rounds[rounds.length - 1][0]);
+    $('champion').textContent = champion ? '우승 · ' + champion : '';
+  }
+
+  function renderBoard(scoredSide) {
+    const state = active.state;
+    const names = participants(active);
+    const wins = winner(active);
+    const game = state.games.length + (state.phase === 'play' ? 1 : 0);
+    const [a,b] = state.points;
+    const inDeuce = Math.min(a,b) >= target - 1;
+    $('rules').textContent = target + '점 · ' + (needed === 2 ? '3게임 2선승' : '1게임 단판');
+    $('game-label').textContent = game + '게임 · 상한 ' + cap() + '점';
+    $('match-title').textContent = roundName(active.level) + ' · ' + active.number + '경기';
+    $('match-status').textContent = wins ? '경기 종료 · ' + wins + ' 승리'
+      : state.phase === 'break' ? '게임 종료 · ' + names[a > b ? 0 : 1] + ' 승리'
+      : inDeuce ? '듀스 · ' + (a === b && a === cap() - 1 ? '다음 득점으로 종료' : '2점 차 승리')
+      : active.history.length ? '경기 중' : '경기 준비';
+    names.forEach((name, side) => {
+      $('team-' + side).textContent = name;
+      const score = $('score-' + side);
+      score.textContent = state.points[side];
+      score.setAttribute('aria-label', name + ' ' + state.points[side] + '점');
+      if (scoredSide === side) {
+        score.classList.remove('bump');
+        void score.offsetWidth;
+        score.classList.add('bump');
+      }
+      $('games-' + side).textContent = state.wins[side] + '게임 승';
+      $('point-' + side).disabled = state.phase !== 'play';
+      $('point-' + side).setAttribute('aria-label', name + ' 1점 추가');
+    });
+    $('next-game').hidden = state.phase !== 'break';
+    $('undo').disabled = $('reset').disabled = !active.history.length;
+    $('game-record').textContent = state.games.map((points, index) => (index + 1) + '게임 ' + points.join('–')).join(' · ') || '—';
+    $('notice').textContent = message;
+  }
+
+  function render(scoredSide, updateBracket = true) {
+    renderBoard(scoredSide);
+    if (updateBracket) renderBracket();
+  }
+
+  function remember(match) {
+    match.history.push(JSON.stringify(match.state));
+  }
+
+  function point(side) {
+    const state = active.state;
+    if (state.phase !== 'play') return;
+    message = '';
+    const firstPoint = !active.history.length;
+    remember(active);
+    const score = ++state.points[side];
+    const gameWon = score === cap() || (score >= target && score - state.points[1 - side] >= 2);
+    if (gameWon) {
+      state.games.push(state.points.slice());
+      state.wins[side]++;
+      state.phase = state.wins[side] === needed ? 'finished' : 'break';
+      playTone();
+    }
+    render(side, firstPoint || gameWon);
+    if (gameWon && document.activeElement === document.body) {
+      $(state.phase === 'break' ? 'next-game' : 'undo').focus({preventScroll:true});
+    }
+  }
+
+  function nextGame() {
+    if (active.state.phase !== 'break') return;
+    remember(active);
+    active.state.phase = 'play';
+    active.state.points = [0,0];
+    render();
+    $('point-0').focus({preventScroll:true});
+  }
+
+  function canCorrect() {
+    if (active.state.phase !== 'finished') return true;
+    const next = rounds[active.level + 1];
+    const following = next && next[Math.floor(active.index / 2)];
+    if (!following || !following.history.length) return true;
+    message = following.number + '경기에 입력된 점수가 있습니다. 해당 경기를 초기화한 뒤 되돌리세요.';
+    renderBoard();
+    return false;
+  }
+
+  function undo() {
+    if (!active.history.length || !canCorrect()) return;
+    message = '';
+    active.state = JSON.parse(active.history.pop());
+    render();
+  }
+
+  function reset() {
+    if (!active.history.length || !canCorrect() || !window.confirm(active.number + '경기의 점수와 게임 기록을 초기화할까요?')) return;
+    message = '';
+    active.state = blank();
+    active.history = [];
+    render();
+  }
+
+  function openSettings() {
+    $('teams-input').value = teams.join('\n');
+    $('target').value = target;
+    $('format').value = needed;
+    $('setup-message').textContent = '';
+    settings.showModal();
+    $('teams-input').focus();
+  }
+
+  function applySettings(random) {
+    const list = $('teams-input').value.split(/\r?\n/).map(name => name.trim()).filter(Boolean);
+    let error = '';
+    if (list.length < 2 || list.length > 16) error = '참가팀을 2~16팀 입력하세요.';
+    else if (list.some(name => Array.from(name).length > 18)) error = '18자가 넘는 팀 이름을 줄여 주세요.';
+    else if (new Set(list).size !== list.length) error = '같은 이름이 있습니다. 팀 이름을 서로 다르게 입력하세요.';
+    $('setup-message').textContent = error;
+    if (error) {
+      $('teams-input').focus();
+      return;
+    }
+    if (rounds.some(round => round.some(match => match.history.length)) &&
+      !window.confirm('새 대진을 만들면 현재 대회의 점수와 결과가 지워집니다. 새 대진을 만들까요?')) return;
+    teams = list;
+    target = Number($('target').value);
+    needed = Number($('format').value);
+    example = false;
+    build(random ? shuffled(teams) : teams);
+    settings.close();
+  }
+
+  function playTone() {
+    if (!soundOn || !audio || audio.state !== 'running') return;
+    const tone = audio.createOscillator();
+    const volume = audio.createGain();
+    tone.frequency.value = 660;
+    volume.gain.setValueAtTime(0.08, audio.currentTime);
+    volume.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.18);
+    tone.connect(volume);
+    volume.connect(audio.destination);
+    tone.start();
+    tone.stop(audio.currentTime + 0.18);
+  }
+
+  async function toggleSound() {
+    if (!soundOn) {
+      try {
+        if (!audio) audio = new (window.AudioContext || window.webkitAudioContext)();
+        await audio.resume();
+      } catch (error) {
+        message = '이 브라우저에서는 소리 재생을 켤 수 없습니다.';
+        renderBoard();
+        return;
+      }
+    }
+    soundOn = !soundOn;
+    $('sound').textContent = soundOn ? '소리 끄기' : '소리 켜기';
+    $('sound').setAttribute('aria-pressed', String(soundOn));
+    playTone();
+  }
+
+  $('open-settings').addEventListener('click', openSettings);
+  $('close-settings').addEventListener('click', () => settings.close());
+  $('draw').addEventListener('click', () => applySettings(true));
+  $('ordered').addEventListener('click', () => applySettings(false));
+  $('point-0').addEventListener('click', () => point(0));
+  $('point-1').addEventListener('click', () => point(1));
+  $('next-game').addEventListener('click', nextGame);
+  $('undo').addEventListener('click', undo);
+  $('reset').addEventListener('click', reset);
+  $('print').addEventListener('click', () => window.print());
+  $('motion').addEventListener('click', () => {
+    const reduced = document.body.classList.toggle('reduce');
+    $('motion').setAttribute('aria-pressed', String(reduced));
+    $('motion').textContent = reduced ? '효과 다시 켜기' : '효과 줄이기';
+  });
+  $('sound').addEventListener('click', toggleSound);
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await document.documentElement.requestFullscreen();
+    } catch (error) {
+      message = '브라우저의 전체 화면 기능을 사용하세요.';
+      renderBoard();
+    }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '전체 화면 닫기' : '전체 화면';
+  });
+  document.addEventListener('keydown', event => {
+    if (settings.open || event.ctrlKey || event.metaKey || event.altKey || event.repeat) return;
+    if (event.code === 'KeyA') point(0);
+    if (event.code === 'KeyL') point(1);
+    if (event.code === 'KeyU') undo();
+  });
+  build(teams);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+{
+ "secs": 396,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 8150,
+ "tok": {
+  "input": 1743738,
+  "cached": 1677568,
+  "output": 8150,
+  "reasoning": 570
+ },
+ "turns": 13,
+ "failed_cmds": 4,
+ "is_error": false,
+ "errors": [],
+ "last": "[2026학년도 늘봄학교 운영 결과.pptx](<C:/Users/User/Downloads/xv-eval-work/fix/public-ppt-codex-harness-1/work/2026학년도 늘봄학교 운영 결과.pptx>)를 현재 폴더에 저장했습니다.\n\n교육지원청 보고용 12장 **제출 전 검토본**입니다. 유형별 참여 실적, 안전관리, 예산 편성·집행, 만족도, 2027학년도 운영 준비안을 담았습니다. 표와 본문은 PowerPoint에서 편집할 수 있으며, 발표자 메모에 집계 기준과 확인 자료를 적었습니다.\n\n학교별 원자료가 없어 실적은 **확인 필요**로 표시했습니다. 제출 전 학교명·담당 부서·집계 기준일과 참여·예산·만족도 수치를 실제 자료로 반영해 주세요.\n\n파일 무결성과 글자·도형 배치 검사를 통과했습니다. 화면은 미리보기로 검토했으며, PowerPoint에서 직접 열어 확인하지는 못했습니다.",
+ "name": "public-ppt-codex-harness-1",
+ "task": "public-ppt",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "2026학년도 늘봄학교 운영 결과.pptx",
+ "all_files": [
+  "2026학년도 늘봄학교 운영 결과.pptx",
+  "_neulbom_work\\deck.json",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-01.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-02.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-03.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-04.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-05.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-06.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-07.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-08.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-09.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-10.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-11.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-12.png",
+  "_neulbom_work\\review\\2026학년도 늘봄학교 운영 결과-sketch-sheet.png"
+ ],
+ "opens": true
+}

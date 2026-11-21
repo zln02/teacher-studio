@@ -1,0 +1,27 @@
+{
+ "secs": 426,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 19033,
+ "tok": {
+  "input": 611034,
+  "cached": 557056,
+  "output": 19033,
+  "reasoning": 617
+ },
+ "turns": 21,
+ "failed_cmds": 5,
+ "is_error": false,
+ "errors": [],
+ "last": "[경우의 수 실험실.html](<C:/Users/User/Downloads/xv-eval-work/fix/webapp-codex-harness-1/work/경우의 수 실험실.html>)을 지금 폴더에 저장했습니다. 파일을 더블클릭하면 인터넷 없이 열립니다.\n\n- 옷차림을 직접 조합해 **표와 수형도**에 기록하고, 빠진 경우나 중복을 확인합니다.\n- **합의 법칙과 곱의 법칙**을 비교하고, 대표 뽑기와 두 자리 수 만들기에서 순서와 조건이 답을 어떻게 바꾸는지 익힙니다.\n- **연습 6문제와 도전 1문제**에 힌트와 풀이를 넣었습니다. 교실에서는 **큰 화면** 버튼으로 글자를 키울 수 있습니다.\n\n활동별 경우의 수와 문제 정답, 오프라인 파일 점검을 마쳤습니다. 실행 환경 제한으로 브라우저 화면은 직접 확인하지 못했습니다.",
+ "name": "webapp-codex-harness-1",
+ "task": "webapp",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "경우의 수 실험실.html",
+ "all_files": [
+  "경우의 수 실험실.html"
+ ],
+ "opens": true
+}
