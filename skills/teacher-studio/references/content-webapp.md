@@ -34,7 +34,7 @@
    - Age: reading load matches the grade; under-14 privacy and AI-service age limits → `../teacher-law` if the user wants accounts, logging or a live AI.
 7. **Give the teacher the operating notes**: how to start (더블클릭), the one-line honest capability statement, how to reset between classes, what to check before class (the worked case), and what it does not do.
 8. **Verify by doing the flow.** Walk steps ①-③ with the worked case and one wrong input; compare outputs with hand calculation; then run the build's checks. Report what was and was not tested.
-   - Calculations: also try the edges (0, the smallest and largest allowed value, a decimal, a unit change) and check 단위 and 반올림 match the textbook's convention. A formula or constant still 「확인 필요」 keeps the app a 「교사 초안」.
+   - Calculations: also try the edges (0, the smallest and largest allowed value, a decimal, a unit change) and check 단위 and 반올림 match the textbook's convention. A formula or constant you could not verify is left out of the app and named in the final message.
    - Walk the flow once more with the keyboard only, and once at 200% zoom.
 
 ## 전문가 점검표

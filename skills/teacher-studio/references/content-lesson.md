@@ -82,7 +82,7 @@ Use for any material a teacher puts in front of students. This decides the conte
 - [ ] Every activity states product · time · 준비물 · early-finisher task; total time fits the period with ≈ 3 minutes of slack.
 - [ ] Contexts are age-appropriate and varied; no stereotype by gender, family form, region or ability; no real student named.
 - [ ] Third-party text/images (교과서 지문, 시, 사진) have a stated basis → `teacher-law` when unsure.
-- [ ] The teacher gets: 정답표, 준비물, 시간 계획, and the list of 「확인 필요」 items. An unverified answer or safety condition keeps the whole material a 「교사 초안」 (CONTENT-RULES, Release status).
+- [ ] The teacher gets: 정답표, 준비물, 시간 계획, and, in the final message, the list of what you could not verify. An answer or safety condition you could not verify is left out of the material, not shipped with a mark on it (CONTENT-RULES, Unknowns).
 
 ## Sources (checked 2026-11-20)
 - NCIC 국가교육과정정보센터 (국가교육위원회 · 한국교육과정평가원), 2022 개정 원문·해설서 menu: https://ncic.re.kr

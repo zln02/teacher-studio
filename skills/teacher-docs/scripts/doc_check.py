@@ -4,6 +4,9 @@
 """One gate for every document (HWPX / DOCX / PDF / HTML, or the doc spec JSON):
 
   placeholders  [학교명] 20XX OO 000 ... (shared placeholders.py; FAIL unless listed in fillins / template_blanks)
+  unknowns      the one rule for what the user did not give (CONTENT-RULES, 「Unknowns」): 「확인 필요」-type filler (1-2 WARN, 3+ FAIL),
+                a 「교사 초안」 stamp (FAIL), the example note missing or repeated (WARN), underline blanks outside the 회신서 / 신청서 (WARN),
+                a 가정통신문 that asks the family to answer but has no reply slip (WARN on a lone file, FAIL from a spec without "reply")
   privacy       주민등록번호 FAIL · 휴대전화 / 전자우편 / 「성명: 홍길동」 / 「3학년 2반 15번」 WARN
   공문 format   item marks in order (1. 가. 1) 가) (1) (가) ① ㉮), single-item mark, 끝 with two spaces, 붙임 without colon,
                 수신/제목 lines, dates 2026. 11. 19., 24-hour time        (--kind gongmun, or auto when 수신+제목 are found)
@@ -227,6 +230,38 @@ def check_placeholders(lines: list[str], fillins: list) -> list[tuple[str, str]]
     return res
 
 
+NEEDS_REPLY = re.compile(r"동의|신청|참가\s?(?:여부|희망)|희망\s?(?:여부|조사|자)|회신|제출|납부|참가비|수익자\s?부담")
+
+
+def is_notice(lines: list[str]) -> bool:
+    return any("가정통신문" in re.sub(r"\s", "", ln) for ln in lines[:8])
+
+
+def check_unknowns(lines: list[str], fillins: list, kind: str = "", reply=None) -> list[tuple[str, str]]:
+    """The unknowns policy. kind: the spec's kind when known. reply: True = the spec has a reply slip, False = the spec says none is
+    needed ("reply": false), None = unknown (a lone file) or not written in the spec."""
+    cut = ph.slip_start(lines) if kind != "form" else 0
+    body, has_slip = lines[:cut], cut < len(lines)
+    res = ph.policy_checks(body if kind != "form" else lines, (), fillins, lesson=(kind == "form"))
+    if ph.ALLOW_ALL not in fillins and kind != "form":
+        blanks = [ln.strip()[:24] for ln in body if ph.UNDERLINE.search(ln)]
+        if blanks:
+            res.append(("WARN", f"본문에 밑줄 빈칸 {len(blanks)}곳 ('{blanks[0]}') -> 손으로 쓰는 칸(회신서·신청서·서명란·학습지)이 아니면 예시 값으로 채우고 "
+                                "fillins에 적으세요. 빈칸을 원하신 경우에는 \"template_blanks\": true"))
+    notice = kind == "notice" or (not kind and is_notice(lines))
+    if notice and reply is not False and not (reply or has_slip):
+        asks = list(dict.fromkeys(m.group(0) for ln in body for m in NEEDS_REPLY.finditer(ln)))
+        if asks:
+            lv = "FAIL" if kind == "notice" else "WARN"
+            res.append((lv, f"가정통신문에 회신서가 없어요 (본문에 {', '.join(asks[:3])}) -> 가정에서 답하거나 고르거나 동의할 것이 있으면 절취선 아래 "
+                            "회신서(\"reply\": {title, fields})를 넣으세요. 답할 것이 정말 없는 알림이면 \"reply\": false"))
+        elif kind == "notice":
+            res.append(("WARN", "가정통신문에 회신서가 없어요 -> 답할 것이 없는 알림이면 그대로 두고 (\"reply\": false), 있으면 \"reply\"를 넣으세요"))
+    elif notice:
+        res.append(("PASS", "가정통신문 회신서" + (" 있음" if (reply or has_slip) else " 필요 없음(spec)")))
+    return res
+
+
 def check_open(path: Path) -> list[tuple[str, str]]:
     suf = path.suffix.lower()
     try:
@@ -336,7 +371,8 @@ def is_gongmun(lines: list[str]) -> bool:
     return any(re.match(r"^\s*수신\s", ln) for ln in lines) and any(re.match(r"^\s*제목\s", ln) for ln in lines)
 
 
-def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages: int | None = None, min_font: float | None = None) -> list[tuple[str, str]]:
+def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages: int | None = None, min_font: float | None = None,
+        reply=None) -> list[tuple[str, str]]:
     path = Path(path)
     fills = ph.with_blanks(list(fillins or []), allow_blanks)
     res = []
@@ -345,6 +381,7 @@ def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages:
         return res
     lines = texts_of(path)
     res += check_placeholders(lines, fills)
+    res += check_unknowns(lines, fills, kind, reply)
     res += check_privacy(lines)
     official = kind == "gongmun" or (not kind and is_gongmun(lines))
     if official:

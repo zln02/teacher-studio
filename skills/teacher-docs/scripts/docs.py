@@ -163,8 +163,10 @@ def make(spec: dict, out: Path, template=None, yes: bool = False, base: Path | N
 
 def finish(out: Path, kind: str, spec: dict, max_pages=None, min_font=None) -> int:
     """Gate + look + the READY / NOT DONE line (shared by make and append)."""
-    res = doc_check.run(out, "gongmun" if kind == "gongmun" else "", spec.get("fillins") or [], spec.get("template_blanks") is True,
-                        max_pages or spec.get("max_pages") or spec.get("fit_pages"), min_font or spec.get("min_font"))
+    rp = spec.get("reply")
+    res = doc_check.run(out, kind, spec.get("fillins") or [], spec.get("template_blanks") is True,
+                        max_pages or spec.get("max_pages") or spec.get("fit_pages"), min_font or spec.get("min_font"),
+                        reply=(True if rp else (False if rp is False else None)))
     try:  # 「예시를 그대로 따라간 것 같아요」: copied sentences, or the same section order with the example's headings
         sys.path.insert(0, str(HERE.parent / "shared" / "tools"))
         import example_likeness
@@ -180,6 +182,9 @@ def finish(out: Path, kind: str, spec: dict, max_pages=None, min_font=None) -> i
         print(f"preview {pv} (한글 화면의 근사치)")
     if out.suffix.lower() == ".pdf":
         look(out)
+    ex = [str(x) for x in (spec.get("fillins") or []) if str(x).strip()]
+    if ex and spec.get("template_blanks") is not True:  # the unknowns rule: every example value is named in the last message
+        print("바꿔 넣을 곳 (예시로 채운 값: 마지막 안내에 하나도 빠짐없이 적어 주세요): " + " · ".join(ex))
     if any(lv == "FAIL" for lv, _ in res):
         print(f"NOT DONE {out}: 위 FAIL을 spec에서 고치고 같은 명령을 다시 실행하세요 (PASS가 될 때까지 완료 보고 금지)")
         return 1

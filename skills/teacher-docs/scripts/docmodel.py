@@ -9,7 +9,9 @@ Spec (short JSON the AI writes):
             {"note": "※ 참고"}],
    "attachments": ["운영 계획 1부"], "footer": {"시행": "...", "전화": "..."},      # gongmun
    "greeting": "학부모님, 안녕하십니까?", "number": "제2026-35호", "reply": {"title": "참가 신청서", "fields": ["참가 여부 (□ 참가  □ 불참)"]},  # notice
-   "fillins": [...], "template_blanks": false, "design": {"mood": "단정", "font": "batang|dotum", "font_size": 12.5 | "large" | "small", "line": 1.6},
+   "fillins": [every example value you wrote for something the user did not give: "체험 날짜 2026. 12. 3.(목)", "참가비 15,000원"] -> the builder adds
+             ONE line at the foot of the body (「※ … 예시입니다 …」; "example_note": "own wording" | false) and prints the list for the last message,
+   "template_blanks": false, "design": {"mood": "단정", "font": "batang|dotum", "font_size": 12.5 | "large" | "small", "line": 1.6},
    "max_pages": 1 (PDF: shrink a little to fit, FAIL when it still does not), "min_font": 10}
   kind "form" = a one-page 신청서 / 동의서: {"kind":"form","org","title","intro","fields":["학년 / 반", ["상담 방법", "□ 방문   □ 전화"]],"body":[...],
                                               "statement":"위와 같이 신청합니다.","sign":"보호자:            (서명)","to":"우리 학교장"}
@@ -171,6 +173,25 @@ def form_blocks(fm: dict) -> list:
     return out
 
 
+# ---------------------------------------------------------------------------------------------------------------- unknowns
+EXAMPLE_NOTE_DOC = "※ 날짜·장소·금액 등 일부 내용은 예시입니다. 확정된 내용으로 바꾼 뒤 이 줄을 지워 주세요."
+_EX_NOTE = re.compile(r"예시(?:\s?(?:값|자료|수치|일정|내용))?\s?(?:입니다|이에요|예요|임(?![가-힣]))|가상\s?수치|예시[^\n]{0,30}(?:바꿔|바꾸|교체|확정|실제)")
+
+
+def example_note(spec: dict) -> list:
+    """The ONE example note of a document (CONTENT-RULES, 「Unknowns」): a small line at the foot of the body, only when the spec lists
+    example values in "fillins". Not added when the spec already says it, when the user wants blanks, or with "example_note": false."""
+    v = spec.get("example_note")
+    fills = [x for x in (spec.get("fillins") or []) if str(x).strip()]
+    if v is False or spec.get("template_blanks") is True or not fills:
+        return []
+    if isinstance(v, str) and v.strip():
+        return [P(v.strip(), "note", "left")]
+    if any(_EX_NOTE.search(x) for x in walk_strings(spec)):
+        return []
+    return [P(EXAMPLE_NOTE_DOC, "note", "left")]
+
+
 # ---------------------------------------------------------------------------------------------------------------- kinds
 def build(spec: dict) -> dict:
     """spec -> {"blocks": [...], "meta": {...}}"""
@@ -250,6 +271,7 @@ def _gongmun(spec: dict) -> list:
         for ln in (line1, line2, line3):
             if ln:
                 b.append(P(ln, "small", "left"))
+    b.extend(example_note(spec))
     return b
 
 
@@ -268,6 +290,7 @@ def _notice(spec: dict) -> list:
     body: list = []
     _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
     b.extend(body)
+    b.extend(example_note(spec))
     b.append({"t": "space"})
     if spec.get("date"):
         b.append(P(gov_date(spec["date"]), "body", "center"))
@@ -323,6 +346,7 @@ def _form(spec: dict) -> list:
     body: list = []
     _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
     b.extend(body)
+    b.extend(example_note(spec))
     b.append({"t": "space"})
     b.append(P(spec.get("statement") or "위와 같이 신청합니다.", "body", "center"))
     b.append(P(gov_date(spec["date"]) if spec.get("date") else (spec.get("date_line") or "년        월        일"), "body", "center"))
@@ -355,6 +379,7 @@ def _guide(spec: dict) -> list:
     if spec.get("contact"):
         b.append({"t": "space"})
         b.append(P(f"※ 문의: {spec['contact']}", "note", "left"))
+    b.extend(example_note(spec))
     if spec.get("date") or spec.get("sender"):
         b.append({"t": "space"})
         if spec.get("date"):
@@ -383,6 +408,7 @@ def _report(spec: dict) -> list:
             if x["t"] == "p" and x.get("level") is not None and not x["hang"]:
                 x["hang"] = report_mark(x["level"], 0)
         b.extend(body)
+    b.extend(example_note(spec))
     return b
 
 
@@ -415,7 +441,7 @@ def walk_strings(spec) -> list[str]:
                 out.append(v)
         elif isinstance(v, dict):
             for k, x in v.items():
-                if k not in ("fillins", "design"):
+                if k not in ("fillins", "design", "example_note"):
                     w(x, k)
         elif isinstance(v, list):
             for x in v:

@@ -85,3 +85,67 @@ def fillin_list(texts, fillins=()) -> list[str]:
             if _listed(m, fillins) and m not in found:
                 found.append(m)
     return found
+
+
+# ---------------------------------------------------------------------------------------------------------- unknowns policy
+# shared/content/CONTENT-RULES.md, 「Unknowns」: what the user did not give is an example value in the body, a blank only where a hand
+# writes (회신서 · 신청서 · 서명란 · 학생/보호자 칸), ONE short example note per file, never 「확인 필요」 filler or a 「교사 초안」 stamp.
+FILLER = re.compile(r"(?:확인|집계|파악|입력|작성|기재|조사)\s?필요|추후\s?(?:확정|기재|결정)|(?<![가-힣])미정(?![가-힣])")
+STAMP = re.compile(r"교사\s?용?\s?초안|검토용\s?초안|(?:배포|제출|결재|발송)\s?전\s?(?:확인|검토)(?:본|용)?|(?<![A-Za-z])DRAFT(?![A-Za-z])")
+EXAMPLE_NOTE = re.compile(r"예시(?:\s?(?:값|자료|수치|일정|내용))?\s?(?:입니다|이에요|예요|임(?![가-힣]))|가상\s?수치|(?:자료|출처)\s?[:：]\s?(?:예시|가상)|예시[^\n]{0,30}(?:바꿔|바꾸|교체|확정|실제)")
+UNDERLINE = re.compile(r"_{3,}|＿{2,}")
+SLIP = re.compile(r"(?:회신서|신청서|동의서|희망서|확인서|응답서)\s*[\]>】)〉」]?\s*$|절취|자르는\s?선|✂")
+EXAMPLE_NOTE_DOC = "※ 날짜·장소·금액 등 일부 내용은 예시입니다. 확정된 내용으로 바꾼 뒤 이 줄을 지워 주세요."
+EXAMPLE_NOTE_DECK = "[예시 값 안내] 이 자료의 일부 날짜·장소·수치는 예시입니다. 쓰기 전에 실제 값으로 바꿔 주세요."
+
+
+def fillers(texts) -> list[str]:
+    """Every 「확인 필요」-type filler phrase (a count, not a set: 45 cells of 「확인 필요」 are 45 hits)."""
+    return [m.group(0) for t in texts for m in FILLER.finditer(t or "")]
+
+
+def stamps(texts) -> list[str]:
+    return [m.group(0) for t in texts for m in STAMP.finditer(t or "")]
+
+
+def example_notes(texts) -> int:
+    """How many lines say 「…은 예시입니다 / 예시 자료(가상 수치) / 예시 … 바꿔 주세요」."""
+    return sum(1 for t in texts for ln in (t or "").split("\n") if EXAMPLE_NOTE.search(ln))
+
+
+def slip_start(lines) -> int:
+    """Index of the first line of the hand-filled part (회신서 · 신청서 · 동의서 under a cut line or on its own page); len(lines) when none.
+    A slip = a short heading line naming it (or a cut line), followed by something a hand fills in: □, (서명), (인), an underline."""
+    L = list(lines)
+    for i, ln in enumerate(L):
+        s = (ln or "").strip()
+        if s and len(s) <= 34 and SLIP.search(s) and not re.search(r"안내|붙임|첨부|제출|통신문", s):
+            rest = "\n".join(L[i:])
+            if re.search(r"□|☐|\(\s?서명\s?\)|\(\s?인\s?\)|서명|_{3,}|년\s{2,}월\s{2,}일", rest):
+                return i
+    return len(L)
+
+
+def policy_checks(body, notes=(), fillins=(), deck: bool = False, lesson: bool = False) -> list[tuple[str, str]]:
+    """The unknowns policy on a finished file. body = the text a reader sees (document lines, or slide texts); notes = speaker notes.
+    WARN for a slip or two, FAIL when the file is plainly a draft (filler everywhere, a draft stamp)."""
+    res: list[tuple[str, str]] = []
+    allow = ALLOW_ALL in (fillins or [])  # the user asked for a 양식: blanks are theirs to fill, only the stamp still counts
+    fl = fillers(body)
+    if fl:
+        lv = "FAIL" if len(fl) >= 3 and not allow else "WARN"
+        res.append((lv, f"「확인 필요」 같은 빈말 {len(fl)}곳 ({', '.join(list(dict.fromkeys(fl))[:3])}) -> 본문·표에는 그럴듯한 예시 값을 쓰고 fillins에 적어 "
+                        "마지막 안내의 「바꿔 넣을 곳」으로 알리세요 (손으로 쓰는 회신서·신청서 칸만 빈칸)"))
+    else:
+        res.append(("PASS", "「확인 필요」 같은 빈말 없음"))
+    st = stamps(body)
+    res.append(("FAIL" if st else "PASS", "본문에 「교사 초안」 도장 없음" + (f": {list(dict.fromkeys(st))[:3]} -> 파일에서 지우고, 확인할 것은 마지막 안내에만 적으세요" if st else "")))
+    if allow:
+        return res
+    n_body, n_notes = example_notes(body), example_notes(notes)
+    if n_body + n_notes > 1 and n_body > 1:
+        where = "발표자 메모(첫 장)나 첫 자료 표 아래 한 줄" if deck else "본문 맨 아래 한 줄"
+        res.append(("WARN", f"예시 안내가 {n_body}번 되풀이돼요 -> 파일 전체에서 한 번만 ({where}), 나머지는 지우고 마지막 안내에 목록으로"))
+    elif [f for f in (fillins or []) if f != ALLOW_ALL] and not lesson and n_body + n_notes == 0:
+        res.append(("WARN", "예시 값을 썼는데(fillins) 예시 안내 한 줄이 없어요 -> " + ("첫 장 발표자 메모에 한 줄" if deck else "본문 맨 아래에 「" + EXAMPLE_NOTE_DOC + "」")))
+    return res

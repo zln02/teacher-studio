@@ -36,7 +36,7 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 - Every number: 단위 · 기준일 · 출처, and the same value everywhere it appears. Comparisons name the base (전년 대비, 계획 대비).
 - 실적 is stated against the plan or target, not alone. 문제점 comes with 원인 and 개선 과제 (who · by when).
 - 개조식 endings, one line per item, no 「~습니다」. Section order follows what the reviewer asks: 왜 → 무엇을 했나 → 결과 → 남은 문제 → 다음 일정 · 건의.
-- Invented figures are never presented as real: 「예시 자료(가상 수치), 실제 집계로 교체」.
+- Figures the user gave are used as given. Their own counts and amounts they did not give are plausible example values that agree with each other, listed in `"fillins"`, with a believable `source` (「우리 학교 자체 집계(2026. 11.)」) and noted ONCE for the deck: the first slide's speaker notes (the build adds it), or one small `footnote` under the first data table (「※ 수치는 예시입니다. 실제 집계로 바꿔 주세요.」). Not on every slide, and never a 「확인 필요」「집계 필요」 cell. Statistics about the world (전국 평균, 연구 결과) are never invented (CONTENT-RULES, Unknowns).
 
 **promo**
 - One message; headline says the benefit to the audience, not the organiser's title. ≤ 3 levels of emphasis on a slide (headline → key facts → details).
@@ -54,7 +54,7 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 - [ ] No body slide is half empty and none is a wall of text; a claim with two kinds of evidence shows both on one slide (`panel`); data slides say what the data means (`takeaway`).
 - [ ] Body is not the script, but instructions, safety steps, formulas, key sentences and figure captions are on the slide.
 - [ ] Checked on the final output: from the back of the room, and as the handout if it will be distributed.
-- [ ] No answer, date, number or safety condition on a slide is still 「확인 필요」; otherwise the deck is a 「교사 초안」.
+- [ ] No 「확인 필요」 text, slot or draft stamp on any slide. An answer or safety condition you could not verify is left out and named in the final message; the user's unknowns are example values listed in `"fillins"`, noted once (not in a lesson deck).
 - [ ] class: objectives ↔ check questions match one to one; hook answered at the end; answers and 「왜」 present.
 - [ ] public: conclusion and request on the 요약 slide; every number has 단위 · 기준일 · 출처 and agrees across slides; totals recomputed.
 - [ ] promo: one message, one CTA, action facts complete and consistent.

@@ -70,7 +70,7 @@ Content quality first: before writing any content read references/content-writin
 - **Variety**: a fresh look per job; legacy skins are used only when the user names one.
 - **Vague complaints** (「별로야」「이상해」「아까가 나았어」): diagnose yourself, do not interrogate (`references/vague-fix.md`, `scripts/diagnose.py`); 2 fix loops, then options.
 - **Other skills and documents**: use them when they beat our path; log (`scripts/skill_scout.py log`) and end with 「출처: <이름> (<만든 곳>, <라이선스>)」.
-- **Last message = an answer, never a status**: full path of the file · how to open it · check result in one line · 2 tweaks. List unknown school names, dates and amounts as 「바꿔 넣을 곳」.
+- **Last message = an answer, never a status**: full path of the file · how to open it · check result in one line · 2 tweaks. List every example value as 「바꿔 넣을 곳」.
 
 ## User wins (a shortcut, not a cage)
 Checks exist so YOU fix things before showing them. Defaults are safe; when the user says otherwise, set the switch, add ONE caution line, go on. No lecture, no second ask.
@@ -79,7 +79,7 @@ Switch table (what the user says -> what you set -> the one caution line): `refe
 
 ## Absolute rules (every skill)
 1. No place to enter or store student names, 학번, photos, grades.
-2. Unsure facts -> mark 「확인 필요」. Never invent figures, quotes or links.
+2. Unknowns (`shared/content/CONTENT-RULES.md`): never invent world facts (figures, quotes, laws, links); leave out what you cannot verify and say so at the end. What the user did not give (date, place, cost) -> a plausible example value; blanks only where a hand writes; one example note per file. No 「확인 필요」 cells, no 「교사 초안」 stamp.
 3. Law/copyright: inform, do not block (`teacher-law`). No lyrics, famous characters, real shows, brands or logos; use originals or the user's files.
 4. Output is one offline HTML file (or the asked document file) targeting Chrome 90 and later. Its JavaScript stays within ES2017 by default. Report the browsers actually checked.
 5. Teacher Studio follows a teacher-operated workflow. Use the legal route for current service-specific age rules and student use. The teacher decides the final evaluation/생기부 wording.

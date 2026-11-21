@@ -177,11 +177,15 @@ class FloorNotCeiling(unittest.TestCase):
                     "skills/teacher-docs/SKILL.md", "skills/teacher-studio/references/webapp.md"):
             self.assertIn("NO-BROWSER", (ROOT / rel).read_text(encoding="utf-8"), rel)
 
-    def test_release_status_rule_was_left_for_the_owner(self):
+    def test_unknowns_rule_replaced_release_status(self):
+        # the owner chose 「섞기」 (docs/research/blanks-policy-2026-11.md): the old 「확인 필요 → 교사 초안」 sentences are gone
         t = (ROOT / "shared/content/CONTENT-RULES.md").read_text(encoding="utf-8")
-        self.assertIn("Any blocking fact still 「확인 필요」, or user material that conflicts with an official source → the output is a **「교사 초안」**.", t)
+        self.assertNotIn("Release status", t)
+        self.assertNotIn("the output is a **「교사 초안」**", t)
+        self.assertIn("## Unknowns — example values in the body, blanks only where a hand writes", t)
         d = (ROOT / "skills/teacher-docs/references/content-docs.md").read_text(encoding="utf-8")
-        self.assertIn("Missing fact → ask or mark 「〈확인 필요〉」 visibly; never fill with a plausible guess.", d)
+        self.assertNotIn("never fill with a plausible guess", d)
+        self.assertIn("Missing fact → a plausible example value in the body and the tables", d)
 
 
 if __name__ == "__main__":

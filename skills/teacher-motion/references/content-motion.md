@@ -30,5 +30,5 @@ Motion makes weak content look finished, so settle the content first. Lesson pie
 - [ ] 오프닝 ends on a question the lesson answers; 홍보 ends on a complete CTA held long enough to read and act on (about 3초 or more; longer with a date and an address).
 - [ ] No empty lines (「지금 시작합니다」「함께 떠나요」) that fit any topic.
 - [ ] Watched once muted and once without looking: nothing essential was lost either way; captions match; meaningful sounds are shown; it can be paused.
-- [ ] No date, place, cost or eligibility is still 「확인 필요」 in a video that will be shown or posted.
+- [ ] No 「확인 필요」 on screen. A date, place or cost the user did not give is a plausible example value, listed in the final message so it is replaced before the video is shown or posted (CONTENT-RULES, Unknowns).
 - [ ] Facts verified; dates with computed 요일; rights cleared and credited.

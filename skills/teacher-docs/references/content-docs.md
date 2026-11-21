@@ -12,7 +12,7 @@
    | (parents) act or consent | 가정통신문 | what the family does, by when, how |
    If you cannot name the reader's action, ask the teacher one question before drafting.
 2. **Conclusion first (두괄식).** The title names the matter and the action (「… 제출」「… 안내」「… 결과 보고」). The first item states the purpose and, for 공문, the basis (「관련: 〈문서명·번호〉(날짜)」) when one exists. Background comes after the request, and only as much as the decision needs.
-3. **Complete the action facts** (a reviewer checks these first): 대상 · 일시(요일) · 장소 · 내용 · 방법 · 기한 · 제출처 · 준비물/비용 · 문의(담당자 · 전화). Missing fact → ask or mark 「〈확인 필요〉」 visibly; never fill with a plausible guess. A document with an open 기한 · 대상 · 자격 · 비용 · 안전 조건 is a 「교사 초안」 and is labelled so until the teacher confirms (CONTENT-RULES, Release status).
+3. **Complete the action facts** (a reviewer checks these first): 대상 · 일시(요일) · 장소 · 내용 · 방법 · 기한 · 제출처 · 준비물/비용 · 문의(담당자 · 전화). A fact the user gave is used as given. Missing fact → a plausible example value in the body and the tables (a real date with its computed weekday, a place, a round amount, a role such as 「담임 교사」), added to `"fillins"`; an underline blank or check box only inside the reply slip or form the family writes on. One small line at the foot of the body says some dates, places and amounts are examples (the builder adds it when `"fillins"` is not empty). Never 「확인 필요」, a bracket slot or a 「교사 초안」 mark on the page (CONTENT-RULES, Unknowns).
    - **Follow the reader's action to the end**, and add only what this case needs: what the cost includes and excludes, how participants are chosen and what happens to those not chosen (정원 초과 · 대기), how a change or cancellation is announced, what to do if the deadline is missed. A reply link or form must open for someone without a school account; say what to do if it does not.
 4. **Numbers carry 단위 · 기준일 · 출처.**
    - Statistic: 「〈값〉〈단위〉(〈기준일〉 기준, 〈출처〉)」. Own counts: 「우리 학교 자체 집계(2026. 11.)」.
@@ -38,7 +38,7 @@
    - 회신서 · 신청서 collecting student or family data → collect the minimum; a consent section is a legal text → `teacher-law`.
    - Named students, 사진, 성적, 건강 · 상담 · 징계 facts → not in a document that leaves the 담당자; use counts or 「학생 A」. Removing the name is not enough: 학년 · 반 · 행사 · 날짜 · 사진 배경 together can point to one student. Check 공개 목적 · 공개 범위 · who could recognise the person; when in doubt, generalise further or leave it out, and ask `teacher-law` for the basis (동의, 법정대리인 동의 for younger students).
    - Small counts in a table can be worked out from totals (전체 and one group shown → the hidden group is known). Hide or merge so that subtraction does not reveal them.
-   - 공문 공개 구분, 수익자 부담 경비, 안전 · 보험, 외부 강사 · 업체 names → flag for the teacher to confirm with the school's rule; state it as 「확인 필요」, not as fact.
+   - 공문 공개 구분, 수익자 부담 경비, 안전 · 보험, 외부 강사 · 업체 names → write the usual example value (a generic name such as 「시립 실내수영장」「전문 강사」, a round amount), add it to `"fillins"`, and ask the teacher in the final message to check it against the school's rule.
    - Third-party images or text in a 통신문 → basis and credit, or remove.
 8. **Review as the 결재권자 would** (list below), then run `doc_check.py`.
 
@@ -54,7 +54,7 @@
 - Personal data that need not be there; a 회신서 asking more than the purpose needs.
 - Self-praise, vague claims (「큰 성과」「적극 추진」) without a number; filler background before the point.
 - Sentences a parent would have to read twice; 한자어 · 외래어 habit words.
-- A decision or expense that needs a prior 결재 or 학교운영위원회 step, written as already decided → mark 「확인 필요」.
+- A decision or expense that needs a prior 결재 or 학교운영위원회 step, written as already decided → word it as planned (「~할 예정」) and name the step in the final message.
 - State of the document unclear: draft before 결재 sent as if final; 수신 · 공개 범위 wider than intended; 본문 and 붙임 saying different things (date, amount, count).
 - Cost with no statement of what it covers; selection with no criteria; no word on change or cancellation where one is likely.
 
@@ -66,10 +66,10 @@
 - [ ] 개조식: one fact per item, parallel endings, ≤ 3 levels, no ambiguity from dropped 조사.
 - [ ] Tone matches the reader; a parent finds what to do in 5 seconds; no 행정 용어 in a 가정통신문.
 - [ ] One term per concept through the whole document and its 붙임.
-- [ ] No unnecessary personal data; legal items routed to `teacher-law` or marked 「확인 필요」.
+- [ ] No unnecessary personal data; legal items routed to `teacher-law`; what could not be confirmed is named in the final message, not printed on the page.
 - [ ] No invented basis, document number, statistic or rule.
 - [ ] Reading goals met or knowingly exceeded: a 가정통신문 aims at one A4 (reply slip may be the lower part) and a 보고서 요약 at about 5 lines with the key numbers. These are house goals, not rules: a required condition or consent text is never dropped to fit, and the school's or 교육청's own form and rules come first.
-- [ ] No open 기한 · 대상 · 자격 · 비용 · 안전 조건; if any remains, the file is labelled 「교사 초안」 with the open items listed.
+- [ ] Unknowns follow the one rule (CONTENT-RULES, Unknowns): 기한 · 대상 · 비용 · 장소 the user did not give are example values listed in `"fillins"`; blanks only inside the 회신서 · 신청서 · 서명란; one example note at the foot; no 「확인 필요」, slot or 「교사 초안」 mark on the page. A 가정통신문 the family must answer keeps its reply slip.
 - [ ] The reader's path was walked to the end (cost coverage, selection, change/cancel, link opens without a school account) and 본문 = 붙임.
 - [ ] No person can be recognised from combined details; no small count recoverable from totals.
 - [ ] `content-writing.md` tell check passed.

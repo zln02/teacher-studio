@@ -37,7 +37,7 @@
 - [ ] Options differ in approach; each has a real downside and a cost; no straw option.
 - [ ] Criteria came from the user's constraints, and the comparison uses the same criteria for all options.
 - [ ] Every fact has a dated source and a 확인한 날짜; rules and deadlines come from the authoritative text with its 적용일; decision-critical estimates have a second independent source or a stated range; old facts flagged.
-- [ ] No rule, deadline, cost or eligibility the plan depends on is still 「확인 필요」; if one is, the plan is marked 「초안」 and the first next step is to confirm it.
+- [ ] A rule, deadline, cost or eligibility the plan depends on that could not be confirmed is named as the first next step (「먼저 확인할 것」), not hidden and not stamped across the plan.
 - [ ] Fact · 추정 · 의견 are distinguishable; nothing invented; gaps marked 「확인 필요」.
 - [ ] Risks have early signs and responses; privacy/copyright/safety were scanned.
 - [ ] The recommendation states what is given up and what would change it; confidence is stated.

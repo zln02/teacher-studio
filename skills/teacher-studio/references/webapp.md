@@ -21,7 +21,7 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 1. **The first screen works in 5 seconds**: one clear title, the main control visible without scrolling, a sensible starting value or example already filled in.
 2. **Real content for this class**: helper = 8-12 questions students of that grade actually ask, in their words; calculator/simulation = the textbook's own quantities, units and a worked example; no lorem ipsum, no 「예시 1」.
 3. **Every control gives a visible result at once** (number + unit + one plain sentence 「시속 60 km로 2시간이면 120 km를 가요」), and wrong input gets a kind hint, not NaN.
-4. **Facts are right for the grade**; unsure -> 「확인 필요」. Formulas are shown the way the textbook writes them.
+4. **Facts are right for the grade**; one you cannot verify is left out and named in the last message. Formulas are shown the way the textbook writes them.
 5. **Readable on the projector**: test with P (projector mode); labels are short enough not to wrap inside buttons.
 6. The honest-AI line and what it can / cannot do (`can`, `cannot`) are written for this app.
 7. **The screen is full of the subject, not of empty space**: after the first click nothing leaves most of the page blank, and repeating an action replaces the last result instead of stacking the same answer again.
@@ -36,7 +36,7 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
    {"type": "runner", "name", "timeout_ms": 3000, "examples": [{"name", "code"}]},          // JavaScript only
    {"type": "custom", "name", "icon", "html": "...", "css": "...", "js": "..."} ]}
 ```
-- helper: 8-12 intents. Keys = Korean words + English/code words a student would type. Answers are plain text (no markdown marks), accurate for the grade; unsure -> 「확인 필요」. With a runner on the page, code in an answer gets a 「연습장에서 해 보기」 button.
+- helper: 8-12 intents. Keys = Korean words + English/code words a student would type. Answers are plain text (no markdown marks), accurate for the grade; an answer you cannot verify is left out. With a runner on the page, code in an answer gets a 「연습장에서 해 보기」 button.
 - runner: JavaScript in a Web Worker; `console.log` prints; endless loops stop after `timeout_ms`; errors come with a plain Korean hint.
 - custom: your own controls. Rules: ES2017 (no `?.` `??`), every input has a `<label>`, `autocomplete="off"`, sizes in rem, no fields for names/학번/phone, no storage, no network. Use `APP.el(id)`, `APP.onReset(fn)` (「처음으로」), `APP.say(text)` (screen readers), `APP.toRunner(code)`.
 - Built in, never re-implement: 가-/가+, projector mode (P), 「처음으로」, 「이 프로그램은?」 panel, keyboard (Enter, Ctrl+Enter, Esc, ?), skip link, phone layout, embedded Noto Sans KR, style from `words` (the user's `palette` wins).

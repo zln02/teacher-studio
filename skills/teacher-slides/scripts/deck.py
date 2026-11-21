@@ -280,6 +280,27 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     return rep
 
 
+def example_note(spec: dict) -> bool:
+    """CONTENT-RULES 「Unknowns」: a deck with example values ("fillins") says so ONCE, in the first slide's speaker notes. Added here
+    unless the spec already says it somewhere (a footnote under the first data table), the user wants blanks, it is a lesson deck
+    (its content is simply filled and correct) or "example_note" is false. Returns True when the line was added."""
+    import placeholders as ph
+    fills = [x for x in (spec.get("fillins") or []) if str(x).strip()]
+    slides = spec.get("slides") or []
+    if (not fills or not slides or spec.get("template_blanks") is True or spec.get("example_note") is False
+            or dctx.context_of(spec) == "class"):
+        return False
+    if ph.example_notes(dctx._strings(slides, skip=("file", "url", "tex", "fillins"))):
+        return False
+    first = slides[0]
+    if not isinstance(first, dict):
+        return False
+    v = spec.get("example_note")
+    line = v.strip() if isinstance(v, str) and v.strip() else ph.EXAMPLE_NOTE_DECK
+    first["note"] = (str(first.get("note") or "").rstrip() + "\n" + line).strip()
+    return True
+
+
 def placeholder_gate(spec: dict):
     """(leftover placeholders, listed fill-ins found) over every string in the spec (titles, items, notes ...)."""
     import placeholders as ph
@@ -351,6 +372,8 @@ def _run(a, spec, only) -> int:
         if kept:
             a.seed, avoid_ = kept
             print(f"NOTE 같은 모양으로 다시 만들어요 (seed {a.seed}). 다른 모양을 원하면 --fresh")
+    if example_note(spec):
+        print("NOTE 예시 값 안내 한 줄을 첫 장 발표자 메모에 넣었어요 (슬라이드에는 따로 적지 않아요)")
     rep = build_deck(spec, a.spec.resolve().parent, out, a.seed, ov, avoid=avoid_)
     if rep.get("seed") is not None:
         keep_seed(a.spec, rep["seed"], title_, rep.get("avoid"))
@@ -373,6 +396,15 @@ def _run(a, spec, only) -> int:
     if left:
         code = 1
         print(f"FAIL placeholders left in the deck: {left[:10]}  -> 실제 값이나 그럴듯한 가정(오늘 날짜, 2026학년도, '우리 학교')으로 채우거나, spec의 \"fillins\"에 적어 마지막에 「바꿔 넣을 곳」으로 알리세요")
+    ph_ = __import__("placeholders")  # the unknowns rule on what the audience sees (speaker notes are read separately)
+    for lv_, msg_ in ph_.policy_checks(list(dctx._strings(spec.get("slides") or [])), [str(x.get("note") or "") for x in spec.get("slides") or [] if isinstance(x, dict)],
+                                       ph_.with_blanks(spec.get("fillins"), spec.get("template_blanks")), deck=True, lesson=dctx.context_of(spec) == "class"):
+        if lv_ != "PASS":
+            print(f"{lv_:4} {msg_}")
+            code = code or (1 if lv_ == "FAIL" else 0)
+    ex_ = [str(x) for x in (spec.get("fillins") or []) if str(x).strip() and str(x) not in listed]
+    if ex_ and spec.get("template_blanks") is not True:  # the unknowns rule: every example value is named in the last message
+        print("바꿔 넣을 곳 (예시로 채운 값: 마지막 안내에 하나도 빠짐없이 적어 주세요): " + " · ".join(ex_))
     if listed:
         print("바꿔 넣을 곳 (선생님께 마지막에 알려 주세요): " + ", ".join(listed))
         if spec.get("template_blanks") is True:
@@ -395,7 +427,8 @@ def _run(a, spec, only) -> int:
                 if "줄여" in w_ or "넘쳐" in w_:
                     print("NOTE", w_)
             import pptx_check
-            ck = pptx_check.check_pptx(px, __import__("placeholders").with_blanks(spec.get("fillins"), spec.get("template_blanks")))
+            ck = pptx_check.check_pptx(px, __import__("placeholders").with_blanks(spec.get("fillins"), spec.get("template_blanks")),
+                                       lesson=dctx.context_of(spec) == "class")
             for lv, msg in ck["results"]:
                 print(f"{lv:4} pptx: {msg}")
                 if lv == "FAIL":

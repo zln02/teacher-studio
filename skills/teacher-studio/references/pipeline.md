@@ -30,14 +30,14 @@ For clear games, videos, decks and reports, draft a storyboard internally when h
 
 ## Final checkpoint (the LAST message of every job, even 「알아서」 and even when a helper agent did the building)
 1. **End with an answer, never a status.** The last message must contain: (a) the finished file's full path, (b) how to open it (「더블클릭하면 브라우저에서 열려요」 / PowerPoint), (c) the check result in one line (PASS, or what is still open and why). Never end on 「서브 에이전트가 만드는 중이에요」, 「백그라운드에서 진행 중」 or a plan. If a helper is still running, wait for it, then answer; if you cannot wait, say plainly that it is NOT finished and where the partial file is.
-2. **Use known facts in the deliverable.** For missing school names, real dates and amounts use the explicit `fillins` list, where supported, and tell the teacher what to enter under 「바꿔 넣을 곳」.
+2. **Use known facts in the deliverable; fill the rest with example values** (`shared/content/CONTENT-RULES.md`, 「Unknowns」). Every example value (date, place, amount, the user's own counts) goes in the `fillins` list, where supported, and the last message names each one under 「바꿔 넣을 곳」. Blanks only in hand-filled parts (회신서 · 신청서 · 서명란); no 「확인 필요」 cells, no draft stamp.
 3. **A PowerPoint was looked at.** With `.pptx`: report the `pptx_check` result (placeholders, text fit). Show the rendered PNG sheet (`deck.py ... --review DIR` writes it). Real drawing needs LibreOffice (~350MB; ask first, `ensure.py libreoffice`); without it the picture is an APPROXIMATE preview drawn from the shapes: say so in plain words (「대략의 미리보기예요, PowerPoint에서 한 번 열어 보세요」).
 4. A report/data job: say which columns were treated as identifiers and hidden (`teacher-data`).
 5. **How it will be used** (`classroom-use.md`): the use was said -> run `deliver.py FILE --use <use>` and show its 꾸러미 lines; 「알아서」 -> `--use auto` (TV/screen + PDF), no question; otherwise end with ONE question 「어떻게 쓰실 건가요? (추천: …)」 (teacher list or general list; never ask whether the user is a teacher). Programs missing on this PC -> offer with the size, never install silently. Never upload.
 
 ## Rules
 - Plain Korean, no dev terms. Show the created file, and offer a preview when the current conversation can display it.
-- Never invent facts for 대본 (mark 「확인 필요」); sources recorded for deliver stage.
+- Never invent world facts for 대본 (leave out what you cannot verify and say so); sources recorded for deliver stage.
 - The storyboard sheet is a drawing aid, not a deliverable; it contains no student data.
 - Do not read raw spreadsheet rows at any stage (teacher-data does it).
 - Keep each artifact one screen. If it grows, cut.

@@ -53,7 +53,7 @@ What a 홍보 담당 decides before any design. Used by `teacher-slides` (`promo
 - [ ] One audience, one action, one message; the headline states a benefit or a clear invitation.
 - [ ] Reading test passed on the real medium and size: what it is and who it is for (headline length was a means to this, not the criterion).
 - [ ] ≤ 3 levels of emphasis; nothing competes with L1; every deciding condition (자격 · 비용 · 정원 · 동행 · 안전) is on the piece, not only behind the link.
-- [ ] No deciding fact is still 「확인 필요」 (date, place, cost, eligibility, deadline); otherwise the piece is a 「교사 초안」 and is not posted.
+- [ ] Deciding facts (date, place, cost, eligibility, deadline) the user gave are used as given; those they did not give are plausible example values (CONTENT-RULES, Unknowns): never 「확인 필요」 or a draft stamp on the piece, one note for the file (PPT: first slide's speaker notes), and every example listed in the final message so it is replaced before posting.
 - [ ] Decision facts complete and identical everywhere: 언제(요일) · 어디서 · 누구 · 얼마 · 어떻게 · 마감 · 문의.
 - [ ] One CTA with verb + channel + deadline + fallback to the QR.
 - [ ] No empty adjectives; each claim has a visible or countable proof; nothing invented.

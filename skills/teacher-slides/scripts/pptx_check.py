@@ -12,6 +12,9 @@ Checks (FAIL = fix before handing over):
   geometry      shapes inside the slide, no empty text placeholders
   visual weight no body slide that looks mostly empty (pptx_fill.py: content < 6 % of the slide, or content ends above 60 % of the height)
   notes         placeholders in speaker notes count too
+  unknowns      CONTENT-RULES 「Unknowns」: 「확인 필요」-type filler on slides (1-2 WARN, 3+ FAIL), a 「교사 초안」 stamp on a slide (FAIL),
+                the example note repeated on slides or missing although the spec lists example values in "fillins" (WARN; a lesson deck
+                needs none), underline blanks on a slide that is not a 양식 (WARN)
 --render DIR    also draws the slides as PNG: real LibreOffice rendering when installed (or --yes to install it, large), else an
                 APPROXIMATE preview from the shapes (labelled as such; fonts and line breaks differ from PowerPoint).
 """
@@ -72,7 +75,7 @@ def frame_overflow(sh, tf):
     return need, bh, need / max(bh, 1)
 
 
-def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
+def check_pptx(path: Path, fillins=(), tol: float = 1.12, lesson: bool = False) -> dict:
     """Returns {results:[(level,msg)], fillins:[...], texts:[per-slide text], overflow:[(slide, text, ratio)]}."""
     from pptx import Presentation
     prs = Presentation(str(path))
@@ -80,6 +83,7 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
     results: list[tuple[str, str]] = []
     left_over, listed, texts_all, over, off, empty = [], [], [], [], [], []
     tiny, small, plain_n, body_n = [], [], 0, 0
+    seen_txt, note_txt = [], []  # what the audience sees / the speaker notes (the unknowns policy treats them differently)
     for i, s in enumerate(prs.slides, 1):
         texts = []
         for sh, tf, label in _frames(s):
@@ -97,8 +101,10 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
                             tiny.append((i, r_.text.strip()[:14], r_.font.size.pt))
                         elif r_.font.size.pt < 14:
                             small.append((i, r_.text.strip()[:14], r_.font.size.pt))
+        seen_txt.append("\n".join(texts))
         if s.has_notes_slide:
             texts.append(s.notes_slide.notes_text_frame.text or "")
+            note_txt.append(texts[-1])
         txt = "\n".join(texts)
         texts_all.append(txt)
         if 1 < i < len(prs.slides):  # body slides: is anything on it besides text? (table, chart, picture, line, a grid of 3+ boxes)
@@ -122,6 +128,12 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12) -> dict:
                 off.append((i, sh.name))
     results.append(("FAIL" if left_over else "PASS",
                     "no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...)" + (f": {left_over[:8]}{' ...(+%d)' % (len(left_over) - 8) if len(left_over) > 8 else ''}" if left_over else "")))
+    pol = ph.policy_checks(seen_txt, note_txt, fillins, deck=True, lesson=lesson)
+    if ph.ALLOW_ALL not in (fillins or []):
+        ul = [(i, m.group(0)[:8]) for i, t in enumerate(seen_txt, 1) for m in ph.UNDERLINE.finditer(t)]
+        if ul:
+            pol.append(("WARN", f"슬라이드에 밑줄 빈칸 {len(ul)}곳 (예: {ul[0][0]}번) -> 그럴듯한 예시 값으로 채우고 fillins에 적으세요. 빈칸을 원하신 경우만 \"template_blanks\": true"))
+    results += pol
     results.append(("FAIL" if over else "PASS", "text fits its box (estimate)" + (f": {over[:6]}" if over else "")))
     results.append(("FAIL" if off else "PASS", "every shape inside the slide" + (f": {off[:4]}" if off else "")))
     results.append(("FAIL" if empty else "PASS", "no empty placeholder" + (f": {empty[:4]}" if empty else "")))
@@ -151,15 +163,16 @@ def main() -> int:
     ap.add_argument("--yes", action="store_true", help="with --render: the teacher agreed to install LibreOffice")
     a = ap.parse_args()
     fills = [x.strip() for x in a.fillins.split(",") if x.strip()]
-    tb = False
+    tb = lesson = False
     if a.spec:
         sp = json.loads(a.spec.read_text(encoding="utf-8"))
         fills += [str(x) for x in (sp.get("fillins") or [])]
+        lesson = str(sp.get("context") or "").strip().lower() in ("class", "수업")
         tb = sp.get("template_blanks") is True  # the user asked for a 양식: same as --allow-blanks
     if a.allow_blanks or tb:
         fills = ph.with_blanks(fills, True)
         print("NOTE 양식 모드: 빈칸을 일부러 남긴 파일이에요. 사용하기 전에 채워 주세요.")
-    r = check_pptx(a.pptx, fills)
+    r = check_pptx(a.pptx, fills, lesson=lesson)
     for lv, msg in r["results"]:
         print(f"{lv:4} {msg}")
     if r["fillins"]:

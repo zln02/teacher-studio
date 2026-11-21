@@ -27,7 +27,7 @@ Template-first still wins: `--template mine.pptx` uses the user's masters; `desi
 ## What a good deck holds (jobs, not a slide order; the outline comes from the content)
 A context names the jobs a deck must do. Which slides do them, how many and in what order is decided from THIS content (`content-slides.md`). Do not reuse a list of slide types from an earlier deck or from `assets/spec-examples/`.
 - **class**: says what will be learned · opens with a question or a case · carries each sub-topic of the unit on a slide whose type fits its shape · checks understanding more than once, with answers and reasons · gives the class something to do · closes with what was learned and what comes next. The .pptx collects the answers on one 「확인 문제 정답」 slide before the closing.
-- **public**: 표지 · 목차 (auto) · 요약 with the key numbers come first by convention. After that, one section per real part of the work; each data slide has `source` ("우리 학교 자체 집계(2026. 11.)" or 「예시 자료(가상 수치), 실제 집계로 교체」) and numbers that agree across slides.
+- **public**: 표지 · 목차 (auto) · 요약 with the key numbers come first by convention. After that, one section per real part of the work; each data slide has `source` ("우리 학교 자체 집계(2026. 11.)") and numbers that agree across slides. Figures the user did not give are example values: listed in `"fillins"` and noted once for the deck (first slide's speaker notes, or one `footnote` under the first data table), not on every slide.
 - **promo**: one promise · the reasons that are real · the facts needed to act · one call to action.
 - **personal**: the pictures lead; words only where a picture cannot say it.
 - Shape -> slide type (any context; `"type": "auto"` lets the build choose, `scripts/deck_shape.py` prints the choice):

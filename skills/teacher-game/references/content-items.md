@@ -45,7 +45,7 @@
 - [ ] No cueing: answer not longest/most detailed; grammar of stem fits all options; positions vary; no option repeats a stem word alone.
 - [ ] Negative stems ≤ 2 in 10 and marked.
 - [ ] Explanations say 「왜」 and address the tempting error.
-- [ ] All keys re-solved independently; numbers recomputed; facts sourced. An item whose key is still 「확인 필요」 is left out of the game, or the whole file stays a 「교사 초안」 until the teacher confirms it.
+- [ ] All keys re-solved independently; numbers recomputed; facts sourced. An item whose key you could not verify is left out of the game and named in the review table (CONTENT-RULES, Unknowns: no draft mark inside the file).
 - [ ] Difficulty rises, with an easy start and a solvable end; forms and contexts vary.
 - [ ] Nothing shames a wrong answer; no real names; contexts free of stereotype.
 - [ ] `../teacher-studio/references/content-writing.md` budgets and tell check passed.

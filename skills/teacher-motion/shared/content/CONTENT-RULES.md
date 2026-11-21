@@ -21,13 +21,12 @@ These are principles and decisions, not templates. Never copy wording or structu
 1. **Reader and use first.** Name who reads it, where (TV at 8 m, phone, printed A4, 결재 화면) and what they do next. If either is unknown and it changes the content, ask once; otherwise state the assumption in one line.
 2. **One purpose, said in one sentence, before writing.** If you cannot write 「이것을 본 사람은 ___를 한다/안다」 the content is not ready. Everything that does not serve that sentence is cut, not shrunk.
 3. **Content before container.** Decide the claims, their order and the evidence first; then pick slide types, layouts and length. Do not fill a layout because it exists.
-4. **Facts are verified or marked.**
-   - Every number, date, name, definition, quotation and formula is one of: (a) from the user's own material, (b) checked against a source in this session, (c) marked 「확인 필요」. These are three different states, not three ways to pass (see 「Release status」 below).
+4. **World facts are verified; the user's own unknowns are filled with example values.**
+   - Two kinds of fact, two rules. **World facts** (statistics, laws, quotations, 성취기준 codes, definitions, formulas, answer keys, textbook content): each is (a) from the user's own material or (b) checked against a source in this session. One you cannot verify is left out, or the sentence is rewritten so the claim is not made, and it is named in the final message. **The user's own facts** (their 날짜 · 시간 · 장소 · 비용 · 인원 · 실적 수치 · 담당 · 전화): what the user gave is used exactly as given; what they did not give is an *unknown* and is filled with a plausible example value (see 「Unknowns」 below).
    - User material can be old or contradict itself or an official source (last year's date, a changed rule, two different deadlines). Do not silently pick one: show the conflict to the teacher.
    - Not common knowledge → source on the page: who, what, year (and 기준일 for statistics).
    - Dates: compute the weekday, never recall it. Sums and percentages: recompute from the raw counts with the same 분모. Rounded shares may not add to 100% (33.3% × 3 = 99.9%) and 복수 응답 shares can exceed it; say so in a note instead of forcing the figures to fit.
-   - Never invent statistics, quotes, laws, 성취기준 codes, links or "research says". An honest gap beats a confident error.
-   - Illustrative numbers are labelled 「예시(가상 수치)」 on the same screen.
+   - Never invent statistics about the world, quotes, laws, 성취기준 codes, links or "research says". Example values for the user's own unknowns are not inventions of this kind: they stand in for values only the user has, are noted once in the file and are all listed in the final message.
 5. **Specific over generic.** Each sentence must be falsifiable or actionable. If a sentence fits any topic unchanged (「다양한 활동으로 효과적으로…」), delete or replace it with the particular fact, number, step or example. Exception: safety instructions, official wording (성취기준 원문, 법정 문구) and standing notices stay even though they repeat across topics.
 6. **Shape follows the content.** Sequence → steps; comparison → table; one number → big number; cause → diagram. Three bullets are not the default shape of a thought.
 7. **Level is chosen, not defaulted.** Vocabulary, sentence length and amount per screen match the stated grade or audience (`content-writing.md`). Plain is not childish.
@@ -46,13 +45,16 @@ The generators and gates guarantee a floor: the file opens, reads from the back 
 - **Design.** Tool-picked colours, fonts and layouts are safe defaults, not requirements. Order: the user's design > a look you can justify for this topic and room (your own palette, illustration, composition) > the tool default. Whatever you choose still passes the gates: contrast, text size, no overflow, offline, privacy, no AI house look.
 - **Last check before the final message:** 「Would I have made something richer, deeper or better-looking for this request without these tools?」 If yes, it is not finished: add what is missing.
 
-## Release status — 「배포용」 or 「교사 초안」
-Some facts cause harm when wrong. These are **blocking facts**: 정답과 채점 기준 · 제출 마감과 일시 · 신청 자격과 선정 기준 · 비용 · 안전 조건(실험 · 체험 · 급식 · 이동) · 법적 근거와 동의 · 공식 문구(성취기준, 조문). Add any fact a reader would act on without asking.
+## Unknowns — example values in the body, blanks only where a hand writes
+One rule for every kind of output (document, deck, poster, video, app). It applies only to what the user did not give: a fact the user gave is used as given.
 
-- Every blocking fact verified (from a checked source, or confirmed by the teacher for this use) → the output may be called 배포용.
-- Any blocking fact still 「확인 필요」, or user material that conflicts with an official source → the output is a **「교사 초안」**. It does not pass the gate. Say so in the first line of the final message, mark it on the teacher-facing page (not on what students or parents see as fact), and list each open item: what, where in the file, how to confirm.
-- Non-blocking 「확인 필요」 items (a side fact, a term that differs by textbook) may ship if listed.
-- Keep a short verification note for the teacher: each blocking fact, its source or who confirmed it, and where it appears in the file.
+1. **Body → a plausible example value.** In the body, the tables, the schedule, the report figures and the slides, write a believable value so the file reads as finished: a real upcoming date with its computed weekday, a time, a place (「시립 실내수영장」), a round cost, counts and rates that agree with each other. People appear as roles (「담임 교사」「우리 학교장」「교육연구부」), never a made-up real-looking name; the organisation is 「우리 학교」. Never the words 「확인 필요」「집계 필요」「미정」 in a cell or a line, and never a slot (`[학교명]`, `○○`, `20XX`).
+2. **Hand-filled parts → blanks.** Only what a person writes on by hand stays blank: the 회신서 · 신청서 · 동의서, sign lines, student and guardian fields. These are labelled underlines or check boxes (`학년 ___ 반 ___`, `□ 참가   □ 불참`, `보호자:            (서명)`). A notice that normally carries a reply slip (the family answers, chooses, pays or consents) keeps it.
+3. **One note per file.** Exactly one short line says that example values need checking, and only when the file has example values. Document (HWPX · Word · PDF): one small line at the foot of the body, `※ 날짜·장소·금액 등 일부 내용은 예시입니다. 확정된 내용으로 바꾼 뒤 이 줄을 지워 주세요.` Report or promo PPT: the speaker notes of the first slide (a report may instead put one small line under its first data table). Lesson material (class PPT, game, worksheet): no note; its content is simply filled and correct. Never repeat the note per cell or per slide, and never a 「교사 초안」「검토본」 stamp anywhere in the file.
+4. **The final message lists every example value** (what you wrote, where it is) as 「바꿔 넣을 곳」. Keep that list in the spec's `"fillins"` as you write (`"참가비 15,000원"`, `"체험 날짜 2026. 12. 3.(목)"`): the tools add the one note from it and print the list for the final message. The first line of the final message is still the answer (the file), not a warning.
+5. **The user wins.** 「빈칸으로 둬」「양식으로」 → labelled underline blanks in the body too (`"template_blanks": true`). The user's own template is filled as it stands.
+
+World facts that cause harm when wrong are not unknowns: 정답과 채점 기준 · 안전 조건(실험 · 급식 · 이동) · 법적 근거와 동의 문구 · 공식 문구(성취기준, 조문). Verify them, or leave them out and say so in the final message; never an example value for these. User material that conflicts with an official source is shown to the teacher in the final message, not silently resolved. (Legal answers keep their own wording for what could not be confirmed: `teacher-law`.)
 
 ## Expert self-review gate — 「이 분야 전문가가 그대로 쓸 수준인가?」
 Run after the draft, and again on the built file. Any 「아니오」 → fix, then re-check. Report unresolved items to the user in plain words; do not hide them.
@@ -60,7 +62,7 @@ Run after the draft, and again on the built file. Any 「아니오」 → fix, t
 | # | criterion | pass when |
 |---|---|---|
 | G1 | 목적 | one sentence states what the reader does or knows afterward, and every part serves it |
-| G2 | 정확성 | every fact is traced to user material or a checked source; numbers recomputed; dates and weekdays computed; **no blocking fact is 「확인 필요」** (otherwise status = 교사 초안, with the open items listed); conflicts in user material were shown to the teacher |
+| G2 | 정확성 | every world fact is traced to user material or a checked source; numbers recomputed; dates and weekdays computed; **the user's unknowns follow 「Unknowns」**: example values in the body (one note in the file, every one listed in the final message), blanks only in hand-filled parts, no 「확인 필요」 filler and no draft stamp in the file; conflicts in user material were shown to the teacher |
 | G3 | 전문가의 눈 | the checks in the per-kind 「전문가 점검표」 all pass (the things a 수석교사 · 교감 · 장학사 · 홍보 담당 · 통계 담당 would flag first) |
 | G4 | 구체성 | no sentence survives that would fit another topic unchanged; no filler words from the banned list |
 | G5 | 수준 | a reader at the stated level understands it on first reading, and an adult does not feel talked down to |
