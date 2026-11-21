@@ -70,15 +70,15 @@ def build_html() -> str:
     head = (f'<div class="meta">교사 연수 &nbsp;·&nbsp; 2026. 11. 23.(월) 14:00 &nbsp;·&nbsp; 60분 &nbsp;·&nbsp; AI교육코디네이터 박진영</div>')
 
     # ---------------------------------------------------------------- page 1: follow along
-    harness = (f'<div class="harness"><div class="hx-text"><b>하네스</b> = AI에게 <b>도구</b>와 <b>레시피</b>를 주는 것</div>'
+    harness = (f'<div class="harness"><div class="hx-text"><b>하네스</b> = AI 요리사에게 <b>도구</b>와 <b>레시피</b>를 주는 것</div>'
                f'<div class="hx-pic" aria-hidden="true">'
                f'<span class="chip">{ic("flame", 20)}도구</span><span class="op">+</span>'
                f'<span class="chip">{ic("book", 20)}레시피</span><span class="op">=</span>'
                f'<span class="chip strong">{ic("egg", 20)}김치볶음밥</span></div></div>')
     steps = "".join([
-        step(1, "AI 열기", "Claude 앱 &nbsp;<span class='tag'>미리 준비됨</span>"),
-        step(2, "「컴퓨터를 쓰는 모드」 고르기",
-             "Claude 데스크톱 → <b>Cowork</b> 또는 <b>Code</b> 탭<br>ChatGPT 개인 → <b>Codex</b> 앱"),
+        step(1, "우리 식당 열기", "식당 ① <span class='real'>(Claude 데스크톱 앱)</span> &nbsp;<span class='tag'>미리 준비됨</span>"),
+        step(2, "파일을 만드는 「주방」 열기",
+             "식당 ① → <b>Cowork</b> 또는 <b>Code</b> 탭<br>식당 ② <span class='real'>(ChatGPT 개인 계정)</span> → <b>Codex</b> 앱"),
         step(3, "링크 붙여넣고 한 줄", "",
              f'<div class="code">{REPO}</div><div class="say">「내가 준 링크에 하네스 세팅해 줘」</div>'),
         step(4, "만들고 싶은 것 말하기", "예시 (그대로 따라 말해도 돼요)",
@@ -87,7 +87,7 @@ def build_html() -> str:
     ])
     planb = (f'<div class="planb"><div class="pb-h">{ic("hand-stop", 22)} 막히면 (Plan B)</div>'
              f'<ol><li><b>{REPO}</b> → <b>dist</b> 폴더에서 zip 파일 받기</li>'
-             f'<li>Claude → <b>Customize → Skills</b> 에 zip 올리기</li>'
+             f'<li>식당 ① → <b>Customize → Skills</b> 에 zip 올리기</li>'
              f'<li>코드 실행 켜기: <b>Settings → Capabilities</b></li></ol></div>')
     p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">따라 하기 안내지 &nbsp;·&nbsp; 1쪽 따라 하기 / 2쪽 가져가기</div>'
           f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">「바로 만들어」 말고, <b>「기획부터 같이 해 줘」</b></div></div>'
@@ -146,6 +146,7 @@ h2.first{{margin-top:5mm}}
 .tips b{{font-size:16pt;font-weight:900;white-space:nowrap}}
 .tn{{flex:0 0 10mm;height:10mm;border-radius:50%;border:1.8pt solid {INK};font-weight:900;font-size:15pt;display:flex;align-items:center;justify-content:center}}
 .td{{color:#222}}
+.real{{font-size:.82em;color:#444}}
 .cards{{display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;margin-bottom:5mm}}
 .card{{border:1pt solid {LINE};border-radius:3mm;padding:3.2mm 4.5mm;break-inside:avoid}}
 .c-h{{display:flex;align-items:center;gap:2mm;font-size:15pt}}

@@ -684,6 +684,8 @@ h1 em,h2 em,.big em{text-shadow:none}
 .modes li b{color:var(--acc)}
 .modes li.sm{font-size:27px;color:var(--sub)}
 .modes .tagp{font-size:26px;color:var(--warm);font-weight:700}
+.modes h3 .real{font-size:28px;font-weight:600;color:var(--sub);letter-spacing:0;margin-left:14px}
+.pick p.real{font-size:26px;font-weight:600;color:var(--sub);opacity:.85}
 .verify{position:absolute;right:var(--g-x);bottom:var(--g-bottom);font-size:24px;font-weight:700;color:var(--warm);padding:8px 18px;border:1px dashed rgba(217,168,92,.6);border-radius:999px}
 .freeze .storyc .gl{animation:none!important;clip-path:none!important;filter:none!important}
 
@@ -845,15 +847,16 @@ h1,h2,.big,.stmt .big{font-weight:800}
 /* 그림책 장의 툰 색을 덱 쪽으로 한 단계 가라앉혀요 (그림책다움은 남기고 형광기만 빼요) */
 .storyc .gl canvas,.storyc .fb{filter:saturate(.86)}
 
-/* ---------- AI 회사들도 하네스로 경쟁해요 (hx): 같은 크기의 AI 두뇌 + 앱마다 다른 둘레 ----------
-   상표: ChatGPT만 공식 로고(OpenAI Blossom 흰색, 받은 그대로 · 색 안 바꿈 · 여백은 파일에 들어 있는 그대로).
-   Claude · Gemini는 가이드라인이 사전 승인을 요구해서 이름 글자만(브랜드 색). 근거는 deck-v2-NOTICE.md */
+/* ---------- 식당들도 하네스로 경쟁해요 (hx): 같은 크기의 요리사 + 식당(주방)마다 다른 둘레 ----------
+   실제 회사·앱 이름과 로고는 쓰지 않아요(식당 A·B·C 비유). 색도 브랜드 색이 아니라 덱 색이에요. 대응표는 deck-v2-NOTICE.md */
 .hx h2{font-size:60px;margin-bottom:0}
 .hxgrid{position:absolute;left:110px;right:110px;top:250px;display:grid;grid-template-columns:repeat(3,540px);justify-content:space-between}
 .hxapp{position:relative;border-radius:22px;background:linear-gradient(180deg,#1e2025,#17191d);border:1px solid rgba(243,240,233,.13);box-shadow:0 36px 70px -44px rgba(0,0,0,.9)}
 /* 창 바탕은 불투명하게: 반투명 판에 CSS 등장 움직임(opacity)을 걸면 소프트웨어 렌더링에서 판이 하얗게 덧칠돼요 (motion QA에서 찾음) */
 .hxapp:before{content:"";position:absolute;left:22px;right:22px;top:-1px;height:3px;border-radius:2px;background:var(--bc);opacity:.85}
-.hxapp.chatgpt{--bc:#f3f0e9}.hxapp.claude{--bc:#d97757}.hxapp.gemini{--bc:#4285f4}
+.hxapp.ra{--bc:#f3f0e9}.hxapp.rb{--bc:var(--warm)}.hxapp.rc{--bc:var(--acc)}
+.hxapp .bar .sto{width:30px;height:30px;margin-left:12px;color:var(--bc)}
+.hxapp .bar .sto+b{margin-left:4px}
 .hxapp .bar{display:flex;align-items:center;gap:9px;height:60px;padding:0 22px;border-bottom:1px solid rgba(243,240,233,.1)}
 .hxapp .bar i{width:11px;height:11px;border-radius:50%;background:rgba(243,240,233,.2)}
 .hxapp .bar b{margin-left:14px;font-size:30px;font-weight:800;letter-spacing:-.02em;color:var(--bc)}

@@ -9,7 +9,7 @@
    "h": "하네스란?",
    "body": [
     {
-     "p": "하네스 = AI에게 **도구와 레시피**를 주는 것 (김치볶음밥도 레시피가 있으면 실패하지 않아요)"
+     "p": "하네스 = AI 요리사에게 **도구와 레시피**를 주는 것 (김치볶음밥도 레시피가 있으면 실패하지 않아요)"
     }
    ]
   },
@@ -17,10 +17,10 @@
    "h": "실습 4단계",
    "body": [
     {
-     "p": "① **AI 열기** · Claude 앱 (미리 준비됨)"
+     "p": "① **우리 식당 열기** · 식당 ①(Claude 데스크톱 앱) 미리 준비됨"
     },
     {
-     "p": "② **「컴퓨터를 쓰는 모드」 고르기** · Claude 데스크톱: Cowork 또는 Code 탭 / ChatGPT 개인: Codex 앱"
+     "p": "② **파일을 만드는 「주방」 열기** · 식당 ①: Cowork 또는 Code 탭 / 식당 ②(ChatGPT 개인 계정): Codex 앱"
     },
     {
      "p": "③ **링크 붙여넣고 한 줄** · github.com/zln02/teacher-studio + 「내가 준 링크에 하네스 세팅해 줘」"
@@ -40,7 +40,7 @@
    "h": "막히면 (Plan B)",
    "body": [
     "github.com/zln02/teacher-studio 의 dist 폴더에서 zip 파일 받기",
-    "Claude 「Customize → Skills」에 zip 올리기",
+    "식당 ① 「Customize → Skills」에 zip 올리기",
     "코드 실행 켜기 · Settings → Capabilities"
    ]
   },

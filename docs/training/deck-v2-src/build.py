@@ -69,7 +69,7 @@ def compare_slides() -> str:
   <div class="kicker">같은 부탁, 다른 결과</div><div class="cno">{k} / {len(CASES)}</div>
   <div class="ask"><svg class="ic"><use href="#message-square"/></svg>「{ask}」</div>
   <div class="pair">
-    <div class="shot" data-b="1"><div class="hd">그냥 AI<i>ChatGPT·Claude 그대로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
+    <div class="shot" data-b="1"><div class="hd">그냥 AI<i>요리사 혼자, 맨손으로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
     <div class="shot h" data-b="2"><div class="hd"><svg class="ic"><use href="#sparkles"/></svg>하네스 AI<i>하네스를 채우고</i></div>{shot(case, "harness")}<p>{cap}</p></div>
   </div>
   <aside class="note">[8~15분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
@@ -208,7 +208,6 @@ def main() -> int:
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
-    slides = slides.replace("__LOGO_OPENAI__", svg_uri(ASSETS / "logo_openai_blossom_white.svg"))
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
@@ -236,7 +235,7 @@ def main() -> int:
   - Noto Sans KR subset (fallback) · SIL Open Font License 1.1
   - CC0 models: Poly Haven round_spectacles (glTF, textures shrunk); RobotExpressive.glb by Tomás Laulhé (CC0 1.0, from three.js examples)
   - CC0 photo: "Three horse power." by Bernard Spragg. NZ (Wikimedia Commons, CC0 1.0), cropped and graded
-  - Trademark: OpenAI Blossom logo (official file from openai.com/brand, unaltered, identification only). OpenAI, ChatGPT, Anthropic, Claude, Google and Gemini are trademarks of their owners; no endorsement implied.
+  - Trademarks: app names on the hands-on slides are trademarks of their owners, used only to name the app to open; no endorsement implied. No company logos are embedded.
   - QR Code generator (Project Nayuki) · MIT License (drawn at build time)
 -->
 <style>
