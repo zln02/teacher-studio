@@ -1,0 +1,43 @@
+{
+ "different_requests": 0.48,
+ "same_request": 0.538,
+ "per_seed": {
+  "4": 0.512,
+  "5": 0.484,
+  "6": 0.445
+ },
+ "per_spec": {
+  "a-escape-light-wave": 0.455,
+  "e-family-quiz": 0.438,
+  "h-escape-history": 0.725,
+  "i-party-quiz": 0.549,
+  "j-tv-quiz-dokdo": 0.746,
+  "k-solar-quiz": 0.316
+ },
+ "layouts": {
+  "a-escape-light-wave@4": "right",
+  "a-escape-light-wave@5": "stack",
+  "a-escape-light-wave@6": "left",
+  "e-family-quiz@4": "stair",
+  "e-family-quiz@5": "stack",
+  "e-family-quiz@6": "stack",
+  "h-escape-history@4": "stack",
+  "h-escape-history@5": "stack",
+  "h-escape-history@6": "stack",
+  "i-party-quiz@4": "stack",
+  "i-party-quiz@5": "column",
+  "i-party-quiz@6": "left",
+  "j-tv-quiz-dokdo@4": "left",
+  "j-tv-quiz-dokdo@5": "column",
+  "j-tv-quiz-dokdo@6": "column",
+  "k-solar-quiz@4": "stack",
+  "k-solar-quiz@5": "left",
+  "k-solar-quiz@6": "news"
+ },
+ "specs": 6,
+ "seeds": [
+  4,
+  5,
+  6
+ ]
+}

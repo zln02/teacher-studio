@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "color-ppt",
+ "run": 1,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-harness",
+  "B": "claude-bare",
+  "C": "claude-harness",
+  "D": "codex-bare"
+ },
+ "result": {
+  "A": {
+   "content": 5,
+   "design": 5,
+   "readability": 4,
+   "fit": 5,
+   "note": "A has accurate content: car and pedestrian signals are separated, the flashing green light is covered, and the sign illustrations are realistic. The stop, look and walk steps are followed by a quiz with answers, all in a tidy, consistent illustrated style. Some of the explanation text is small."
+  },
+  "B": {
+   "content": 3,
+   "design": 4,
+   "readability": 5,
+   "fit": 4,
+   "note": "B uses large type and strong colours that suit 2nd graders, and the lesson flows from the intro through an OX quiz to a summary. However, the 정지 sign is drawn as a red square instead of the real inverted triangle. The OX quiz shows no answers, and the slide's sign illustrations are not very accurate."
+  },
+  "C": {
+   "content": 3,
+   "design": 3,
+   "readability": 4,
+   "fit": 3,
+   "note": "C has a clean structure with learning goals, a crossing procedure and quizzes with answers. However, the signs are abstract shapes (a yellow pentagon, a triangle and a circle) that look little like real signs, so they are hard to use for teaching. The traffic-light slide is also mostly empty space."
+  },
+  "D": {
+   "content": 4,
+   "design": 3,
+   "readability": 2,
+   "fit": 3,
+   "note": "D has rich, accurate content, including the flashing green light, a sign quiz, answers and a legal source. However, the cover and slide titles are no bigger than the body text, so there is almost no visual hierarchy. Sign labels overlap the drawings, and the text in the final dark box is hard to read."
+  },
+  "ranking": [
+   "A",
+   "B",
+   "C",
+   "D"
+  ]
+ },
+ "cost": 0.3208358,
+ "secs": 28,
+ "raw": "{\"A\":{\"content\":5,\"design\":5,\"readability\":4,\"fit\":5,\"note\":\"A has accurate content: car and pedestrian signals are separated, the flashing green light is covered, and the sign illustrations are realistic. The stop, look and walk steps are followed by a quiz with answers, all in a tidy, consistent illustrated style. Some of the explanation text is small.\"},\"B\":{\"content\":3,\"design\":4,\"readability\":5,\"fit\":4,\"note\":\"B uses large type and strong colours that suit 2nd graders, and the lesson flows from the intro through an OX quiz to a summary. However, the 정지 sign is drawn as a red square instead of the real inverted triangle. The OX quiz shows no answers, and the slide's sign illustrations are not very accurate.\"},\"C\":{\"content\":3,\"design\":3,\"readability\":4,\"fit\":3,\"note\":\"C has a clean structure with learning goals, a crossing procedure and quizzes with answers. However, the signs are abstract shapes (a yellow pentagon, a triangle and a circle) that look little like real signs, so they are hard to use for teaching. The traffic-light slide is also mostly empty space.\"},\"D\":{\"content\":4,\"design\":3,\"readability\":2,\"fit\":3,\"note\":\"D has rich, accurate content, including the flashing green light, a sign quiz, answers and a legal source. However, the cover and slide titles are no bigger than the body text, so there is almost no visual hierarchy. Sign labels overlap the drawings, and the text in the final dark box is hard to read.\"},\"ranking\":[\"A\",\"B\",\"C\",\"D\"]}"
+}

@@ -1,0 +1,43 @@
+{
+ "different_requests": 0.452,
+ "same_request": 0.54,
+ "per_seed": {
+  "1": 0.502,
+  "2": 0.427,
+  "3": 0.426
+ },
+ "per_spec": {
+  "m1-fractions": 0.455,
+  "m2-weather": 0.695,
+  "m3-ox-safety": 0.682,
+  "m4-escape-math": 0.548,
+  "m5-english": 0.4,
+  "m6-civics": 0.459
+ },
+ "layouts": {
+  "m1-fractions@1": "stack",
+  "m1-fractions@2": "rail",
+  "m1-fractions@3": "right",
+  "m2-weather@1": "stack",
+  "m2-weather@2": "split",
+  "m2-weather@3": "stack",
+  "m3-ox-safety@1": "stair",
+  "m3-ox-safety@2": "right",
+  "m3-ox-safety@3": "stair",
+  "m4-escape-math@1": "left",
+  "m4-escape-math@2": "rail",
+  "m4-escape-math@3": "stair",
+  "m5-english@1": "stair",
+  "m5-english@2": "left",
+  "m5-english@3": "right",
+  "m6-civics@1": "poster",
+  "m6-civics@2": "right",
+  "m6-civics@3": "column"
+ },
+ "specs": 6,
+ "seeds": [
+  1,
+  2,
+  3
+ ]
+}

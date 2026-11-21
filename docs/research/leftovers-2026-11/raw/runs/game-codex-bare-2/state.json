@@ -1,0 +1,27 @@
+{
+ "secs": 373,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 14712,
+ "tok": {
+  "input": 519321,
+  "cached": 459008,
+  "output": 14712,
+  "reasoning": 982
+ },
+ "turns": 7,
+ "failed_cmds": 4,
+ "is_error": false,
+ "errors": [],
+ "last": "[우리 동네 해결단 게임 열기](/C:/Users/User/Downloads/xv-eval-work/leftovers/game-codex-bare-2/work/index.html)\n\n현재 폴더에 `index.html`로 저장했습니다. 파일을 브라우저에서 열면 설치나 인터넷 연결 없이 바로 플레이할 수 있어요.\n\n생활 속 상황 12개를 읽고 알맞은 공공 기관을 고르는 게임입니다. 답을 고르면 해설이 나오고, 게임이 끝나면 틀린 문제를 다시 볼 수 있어요. **기관 수첩**에는 공공 기관 8곳이 하는 일을 담았습니다.\n\n채점, 오답 복습, 다시 시작은 스크립트로 검증했습니다. 실제 브라우저 화면은 이 환경에서 확인하지 못했습니다.",
+ "name": "game-codex-bare-2",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

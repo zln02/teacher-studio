@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 지역 공공 기관 탐험대</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:linear-gradient(#bfe9ff,#e8f8e0 60%,#cdeab0);min-height:100vh;color:#33403a}
+#app{max-width:860px;margin:0 auto;padding:14px}
+h1{text-align:center;font-size:2em;margin:10px 0 4px;color:#2b6cb0;text-shadow:2px 2px #fff}
+.sub{text-align:center;margin-bottom:14px}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 0 #b9c9bd;margin-bottom:14px}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.mbtn{border:none;border-radius:16px;padding:18px;font-size:1.1em;cursor:pointer;background:#ffd95e;box-shadow:0 5px 0 #c9a521;font-family:inherit;text-align:left}
+.mbtn:active{transform:translateY(3px);box-shadow:0 2px 0 #c9a521}
+.mbtn b{display:block;font-size:1.3em;margin-bottom:4px}
+.mbtn.b2{background:#9fe0a8;box-shadow:0 5px 0 #5fa86a}.mbtn.b3{background:#ff9f9f;box-shadow:0 5px 0 #c26060}.mbtn.b4{background:#b9b0ff;box-shadow:0 5px 0 #7a70c9}
+.btn{border:none;border-radius:12px;padding:10px 18px;font-size:1em;cursor:pointer;background:#4a90d9;color:#fff;box-shadow:0 4px 0 #2c63a0;font-family:inherit}
+.btn.gray{background:#8a9a90;box-shadow:0 4px 0 #5d6b62}
+.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px;font-weight:bold}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+@media(max-width:560px){.opts{grid-template-columns:1fr}}
+.opt{border:3px solid #cfd8dc;background:#f7fbff;border-radius:14px;padding:14px;font-size:1.05em;cursor:pointer;font-family:inherit}
+.opt:hover{border-color:#4a90d9}
+.opt.ok{background:#c8f5cf;border-color:#2e9e45}.opt.no{background:#ffd0d0;border-color:#d34}
+.q{font-size:1.25em;line-height:1.5}
+.big{font-size:3em;text-align:center}
+.fb{margin-top:10px;padding:10px;border-radius:10px;background:#fff8dc;display:none}
+.bar{height:12px;background:#e3e8e5;border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:#4a90d9;transition:width .3s}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:560px){.grid{grid-template-columns:repeat(3,1fr)}}
+.mc{height:92px;perspective:600px;cursor:pointer}
+.mc div{width:100%;height:100%;border-radius:12px;display:flex;align-items:center;justify-content:center;text-align:center;padding:4px;font-size:.92em;font-weight:bold;line-height:1.25;transition:.2s;border:3px solid #fff}
+.mc .back{background:#4a90d9;color:#fff;font-size:2em}
+.mc.open .back,.mc.done .back{display:none}
+.mc .face{display:none}.mc.open .face,.mc.done .face{display:flex}
+.mc .face.inst{background:#ffe9a8;color:#6b4a00}.mc .face.job{background:#d6f5dc;color:#1d5a2a}
+.mc.done .face{opacity:.55;border-color:#2e9e45}
+.town{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.bld{background:#f1f7ff;border:3px solid #b8cde6;border-radius:14px;padding:10px 4px;text-align:center;cursor:pointer;font-family:inherit;font-size:1em}
+.bld:hover{background:#dbeaff}.bld span{font-size:2.2em;display:block}
+.sit{background:#fff3cd;border:3px dashed #e0a800;border-radius:14px;padding:14px;font-size:1.2em;text-align:center}
+.hearts{font-size:1.3em}
+.mascot{font-size:1.1em}
+table{width:100%;border-collapse:collapse}td,th{border:1px solid #cfd8dc;padding:7px;text-align:left}th{background:#e6f0ff}
+.pop{animation:pop .4s}@keyframes pop{0%{transform:scale(.8)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.shake{animation:sh .3s}@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ===== 데이터 =====
+const INST = [
+ {n:"시청·군청·구청", e:"🏛️", job:"지역 살림을 맡아 주민의 생활을 편리하게 하는 일(도로, 복지, 쓰레기 처리 등)", short:"지역의 살림을 맡아 해요"},
+ {n:"지방 의회(시의회·군의회)", e:"🗳️", job:"주민의 대표가 모여 지역의 일을 의논하고 규칙(조례)을 만들어요", short:"조례를 만들고 의논해요"},
+ {n:"경찰서", e:"🚓", job:"도둑을 잡고 교통을 정리하며 주민의 안전과 질서를 지켜요", short:"안전과 질서를 지켜요"},
+ {n:"소방서", e:"🚒", job:"불을 끄고 다친 사람을 구조하며 화재를 예방해요", short:"불을 끄고 사람을 구조해요"},
+ {n:"보건소", e:"🏥", job:"예방 접종, 건강 검진 등 주민의 건강을 돌봐요", short:"주민의 건강을 돌봐요"},
+ {n:"도서관", e:"📚", job:"책을 빌려주고 독서 프로그램을 열어 지식과 정보를 제공해요", short:"책을 빌려줘요"},
+ {n:"우체국", e:"📮", job:"편지와 택배를 전달하고 통신 서비스를 해요", short:"편지와 소포를 전해요"},
+ {n:"주민 센터(행정복지센터)", e:"🏢", job:"주민등록등본 같은 서류를 떼어 주고 가까이에서 주민을 도와요", short:"서류를 떼어 줘요"},
+ {n:"법원", e:"⚖️", job:"다툼이 생기면 법에 따라 재판하여 해결해요", short:"재판을 해요"},
+ {n:"박물관·문화원", e:"🏺", job:"지역의 문화와 역사를 보존하고 전시·체험으로 알려요", short:"문화와 역사를 알려요"},
+ {n:"학교", e:"🏫", job:"어린이가 배우고 자랄 수 있도록 교육을 해요", short:"교육을 해요"},
+ {n:"청소 사업소", e:"🚛", job:"쓰레기를 치우고 재활용을 도와 깨끗한 환경을 만들어요", short:"쓰레기를 처리해요"}
+];
+// 4지선다 문제
+const QUIZ = [
+ {q:"공공 기관이 하는 일로 가장 알맞은 것은?",o:["회사의 이익을 늘리는 일","지역 주민 모두의 생활을 편리하고 안전하게 하는 일","한 사람의 재산을 불리는 일","물건을 비싸게 파는 일"],a:1,x:"공공 기관은 이익이 아니라 주민 모두의 이익(공공의 이익)을 위해 일해요."},
+ {q:"공공 기관을 운영하는 데 쓰이는 돈은 주로 무엇일까요?",o:["주민이 낸 세금","기관장의 월급","복권 당첨금","외국 회사의 후원금"],a:0,x:"주민이 낸 세금으로 공공 기관을 운영해요."},
+ {q:"불이 났을 때 불을 끄고 사람을 구조하는 곳은?",o:["보건소","소방서","우체국","도서관"],a:1,x:"119에 신고하면 소방서가 출동해요."},
+ {q:"도둑을 잡고 교통 질서를 지키는 곳은?",o:["경찰서","법원","시청","박물관"],a:0,x:"위급할 땐 112! 경찰서가 안전과 질서를 지켜요."},
+ {q:"예방 접종을 맞고 건강 검진을 받을 수 있는 곳은?",o:["보건소","주민 센터","도서관","소방서"],a:0,x:"보건소는 주민의 건강을 돌보는 공공 기관이에요."},
+ {q:"책을 빌려 읽고 독서 프로그램에 참여할 수 있는 곳은?",o:["우체국","법원","도서관","경찰서"],a:2,x:"도서관은 누구나 책을 빌릴 수 있는 공공 기관이에요."},
+ {q:"편지나 택배를 보낼 때 이용하는 공공 기관은?",o:["우체국","시청","학교","소방서"],a:0,x:"우체국은 편지·소포 전달과 통신 서비스를 해요."},
+ {q:"주민등록등본 같은 서류를 가까운 곳에서 떼려면 어디로 갈까요?",o:["법원","주민 센터","박물관","경찰서"],a:1,x:"주민 센터(행정복지센터)는 가까이에서 주민을 도와요."},
+ {q:"사람들 사이의 다툼을 법에 따라 판단하는 곳은?",o:["시청","보건소","법원","우체국"],a:2,x:"법원은 재판을 통해 다툼을 해결해요."},
+ {q:"지역의 규칙인 '조례'를 만드는 곳은?",o:["경찰서","지방 의회","소방서","우체국"],a:1,x:"지방 의회는 주민의 대표(의원)가 모여 조례를 만들어요."},
+ {q:"지역 주민이 직접 뽑는 사람이 아닌 것은?",o:["시장·군수·구청장","지방 의회 의원","소방관","시의원"],a:2,x:"시장·군수·구청장과 지방 의회 의원은 주민이 선거로 뽑아요. 소방관은 시험을 통해 일해요."},
+ {q:"지역의 살림을 맡아 도로 정비, 복지, 쓰레기 처리 등을 하는 곳은?",o:["시청·군청·구청","도서관","우체국","박물관"],a:0,x:"지방 자치 단체의 행정을 담당하는 대표 기관이에요."},
+ {q:"지역의 역사와 문화유산을 전시해 알려 주는 곳은?",o:["보건소","박물관","법원","소방서"],a:1,x:"박물관·문화원은 지역의 문화를 보존하고 알려요."},
+ {q:"우리 지역의 문제(예: 통학로가 위험함)를 해결하는 순서로 알맞은 것은?",o:["해결 방법 실천 → 문제 확인 → 결정","문제 확인 → 해결 방법 찾기 → 결정 → 실천","결정 → 문제 확인 → 실천","아무것도 안 한다"],a:1,x:"문제를 알아보고, 방법을 찾고, 함께 결정한 뒤 실천해요."},
+ {q:"지역 문제에 주민이 참여하는 방법이 아닌 것은?",o:["주민 투표","공청회 참석","시청에 민원·의견 내기","문제를 보고 모른 척하기"],a:3,x:"주민 투표, 공청회, 민원, 청원 등으로 참여할 수 있어요."},
+ {q:"공공 기관을 이용할 때의 바른 태도는?",o:["시설을 아끼고 질서를 지킨다","큰 소리로 떠든다","물건을 마음대로 가져간다","줄을 서지 않는다"],a:0,x:"공공 시설은 모두의 것이니 아끼고 규칙을 지켜요."},
+ {q:"119는 어디에 신고하는 번호일까요?",o:["경찰서","소방서(화재·구조·구급)","우체국","시청"],a:1,x:"119는 화재·구조·구급, 112는 범죄 신고예요."},
+ {q:"112에 전화하면 어느 기관이 도와줄까요?",o:["소방서","보건소","경찰서","법원"],a:2,x:"112는 경찰 신고 번호예요."},
+ {q:"공공 기관과 민간 기관(회사)의 가장 큰 차이는?",o:["공공 기관은 공공의 이익을, 회사는 주로 이익(돈)을 목표로 한다","차이가 없다","회사만 사람이 일한다","공공 기관은 건물이 없다"],a:0,x:"공공 기관은 주민 모두를 위한 서비스를 해요."},
+ {q:"쓰레기를 치우고 재활용을 돕는 일을 하는 곳은?",o:["청소 사업소(환경 담당 기관)","도서관","법원","학교"],a:0,x:"깨끗한 환경을 위해 쓰레기 수거·처리를 해요."},
+ {q:"주민이 낸 세금으로 지은 시설이 아닌 것은?",o:["공원","공립 도서관","동네 개인 편의점","보건소"],a:2,x:"편의점은 개인이 운영하는 가게(민간)예요."},
+ {q:"지방 자치란 무엇일까요?",o:["나라에서 모든 일을 정한다","지역 주민이 지역의 일을 스스로 해결하는 것","외국이 지역을 다스리는 것","회사가 지역을 운영하는 것"],a:1,x:"지방 자치는 주민이 선거로 대표를 뽑아 지역의 일을 스스로 해결하는 제도예요."}
+];
+// 긴급 출동 상황
+const SIT = [
+ ["🔥 아파트에서 불이 났어요!",3],["🦹 가방을 훔쳐 간 도둑이 있어요!",2],["💉 독감 예방 접종을 받고 싶어요.",4],["📖 재미있는 동화책을 빌리고 싶어요.",5],
+ ["📦 멀리 사는 할머니께 택배를 보내요.",6],["📄 주민등록등본이 필요해요.",7],["⚖️ 이웃과 큰 다툼이 생겨 재판이 필요해요.",8],["🏺 신라 시대 유물을 구경하고 싶어요.",9],
+ ["🗑️ 동네 쓰레기가 치워지지 않고 쌓여 있어요.",11],["🏫 우리 지역 학교에서 공부해요.",10],["🚦 신호등이 고장 나서 교통이 엉망이에요.",2],["🧗 산에서 길을 잃은 사람을 구해야 해요.",3],
+ ["📜 우리 동네에 새로운 조례가 필요해요.",1],["🛣️ 동네 도로가 깨져서 고쳐 주세요.",0],["🩺 건강 검진을 받고 싶어요.",4]
+];
+// ===== 유틸 =====
+const $=s=>document.querySelector(s), app=$("#app");
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let actx;function beep(f,d=.12,t="sine"){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.type=t;o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+d)}catch(e){}}
+const good=()=>{beep(660);setTimeout(()=>beep(880),100)}, bad=()=>beep(180,.25,"square");
+const best=k=>+localStorage.getItem("pub_"+k)||0, setBest=(k,v)=>{if(v>best(k))localStorage.setItem("pub_"+k,v)};
+let timer=null;function stopTimer(){clearInterval(timer);timer=null}
+
+// ===== 메뉴 =====
+function menu(){
+ stopTimer();
+ app.innerHTML=`<h1>🏙️ 우리 지역 공공 기관 탐험대</h1>
+ <div class="sub">초등 사회 4학년 · 우리 지역의 공공 기관 복습 게임</div>
+ <div class="menu">
+  <button class="mbtn" onclick="startQuiz()"><b>📝 퀴즈 도전</b>10문제! 하트 3개가 다 없어지면 끝! (최고 ${best("quiz")}점)</button>
+  <button class="mbtn b3" onclick="startRescue()"><b>🚨 긴급 출동!</b>상황을 보고 알맞은 기관을 찾아라 (최고 ${best("rescue")}점)</button>
+  <button class="mbtn b2" onclick="startMatch()"><b>🃏 카드 짝 맞추기</b>기관과 하는 일을 짝지어요 (최고 기록 ${best("match")?best("match")+"번":"없음"})</button>
+  <button class="mbtn b4" onclick="study()"><b>📖 기관 도감</b>공부하고 시작하면 더 쉬워요!</button>
+ </div>
+ <div class="card" style="margin-top:14px"><b>💡 기억해요</b><br>공공 기관은 주민이 낸 <b>세금</b>으로 운영하며, 지역 주민 모두의 <b>편리하고 안전한 생활</b>을 위해 일해요.</div>`;
+}
+function study(){
+ app.innerHTML=`<div class="top"><h2>📖 기관 도감</h2><button class="btn gray" onclick="menu()">← 처음으로</button></div>
+ <div class="card"><table><tr><th></th><th>기관</th><th>하는 일</th></tr>${INST.map(i=>`<tr><td style="font-size:1.6em">${i.e}</td><td><b>${i.n}</b></td><td>${i.job}</td></tr>`).join("")}</table></div>
+ <div class="card"><b>🗣️ 주민 참여 방법</b>: 주민 투표, 공청회, 민원·청원, 선거로 대표 뽑기<br><b>🔎 문제 해결 순서</b>: 문제 확인 → 해결 방법 찾기 → 결정 → 실천<br><b>📞 신고 번호</b>: 112(경찰), 119(화재·구조·구급)</div>`;
+}
+function end(title,score,key,extra=""){
+ stopTimer();setBest(key,score);
+ const msg=score>=90?"🏆 공공 기관 박사!":score>=60?"👍 잘했어요!":"💪 도감을 보고 다시 도전!";
+ app.innerHTML=`<div class="card" style="text-align:center"><div class="big pop">${score>=60?"🎉":"📚"}</div><h2>${title}</h2><h1 style="margin:0">${score}점</h1><p>${msg}</p>${extra}<button class="btn" onclick="${key==='quiz'?'startQuiz()':key==='rescue'?'startRescue()':'startMatch()'}">다시 하기</button> <button class="btn gray" onclick="menu()">처음으로</button></div>`;
+}
+
+// ===== 퀴즈 =====
+let Q;
+function startQuiz(){Q={list:shuffle(QUIZ).slice(0,10),i:0,hp:3,score:0,streak:0,locked:false};quizShow()}
+function quizShow(){
+ const q=Q.list[Q.i];
+ const order=shuffle(q.o.map((t,k)=>[t,k]));
+ app.innerHTML=`<div class="top"><button class="btn gray" onclick="menu()">← 그만하기</button><span>${Q.i+1} / 10</span><span class="hearts">${"❤️".repeat(Q.hp)}${"🖤".repeat(3-Q.hp)}</span><span>⭐ ${Q.score}${Q.streak>=2?` 🔥${Q.streak}연속`:""}</span></div>
+ <div class="bar"><i style="width:${Q.i*10}%"></i></div>
+ <div class="card" style="margin-top:12px"><div class="q">${q.q}</div><div class="opts">${order.map(([t,k])=>`<button class="opt" data-k="${k}">${t}</button>`).join("")}</div><div class="fb" id="fb"></div></div>`;
+ Q.locked=false;
+ document.querySelectorAll(".opt").forEach(b=>b.onclick=()=>quizPick(b,q));
+}
+function quizPick(b,q){
+ if(Q.locked)return;Q.locked=true;
+ const ok=+b.dataset.k===q.a;
+ document.querySelectorAll(".opt").forEach(x=>{if(+x.dataset.k===q.a)x.classList.add("ok")});
+ if(ok){good();Q.streak++;Q.score+=10+(Q.streak>=3?5:0)}else{bad();b.classList.add("no","shake");Q.hp--;Q.streak=0}
+ const fb=$("#fb");fb.style.display="block";fb.innerHTML=`${ok?"⭕ 정답!":"❌ 아쉬워요."} ${q.x}<br><br><button class="btn" id="nx">${Q.hp<=0||Q.i>=9?"결과 보기":"다음 문제 ▶"}</button>`;
+ $("#nx").onclick=()=>{if(Q.hp<=0||Q.i>=9)end(Q.hp<=0?"하트가 모두 사라졌어요":"퀴즈 완료!",Math.min(100,Q.score),"quiz");else{Q.i++;quizShow()}};
+}
+
+// ===== 긴급 출동 =====
+let R;
+function startRescue(){R={list:shuffle(SIT).slice(0,10),i:0,score:0,t:10,locked:false};rescueShow()}
+function rescueShow(){
+ stopTimer();R.t=12;R.locked=false;
+ const [txt]=R.list[R.i];
+ app.innerHTML=`<div class="top"><button class="btn gray" onclick="menu()">← 그만하기</button><span>${R.i+1} / 10</span><span id="tm">⏱️ ${R.t}</span><span>⭐ ${R.score}</span></div>
+ <div class="card"><div class="sit pop">${txt}</div><div style="text-align:center;margin-top:8px">어느 기관에 도움을 요청할까요?</div>
+ <div class="town">${INST.map((x,k)=>`<button class="bld" data-k="${k}"><span>${x.e}</span>${x.n}</button>`).join("")}</div><div class="fb" id="fb"></div></div>`;
+ document.querySelectorAll(".bld").forEach(b=>b.onclick=()=>rescuePick(+b.dataset.k));
+ timer=setInterval(()=>{R.t--;const t=$("#tm");if(t)t.textContent="⏱️ "+R.t;if(R.t<=0){stopTimer();rescuePick(-1)}},1000);
+}
+function rescuePick(k){
+ if(R.locked)return;R.locked=true;stopTimer();
+ const a=R.list[R.i][1];const ok=k===a;
+ document.querySelectorAll(".bld").forEach(b=>{if(+b.dataset.k===a)b.style.cssText="background:#c8f5cf;border-color:#2e9e45";else if(+b.dataset.k===k)b.style.cssText="background:#ffd0d0;border-color:#d34"});
+ if(ok){good();R.score+=10+Math.max(0,R.t>>1)}else bad();
+ const fb=$("#fb");fb.style.display="block";
+ fb.innerHTML=`${ok?"⭕ 출동 성공!":k<0?"⏰ 시간 초과!":"❌ 다른 기관이에요."} 정답: <b>${INST[a].e} ${INST[a].n}</b> – ${INST[a].short}<br><br><button class="btn" id="nx">${R.i>=9?"결과 보기":"다음 ▶"}</button>`;
+ $("#nx").onclick=()=>{if(R.i>=9)end("긴급 출동 완료!",Math.min(100,R.score),"rescue");else{R.i++;rescueShow()}};
+}
+
+// ===== 카드 짝 맞추기 =====
+let M;
+function startMatch(){
+ const pick=shuffle(INST).slice(0,6);
+ const cards=shuffle(pick.flatMap((x,k)=>[{id:k,t:`${x.e}<br>${x.n}`,c:"inst"},{id:k,t:x.short,c:"job"}]));
+ M={cards,open:[],found:0,tries:0,lock:false};
+ app.innerHTML=`<div class="top"><button class="btn gray" onclick="menu()">← 그만하기</button><span>기관 카드와 하는 일 카드를 짝지어요</span><span id="tr">시도 0번</span></div><div class="card"><div class="grid">${cards.map((c,i)=>`<div class="mc" data-i="${i}"><div class="back">❓</div><div class="face ${c.c}">${c.t}</div></div>`).join("")}</div><div class="fb" id="fb"></div></div>`;
+ document.querySelectorAll(".mc").forEach(e=>e.onclick=()=>matchFlip(e));
+}
+function matchFlip(e){
+ if(M.lock||e.classList.contains("open")||e.classList.contains("done"))return;
+ e.classList.add("open");M.open.push(e);beep(500,.06);
+ if(M.open.length<2)return;
+ M.tries++;$("#tr").textContent=`시도 ${M.tries}번`;
+ const [a,b]=M.open.map(x=>M.cards[+x.dataset.i]);
+ if(a.id===b.id&&a.c!==b.c){
+  good();M.open.forEach(x=>{x.classList.remove("open");x.classList.add("done")});M.open=[];M.found++;
+  if(M.found===6){
+   const sc=Math.max(0,Math.round(100-(M.tries-6)*6));
+   setTimeout(()=>{stopTimer();const prev=best("match");if(!prev||M.tries<prev)localStorage.setItem("pub_match",M.tries);
+    app.innerHTML=`<div class="card" style="text-align:center"><div class="big pop">🎉</div><h2>모든 짝을 찾았어요!</h2><h1 style="margin:0">${M.tries}번 만에 성공</h1><p>${sc>=80?"🏆 기억력 대장!":"👍 잘했어요!"} (최고 기록 ${best("match")}번)</p><button class="btn" onclick="startMatch()">다시 하기</button> <button class="btn gray" onclick="menu()">처음으로</button></div>`},600);
+  }
+ }else{
+  bad();M.lock=true;
+  setTimeout(()=>{M.open.forEach(x=>x.classList.remove("open"));M.open=[];M.lock=false},900);
+ }
+}
+menu();
+</script>
+</body>
+</html>

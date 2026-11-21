@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#182d29">
+<title>우리 동네 해결단 | 공공 기관 복습 게임</title>
+<style>
+  :root{color-scheme:light;--ink:#182d29;--muted:#53645e;--cream:#f7f5eb;--green:#2c5748;--lime:#e3edac;--line:#dcded0;--white:#fffef8;--orange:#f6b361}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--cream);color:var(--ink);font-family:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;word-break:keep-all}
+  button{font:inherit;color:inherit;cursor:pointer}
+  button:focus-visible,summary:focus-visible{outline:3px solid #a6541c;outline-offset:4px}
+  button:disabled{cursor:default}
+  [hidden]{display:none!important}
+  .wrap{width:min(1160px,calc(100% - 64px));margin-inline:auto}
+  .bar{background:var(--ink);color:#fffcec}
+  .bar .wrap{height:74px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .brand,.notebook{display:flex;align-items:center;gap:11px}
+  .brand{font-size:20px;font-weight:900;letter-spacing:-.06em}
+  .brand-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--orange);color:var(--ink);font-size:22px}
+  .notebook{border:1px solid #71837a;border-radius:10px;background:#263d36;color:#fffcec;padding:9px 13px;font-size:13px;font-weight:800}
+  .notebook:hover{background:#40594e}
+  .intro{padding:34px 0 24px}
+  .eyebrow{margin:0 0 8px;color:#496359;font-size:13px;font-weight:900;letter-spacing:.05em}
+  h1,h2,h3,p{margin-top:0}
+  h1{margin-bottom:8px;font-size:clamp(33px,5vw,56px);line-height:1.13;letter-spacing:-.085em}
+  .intro>p:last-child{margin:0;color:var(--muted);font-size:15px;line-height:1.65}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 302px;gap:22px;align-items:start}
+  .panel,.side{background:var(--white);border:1px solid var(--line);border-radius:23px;overflow:hidden}
+  .panel{box-shadow:0 5px 0 #e9e7da}
+  .play{padding:23px}
+  .mission{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;min-height:216px;border-radius:16px;background:#e4edcc;padding:24px 220px 24px 24px}
+  .mission-copy{position:relative;z-index:1}
+  .tag{display:inline-flex;align-items:center;gap:7px;border-radius:999px;background:#2e5143;color:#fffef6;padding:6px 11px;font-size:11px;font-weight:900;letter-spacing:.05em}
+  .mission h2{margin:12px 0 7px;font-size:clamp(23px,3vw,33px);letter-spacing:-.07em;line-height:1.23}
+  .mission p{margin:0;font-size:15px;line-height:1.65;color:#344e42;font-weight:600}
+  .mission canvas{position:absolute;right:0;top:0;width:226px;height:100%;z-index:-1}
+  .options-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:19px 0 11px}
+  .options-heading h3{margin:0;font-size:16px;letter-spacing:-.035em}
+  .keys{color:var(--muted);font-size:12px}
+  .options{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .option{display:flex;align-items:center;gap:11px;text-align:left;background:#fffefa;border:1px solid #d9ddd0;border-radius:13px;padding:10px 11px;min-height:60px;font-weight:800;letter-spacing:-.03em}
+  .option:hover:enabled{background:#f2f5e3;border-color:#607b65;transform:translateY(-1px)}
+  .option-icon{display:grid;place-items:center;flex:none;width:35px;height:35px;border-radius:10px;background:var(--tile);font-size:20px}
+  .option-key{margin-left:auto;display:grid;place-items:center;flex:none;width:22px;height:22px;border:1px solid #dce0d4;border-radius:6px;color:#516157;font-size:11px}
+  .option.correct{background:#e4efd4;border-color:#4e7958}
+  .option.wrong{background:#faeae0;border-color:#b86749}
+  .response{margin-top:15px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;border-radius:13px;background:#edf2dc;padding:12px 15px}
+  .response[data-kind="wrong"]{background:#faede3}
+  .response strong{display:block;font-size:14px;margin-bottom:3px}
+  .response p{margin:0;color:#394e43;font-size:13px;line-height:1.55}
+  .primary{background:#284e40;color:#fffef7;border:0;border-radius:10px;padding:10px 15px;font-weight:850;font-size:14px;white-space:nowrap}
+  .primary:hover{background:#3b6955}
+  .side{padding:18px 18px 16px}
+  .side-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:13px}
+  .side-heading h2{font-size:18px;margin:0;letter-spacing:-.05em}
+  .count{padding:5px 9px;border-radius:7px;background:#eef1e2;font-size:12px;font-weight:900;font-variant-numeric:tabular-nums}
+  progress{display:block;width:100%;height:8px;appearance:none;border:0;border-radius:999px;overflow:hidden;background:#e8eadc}
+  progress::-webkit-progress-bar{background:#e8eadc}
+  progress::-webkit-progress-value{background:#52775a;border-radius:999px}
+  progress::-moz-progress-bar{background:#52775a;border-radius:999px}
+  .map{position:relative;isolation:isolate;margin-top:15px;padding:16px 14px;overflow:hidden;border-radius:14px;background:#e8eddb}
+  .map canvas{position:absolute;inset:0;width:100%;height:100%;z-index:-1}
+  .stages{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .stage{display:flex;align-items:center;gap:10px;padding:7px 8px;background:#fffef1eF;border:1px solid #e4e6d8;border-radius:10px;font-size:13px;font-weight:800;color:#4f6058}
+  .stage[aria-current="step"]{background:#f9f8d8;border-color:#79906c;color:#243e32;box-shadow:0 2px 0 #60765824}
+  .stage-index{width:25px;height:25px;display:grid;place-items:center;flex:none;background:#e8ebde;border-radius:7px;font-size:11px;font-weight:900}
+  .stage[aria-current="step"] .stage-index{background:#355948;color:white}
+  .stage.done .stage-index{background:#d8e8bd;color:#2e5143}
+  .stage-status{margin-left:auto;font-size:10px;white-space:nowrap}
+  .score{display:flex;align-items:center;gap:10px;margin-top:14px;padding-top:13px;border-top:1px solid #e4e6db}
+  .score-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:9px;background:#fae5b8;color:#70431f;font-size:19px}
+  .score p{margin:0;font-size:12px;font-weight:800;color:var(--muted)}
+  .score strong{margin-left:auto;font-size:18px;font-variant-numeric:tabular-nums}
+  footer{display:flex;justify-content:space-between;gap:10px;padding:23px 0 26px;color:#53645b;font-size:12px;line-height:1.55}
+  .result{padding:23px}
+  .result-hero{background:#e4edcc;border-radius:16px;padding:25px}
+  .result-hero h2{font-size:clamp(27px,4vw,39px);letter-spacing:-.065em;margin:10px 0 6px}
+  .result-hero p{line-height:1.65;margin:0 0 15px}
+  .review{margin-top:15px;border:1px solid var(--line);border-radius:13px;padding:13px 15px}
+  .review summary{font-weight:850;cursor:pointer}
+  .review ol{padding-left:25px;margin:13px 0 0}
+  .review li{margin-bottom:10px;font-size:14px;line-height:1.6}
+  .review li:last-child{margin-bottom:0}
+  dialog{width:min(540px,calc(100% - 32px));max-height:85vh;max-height:85dvh;padding:22px;border:1px solid var(--line);border-radius:18px;background:var(--white);color:var(--ink)}
+  dialog::backdrop{background:#182d299c}
+  .dialog-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .dialog-head h2{margin:0;font-size:24px;letter-spacing:-.06em}
+  .dialog-description{margin:12px 0 0;color:var(--muted);font-size:14px;line-height:1.6}
+  .close{border:1px solid var(--line);border-radius:8px;background:var(--cream);padding:7px 12px;font-weight:800}
+  .directory{list-style:none;padding:0;margin:15px 0 0;display:grid;gap:8px}
+  .directory li{display:flex;align-items:center;gap:11px;padding:8px 10px;border-radius:10px;background:#f3f4e9;font-size:13px;line-height:1.55}
+  .directory strong{display:block;font-size:14px}
+  @media(max-width:900px){.layout{grid-template-columns:minmax(0,1fr) 252px;gap:15px}.wrap{width:calc(100% - 40px)}.mission{padding-right:160px}.mission canvas{width:174px}.play,.result{padding:17px}.side{padding:14px}}
+  @media(max-width:720px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px 16px}.side-heading{margin:0}.side progress{grid-column:1}.map{grid-column:1/-1;margin:0}.stages{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}.stage{gap:5px;flex-wrap:wrap;padding:6px}.stage-status{display:none}.score{grid-column:2;grid-row:1/span 2;margin:0;padding:0;border:0}.score p{max-width:45px}.intro{padding-top:24px}.keys{display:none}}
+  @media(max-width:420px){.wrap{width:calc(100% - 28px)}.bar .wrap{height:60px}.brand{font-size:17px}.brand-icon{width:30px;height:30px}.notebook{font-size:12px;padding:7px 8px}.play,.result{padding:12px}.mission{padding:18px 78px 18px 15px;min-height:184px}.mission canvas{right:-44px;width:142px;opacity:.58}.mission p{font-size:14px}.option{padding:8px;gap:7px;font-size:13px}.option-icon{width:29px;height:29px;font-size:17px}.option-key{display:none}.response{grid-template-columns:1fr}.response .primary{justify-self:end}.stage{font-size:11px}.stage-index{width:21px;height:21px}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+  <header class="bar">
+    <div class="wrap">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">⌂</span> 우리 동네 해결단</div>
+      <button class="notebook" id="open-notebook" type="button"><span aria-hidden="true">▤</span> 기관 수첩</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="intro">
+      <p class="eyebrow">초등 4학년 사회 · 복습 게임</p>
+      <h1>우리 지역의 공공 기관</h1>
+      <p>동네에 생긴 일을 살펴보고, 우리를 도와줄 공공 기관을 찾아요.</p>
+    </div>
+    <div class="layout">
+      <section class="panel" aria-label="공공 기관 찾기 게임">
+        <div class="play" id="play">
+          <div class="mission">
+            <canvas id="scene" aria-hidden="true"></canvas>
+            <div class="mission-copy">
+              <span class="tag" id="mission-number"></span>
+              <h2 id="question" tabindex="-1"></h2>
+              <p id="scenario"></p>
+            </div>
+          </div>
+          <div class="options-heading">
+            <h3 id="choices-heading">어느 기관에 도움을 요청할까요?</h3>
+            <span class="keys">키보드 1–4로 선택</span>
+          </div>
+          <div class="options" id="options" role="group" aria-labelledby="choices-heading"></div>
+          <div class="response" id="response" hidden>
+            <div id="feedback"><strong id="feedback-title"></strong><p id="feedback-text"></p></div>
+            <button class="primary" id="next" type="button"></button>
+          </div>
+        </div>
+        <div class="result" id="result" hidden>
+          <div class="result-hero">
+            <span class="tag">✦ 활동 완료</span>
+            <h2 id="result-heading" tabindex="-1">우리 동네 해결단 임무 완료!</h2>
+            <p id="result-summary"></p>
+            <button class="primary" id="restart" type="button">다시 도전하기</button>
+          </div>
+          <details class="review" id="review">
+            <summary id="review-label"></summary>
+            <ol id="review-items"></ol>
+          </details>
+        </div>
+      </section>
+      <aside class="side" aria-labelledby="progress-heading">
+        <div class="side-heading"><h2 id="progress-heading">탐험 진행</h2><span class="count" id="count"></span></div>
+        <progress id="progress" max="12" value="0" aria-label="푼 문제 수"></progress>
+        <div class="map">
+          <canvas id="map-art" aria-hidden="true"></canvas>
+          <ol class="stages" id="stages"></ol>
+        </div>
+        <div class="score"><span class="score-icon" aria-hidden="true">★</span><p>맞힌 문제</p><strong id="score">0</strong></div>
+      </aside>
+    </div>
+    <footer><span>우리 동네 해결단</span><span>사회 · 우리 지역의 공공 기관</span></footer>
+  </main>
+  <dialog id="notebook" aria-labelledby="notebook-title">
+    <div class="dialog-head">
+      <h2 id="notebook-title">기관 수첩</h2>
+      <form method="dialog"><button class="close" type="submit">닫기</button></form>
+    </div>
+    <p class="dialog-description">공공 기관은 주민의 안전과 편리한 생활을 위해 여러 가지 일을 해요.</p>
+    <ul class="directory" id="directory"></ul>
+  </dialog>
+  <noscript><p class="wrap">게임을 하려면 브라우저에서 자바스크립트를 켜 주세요.</p></noscript>
+<script>
+  "use strict";
+  const agencies = {
+    police: {name:"경찰서", icon:"👮", color:"#e6edfa", role:"범죄를 예방하고 교통안전을 지켜요."},
+    fire: {name:"소방서", icon:"🚒", color:"#f8e4db", role:"불을 끄고 위험에 처한 사람을 구조해요."},
+    health: {name:"보건소", icon:"🩺", color:"#e8efda", role:"예방 접종과 건강 상담 등으로 주민의 건강을 지켜요."},
+    library: {name:"공공 도서관", icon:"📚", color:"#f9edcf", role:"주민에게 책을 빌려 주고 독서 활동을 도와요."},
+    office: {name:"행정복지센터", icon:"🏠", color:"#e7eddb", role:"주민등록 등본을 발급하고 가까운 곳에서 복지 상담을 해요."},
+    city: {name:"시청", icon:"🏛️", color:"#e2eee9", role:"시의 도로와 공원 등을 관리하고 주민 생활에 필요한 일을 해요."},
+    post: {name:"우체국", icon:"✉️", color:"#f9e9cf", role:"편지와 소포를 접수하고 배달해요."},
+    education: {name:"교육지원청", icon:"🏫", color:"#ebe5f4", role:"지역의 학교가 교육 활동을 잘할 수 있도록 지원해요."}
+  };
+  const missions = [
+    {title:"책을 빌리고 싶어요", story:"지우는 주말에 읽을 책을 골라 집에 가져가고 싶어요.", choices:["library","police","health","post"], answer:"library", explanation:"공공 도서관에서는 주민이 여러 책을 읽거나 빌릴 수 있어요."},
+    {title:"멀리 사는 친구에게 소포를 보내요", story:"민준이는 다른 지역에 사는 친구에게 선물을 보내려고 해요.", choices:["office","fire","post","library"], answer:"post", explanation:"우체국은 소포와 편지를 접수해 받는 사람에게 배달해요."},
+    {title:"예방 접종이 궁금해요", story:"서아는 가족과 함께 지역에서 받을 수 있는 예방 접종을 알아보고 싶어요.", choices:["police","health","city","library"], answer:"health", explanation:"보건소에 문의하면 지역에서 받을 수 있는 예방 접종을 안내받을 수 있어요."},
+    {title:"주민등록 등본이 필요해요", story:"가족이 제출할 서류를 준비하고 있어요. 가까운 곳에 방문해 주민등록 등본을 발급받으려고 해요.", choices:["health","post","library","office"], answer:"office", explanation:"읍·면·동에 있는 행정복지센터에서 주민등록 등본을 발급받을 수 있어요."},
+    {title:"건물에서 불이 났어요", story:"건물에서 연기와 불길이 보여요. 불을 끄고 사람을 구조하는 기관이 필요해요.", choices:["fire","library","office","health"], answer:"fire", explanation:"소방서는 화재를 진압하고 위험에 처한 사람을 구조해요."},
+    {title:"사라진 자전거를 찾고 싶어요", story:"잠가 둔 자전거가 사라졌어요. 가족과 함께 도난이 의심되는 일을 신고하려고 해요.", choices:["post","city","police","education"], answer:"police", explanation:"경찰서는 도난 신고를 받고 범죄가 일어났는지 조사해요."},
+    {title:"시에서 만든 공원에 고장 난 시설이 있어요", story:"시에서 관리하는 공원의 벤치가 망가졌어요. 공원 관리 담당 부서에 알리려고 해요.", choices:["library","city","post","education"], answer:"city", explanation:"시청은 시가 관리하는 공원과 시설물을 살피고 망가진 시설을 고치는 일을 해요."},
+    {title:"학교 체험 활동에 지원이 필요해요", story:"학교 선생님이 지역의 학교를 돕는 기관에 교육 활동 지원을 문의하려고 해요.", choices:["office","police","fire","education"], answer:"education", explanation:"교육지원청은 지역 학교의 교육 활동과 운영을 지원해요."},
+    {title:"어린이 독서 모임에 참여하고 싶어요", story:"하린이는 주민에게 책을 빌려 주고 독서 모임도 여는 기관을 찾고 있어요.", choices:["health","library","education","post"], answer:"library", explanation:"공공 도서관은 책을 빌려 주고 독서 모임이나 책 읽기 프로그램을 열기도 해요."},
+    {title:"어르신이 건강 상담을 받고 싶어 해요", story:"할머니는 동네 주민을 대상으로 하는 건강 상담 프로그램이 있는지 알아보려고 해요.", choices:["health","office","fire","police"], answer:"health", explanation:"보건소는 주민을 위한 건강 상담과 건강 관리 프로그램을 운영해요."},
+    {title:"우리 시의 도로를 고쳐 주세요", story:"시에서 관리하는 도로에 움푹 파인 곳이 생겼어요. 도로를 관리하는 담당 부서에 알리려고 해요.", choices:["education","post","city","office"], answer:"city", explanation:"시청의 도로 담당 부서는 시가 관리하는 도로를 점검하고 보수해요."},
+    {title:"골목에서 안전하게 다니는 법을 배워요", story:"학교에서 길을 안전하게 건너는 법과 교통 규칙을 알려 줄 기관의 도움을 받고 싶어요.", choices:["fire","city","library","police"], answer:"police", explanation:"경찰서는 교통안전을 지키고 어린이에게 교통사고를 예방하는 방법을 알려 주기도 해요."}
+  ];
+  const stageNames = ["동네 생활", "안전과 시설", "함께 사는 지역"];
+  const stageSize = 4;
+  const byId = id => document.getElementById(id);
+  const options = byId("options");
+  const notebook = byId("notebook");
+  let current = 0;
+  let score = 0;
+  let answered = false;
+  let missed = [];
+  let order = missions;
+
+  function icon(agency) {
+    const node = document.createElement("span");
+    node.className = "option-icon";
+    node.style.setProperty("--tile", agency.color);
+    node.setAttribute("aria-hidden", "true");
+    node.textContent = agency.icon;
+    return node;
+  }
+
+  function showProgress() {
+    const solved = current + Number(answered);
+    byId("count").textContent = `${solved} / ${missions.length}`;
+    byId("progress").value = solved;
+    byId("score").textContent = score;
+    Array.from(byId("stages").children).forEach((stage, index) => {
+      const complete = solved >= (index + 1) * stageSize;
+      const active = !complete && index === Math.floor(solved / stageSize);
+      stage.classList.toggle("done", complete);
+      if (active) stage.setAttribute("aria-current", "step");
+      else stage.removeAttribute("aria-current");
+      stage.firstElementChild.textContent = complete ? "✓" : index + 1;
+      stage.lastElementChild.textContent = complete ? "완료" : active ? "진행 중" : "대기";
+    });
+  }
+
+  function showMission(moveFocus = true) {
+    const mission = order[current];
+    answered = false;
+    byId("mission-number").textContent = `✦ 문제 ${String(current + 1).padStart(2, "0")} / ${missions.length}`;
+    byId("question").textContent = mission.title;
+    byId("scenario").textContent = mission.story;
+    byId("response").hidden = true;
+    options.replaceChildren(...mission.choices.map((key, index) => {
+      const agency = agencies[key];
+      const button = document.createElement("button");
+      const shortcut = document.createElement("span");
+      button.type = "button";
+      button.className = "option";
+      button.dataset.agency = key;
+      shortcut.className = "option-key";
+      shortcut.setAttribute("aria-hidden", "true");
+      shortcut.textContent = index + 1;
+      button.append(icon(agency), document.createTextNode(agency.name), shortcut);
+      button.addEventListener("click", () => selectAnswer(key));
+      return button;
+    }));
+    showProgress();
+    drawScene();
+    if (moveFocus) byId("question").focus();
+  }
+
+  function selectAnswer(key) {
+    if (answered) return;
+    const mission = order[current];
+    const correct = key === mission.answer;
+    answered = true;
+    if (correct) score++;
+    else missed.push(mission);
+    for (const button of options.children) {
+      button.disabled = true;
+      if (button.dataset.agency === mission.answer) {
+        button.classList.add("correct");
+        button.querySelector(".option-key").textContent = "✓";
+      } else if (button.dataset.agency === key) {
+        button.classList.add("wrong");
+        button.querySelector(".option-key").textContent = "×";
+      }
+    }
+    byId("response").dataset.kind = correct ? "correct" : "wrong";
+    byId("feedback-title").textContent = correct ? "정답이에요!" : `정답은 ${agencies[mission.answer].name}이에요.`;
+    byId("feedback-text").textContent = mission.explanation;
+    byId("next").textContent = current + 1 === missions.length ? "결과 보기 →" : "다음 문제 →";
+    byId("response").hidden = false;
+    byId("next").focus();
+    showProgress();
+  }
+
+  function showResult() {
+    byId("play").hidden = true;
+    byId("result").hidden = false;
+    byId("result-summary").textContent = `${missions.length}문제 중 ${score}문제를 맞혔어요. ${missed.length ? "헷갈린 기관의 역할을 다시 살펴봐요." : "모든 상황에서 알맞은 공공 기관을 찾았어요!"}`;
+    byId("review-label").textContent = missed.length ? `다시 살펴볼 문제 (${missed.length}개)` : "전체 문제 돌아보기";
+    byId("review").open = missed.length > 0;
+    byId("review-items").replaceChildren(...(missed.length ? missed : order).map(mission => {
+      const item = document.createElement("li");
+      const title = document.createElement("strong");
+      title.textContent = mission.title;
+      item.append(title, document.createElement("br"), mission.explanation);
+      return item;
+    }));
+    byId("result-heading").focus();
+  }
+
+  function shuffle(items) {
+    const copy = [...items];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  }
+
+  byId("next").setAttribute("aria-describedby", "feedback");
+  byId("next").addEventListener("click", () => {
+    if (!answered || byId("play").hidden) return;
+    if (current + 1 === missions.length) showResult();
+    else {
+      current++;
+      showMission();
+    }
+  });
+  byId("restart").addEventListener("click", () => {
+    current = 0;
+    score = 0;
+    missed = [];
+    order = stageNames.flatMap((_, index) => shuffle(missions.slice(index * stageSize, (index + 1) * stageSize)));
+    order = order.map(mission => ({...mission, choices:shuffle(mission.choices)}));
+    byId("result").hidden = true;
+    byId("play").hidden = false;
+    showMission();
+  });
+  byId("open-notebook").addEventListener("click", () => notebook.showModal());
+  document.addEventListener("keydown", event => {
+    if (event.repeat || event.altKey || event.ctrlKey || event.metaKey || notebook.open || answered || byId("play").hidden) return;
+    if (/^[1-4]$/.test(event.key)) {
+      event.preventDefault();
+      options.children[Number(event.key) - 1].click();
+    }
+  });
+
+  for (const name of stageNames) {
+    const stage = document.createElement("li");
+    const number = document.createElement("span");
+    const status = document.createElement("span");
+    stage.className = "stage";
+    number.className = "stage-index";
+    status.className = "stage-status";
+    stage.append(number, document.createTextNode(name), status);
+    byId("stages").append(stage);
+  }
+  for (const agency of Object.values(agencies)) {
+    const item = document.createElement("li");
+    const content = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = agency.name;
+    content.append(name, document.createTextNode(agency.role));
+    item.append(icon(agency), content);
+    byId("directory").append(item);
+  }
+
+  function prepareCanvas(canvas, width, height) {
+    const ratio = Math.min(devicePixelRatio || 1, 3);
+    canvas.width = width * ratio;
+    canvas.height = height * ratio;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(ratio, ratio);
+    return ctx;
+  }
+
+  function shape(ctx, color, ...points) {
+    ctx.beginPath();
+    ctx.moveTo(...points[0]);
+    for (const point of points.slice(1)) ctx.lineTo(...point);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function ellipse(ctx, color, x, y, rx, ry) {
+    ctx.beginPath();
+    ctx.ellipse(x, y, rx, ry, 0, 0, 2 * Math.PI);
+    ctx.fillStyle = color;
+    ctx.fill();
+  }
+
+  function box(ctx, color, x, y, w, h) {
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+  }
+
+  function tree(ctx, x, y, size) {
+    box(ctx, "#6b6352", x - 2, y - size * .42, 4, size * .42);
+    ellipse(ctx, "#7b9a69", x, y - size * .64, size * .31, size * .45);
+    ellipse(ctx, "#a0b680", x - size * .1, y - size * .73, size * .19, size * .30);
+  }
+
+  function drawScene() {
+    const ctx = prepareCanvas(byId("scene"), 226, 216);
+    const roofs = ["#b96943", "#507477", "#a26880"];
+    const walls = ["#f3d596", "#d4e5df", "#f2d9d8"];
+    const stage = Math.floor(current / stageSize);
+    ellipse(ctx, "#f7edb6", 158, 56, 47, 47);
+    ellipse(ctx, "#f2f4dc", 77, 54, 20, 5);
+    ellipse(ctx, "#f2f4dc", 62, 57, 19, 4);
+    ellipse(ctx, "#d4e1b9", 152, 182, 110, 32);
+    ellipse(ctx, "#b8cd9b", 173, 175, 67, 18);
+    shape(ctx,"#f6edca",[113,171],[148,167],[184,182],[210,216],[163,216],[154,191]);
+    tree(ctx, 65, 174, 51);
+    tree(ctx, 197, 174, 61);
+    tree(ctx, 218, 171, 45);
+    box(ctx, "#d4aa72", 92, 98, 80, 76);
+    box(ctx, walls[stage], 96, 96, 61, 76);
+    shape(ctx, "#d6b58b", [157,97],[173,111],[173,173],[157,173]);
+    shape(ctx, roofs[stage], [86,101],[125,66],[164,101]);
+    shape(ctx, roofs[stage], [125,66],[143,70],[181,106],[163,101]);
+    box(ctx, "#fff3cf", 96, 101, 61, 5);
+    box(ctx, "#435c4d", 119, 129, 16, 43);
+    box(ctx, "#688275", 122, 133, 10, 15);
+    ellipse(ctx,"#f4cf87",131,156,1.3,1.3);
+    for (const x of [101, 139]) {
+      box(ctx, "#ffedbd", x, 121, 13, 18);
+      box(ctx, "#698579", x + 2, 123, 9, 14);
+      box(ctx, "#f7e8ba", x + 6, 123, 1, 14);
+      box(ctx, "#f7e8ba", x + 2, 129, 9, 1);
+    }
+    ellipse(ctx, "#ffe8a8", 125, 91, 7, 7);
+    box(ctx, roofs[stage], 124, 86, 2, 6);
+    box(ctx, roofs[stage], 124, 90, 5, 2);
+    tree(ctx, 84, 181, 29);
+    ellipse(ctx,"#f6c477",187,188,3,3);
+    ellipse(ctx,"#f6c477",193,186,2,2);
+    ellipse(ctx,"#fff4d3",71,187,3,3);
+  }
+
+  function drawMap() {
+    const ctx = prepareCanvas(byId("map-art"), 266, 180);
+    box(ctx, "#e8eddb", 0, 0, 266, 180);
+    shape(ctx,"#d6e4c3",[0,0],[70,0],[50,65],[0,71]);
+    shape(ctx,"#d5e6dc",[219,0],[266,0],[266,180],[243,180],[234,131],[252,71]);
+    ctx.strokeStyle = "#fff9e5";
+    ctx.lineWidth = 12;
+    ctx.beginPath();
+    ctx.moveTo(-10, 141);
+    ctx.lineTo(69, 103);
+    ctx.lineTo(93, 34);
+    ctx.lineTo(163, -10);
+    ctx.moveTo(102, 187);
+    ctx.lineTo(186, 138);
+    ctx.lineTo(273, 153);
+    ctx.stroke();
+    for (const [x,y] of [[20,27],[43,32],[14,83],[248,42],[258,73],[22,169],[223,163]]) tree(ctx,x,y,24);
+  }
+  drawMap();
+  showMission(false);
+</script>
+</body>
+</html>

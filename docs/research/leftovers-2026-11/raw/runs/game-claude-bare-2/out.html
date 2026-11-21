@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공공 기관 마을 지키기</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:20px;color:#1d2b4f;background:linear-gradient(180deg,#bfe6ff 0%,#e8f7ff 45%,#c9f0c0 100%);background-attachment:fixed;-webkit-tap-highlight-color:transparent}
+#wrap{max-width:980px;margin:0 auto;padding:14px 14px 40px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.top h1{font-size:clamp(22px,4.5vw,34px);margin:0}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+.btn{border:0;border-radius:18px;padding:14px 22px;min-height:60px;font-weight:bold;font-size:22px;background:#ffd23f;color:#3b2a00;box-shadow:0 5px 0 #c99a00;transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 #c99a00}
+.btn:focus-visible,.choice:focus-visible,.card:focus-visible,.bld:focus-visible,.mbtn:focus-visible{outline:4px solid #1d5bff;outline-offset:2px}
+.btn.green{background:#4cd27a;box-shadow:0 5px 0 #229a4c;color:#05301a}
+.btn.blue{background:#5aa7ff;box-shadow:0 5px 0 #2a6fc9;color:#02193a}
+.btn.gray{background:#fff;box-shadow:0 5px 0 #b8c4dc;border:2px solid #b8c4dc;min-height:48px;font-size:18px;padding:8px 16px}
+.panel{background:#fff;border-radius:24px;padding:18px;box-shadow:0 6px 0 rgba(29,43,79,.15);margin-bottom:16px}
+.title{text-align:center}
+.title .big{font-size:clamp(30px,7vw,52px);font-weight:900;margin:6px 0;color:#d9461f;text-shadow:0 3px 0 #fff}
+.title p{margin:4px 0}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:14px 0}
+.mbtn{border:0;border-radius:22px;padding:16px;min-height:130px;text-align:center;font-weight:bold;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.mbtn:active{transform:translateY(3px)}
+.mbtn .ic{font-size:42px;display:block}
+.mbtn .nm{font-size:23px;display:block;margin:4px 0}
+.mbtn small{font-size:15px;font-weight:normal;display:block;opacity:.95}
+.m1{background:#f0523d}.m2{background:#2f8fe6}.m3{background:#2fa65a}.m4{background:#8e5bd6}.m5{background:#e07a00}
+.town{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.bld{position:relative;border:3px solid #9fb3d9;background:#f4f7ff;border-radius:18px;padding:10px 6px;text-align:center;min-height:106px;font-weight:bold}
+.bld .e{font-size:38px;display:block;filter:grayscale(1);opacity:.55}
+.bld .n{font-size:16px;display:block}
+.bld.got{border-color:#ffb800;background:#fff6cf}
+.bld.got .e{filter:none;opacity:1}
+.bld .st{position:absolute;top:-8px;right:-6px;font-size:26px}
+.hud{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:10px;font-weight:bold}
+.pill{background:#fff;border-radius:999px;padding:6px 16px;box-shadow:0 3px 0 rgba(29,43,79,.15)}
+.bar{height:14px;background:#dbe6f7;border-radius:8px;overflow:hidden;margin-bottom:12px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#4cd27a,#ffd23f);width:0;transition:width .3s}
+.qbox{font-size:clamp(22px,4vw,30px);font-weight:bold;line-height:1.5;text-align:center;padding:10px}
+.qbox .sit{display:block;font-size:56px}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:10px}
+.choice{border:3px solid #7aa7e8;background:#eef5ff;border-radius:18px;padding:14px 16px;min-height:68px;font-size:22px;font-weight:bold;text-align:left;display:flex;gap:12px;align-items:center}
+.choice .k{background:#2f6fd6;color:#fff;border-radius:50%;min-width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}
+.choice.big{justify-content:center;font-size:30px;min-height:96px}
+.choice:hover:not([disabled]){background:#dcebff}
+.choice.ok{background:#c8f5d5;border-color:#1f9d4d}
+.choice.no{background:#ffd9d4;border-color:#d6402b}
+.choice[disabled]{cursor:default}
+.fb{margin-top:14px;border-radius:18px;padding:14px;font-size:20px;line-height:1.55;display:none}
+.fb.show{display:block}
+.fb.ok{background:#e0f9e8;border:3px solid #1f9d4d}
+.fb.no{background:#fff0ed;border:3px solid #d6402b}
+.fb b.t{font-size:24px;display:block}
+.center{text-align:center;margin-top:14px}
+.stars{font-size:60px;letter-spacing:6px}
+.stars .off{filter:grayscale(1);opacity:.3}
+.miss{text-align:left;background:#fff8e6;border-radius:14px;padding:10px 14px;margin:8px 0;line-height:1.5}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{border:3px solid #7aa7e8;background:#eef5ff;border-radius:16px;padding:10px;min-height:76px;font-size:19px;font-weight:bold;text-align:center;display:flex;align-items:center;justify-content:center;width:100%;margin-bottom:10px}
+.card.sel{background:#fff1a8;border-color:#e0a800;transform:scale(1.03)}
+.card.done{background:#c8f5d5;border-color:#1f9d4d;opacity:.8;cursor:default}
+.card.shake{animation:sh .35s;background:#ffd9d4;border-color:#d6402b}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.pop{animation:pop .4s}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+.modal{position:fixed;inset:0;background:rgba(20,30,60,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:10}
+.modal .box{background:#fff;border-radius:24px;padding:22px;max-width:520px;width:100%;text-align:center;line-height:1.6}
+.hint{font-size:16px;color:#3d4d78}
+.tip{background:#fff;border-radius:16px;padding:10px 14px;font-size:17px;margin-top:10px;line-height:1.5}
+@media (max-width:560px){body{font-size:18px}.cols{gap:8px}.card{font-size:16px;padding:6px}}
+</style>
+</head>
+<body>
+<div id="wrap">
+  <div class="top">
+    <h1>🏘️ 공공 기관 마을 지키기</h1>
+    <button class="btn gray" id="mute" aria-label="소리 켜기 끄기">🔊 소리 켜짐</button>
+  </div>
+  <div id="app"></div>
+</div>
+<script>
+'use strict';
+/* ===== 데이터 ===== */
+const INST = [
+ {id:'city',  e:'🏛️', n:'시청(군청·구청)', s:'시청', job:'우리 지역의 살림을 맡아 주민 생활을 돕는 일', info:'시장(군수·구청장)과 공무원이 일하며 도로, 복지, 환경 등 지역의 여러 일을 맡아요.'},
+ {id:'center',e:'🏠', n:'주민 센터', s:'주민 센터', job:'주민등록등본 등 서류를 발급해 주는 일', info:'행정복지센터라고도 해요. 주민등록등본 같은 서류를 떼고, 이사 신고(전입 신고)를 해요.'},
+ {id:'police',e:'🚓', n:'경찰서', s:'경찰서', job:'범죄를 예방하고 교통 안전을 지키는 일', info:'치안을 맡아요. 범죄를 예방하고, 교통 질서를 지키고, 길 잃은 사람을 도와요.'},
+ {id:'fire',  e:'🚒', n:'소방서', s:'소방서', job:'불을 끄고 사람을 구조·구급하는 일', info:'화재를 진압하고, 위험에 빠진 사람을 구조하고, 아픈 사람을 구급차로 병원에 옮겨요.'},
+ {id:'health',e:'🏥', n:'보건소', s:'보건소', job:'감염병을 예방하고 건강 검진·예방 접종을 하는 일', info:'주민의 건강을 지켜요. 예방 접종, 건강 검진, 감염병 예방 활동을 해요.'},
+ {id:'post',  e:'📮', n:'우체국', s:'우체국', job:'편지와 택배(소포)를 전달하는 일', info:'편지와 소포를 보내고 받게 도와요.'},
+ {id:'lib',   e:'📚', n:'도서관', s:'도서관', job:'책을 빌려주고 읽을 공간을 마련하는 일', info:'누구나 책을 빌려 보고, 공부하고, 다양한 문화 프로그램에 참여할 수 있어요.'},
+ {id:'court', e:'⚖️', n:'법원', s:'법원', job:'다툼이 생겼을 때 법에 따라 재판하는 일', info:'사람들 사이의 다툼이나 법을 어긴 일을 법에 따라 공정하게 판단해요.'},
+ {id:'council',e:'🗳️', n:'시의회(군의회)', s:'시의회', job:'조례를 만들고 지역의 예산을 심의하는 일', info:'주민이 뽑은 의원들이 모여 지역에 필요한 조례를 만들고, 예산이 알맞게 쓰이는지 살펴봐요.'},
+ {id:'edu',   e:'🎒', n:'교육청', s:'교육청', job:'지역 학교의 교육에 관한 일을 맡는 일', info:'우리 지역 학교의 교육과 관련된 일을 맡아 학생들이 잘 배우도록 도와요.'},
+ {id:'museum',e:'🏺', n:'박물관', s:'박물관', job:'옛 유물과 자료를 모아 보존하고 전시하는 일', info:'우리 지역의 역사와 문화를 알 수 있는 유물을 모아 보여 줘요.'},
+ {id:'culture',e:'🎎', n:'문화원', s:'문화원', job:'지역의 전통문화를 알리고 문화 행사를 여는 일', info:'우리 고장의 문화를 지키고 알리며 주민을 위한 문화 프로그램을 운영해요.'},
+ {id:'water', e:'🚰', n:'상하수도 사업소', s:'상하수도 사업소', job:'깨끗한 수돗물을 공급하고 하수를 처리하는 일', info:'수돗물을 깨끗하게 만들어 집까지 보내고, 쓰고 난 물(하수)을 깨끗하게 처리해요.'},
+ {id:'clean', e:'♻️', n:'청소 사업소', s:'청소 사업소', job:'쓰레기를 치우고 재활용을 돕는 환경 관리', info:'청소(환경) 사업소는 쓰레기를 거두고 처리하며 깨끗한 환경을 지켜요.'}
+];
+const BY = Object.fromEntries(INST.map(x=>[x.id,x]));
+
+/* 미션 퀴즈: 상황 -> 기관 */
+const MISSION = [
+ ['🔥','"불이 났어요! 빨리 불을 꺼 주세요!"','fire','불을 끄는 화재 진압은 소방서가 해요. 위급할 때는 119에 전화해요.'],
+ ['🚑','"길에서 아픈 사람이 쓰러졌어요. 구급차가 필요해요!"','fire','구조·구급 활동도 소방서의 일이에요. 119 구급대원이 도와줘요.'],
+ ['🧗','"높은 곳에 고양이가 갇혀서 내려오지 못해요."','fire','위험에 빠진 사람이나 동물을 구하는 구조 활동은 소방서가 해요.'],
+ ['👛','"길에서 주운 지갑을 주인에게 돌려주고 싶어요."','police','잃어버린 물건을 찾아 주고 주민을 보호하는 일은 경찰서가 해요.'],
+ ['🚦','"횡단보도 교통 질서를 지켜 주세요. 사고가 날까 봐 걱정돼요."','police','교통 안전을 지키고 범죄를 예방하는 치안은 경찰서의 일이에요.'],
+ ['📄','"주민등록등본을 떼야 해요."','center','주민 센터(행정복지센터)에서 주민등록등본 같은 서류를 발급받을 수 있어요.'],
+ ['🚚','"다른 동네로 이사했어요. 전입 신고를 하고 싶어요."','center','가까운 주민 센터에서 전입 신고를 할 수 있어요.'],
+ ['💉','"독감 예방 접종을 받고 싶어요."','health','예방 접종과 건강 검진은 보건소에서 해요.'],
+ ['😷','"감염병이 퍼지지 않게 막고 싶어요."','health','보건소는 감염병을 예방하고 주민의 건강을 지켜요.'],
+ ['📖','"조용히 책을 빌려 읽고 싶어요."','lib','도서관에서는 누구나 책을 빌리고 읽을 수 있어요.'],
+ ['✉️','"멀리 사는 할머니께 소포를 보내고 싶어요."','post','편지와 택배(소포)를 보내는 일은 우체국에서 해요.'],
+ ['📜','"우리 동네에 꼭 필요한 조례를 만들고 싶어요."','council','조례를 만드는 일은 주민이 뽑은 의원들이 모인 시의회(군의회)가 해요.'],
+ ['💰','"시에서 쓸 예산이 알맞은지 살펴봐야 해요."','council','예산을 심의하는 것도 시의회(군의회)의 중요한 일이에요.'],
+ ['👩‍⚖️','"두 사람 사이의 다툼을 법에 따라 공정하게 판단해 주세요."','court','법에 따라 재판을 하는 곳은 법원이에요.'],
+ ['🏫','"우리 지역 학교의 교육에 관한 일을 맡아서 하는 곳은 어디일까요?"','edu','교육청은 지역 학교의 교육과 관련된 일을 맡아요.'],
+ ['🗿','"우리 고장의 옛 유물을 구경하고 싶어요."','museum','박물관은 옛 유물과 자료를 모아 전시해요.'],
+ ['🥁','"우리 고장의 전통문화를 배우고 행사에도 참여하고 싶어요."','culture','문화원은 지역의 전통문화를 알리고 문화 행사를 열어요.'],
+ ['💧','"수돗물이 깨끗하게 나오도록 관리해 주세요."','water','깨끗한 수돗물 공급과 하수 처리는 상하수도 사업소가 해요.'],
+ ['🗑️','"집 앞에 쌓인 쓰레기를 치워 주세요."','clean','쓰레기를 치우고 재활용을 돕는 일은 청소(환경) 사업소가 해요.'],
+ ['🧑‍💼','"우리 시의 도로와 복지 같은 살림을 맡아서 하는 곳은 어디일까요?"','city','시청(군청·구청)은 시장과 공무원이 지역의 여러 살림을 맡아요.']
+];
+
+/* 짝 맞추기용 하는 일은 INST.job */
+
+/* O/X */
+const OX = [
+ ['공공 기관은 주민 모두의 편리하고 안전한 생활을 위해 일해요.',true,'맞아요! 공공 기관은 공익(모두에게 이로움)을 위해 일해요.',null],
+ ['공공 기관은 돈을 많이 버는 것(이윤)이 가장 큰 목적이에요.',false,'공공 기관은 이윤이 아니라 공익이 목적이에요.',null],
+ ['주민 센터에서는 주민등록등본을 발급받을 수 있어요.',true,'주민 센터(행정복지센터)에서 서류를 발급해 줘요.','center'],
+ ['불이 났을 때는 119에 전화해서 소방서의 도움을 받아요.',true,'화재 진압과 구조·구급은 소방서가 해요.','fire'],
+ ['보건소에서는 불을 끄고 사람을 구조해요.',false,'불을 끄고 구조하는 곳은 소방서예요. 보건소는 건강을 지켜요.','health'],
+ ['경찰서는 범죄를 예방하고 교통 안전을 지켜요.',true,'경찰서는 우리 마을의 치안을 맡아요.','police'],
+ ['시의회(군의회)에서는 조례를 만들고 예산을 심의해요.',true,'주민이 뽑은 의원들이 모여 지역의 일을 의논해요.','council'],
+ ['법원은 편지와 소포를 전달해 줘요.',false,'편지와 소포는 우체국이 전달해요. 법원은 재판을 해요.','court'],
+ ['도서관은 누구나 이용할 수 있는 공공 기관이에요.',true,'도서관은 주민 모두를 위한 공공 기관이에요.','lib'],
+ ['공공 기관을 이용할 때는 차례를 지키고 조용히 해야 해요.',true,'다른 사람을 배려하는 예절을 지켜요.',null],
+ ['공공 기관의 물건은 내 것이니까 마음대로 가져가도 돼요.',false,'공공 기관의 물건은 모두의 것이에요. 아껴 쓰고 제자리에 둬요.',null],
+ ['박물관과 문화원은 우리 지역의 역사와 문화를 알려 줘요.',true,'유물 전시와 문화 행사로 지역의 문화를 지켜요.','museum'],
+ ['상하수도 사업소는 깨끗한 수돗물을 공급하고 하수를 처리해요.',true,'우리가 쓰는 물을 책임지는 곳이에요.','water'],
+ ['보건소에서는 예방 접종과 건강 검진을 받을 수 있어요.',true,'보건소는 주민의 건강을 지키는 곳이에요.','health'],
+ ['공공 기관에서 일하는 사람들은 주민을 돕기 위해 일해요.',true,'공무원은 주민을 위해 봉사하는 사람들이에요.',null],
+ ['지역 문제는 주민이 참여하지 않고 기관만 해결해야 해요.',false,'주민도 투표, 청원, 자원봉사 등으로 함께 참여해요.',null]
+];
+
+/* 공공 기관 vs 민간 기업 */
+const CLASSIFY = [
+ ['경찰서',true,'경찰서는 공익을 위해 일하는 공공 기관이에요.'],
+ ['소방서',true,'소방서는 모두의 안전을 위한 공공 기관이에요.'],
+ ['시청',true,'시청은 지역 살림을 맡은 공공 기관이에요.'],
+ ['보건소',true,'보건소는 주민 건강을 지키는 공공 기관이에요.'],
+ ['도서관(시립)',true,'시립 도서관은 주민 모두를 위한 공공 기관이에요.'],
+ ['주민 센터',true,'주민 센터는 주민의 서류를 도와주는 공공 기관이에요.'],
+ ['법원',true,'법원은 재판을 하는 공공 기관이에요.'],
+ ['우리 동네 치킨집',false,'치킨집은 이윤을 얻으려고 하는 민간 기업(가게)이에요.'],
+ ['장난감 회사',false,'장난감 회사는 물건을 팔아 이윤을 얻는 민간 기업이에요.'],
+ ['놀이공원(사기업)',false,'사기업이 운영하는 놀이공원은 이윤을 목적으로 해요.'],
+ ['휴대전화 판매 회사',false,'물건을 팔아 돈을 버는 민간 기업이에요.'],
+ ['동네 편의점',false,'편의점은 이윤을 위해 장사하는 민간 기업(가게)이에요.'],
+ ['시의회',true,'시의회는 조례를 만드는 공공 기관이에요.'],
+ ['학원',false,'학원은 이윤을 목적으로 하는 민간 기업(사업)이에요.']
+];
+
+/* 주민 참여 */
+const PART = [
+ ['우리 마을 공원 문제를 두고 주민들이 모여 의견을 말하는 모임은?','공청회',['공청회','캠페인','소포','재판'],'공청회에서는 주민과 전문가가 모여 의견을 나눠요.'],
+ ['공공시설을 짓는 일을 주민 모두가 찬성·반대 표로 결정하는 방법은?','주민 투표',['주민 투표','청원','자원봉사','신고'],'주민 투표는 중요한 일을 주민이 직접 표로 결정하는 방법이에요.'],
+ ['"우리 동네에 신호등을 설치해 주세요"라고 글로 정리해 의회나 기관에 요청하는 방법은?','청원',['청원','주민 투표','공청회','재판'],'청원은 바라는 일을 정리해서 공식적으로 요청하는 방법이에요.'],
+ ['지역 살림에 쓸 예산을 정하는 일에 주민이 직접 의견을 내는 제도는?','주민 참여 예산제',['주민 참여 예산제','예방 접종','전입 신고','청원 경찰'],'주민 참여 예산제는 예산 사용에 주민이 함께 참여하는 제도예요.'],
+ ['깨끗한 마을을 위해 친구들과 쓰레기 줍기를 하는 활동은?','캠페인·자원봉사',['캠페인·자원봉사','주민 투표','재판','우편 배달'],'캠페인과 자원봉사는 우리가 직접 실천하는 참여 방법이에요.'],
+ ['시청 누리집(인터넷 홈페이지)에 우리 동네에 바라는 점을 올리는 것은?','누리집 의견 제시',['누리집 의견 제시','공청회','예방 접종','화재 진압'],'누리집에 글을 올려 의견을 낼 수 있어요.'],
+ ['지역 문제를 해결하는 과정에서 가장 먼저 하는 일은?','문제 발견하기',['문제 발견하기','함께 실천하기','해결 방안 마련하기','문제 알리기'],'순서는 문제 발견 → 알리기 → 기관/의회가 해결 방안 마련 → 함께 실천이에요.'],
+ ['지역 문제를 발견하고 알린 다음, 시청이나 시의회가 하는 일은?','해결 방안 마련하기',['해결 방안 마련하기','문제 발견하기','다시 처음부터 잊기','모른 척하기'],'알려진 문제에 대해 기관과 의회가 해결 방안을 마련하고, 주민이 함께 실천해요.']
+];
+
+/* 모드 설정 */
+const MODES = {
+ mission:{name:'미션 퀴즈',icon:'🚒',cls:'m1',desc:'상황을 보고 알맞은 기관 찾기',n:10,lives:3},
+ match:{name:'짝 맞추기',icon:'🧩',cls:'m2',desc:'기관과 하는 일 연결하기'},
+ ox:{name:'O/X 빠른 퀴즈',icon:'⭕',cls:'m3',desc:'맞으면 O, 틀리면 X',n:10,lives:3},
+ classify:{name:'공공 vs 민간',icon:'🏪',cls:'m4',desc:'공공 기관일까, 민간 기업일까?',n:10,lives:3},
+ part:{name:'주민 참여 퀴즈',icon:'🙋',cls:'m5',desc:'참여 방법과 문제 해결 과정',n:8,lives:3}
+};
+const TOTAL_Q = MISSION.length+OX.length+CLASSIFY.length+PART.length;
+
+/* ===== 유틸 ===== */
+const $ = s=>document.querySelector(s);
+const app = $('#app');
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function store(){try{return JSON.parse(localStorage.getItem('pubTown')||'{}')||{};}catch(e){return {};}}
+function saveStore(o){try{localStorage.setItem('pubTown',JSON.stringify(o));}catch(e){}}
+let DB = store(); DB.best=DB.best||{}; DB.stamps=DB.stamps||{}; DB.muted=!!DB.muted;
+let keyHandler=null;
+document.addEventListener('keydown',e=>{if(e.ctrlKey||e.altKey||e.metaKey)return;if(keyHandler&&keyHandler(e.key,e))e.preventDefault();});
+
+/* 소리 */
+let actx=null;
+function beep(freqs){
+ if(DB.muted)return;
+ try{
+  actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+  let t=actx.currentTime;
+  freqs.forEach(f=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+.16);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+.17);t+=.13;});
+ }catch(e){}
+}
+function updMute(){$('#mute').textContent=DB.muted?'🔇 소리 꺼짐':'🔊 소리 켜짐';}
+$('#mute').onclick=()=>{DB.muted=!DB.muted;saveStore(DB);updMute();beep([660]);};
+updMute();
+
+/* ===== 타이틀 ===== */
+function showMenu(){
+ keyHandler=e=>{const m=Object.keys(MODES)[+e-1];if(m){start(m);return true;}};
+ const got=INST.filter(i=>DB.stamps[i.id]).length;
+ let h=`<div class="panel title"><div class="big">🚒 마을을 지켜라! 🚓</div>
+ <p>우리 마을 공공 기관을 찾아가 미션을 해결하고 도장을 모아요!</p>
+ <p class="hint">4학년 사회 · 우리 지역의 공공 기관 (공공 기관: 이윤이 아니라 주민 모두의 편리하고 안전한 생활을 위해 일하는 곳)</p></div>
+ <div class="modes">`;
+ Object.keys(MODES).forEach((k,i)=>{const m=MODES[k];const b=DB.best[k];
+  h+=`<button class="mbtn ${m.cls}" data-m="${k}"><span class="ic">${m.icon}</span><span class="nm">${i+1}. ${m.name}</span><small>${m.desc}</small><small>${b!=null?'🏆 최고 점수 '+b+'점':'아직 기록 없음'}</small></button>`;});
+ h+=`</div><div class="panel"><b>🗺️ 우리 마을 지도</b> <span class="pill">도장 ${got} / ${INST.length}</span>
+ ${got===INST.length?'<p class="pop">🎉 모든 기관 도장을 모았어요! 마을 지킴이 달성!</p>':''}
+ <p class="hint">정답을 맞히면 해당 기관의 도장(⭐)을 받아요. 건물을 누르면 하는 일을 볼 수 있어요.</p><div class="town">`;
+ INST.forEach(i=>{h+=`<button class="bld ${DB.stamps[i.id]?'got':''}" data-i="${i.id}">${DB.stamps[i.id]?'<span class="st">⭐</span>':''}<span class="e">${i.e}</span><span class="n">${i.s}</span></button>`;});
+ h+=`</div></div>
+ <div class="tip">💡 키보드: 숫자 1~5로 게임 시작, 퀴즈에서는 1~4(O/X는 1·2 또는 O·X), 다음 문제는 Enter!</div>
+ <div class="center"><button class="btn gray" id="reset">기록 지우기</button></div>`;
+ app.innerHTML=h;
+ app.querySelectorAll('.mbtn').forEach(b=>b.onclick=()=>start(b.dataset.m));
+ app.querySelectorAll('.bld').forEach(b=>b.onclick=()=>showInfo(b.dataset.i));
+ $('#reset').onclick=()=>{if(confirm('최고 점수와 도장을 모두 지울까요?')){DB.best={};DB.stamps={};saveStore(DB);showMenu();}};
+}
+function showInfo(id){
+ const i=BY[id];const m=document.createElement('div');m.className='modal';
+ m.innerHTML=`<div class="box" role="dialog"><div style="font-size:64px">${i.e}</div><h2>${i.n}</h2><p>${i.info}</p><p><b>하는 일:</b> ${i.job}</p><p>${DB.stamps[id]?'⭐ 도장을 받았어요!':'아직 도장이 없어요. 퀴즈에 도전해 봐요!'}</p><button class="btn blue" id="cl">닫기</button></div>`;
+ document.body.appendChild(m);
+ const close=()=>{m.remove();keyHandler=prev;};const prev=keyHandler;
+ keyHandler=k=>{if(k==='Escape'||k==='Enter'||k===' '){close();return true;}};
+ m.onclick=e=>{if(e.target===m)close();};m.querySelector('#cl').onclick=close;m.querySelector('#cl').focus();
+}
+
+/* ===== 공통 ===== */
+let G=null;
+function start(mode){
+ if(mode==='match')return startMatch();
+ const M=MODES[mode];let pool=[];
+ if(mode==='mission'){
+  pool=MISSION.map(q=>{const a=BY[q[2]].s;const others=shuffle(INST.filter(i=>i.id!==q[2])).slice(0,3).map(i=>i.s);
+   return {sit:q[0],t:q[1],a,c:shuffle([a,...others]),e:q[3],i:q[2]};});
+ }else if(mode==='ox'){
+  pool=OX.map(q=>({t:q[0],a:q[1]?'O':'X',c:['O','X'],e:q[2],i:q[3],big:true}));
+ }else if(mode==='classify'){
+  pool=CLASSIFY.map(q=>({sit:'🔎',t:`"${q[0]}"은(는) 공공 기관일까요, 민간 기업일까요?`,a:q[1]?'공공 기관':'민간 기업',c:['공공 기관','민간 기업'],e:q[2],big:true}));
+ }else{
+  pool=PART.map(q=>({t:q[0],a:q[1],c:shuffle(q[2]),e:q[3]}));
+ }
+ G={mode,qs:shuffle(pool).slice(0,M.n),idx:0,lives:M.lives,score:0,combo:0,maxCombo:0,right:0,missed:[],answered:false};
+ showQ();
+}
+function hearts(n,t){return '❤️'.repeat(n)+'🤍'.repeat(t-n);}
+function showQ(){
+ const M=MODES[G.mode],q=G.qs[G.idx];G.answered=false;
+ let h=`<div class="panel"><div class="hud"><span class="pill">${M.icon} ${M.name}</span><span class="pill">${G.idx+1} / ${G.qs.length}</span><span class="pill" aria-label="목숨">${hearts(G.lives,M.lives)}</span><span class="pill">⭐ ${G.score}점</span><span class="pill">🔥 연속 ${G.combo}</span></div>
+ <div class="bar"><i style="width:${G.idx/G.qs.length*100}%"></i></div>
+ <div class="qbox">${q.sit?`<span class="sit">${q.sit}</span>`:''}${q.t}</div>
+ <div class="choices" id="ch">`;
+ q.c.forEach((c,i)=>{h+=`<button class="choice ${q.big?'big':''}" data-c="${i}"><span class="k">${q.big&&G.mode==='ox'?c:i+1}</span><span>${q.big&&G.mode==='ox'?(c==='O'?'맞아요':'틀려요'):c}</span></button>`;});
+ h+=`</div><div class="fb" id="fb" aria-live="polite"></div><div class="center" id="nx"></div></div>
+ <div class="center"><button class="btn gray" id="home">🏠 처음으로</button></div>`;
+ app.innerHTML=h;
+ app.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(+b.dataset.c));
+ $('#home').onclick=()=>{if(confirm('게임을 그만두고 처음으로 갈까요?'))showMenu();};
+ keyHandler=k=>{
+  if(G.answered){if(k==='Enter'||k===' '){next();return true;}return false;}
+  let n=parseInt(k,10)-1;
+  if(G.mode==='ox'){const u=k.toUpperCase();if(u==='O')n=0;else if(u==='X')n=1;}
+  if(n>=0&&n<q.c.length){answer(n);return true;}
+ };
+}
+function answer(i){
+ if(G.answered)return;G.answered=true;
+ const q=G.qs[G.idx];const ok=q.c[i]===q.a;
+ const bs=app.querySelectorAll('.choice');
+ bs.forEach((b,j)=>{b.disabled=true;if(q.c[j]===q.a)b.classList.add('ok');else if(j===i)b.classList.add('no');});
+ const fb=$('#fb');fb.classList.add('show',ok?'ok':'no');
+ if(ok){
+  G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);G.right++;
+  const gain=100+Math.min(G.combo-1,5)*20;G.score+=gain;
+  if(q.i){DB.stamps[q.i]=1;saveStore(DB);}
+  fb.innerHTML=`<b class="t">🎉 정답! +${gain}점${G.combo>=2?' (콤보 🔥'+G.combo+')':''}</b>${q.e}${q.i?`<br>${BY[q.i].e} ${BY[q.i].s} 도장 획득!`:''}`;
+  beep([660,880]);
+ }else{
+  G.combo=0;G.lives--;G.missed.push(q);
+  fb.innerHTML=`<b class="t">😢 아쉬워요! 정답: ${q.a}</b>${q.e}`;
+  beep([300,220]);
+ }
+ const last=G.idx>=G.qs.length-1||G.lives<=0;
+ $('#nx').innerHTML=`<button class="btn green" id="nb">${last?'결과 보기 (Enter)':'다음 문제 (Enter)'}</button>`;
+ $('#nb').onclick=next;$('#nb').focus();
+ const pills=app.querySelectorAll('.hud .pill');pills[2].textContent=hearts(G.lives,MODES[G.mode].lives);pills[3].textContent='⭐ '+G.score+'점';pills[4].textContent='🔥 연속 '+G.combo;
+}
+function next(){
+ if(!G||!G.answered)return;
+ G.answered=false;
+ if(G.idx>=G.qs.length-1||G.lives<=0){return finish(G.qs.length,G.right,G.lives<=0?G.idx+1:G.qs.length);}
+ G.idx++;showQ();
+}
+function starsFor(r){return r>=0.9?3:r>=0.6?2:1;}
+function finish(total,right,done,matchInfo){
+ const mode=G.mode;const stars=matchInfo?matchInfo.stars:starsFor(right/total);
+ const prev=DB.best[mode];const isBest=prev==null||G.score>prev;
+ if(isBest){DB.best[mode]=G.score;saveStore(DB);}
+ const over=!matchInfo&&G.lives<=0&&right<total;
+ let h=`<div class="panel center"><h2>${over?'💔 목숨을 모두 잃었어요':'🏁 결과'}</h2>
+ <div class="stars" aria-label="별 ${stars}개">${[1,2,3].map(n=>`<span class="${n<=stars?'':'off'}">⭐</span>`).join('')}</div>
+ <p style="font-size:28px;font-weight:bold">${G.score}점</p>
+ <p>${matchInfo?`틀린 횟수 ${matchInfo.mistakes}번`:`맞힌 문제 ${right} / ${done}`} · 최고 연속 정답 ${G.maxCombo}</p>
+ <p>${isBest?'🏆 새로운 최고 점수예요!':'🏆 최고 점수 '+DB.best[mode]+'점'}</p>
+ <p>${stars===3?'정말 훌륭해요! 우리 마을의 수호자예요!':stars===2?'잘했어요! 조금만 더 하면 별 3개!':'괜찮아요, 다시 도전하면 더 잘할 수 있어요!'}</p>`;
+ const missed=G.missed;
+ if(missed.length){h+=`<h3>📝 다시 살펴볼 문제</h3>`;
+  missed.forEach(q=>{h+=`<div class="miss"><b>${q.t}</b><br>✅ 정답: ${q.a}<br>💬 ${q.e}</div>`;});}
+ else h+='<p>🎊 틀린 문제가 없어요!</p>';
+ h+=`<div class="center"><button class="btn green" id="rt">🔄 다시 도전</button> <button class="btn blue" id="mn">🏠 마을로 가기</button></div></div>`;
+ app.innerHTML=h;
+ $('#rt').onclick=()=>start(mode);$('#mn').onclick=showMenu;
+ keyHandler=k=>{if(k==='Enter'){start(mode);return true;}if(k==='Escape'){showMenu();return true;}};
+ beep(stars>=2?[523,659,784]:[392,330]);
+}
+
+/* ===== 짝 맞추기 ===== */
+function startMatch(){
+ const pairs=shuffle(INST).slice(0,6);
+ G={mode:'match',pairs,left:shuffle(pairs),right:shuffle(pairs),sel:null,done:new Set(),mistakes:0,score:0,combo:0,maxCombo:0,missed:[],missedIds:new Set(),lives:0,right_:0};
+ renderMatch();
+}
+function renderMatch(msg){
+ let h=`<div class="panel"><div class="hud"><span class="pill">🧩 짝 맞추기</span><span class="pill">짝 ${G.done.size} / ${G.pairs.length}</span><span class="pill">⭐ ${G.score}점</span><span class="pill">🔥 연속 ${G.combo}</span></div>
+ <div class="bar"><i style="width:${G.done.size/G.pairs.length*100}%"></i></div>
+ <div class="qbox" style="font-size:22px">기관을 누르고, 그 기관이 하는 일을 눌러 연결해요!</div>
+ <div class="cols"><div>`;
+ G.left.forEach(i=>{h+=`<button class="card ${G.done.has(i.id)?'done':''} ${G.sel&&G.sel.id===i.id&&G.sel.side==='L'?'sel':''}" data-id="${i.id}" data-s="L" ${G.done.has(i.id)?'disabled':''}>${i.e} ${i.s}</button>`;});
+ h+=`</div><div>`;
+ G.right.forEach(i=>{h+=`<button class="card ${G.done.has(i.id)?'done':''} ${G.sel&&G.sel.id===i.id&&G.sel.side==='R'?'sel':''}" data-id="${i.id}" data-s="R" ${G.done.has(i.id)?'disabled':''}>${i.job}</button>`;});
+ h+=`</div></div><div class="fb ${msg?'show '+msg.c:''}" id="fb">${msg?msg.t:''}</div></div>
+ <div class="center"><button class="btn gray" id="home">🏠 처음으로</button></div>`;
+ app.innerHTML=h;
+ keyHandler=null;
+ app.querySelectorAll('.card').forEach(b=>b.onclick=()=>pickMatch(b));
+ $('#home').onclick=()=>{if(confirm('게임을 그만두고 처음으로 갈까요?'))showMenu();};
+}
+function pickMatch(b){
+ const id=b.dataset.id,side=b.dataset.s;
+ if(G.done.has(id))return;
+ if(!G.sel||G.sel.side===side){G.sel={id,side};renderMatch();return;}
+ const first=G.sel;G.sel=null;
+ if(first.id===id){
+  G.done.add(id);G.combo++;G.maxCombo=Math.max(G.maxCombo,G.combo);
+  const gain=100+Math.min(G.combo-1,5)*20;G.score+=gain;DB.stamps[id]=1;saveStore(DB);beep([660,880]);
+  if(G.done.size===G.pairs.length){
+   const stars=G.mistakes<=1?3:G.mistakes<=4?2:1;
+   G.score=Math.max(0,G.score-G.mistakes*30);
+   G.missed=[...G.missedIds].map(k=>({t:BY[k].s+'이(가) 하는 일은?',a:BY[k].job,e:BY[k].info}));
+   return finish(G.pairs.length,G.pairs.length,G.pairs.length,{stars,mistakes:G.mistakes});
+  }
+  renderMatch({c:'ok',t:`🎉 정답! ${BY[id].e} ${BY[id].n} 도장 획득!<br>${BY[id].info}`});
+ }else{
+  G.mistakes++;G.combo=0;G.missedIds.add(first.id);if(first.side==='R')G.missedIds.delete(first.id),G.missedIds.add(first.id);
+  beep([300,220]);
+  renderMatch({c:'no',t:'😢 짝이 아니에요. 다시 생각해 봐요!'});
+  app.querySelectorAll('.card').forEach(c=>{if(c.dataset.id===id&&c.dataset.s===side)c.classList.add('shake');});
+ }
+}
+
+showMenu();
+</script>
+</body>
+</html>

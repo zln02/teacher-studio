@@ -1,0 +1,27 @@
+{
+ "secs": 154,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 4593,
+ "tok": {
+  "input": 645600,
+  "cached": 539648,
+  "output": 4593,
+  "reasoning": 311
+ },
+ "turns": 18,
+ "failed_cmds": 6,
+ "is_error": false,
+ "errors": [],
+ "last": "[우리 지역의 공공 기관 복습 게임](<C:/Users/User/Downloads/xv-eval-work/leftovers/game-codex-harness-2/work/우리 지역의 공공 기관.html>)을 지금 폴더에 저장했습니다.\n\n초등 4학년 두 모둠이 번갈아 푸는 **10문제 퀴즈**입니다. OX와 객관식으로 공공 기관의 역할을 복습하고, 이사 신고나 교통안전 같은 상황에서 어느 기관의 도움을 받을지 고릅니다. 문제당 30초이며, 답을 고르면 정답과 해설이 나옵니다. [EBS 초등 사회 학습 자료](https://livedown2.ebs.co.kr/ebsvod/elmt/live/%EB%A7%8C%EC%A0%90%EC%99%95%EC%82%AC%ED%9A%8C4-1-4%EC%A3%BC.pdf)\n\n파일을 더블클릭하면 인터넷 없이 열립니다. **F11**로 전체 화면을 켜고, **⚙️ 선생님 메뉴**에서 일시정지하거나 점수를 조정할 수 있습니다.\n\n자동 점검 36개를 통과했고, 10문제와 해설이 모두 들어 있는지 확인했습니다. 이 환경에서는 브라우저 화면을 직접 열어 플레이를 확인하지 못했습니다.",
+ "name": "game-codex-harness-2",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "우리 지역의 공공 기관.html",
+ "all_files": [
+  "우리 지역의 공공 기관.html"
+ ],
+ "opens": true
+}

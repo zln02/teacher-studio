@@ -1,0 +1,27 @@
+{
+ "secs": 468,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 15806,
+ "tok": {
+  "input": 813763,
+  "cached": 771072,
+  "output": 15806,
+  "reasoning": 1101
+ },
+ "turns": 16,
+ "failed_cmds": 4,
+ "is_error": false,
+ "errors": [],
+ "last": "**[우리 동네 탐험대 — index.html](C:/Users/User/Downloads/xv-eval-work/leftovers/game-codex-bare-1/work/index.html)**를 현재 폴더에 저장했습니다. 파일을 더블클릭하면 인터넷 연결 없이 브라우저에서 바로 플레이할 수 있어요.\n\n초등학교 4학년 사회 **‘우리 지역의 공공 기관’**을 3개 미션, 총 12문제로 복습합니다. 여섯 기관의 역할을 도감에서 살펴보고, 문제마다 해설을 읽을 수 있어요. 미션이 끝나면 틀린 문제를 다시 보고 최고 기록을 확인할 수 있습니다.\n\n마을 지도는 여섯 공공 기관이 모인 점토 모형 마을을 그려 달라는 프롬프트로 생성해 HTML에 넣었습니다. 채점, 오답 복습, 기록 저장 로직은 테스트를 통과했습니다. 이 환경에서는 브라우저 실행이 제한되어 실제 화면 표시는 확인하지 못했습니다.",
+ "name": "game-codex-bare-1",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 1,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

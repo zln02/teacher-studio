@@ -1,0 +1,27 @@
+{
+ "secs": 190,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 3359,
+ "tok": {
+  "input": 805015,
+  "cached": 749824,
+  "output": 3359,
+  "reasoning": 234
+ },
+ "turns": 12,
+ "failed_cmds": 3,
+ "is_error": false,
+ "errors": [],
+ "last": "[우리 지역의 공공 기관 복습 게임.html](<C:/Users/User/Downloads/xv-eval-work/leftovers/game-codex-harness-1/work/우리 지역의 공공 기관.html>)을 현재 폴더에 저장했어요.\n\n초등학교 4학년 사회 복습용으로, **세 모둠이 문항당 30초씩** 돌아가며 풀어요. 객관식 8문제와 OX 2문제로 공공 기관의 역할을 익히고, 이사나 예방 접종처럼 생활 속 상황에 적용해요. 답을 고르면 정답과 까닭이 나와요. [문항 범위 참고 · 금성 초등 티칭허브](https://thub.kumsung.co.kr/elementary/learning/types.do?bookId=328&category=A001008&gradeCategory=C005004001)\n\n파일을 더블클릭하면 인터넷 없이 열려요. **F11**을 누르면 전체 화면으로 볼 수 있고, **톱니바퀴**에서 일시정지나 점수 조정을 할 수 있어요.\n\n자동 점검 36개와 코드 문법 검사를 통과했어요. 브라우저 화면과 실제 플레이는 이 환경에서 직접 확인하지 못했어요.",
+ "name": "game-codex-harness-1",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "우리 지역의 공공 기관.html",
+ "all_files": [
+  "우리 지역의 공공 기관.html"
+ ],
+ "opens": true
+}

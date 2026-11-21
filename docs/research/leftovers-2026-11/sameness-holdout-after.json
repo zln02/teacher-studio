@@ -1,0 +1,43 @@
+{
+ "different_requests": 0.439,
+ "same_request": 0.569,
+ "per_seed": {
+  "1": 0.379,
+  "2": 0.444,
+  "3": 0.493
+ },
+ "per_spec": {
+  "m1-fractions": 0.667,
+  "m2-weather": 0.695,
+  "m3-ox-safety": 0.447,
+  "m4-escape-math": 0.694,
+  "m5-english": 0.535,
+  "m6-civics": 0.379
+ },
+ "layouts": {
+  "m1-fractions@1": "stair",
+  "m1-fractions@2": "right",
+  "m1-fractions@3": "right",
+  "m2-weather@1": "stack",
+  "m2-weather@2": "split",
+  "m2-weather@3": "split",
+  "m3-ox-safety@1": "rail",
+  "m3-ox-safety@2": "right",
+  "m3-ox-safety@3": "stack",
+  "m4-escape-math@1": "left",
+  "m4-escape-math@2": "right",
+  "m4-escape-math@3": "right",
+  "m5-english@1": "left",
+  "m5-english@2": "left",
+  "m5-english@3": "stack",
+  "m6-civics@1": "news",
+  "m6-civics@2": "column",
+  "m6-civics@3": "right"
+ },
+ "specs": 6,
+ "seeds": [
+  1,
+  2,
+  3
+ ]
+}

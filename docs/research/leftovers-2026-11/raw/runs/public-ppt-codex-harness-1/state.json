@@ -1,0 +1,40 @@
+{
+ "secs": 454,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 6532,
+ "tok": {
+  "input": 940177,
+  "cached": 888064,
+  "output": 6532,
+  "reasoning": 844
+ },
+ "turns": 14,
+ "failed_cmds": 3,
+ "is_error": false,
+ "errors": [],
+ "last": "[2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx](<C:/Users/User/Downloads/xv-eval-work/leftovers/public-ppt-codex-harness-1/work/2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx>)를 현재 폴더에 저장했습니다. 운영 실적, 잔반량 변화, 학생 설문, 예산 집행, 후속 계획을 **편집 가능한 PowerPoint 11장**에 담았습니다.\n\n학교 원자료가 없어 운영 내역과 수치는 **예시**로 작성했고 표지에 표시했습니다. 제출 전 학교명·담당 부서·기준일, 운영 대상·기간·목표·활동 실적, 월별 급식 식수·잔반량·감축률, 설문 결과, 예산, 후속 일정을 실제 학교 자료로 바꿔 주세요.\n\n수치 계산과 파일 구조를 검증하고 밑그림으로 배치를 확인했습니다. 실제 PowerPoint 화면은 직접 열어 확인하지 못했습니다. 자동 승인 정책이 임시 파일 정리를 차단해 `.ppt-build` 폴더가 남아 있습니다.",
+ "name": "public-ppt-codex-harness-1",
+ "task": "public-ppt",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx",
+ "all_files": [
+  ".ppt-build\\deck.json",
+  ".ppt-build\\review\\report-sketch-01.png",
+  ".ppt-build\\review\\report-sketch-02.png",
+  ".ppt-build\\review\\report-sketch-03.png",
+  ".ppt-build\\review\\report-sketch-04.png",
+  ".ppt-build\\review\\report-sketch-05.png",
+  ".ppt-build\\review\\report-sketch-06.png",
+  ".ppt-build\\review\\report-sketch-07.png",
+  ".ppt-build\\review\\report-sketch-08.png",
+  ".ppt-build\\review\\report-sketch-09.png",
+  ".ppt-build\\review\\report-sketch-10.png",
+  ".ppt-build\\review\\report-sketch-11.png",
+  ".ppt-build\\review\\report-sketch-sheet.png",
+  "2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx"
+ ],
+ "opens": true
+}
