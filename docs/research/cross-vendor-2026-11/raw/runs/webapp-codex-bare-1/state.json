@@ -1,0 +1,27 @@
+{
+ "secs": 730,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 32067,
+ "tok": {
+  "input": 1136802,
+  "cached": 1083392,
+  "output": 32067,
+  "reasoning": 2061
+ },
+ "turns": 22,
+ "failed_cmds": 8,
+ "is_error": false,
+ "errors": [],
+ "last": "중학교 2학년 수학 **경우의 수 수업 도우미**를 현재 폴더에 만들었습니다. [index.html](C:/Users/User/Downloads/xv-eval-work/webapp-codex-bare-1/work/index.html)을 더블클릭하면 설치나 인터넷 연결 없이 브라우저에서 열립니다.\n\n- **곱의 법칙**은 상의와 하의를 조합하며 익혀요.\n- **합의 법칙**은 버스나 지하철 노선을 하나씩 고르며 익혀요.\n- **순서가 있는 경우**는 회장과 부회장의 역할을 바꿔 보며 비교해요.\n\n각 활동에는 기록판과 힌트가 있고, 마지막에는 **3문제 퀴즈와 풀이**가 나옵니다.\n\n활동 기록, 중복 처리, 퀴즈 채점, 완료 상태 저장 로직을 테스트했습니다. 실행 환경 제한으로 실제 브라우저 화면은 확인하지 못했습니다.",
+ "name": "webapp-codex-bare-1",
+ "task": "webapp",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 1,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

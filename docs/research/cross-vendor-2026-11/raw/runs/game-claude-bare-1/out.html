@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소화 기관 탐험대 - 우리 몸의 소화 기관 복습 게임</title>
+<style>
+*{box-sizing:border-box}
+:root{--pink:#ff8fab;--peach:#ffd6a5;--mint:#b8f0d0;--sky:#bde0fe;--ink:#4a3b52;--card:#fff;--ok:#2fb36b;--no:#e5484d}
+html,body{margin:0;min-height:100%}
+body{font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink);background:linear-gradient(160deg,#fff1e6,#e2f0ff 60%,#e6fbef);min-height:100vh}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{max-width:860px;margin:0 auto;padding:10px 12px 30px}
+#hud{display:none;align-items:center;gap:8px;flex-wrap:wrap;background:#fff;border-radius:18px;padding:8px 12px;box-shadow:0 3px 0 #f1c9d4;margin-bottom:10px;font-weight:700}
+#hud .sp{flex:1}
+.pill{background:#fff4f7;border-radius:999px;padding:4px 12px;white-space:nowrap}
+#hearts{letter-spacing:2px}
+#muteBtn{border:0;background:var(--sky);border-radius:999px;padding:6px 12px;font-weight:700}
+.screen{display:none;animation:pop .3s}
+.screen.on{display:block}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.panel{background:var(--card);border-radius:24px;padding:18px;box-shadow:0 5px 0 #f1c9d4;text-align:center}
+h1{margin:6px 0;font-size:clamp(26px,6vw,40px);color:#e0567f}
+h2{margin:4px 0 10px;font-size:clamp(18px,4.5vw,24px)}
+.big{border:0;background:var(--pink);color:#fff;font-weight:800;font-size:clamp(18px,4vw,22px);padding:12px 30px;border-radius:999px;box-shadow:0 5px 0 #d9607f;margin-top:12px}
+.big:active{transform:translateY(3px);box-shadow:0 2px 0 #d9607f}
+.big:focus-visible,.card:focus-visible,.choice:focus-visible,.organ:focus-visible{outline:4px solid #5b8def;outline-offset:2px}
+.mascot{font-size:64px}
+.menu{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0;padding:0;list-style:none}
+.menu li{background:var(--mint);border-radius:14px;padding:8px 12px;font-weight:700}
+.small{font-size:14px;opacity:.8}
+/* game1 */
+#slots{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin:12px 0}
+.slot{min-height:64px;border:3px dashed #e3b6c4;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;background:#fff8fa;position:relative;font-size:clamp(12px,3.2vw,18px)}
+.slot small{position:absolute;top:2px;left:6px;opacity:.5}
+.slot.full{border-style:solid;border-color:var(--ok);background:#e8fbf0}
+.slot.over{background:#fff0b8}
+#pool{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0}
+.card{border:0;background:var(--peach);border-radius:16px;padding:12px 16px;font-weight:800;font-size:clamp(15px,3.8vw,20px);box-shadow:0 4px 0 #e2b17c;cursor:grab}
+.card[disabled]{display:none}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.fb{min-height:48px;margin:8px 0;padding:10px 12px;border-radius:14px;background:#f6f1ff;font-weight:600;text-align:left;line-height:1.5}
+.fb.ok{background:#e0f8ea}.fb.no{background:#ffe5e5}
+.hidden{display:none!important}
+/* game2 */
+#g2wrap{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;justify-content:center}
+#body{width:min(100%,290px);height:auto;background:#f4fbff;border-radius:20px}
+#g2side{flex:1;min-width:250px}
+#g2q{background:#fff6dd;border-radius:16px;padding:12px;font-weight:700;line-height:1.5;margin-bottom:8px;text-align:left}
+.organ path,.organ ellipse,.organ circle,.organ rect{stroke:#7a4b5e;stroke-width:2.5;transition:filter .2s}
+.organ.clickable{cursor:pointer}
+.organ.clickable:hover,.organ.clickable:focus{filter:brightness(1.12) drop-shadow(0 0 5px #fff);outline:none}
+.organ.pulse{animation:pulse .8s infinite}
+.organ.right{filter:drop-shadow(0 0 6px #2fb36b)}
+.organ.wrong{filter:drop-shadow(0 0 6px #e5484d)}
+@keyframes pulse{50%{opacity:.45}}
+.olabel{font-size:13px;font-weight:800;fill:#4a3b52;paint-order:stroke;stroke:#fff;stroke-width:3px;display:none}
+.olabel.show{display:block}
+.choices{display:grid;gap:8px;grid-template-columns:1fr}
+.choice{border:3px solid #cfe3ff;background:#fff;border-radius:14px;padding:10px 12px;font-weight:700;text-align:left;font-size:clamp(14px,3.6vw,17px)}
+.choice:hover:not([disabled]){background:#eef6ff}
+.choice.right{background:#c9f4da;border-color:var(--ok)}
+.choice.wrong{background:#ffd9d9;border-color:var(--no)}
+.choices.ox{grid-template-columns:1fr 1fr}
+.choices.ox .choice{text-align:center;font-size:44px;font-weight:900;padding:14px}
+#g3q{font-size:clamp(17px,4.4vw,22px);font-weight:800;margin:10px 0 14px;line-height:1.5}
+.tag{display:inline-block;background:var(--sky);border-radius:999px;padding:2px 12px;font-size:14px}
+.stars{font-size:clamp(40px,12vw,70px);letter-spacing:6px}
+.stars span{display:inline-block;opacity:.25;filter:grayscale(1)}
+.stars span.on{opacity:1;filter:none;animation:pop .6s both}
+.stat{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+#modal{position:fixed;inset:0;background:rgba(74,59,82,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:10}
+#modal.on{display:flex}
+#modal .panel{max-width:460px;width:100%}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="hud">
+    <span class="pill" id="hStage">1/3</span>
+    <span class="pill">점수 <b id="hScore">0</b></span>
+    <span class="pill">콤보 <b id="hCombo">0</b></span>
+    <span class="pill" id="hearts" aria-label="목숨"></span>
+    <span class="sp"></span>
+    <button id="muteBtn" aria-label="소리 켜기/끄기">🔊 소리 켬</button>
+  </div>
+
+  <section id="start" class="screen on">
+    <div class="panel">
+      <div class="mascot">🍙😋</div>
+      <h1>소화 기관 탐험대</h1>
+      <p>음식이 몸속을 여행하는 길을 따라가며 소화 기관을 복습해요!</p>
+      <ul class="menu">
+        <li>1. 음식 여행 순서</li><li>2. 기관 위치·역할 짝짓기</li><li>3. OX·4지선다 퀴즈</li>
+      </ul>
+      <p class="small">❤️ 목숨은 5개! 틀리면 하나씩 줄어들고, 연속으로 맞히면 콤보 보너스 점수를 받아요.<br>마우스·터치·키보드(Tab, Enter, 숫자키, O/X)로 즐길 수 있어요.</p>
+      <button class="big" id="startBtn">게임 시작!</button>
+    </div>
+  </section>
+
+  <section id="g1" class="screen">
+    <div class="panel">
+      <h2>🍽️ 1단계: 음식이 지나가는 길</h2>
+      <p>카드를 눌러 순서대로 놓거나, 알맞은 칸으로 끌어다 놓으세요. <br><span class="small">함정 카드도 있어요!</span></p>
+      <div id="slots"></div>
+      <div id="pool"></div>
+      <div class="fb" id="fb1" aria-live="polite">입에서 출발! 첫 번째 칸에 들어갈 기관은?</div>
+      <button class="big hidden" id="next1">다음 게임으로 ▶</button>
+    </div>
+  </section>
+
+  <section id="g2" class="screen">
+    <div class="panel">
+      <h2>🔎 2단계: 기관 위치와 역할 짝짓기</h2>
+      <div id="g2wrap">
+        <svg id="body" viewBox="0 0 300 430" role="img" aria-label="소화 기관이 표시된 몸 그림">
+          <ellipse cx="150" cy="215" rx="108" ry="205" fill="#ffe9dc" stroke="#d9a58c" stroke-width="3" opacity=".6"/>
+          <circle cx="150" cy="48" r="38" fill="#ffe0cc" stroke="#d9a58c" stroke-width="3"/>
+          <rect x="132" y="84" width="36" height="24" fill="#ffe0cc" opacity=".0"/>
+          <g class="organ" data-o="liver" tabindex="-1" role="button" aria-label="간"><path d="M78 160 Q80 140 130 148 L162 152 Q168 185 140 196 Q100 205 82 185Z" fill="#c0674f"/><text class="olabel" x="88" y="176">간</text></g>
+          <g class="organ" data-o="stomach" tabindex="-1" role="button" aria-label="위"><path d="M158 148 Q205 140 212 178 Q214 222 178 226 Q152 226 160 200 Q166 185 156 170Z" fill="#f4a0a0"/><text class="olabel" x="178" y="190">위</text></g>
+          <g class="organ" data-o="pancreas" tabindex="-1" role="button" aria-label="이자"><path d="M128 232 Q165 218 205 230 Q208 242 180 244 Q150 246 128 240Z" fill="#f6d97a"/><text class="olabel" x="205" y="224" >이자</text></g>
+          <g class="organ" data-o="gallbladder" tabindex="-1" role="button" aria-label="쓸개"><ellipse cx="132" cy="206" rx="9" ry="13" fill="#5fbf7a"/><text class="olabel" x="60" y="214">쓸개</text></g>
+          <g class="organ" data-o="largeint" tabindex="-1" role="button" aria-label="큰창자"><path d="M105 360 L105 252 L195 252 L195 360 L165 380 L150 380" fill="none" stroke="#c48a5a" stroke-width="16" stroke-linejoin="round" stroke-linecap="round" style="stroke:#c48a5a"/><text class="olabel" x="206" y="300">큰창자</text></g>
+          <g class="organ" data-o="smallint" tabindex="-1" role="button" aria-label="작은창자"><path d="M125 270 H175 Q180 280 175 288 H125 Q120 298 125 306 H175 Q180 316 175 324 H125 Q120 334 130 340 H170" fill="none" stroke="#f0a3c8" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" style="stroke:#f0a3c8"/><text class="olabel" x="116" y="400" >작은창자</text></g>
+          <g class="organ" data-o="esophagus" tabindex="-1" role="button" aria-label="식도"><line x1="150" y1="78" x2="150" y2="150" stroke="transparent" stroke-width="26" style="stroke:transparent"/><path d="M150 78 L150 140 Q152 150 160 154" fill="none" stroke="#e58a6b" stroke-width="9" stroke-linecap="round" style="stroke:#e58a6b"/><text class="olabel" x="160" y="120">식도</text></g>
+          <g class="organ" data-o="mouth" tabindex="-1" role="button" aria-label="입"><ellipse cx="150" cy="62" rx="17" ry="9" fill="#ff6f8e"/><text class="olabel" x="192" y="66">입</text></g>
+          <g class="organ" data-o="anus" tabindex="-1" role="button" aria-label="항문"><circle cx="150" cy="398" r="9" fill="#8d5a3b"/><text class="olabel" x="165" y="414">항문</text></g>
+        </svg>
+        <div id="g2side">
+          <div id="g2q"></div>
+          <div class="choices" id="g2choices"></div>
+          <div class="fb" id="fb2" aria-live="polite"></div>
+          <button class="big hidden" id="next2">다음 ▶</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="g3" class="screen">
+    <div class="panel">
+      <h2>🧠 3단계: 소화 퀴즈</h2>
+      <span class="tag" id="g3n"></span>
+      <div id="g3q"></div>
+      <div class="choices" id="g3c"></div>
+      <div class="fb hidden" id="fb3" aria-live="polite"></div>
+      <button class="big hidden" id="next3">다음 ▶</button>
+      <p class="small">키보드: 1~4 번호키, O / X 키, Enter</p>
+    </div>
+  </section>
+
+  <section id="result" class="screen">
+    <div class="panel">
+      <div class="mascot" id="rFace">🎉</div>
+      <h1 id="rTitle">탐험 완료!</h1>
+      <div class="stars" id="rStars"></div>
+      <h2>점수 <span id="rScore">0</span>점</h2>
+      <div class="stat"><span class="pill" id="rAcc"></span><span class="pill" id="rCombo"></span><span class="pill" id="rHeart"></span></div>
+      <p id="rMsg"></p>
+      <button class="big" id="againBtn">다시 하기 🔁</button>
+    </div>
+  </section>
+</div>
+
+<div id="modal" role="dialog" aria-modal="true"><div class="panel"><h2 id="mTitle"></h2><p id="mText"></p><button class="big" id="mBtn">시작!</button></div></div>
+
+<script>
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var $$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s))};
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+
+/* ---------- 소리 ---------- */
+var AC=null,muted=false;
+function tone(f,d,type,when,v){
+  if(muted)return;
+  try{
+    AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();
+    var o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+(when||0);
+    o.type=type||"sine";o.frequency.value=f;
+    g.gain.setValueAtTime(v||0.15,s);g.gain.exponentialRampToValueAtTime(0.001,s+d);
+    o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+d);
+  }catch(e){}
+}
+function sfxOk(){tone(660,.12,"sine",0);tone(880,.18,"sine",.1)}
+function sfxNo(){tone(220,.2,"sawtooth",0,.1);tone(165,.25,"sawtooth",.12,.1)}
+function sfxClick(){tone(520,.06,"square",0,.06)}
+function sfxWin(){[523,659,784,1047].forEach(function(f,i){tone(f,.25,"triangle",i*.12)})}
+function sfxLose(){[392,330,262].forEach(function(f,i){tone(f,.3,"triangle",i*.18)})}
+$("#muteBtn").onclick=function(){muted=!muted;this.textContent=muted?"🔇 소리 끔":"🔊 소리 켬";if(!muted)sfxClick()};
+
+/* ---------- 상태 ---------- */
+var S={score:0,combo:0,maxCombo:0,hearts:5,right:0,tries:0,stage:0,over:false};
+function show(id){
+  $$(".screen").forEach(function(e){e.classList.toggle("on",e.id===id)});
+  $("#hud").style.display=(id==="start"||id==="result")?"none":"flex";
+  window.scrollTo(0,0);
+}
+function hud(){
+  $("#hScore").textContent=S.score;$("#hCombo").textContent=S.combo;
+  $("#hStage").textContent=S.stage+" / 3 단계";
+  var h="";for(var i=0;i<5;i++)h+=i<S.hearts?"❤️":"🤍";
+  $("#hearts").textContent=h;
+}
+function good(){
+  S.right++;S.tries++;S.combo++;if(S.combo>S.maxCombo)S.maxCombo=S.combo;
+  S.score+=100+Math.min(S.combo-1,5)*20;sfxOk();hud();
+}
+function bad(){
+  S.tries++;S.combo=0;S.hearts--;sfxNo();hud();
+  if(S.hearts<=0){S.over=true;setTimeout(function(){finish(false)},1600);return true}
+  return false;
+}
+function setFb(el,cls,html){el.className="fb "+cls;el.innerHTML=html;el.classList.remove("hidden")}
+function modal(title,text,btn,cb){
+  $("#mTitle").textContent=title;$("#mText").innerHTML=text;$("#mBtn").textContent=btn||"시작!";
+  $("#modal").classList.add("on");
+  $("#mBtn").onclick=function(){$("#modal").classList.remove("on");sfxClick();cb()};
+  setTimeout(function(){$("#mBtn").focus()},30);
+}
+function reveal(btn){btn.classList.remove("hidden");setTimeout(function(){btn.focus()},30)}
+
+/* ---------- 흐름 ---------- */
+function startGame(){
+  S={score:0,combo:0,maxCombo:0,hearts:5,right:0,tries:0,stage:1,over:false};
+  hud();show("g1");
+  modal("1단계 · 음식 여행 순서","음식이 몸속을 지나가는 순서대로 카드를 놓아요.<br>카드를 누르면 빈 칸에 차례로 들어가고, 끌어서 원하는 칸에 놓을 수도 있어요.","출발!",initG1);
+}
+$("#startBtn").onclick=function(){sfxClick();startGame()};
+$("#againBtn").onclick=function(){sfxClick();show("start")};
+$("#next1").onclick=function(){sfxClick();S.stage=2;hud();show("g2");
+  modal("2단계 · 기관 짝짓기","몸 그림에서 기관을 찾아 누르거나, 기관의 역할을 고르는 문제가 번갈아 나와요.<br>(기관은 Tab 키로 이동, Enter로 선택)","좋아요!",initG2)};
+$("#next2").onclick=function(){sfxClick();S.stage=3;hud();show("g3");
+  modal("3단계 · 소화 퀴즈","OX와 4지선다 퀴즈 10문제! 정답이면 해설을 볼 수 있어요.","도전!",initG3)};
+
+/* ---------- 게임1 ---------- */
+var PATH=["입","식도","위","작은창자","큰창자","항문"];
+var TRAPS={"간":"간은 쓸개즙을 만들어 소화를 돕지만, 음식물이 직접 지나가지는 않아요.","이자":"이자는 이자액을 만들어 소화를 돕지만, 음식물이 직접 지나가지는 않아요."};
+var g1={filled:[]};
+function initG1(){
+  g1.filled=[];
+  var sl="";for(var i=0;i<6;i++)sl+='<div class="slot" data-i="'+i+'"><small>'+(i+1)+'</small><span></span></div>';
+  $("#slots").innerHTML=sl;
+  var cards=PATH.map(function(n,i){return{n:n,i:i}}).concat([{n:"간",i:-1},{n:"이자",i:-2}]);
+  var pool=$("#pool");pool.innerHTML="";
+  shuffle(cards).forEach(function(c){
+    var b=document.createElement("button");b.className="card";b.textContent=c.n;b.draggable=true;b.dataset.i=c.i;
+    b.onclick=function(){var e=firstEmpty();if(e>=0)tryPlace(b,e)};
+    b.addEventListener("dragstart",function(ev){ev.dataTransfer.setData("text/plain",String(c.i));ev.dataTransfer.effectAllowed="move";g1.drag=b});
+    pool.appendChild(b);
+  });
+  $$(".slot").forEach(function(s){
+    s.addEventListener("dragover",function(ev){ev.preventDefault();s.classList.add("over")});
+    s.addEventListener("dragleave",function(){s.classList.remove("over")});
+    s.addEventListener("drop",function(ev){ev.preventDefault();s.classList.remove("over");
+      var idx=+s.dataset.i;if(g1.filled[idx]||!g1.drag)return;tryPlace(g1.drag,idx)});
+  });
+  $("#next1").classList.add("hidden");
+  setFb($("#fb1"),"","입에서 출발! 첫 번째 칸에 들어갈 기관은?");
+}
+function firstEmpty(){for(var i=0;i<6;i++)if(!g1.filled[i])return i;return -1}
+function tryPlace(btn,slot){
+  if(S.over)return;
+  var ci=+btn.dataset.i,name=btn.textContent;
+  if(ci===slot){
+    g1.filled[slot]=true;btn.disabled=true;
+    var s=$$(".slot")[slot];s.classList.add("full");s.querySelector("span").textContent=name;
+    good();
+    var left=g1.filled.filter(Boolean).length;
+    if(left===6){
+      $$("#pool .card").forEach(function(c){c.disabled=true});
+      setFb($("#fb1"),"ok","🎉 완성! 음식물은 <b>입 → 식도 → 위 → 작은창자 → 큰창자 → 항문</b> 순서로 지나가요.<br>간·쓸개·이자는 소화를 돕는 기관이라 음식물이 직접 지나가지 않아요.");
+      sfxWin();reveal($("#next1"));
+    }else setFb($("#fb1"),"ok","딩동댕! "+name+" 칸 완성. 계속 이어가 볼까요?");
+  }else{
+    btn.classList.remove("shake");void btn.offsetWidth;btn.classList.add("shake");
+    var msg=TRAPS[name]?TRAPS[name]+" (함정 카드!)":(ci>=0?name+"은(는) 그 자리가 아니에요. 음식물이 지나가는 순서를 다시 생각해 보세요.":"");
+    var dead=bad();
+    setFb($("#fb1"),"no","❌ "+msg+(dead?"<br>목숨이 모두 없어졌어요...":""));
+  }
+}
+
+/* ---------- 게임2 ---------- */
+var ORG={
+  mouth:{n:"입",r:"이로 음식물을 잘게 부수고, 침을 섞어 녹말을 소화시켜요."},
+  esophagus:{n:"식도",r:"삼킨 음식물을 위로 운반하는 통로예요. 소화액은 나오지 않아요."},
+  stomach:{n:"위",r:"음식물을 잘게 부수고 위액으로 단백질 등을 소화시켜요."},
+  liver:{n:"간",r:"쓸개즙을 만들어요. (음식물은 지나가지 않아요)"},
+  gallbladder:{n:"쓸개",r:"간에서 만든 쓸개즙을 저장했다가 작은창자로 내보내요."},
+  pancreas:{n:"이자",r:"이자액을 만들어 작은창자로 보내요."},
+  smallint:{n:"작은창자",r:"소화된 영양소 대부분을 흡수해요."},
+  largeint:{n:"큰창자",r:"남은 물질에서 주로 수분을 흡수해요."},
+  anus:{n:"항문",r:"소화되고 남은 찌꺼기를 몸 밖으로 내보내요."}
+};
+var g2={q:[],i:0,mode:"A",done:false};
+function initG2(){
+  g2.q=shuffle(Object.keys(ORG));g2.i=0;nextQ2();
+}
+function clearOrgans(){
+  $$("#body .organ").forEach(function(o){o.classList.remove("pulse","right","wrong","clickable");o.setAttribute("tabindex","-1")});
+  $$("#body .olabel").forEach(function(l){l.classList.remove("show")});
+}
+function nextQ2(){
+  if(g2.i>=g2.q.length){sfxWin();S.stage=3;hud();show("g3");
+    modal("3단계 · 소화 퀴즈","OX와 4지선다 퀴즈 10문제! 정답이면 해설을 볼 수 있어요.","도전!",initG3);return}
+  clearOrgans();g2.done=false;
+  $("#next2").classList.add("hidden");$("#fb2").classList.add("hidden");
+  var id=g2.q[g2.i];g2.cur=id;g2.mode=(g2.i%2===0)?"A":"B";
+  var box=$("#g2choices");box.innerHTML="";
+  var head="<span class='tag'>"+(g2.i+1)+" / "+g2.q.length+"</span><br>";
+  if(g2.mode==="A"){
+    $("#g2q").innerHTML=head+"🔍 이 역할을 하는 기관을 몸 그림에서 눌러 보세요.<br><b>“"+ORG[id].r+"”</b>";
+    $$("#body .organ").forEach(function(o){o.classList.add("clickable");o.setAttribute("tabindex","0")});
+  }else{
+    $("#g2q").innerHTML=head+"💡 깜빡이는 기관은 무엇일까요? 알맞은 역할을 고르세요.";
+    $('#body .organ[data-o="'+id+'"]').classList.add("pulse");
+    var others=shuffle(Object.keys(ORG).filter(function(k){return k!==id})).slice(0,3);
+    shuffle([id].concat(others)).forEach(function(k,idx){
+      var b=document.createElement("button");b.className="choice";b.textContent=(idx+1)+". "+ORG[k].r;b.dataset.k=k;
+      b.onclick=function(){answer2(k,b)};box.appendChild(b);
+    });
+  }
+}
+$$("#body .organ").forEach(function(o){
+  var h=function(){if(g2.mode==="A"&&!g2.done&&!S.over)answer2(o.dataset.o,null)};
+  o.addEventListener("click",h);
+  o.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();h()}});
+});
+function answer2(k,btn){
+  if(g2.done||S.over)return;g2.done=true;
+  var id=g2.cur,ok=(k===id),el=$('#body .organ[data-o="'+id+'"]');
+  var lab=el.querySelector(".olabel");lab.classList.add("show");
+  el.classList.remove("pulse");
+  $$("#g2choices .choice").forEach(function(b){b.disabled=true;if(b.dataset.k===id)b.classList.add("right")});
+  var info="<b>"+ORG[id].n+"</b>: "+ORG[id].r;
+  if(ok){el.classList.add("right");good();setFb($("#fb2"),"ok","⭕ 정답! "+info)}
+  else{
+    el.classList.add("right");if(btn)btn.classList.add("wrong");
+    if(g2.mode==="A"){var w=$('#body .organ[data-o="'+k+'"]');w.classList.add("wrong");w.querySelector(".olabel").classList.add("show")}
+    var dead=bad();setFb($("#fb2"),"no","❌ 아쉬워요! 정답은 "+info+(dead?"<br>목숨이 모두 없어졌어요...":""));
+  }
+  g2.i++;
+  if(!S.over){$("#next2").textContent=g2.i>=g2.q.length?"3단계로 ▶":"다음 ▶";reveal($("#next2"))}
+}
+$("#next2").onclick=function(){sfxClick();nextQ2()};
+
+/* ---------- 게임3 ---------- */
+var QS=[
+ {t:"ox",q:"침 속의 아밀레이스는 녹말을 분해한다.",a:true,e:"침 속 소화 효소인 아밀레이스가 녹말을 분해해요. 밥을 오래 씹으면 단맛이 나는 까닭이에요."},
+ {t:"mc",q:"쓸개즙을 만드는 기관은 어디일까요?",c:["간","쓸개","이자","위"],a:0,e:"쓸개즙은 간에서 만들어져 쓸개에 저장되었다가 작은창자로 나와요."},
+ {t:"ox",q:"쓸개즙에는 소화 효소가 들어 있다.",a:false,e:"쓸개즙에는 소화 효소가 없어요. 하지만 지방이 잘 소화되도록 도와줘요."},
+ {t:"mc",q:"소화된 영양소를 대부분 흡수하는 기관은?",c:["위","작은창자","큰창자","식도"],a:1,e:"영양소는 대부분 작은창자의 벽(융털)에서 흡수돼요."},
+ {t:"ox",q:"먹은 음식물은 간을 직접 지나간다.",a:false,e:"간·쓸개·이자는 소화를 돕는 기관일 뿐 음식물이 직접 지나가지 않아요."},
+ {t:"mc",q:"위액이 주로 소화시키는 영양소는?",c:["단백질","비타민","물","무기질"],a:0,e:"위액 속 펩신 등이 단백질을 분해해요."},
+ {t:"ox",q:"큰창자에서는 주로 수분이 흡수된다.",a:true,e:"큰창자는 남은 찌꺼기에서 주로 수분을 흡수하고, 나머지는 항문으로 보내요."},
+ {t:"mc",q:"음식물이 지나가는 순서로 알맞은 것은?",c:["입 → 위 → 식도 → 작은창자 → 큰창자 → 항문","입 → 식도 → 위 → 작은창자 → 큰창자 → 항문","입 → 식도 → 작은창자 → 위 → 큰창자 → 항문","입 → 식도 → 위 → 큰창자 → 작은창자 → 항문"],a:1,e:"입 → 식도 → 위 → 작은창자 → 큰창자 → 항문 순서예요."},
+ {t:"mc",q:"입에서 녹말을 분해하는 소화액은?",c:["위액","쓸개즙","침","물"],a:2,e:"침에 들어 있는 아밀레이스가 녹말을 분해해요."},
+ {t:"ox",q:"소화는 음식물을 우리 몸이 흡수할 수 있는 작은 크기의 영양소로 분해하는 과정이다.",a:true,e:"소화는 음식물을 잘게 쪼개어 흡수할 수 있는 작은 영양소로 만드는 과정이에요."},
+ {t:"mc",q:"이자에서 만들어 작은창자로 내보내는 소화액은?",c:["침","위액","쓸개즙","이자액"],a:3,e:"이자는 여러 소화 효소가 들어 있는 이자액을 만들어요."},
+ {t:"ox",q:"소화된 영양소는 대부분 큰창자에서 흡수된다.",a:false,e:"영양소는 대부분 작은창자에서 흡수되고, 큰창자에서는 주로 수분이 흡수돼요."},
+ {t:"ox",q:"식도에서는 소화액이 나와 음식물을 소화시킨다.",a:false,e:"식도는 음식물이 위로 이동하는 통로예요. 소화액이 나오지 않아요."},
+ {t:"mc",q:"소화되고 남은 찌꺼기가 몸 밖으로 나가는 곳은?",c:["식도","쓸개","항문","이자"],a:2,e:"찌꺼기는 큰창자를 거쳐 항문으로 나가요."}
+];
+var g3={q:[],i:0,done:false,cur:null};
+function initG3(){g3.q=shuffle(QS).slice(0,10);g3.i=0;showQ3()}
+function showQ3(){
+  var q=g3.q[g3.i];g3.cur=q;g3.done=false;
+  $("#g3n").textContent=(q.t==="ox"?"OX 퀴즈":"4지선다")+" · "+(g3.i+1)+" / "+g3.q.length;
+  $("#g3q").textContent=q.q;
+  var box=$("#g3c");box.innerHTML="";box.className="choices"+(q.t==="ox"?" ox":"");
+  $("#fb3").classList.add("hidden");$("#next3").classList.add("hidden");
+  var opts;
+  if(q.t==="ox")opts=[{l:"O",ok:q.a===true},{l:"X",ok:q.a===false}];
+  else opts=shuffle(q.c.map(function(c,i){return{l:c,ok:i===q.a}})).map(function(o,i){o.l=(i+1)+". "+o.l;return o});
+  g3.opts=opts;
+  opts.forEach(function(o,i){
+    var b=document.createElement("button");b.className="choice";b.textContent=o.l;
+    b.setAttribute("aria-label",q.t==="ox"?(i===0?"O 맞다":"X 틀리다"):o.l);
+    b.onclick=function(){pick3(i)};box.appendChild(b);
+  });
+}
+function pick3(i){
+  if(g3.done||S.over)return;g3.done=true;
+  var q=g3.cur,btns=$$("#g3c .choice"),ok=g3.opts[i].ok;
+  btns.forEach(function(b,k){b.disabled=true;if(g3.opts[k].ok)b.classList.add("right")});
+  if(ok){good();setFb($("#fb3"),"ok","⭕ 정답! "+q.e)}
+  else{btns[i].classList.add("wrong");var dead=bad();setFb($("#fb3"),"no","❌ 아쉬워요! "+q.e+(dead?"<br>목숨이 모두 없어졌어요...":""))}
+  g3.i++;
+  if(!S.over){$("#next3").textContent=g3.i>=g3.q.length?"결과 보기 🏆":"다음 ▶";reveal($("#next3"))}
+}
+$("#next3").onclick=function(){sfxClick();if(g3.i>=g3.q.length)finish(true);else showQ3()};
+document.addEventListener("keydown",function(e){
+  if(!$("#g3").classList.contains("on")||g3.done||$("#modal").classList.contains("on"))return;
+  var k=e.key.toLowerCase(),i=-1;
+  if(g3.cur&&g3.cur.t==="ox"){if(k==="o"||k==="1")i=0;else if(k==="x"||k==="2")i=1}
+  else if(k>="1"&&k<="4")i=+k-1;
+  if(i>=0&&i<g3.opts.length)pick3(i);
+});
+
+/* ---------- 결과 ---------- */
+function finish(cleared){
+  $("#modal").classList.remove("on");
+  show("result");
+  var acc=S.tries?S.right/S.tries:0,stars=0;
+  if(cleared)stars=acc>=0.9?3:acc>=0.7?2:1;
+  else stars=acc>=0.6?1:0;
+  $("#rFace").textContent=cleared?(stars===3?"🏆":"🎉"):"😵";
+  $("#rTitle").textContent=cleared?"탐험 완료!":"앗, 목숨이 모두 없어졌어요";
+  var st="";for(var i=0;i<3;i++)st+='<span'+(i<stars?' class="on" style="animation-delay:'+(i*.25)+'s"':'')+'>⭐</span>';
+  $("#rStars").innerHTML=st;
+  $("#rScore").textContent=S.score;
+  $("#rAcc").textContent="정답률 "+Math.round(acc*100)+"%";
+  $("#rCombo").textContent="최고 콤보 "+S.maxCombo;
+  $("#rHeart").textContent="남은 목숨 "+Math.max(S.hearts,0);
+  $("#rMsg").textContent=!cleared?"괜찮아요! 다시 도전해서 소화 기관을 완벽하게 익혀 봐요."
+    :stars===3?"대단해요! 소화 기관 박사님이에요!":stars===2?"잘했어요! 조금만 더 하면 박사님!":"끝까지 해냈어요! 다시 하면 더 잘할 수 있어요.";
+  if(cleared)sfxWin();else sfxLose();
+  setTimeout(function(){$("#againBtn").focus()},50);
+}
+hud();
+</script>
+</body>
+</html>

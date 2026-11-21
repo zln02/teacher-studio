@@ -1,0 +1,10 @@
+{
+ "pngs": [
+  "html-01-start.png",
+  "html-90-bottom.png"
+ ],
+ "notes": [
+  "click: Locator.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for locator(\"button:visible, [role=but",
+  "js_errors=[]"
+ ]
+}

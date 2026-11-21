@@ -1,0 +1,27 @@
+{
+ "secs": 326,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 14561,
+ "tok": {
+  "input": 266426,
+  "cached": 246784,
+  "output": 14561,
+  "reasoning": 687
+ },
+ "turns": 9,
+ "failed_cmds": 3,
+ "is_error": false,
+ "errors": [],
+ "last": "중학교 2학년 수학 **경우의 수 실험실**을 만들었습니다. 지금 폴더에 저장한 [index.html](C:/Users/User/Downloads/xv-eval-work/webapp-codex-bare-2/work/index.html)을 더블클릭하면 브라우저에서 열립니다. 설치나 인터넷 연결 없이 사용할 수 있습니다.\n\n- **조합 실험**에서 상의와 하의를 하나씩 골라 9가지 옷차림을 찾아봅니다. 이미 만든 조합은 한 번만 셉니다.\n- **원리 탐구**에서 선택지의 수를 바꾸며 합의 법칙과 곱의 법칙이 각각 언제 쓰이는지 확인합니다.\n- **실력 확인**에서 힌트와 해설이 있는 5문제를 풀고 점수를 확인합니다. 완료한 학습 단계는 같은 브라우저에 저장됩니다.\n\n조합 계산, 중복 처리, 채점, 진도 저장은 자동 검사로 확인했습니다. 실제 브라우저에서 화면 배치는 확인하지 못했습니다.",
+ "name": "webapp-codex-bare-2",
+ "task": "webapp",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

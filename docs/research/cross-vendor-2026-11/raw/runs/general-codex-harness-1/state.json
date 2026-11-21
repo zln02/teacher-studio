@@ -1,0 +1,28 @@
+{
+ "secs": 349,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 14812,
+ "tok": {
+  "input": 489355,
+  "cached": 444544,
+  "output": 14812,
+  "reasoning": 1099
+ },
+ "turns": 17,
+ "failed_cmds": 2,
+ "is_error": false,
+ "errors": [],
+ "last": "[배드민턴 월례 대회 대진표·점수판](<C:/Users/User/Downloads/xv-eval-work/general-codex-harness-1/work/배드민턴 월례 대회.html>)을 현재 폴더에 저장했습니다. 파일을 더블클릭하면 인터넷 없이 열립니다.\n\n- **대진표**에서 참가 팀을 한 줄에 하나씩 입력하고 **대진표 만들기**를 누르세요. 기본은 8팀 무작위 추첨, 21점 단판이며, 2~16팀과 15점제·3게임 중 2선승으로 바꿀 수 있습니다.\n- **점수판**은 대진표에서 경기를 누르면 열립니다. `+1점`으로 점수를 올리고, 잘못 누르면 **직전 득점 취소**를 쓰세요. **결과 확정**을 누르면 승자가 다음 라운드에 올라갑니다. 코트에서 띄울 때는 **전체화면**을 누르세요.\n- 경기 기록은 열린 탭에 유지됩니다. 대회가 끝나면 탭을 닫기 전에 **인쇄 · PDF**로 결과를 보관하세요.\n\n2~16팀 대진, 부전승, 듀스, 득점 취소, 우승 표시를 확인했습니다. 실제 브라우저에서 화면 배치와 전체화면 동작은 확인하지 못했습니다.",
+ "name": "general-codex-harness-1",
+ "task": "general",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "배드민턴 월례 대회.html",
+ "all_files": [
+  "배드민턴 월례 대회.html"
+ ],
+ "opens": true,
+ "general_fixed": true
+}

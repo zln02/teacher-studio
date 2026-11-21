@@ -1,0 +1,10 @@
+{
+ "check_game": {
+  "rc": 1,
+  "out": "PASS file size 27 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nPASS no optional chaining ?. (old Chrome)\nPASS no nullish ?? (old Chrome)\nPASS no replaceAll (old Chrome)\nPASS no .at() (old Chrome)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nPASS no alert/prompt/confirm blocks the game\nPASS no aspect-ratio (old Chrome)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nWARN HTML5 drag API does not work on tablets; use NG.drag\nPASS GAME.items has 0 entries\nPASS ES2017 syntax: 1 inline script(s)\nSKIP browser opening check could not finish: Page.wait_for_function: Timeout 5000ms exceeded.\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\nWARN 밤티 검사: 빛 번짐(네온) 효과가 3군데 있어요. 색이 번지는 그림자(0 0 Npx 색)는 빼고, 아래로 떨어지는 어두운 그림자 하나만 써 주세요.\nWARN 밤티 검사: 형광색이 있어요(#ff8fab). 채도를 낮춘 색으로 바꿔 주세요 (design.py 팔레트는 모두 형광이 아니에요).\nWARN 전문 디자이너 기준 3/5: 강조색은 주 색 + 보조 색, 형광 없음 / 빛 번짐·속 빈 글자·여러 색 그라데이션 없음\n\nRESULT: FAIL (6 fail, 1 unchecked, 4 warn)\n"
+ },
+ "check_webapp": {
+  "rc": 1,
+  "out": "PASS no outside address: works offline\nPASS script syntax ES2017 (no ?. / ??)\nPASS no network or storage API\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 26 KB\nPASS example-likeness: not a copy of a shipped example (2 compared)\nPASS ES2017 syntax: 1 inline script(s)\nFAIL [1600x900] low text contrast: 2.1:1 게임 시작!\nFAIL [projector] low text contrast: 2.1:1 게임 시작!\nFAIL no reset button (#wa-reset)\nPASS clicked 0 part(s)\nFAIL [phone 390] low text contrast: 2.1:1 게임 시작!\nPASS no JS errors\nPASS no outside requests while running\ncheck: FAIL (4 fail, 0 unchecked)\n"
+ }
+}

@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "hwpx-notice",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-bare",
+  "B": "codex-harness",
+  "C": "claude-bare",
+  "D": "claude-harness"
+ },
+ "result": {
+  "A": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "The layout is tidy, with an overview table, a supplies list, safety notes and a tear-off reply form. However, the date, venue, school name, issue date and deadline are all left as bracketed placeholders, and the empty boxes at the top make it feel unfinished."
+  },
+  "B": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "The overview table and the swimming-pool rules are neat. But the date, venue and cost are only marked as needing confirmation, there is no reply form, and the working note \"교사 초안·배포 전 확인\" is still printed on the page, so it can't be sent as is."
+  },
+  "C": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 5,
+   "note": "It includes the school name, issue date, a schedule table for each class, supplies, detailed precautions, contact details and a reply consent form with a submission deadline, so it is very complete. The parts that need filling in are limited to the ○○ school name and the phone numbers, and the tables and section hierarchy are well organized."
+  },
+  "D": {
+   "content": 4,
+   "design": 3,
+   "readability": 4,
+   "fit": 4,
+   "note": "It has a document number, specific dates and a class schedule table with departure and return times, plus what parents should do at home and a reply form. However, the field labels in the reply form are laid out awkwardly, and the school is given only as the generic \"우리 학교장\"."
+  },
+  "ranking": [
+   "C",
+   "D",
+   "A",
+   "B"
+  ]
+ },
+ "cost": 0.2798154,
+ "secs": 18,
+ "raw": "{\"A\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"The layout is tidy, with an overview table, a supplies list, safety notes and a tear-off reply form. However, the date, venue, school name, issue date and deadline are all left as bracketed placeholders, and the empty boxes at the top make it feel unfinished.\"},\"B\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"The overview table and the swimming-pool rules are neat. But the date, venue and cost are only marked as needing confirmation, there is no reply form, and the working note \\\"교사 초안·배포 전 확인\\\" is still printed on the page, so it can't be sent as is.\"},\"C\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":5,\"note\":\"It includes the school name, issue date, a schedule table for each class, supplies, detailed precautions, contact details and a reply consent form with a submission deadline, so it is very complete. The parts that need filling in are limited to the ○○ school name and the phone numbers, and the tables and section hierarchy are well organized.\"},\"D\":{\"content\":4,\"design\":3,\"readability\":4,\"fit\":4,\"note\":\"It has a document number, specific dates and a class schedule table with departure and return times, plus what parents should do at home and a reply form. However, the field labels in the reply form are laid out awkwardly, and the school is given only as the generic \\\"우리 학교장\\\".\"},\"ranking\":[\"C\",\"D\",\"A\",\"B\"]}"
+}

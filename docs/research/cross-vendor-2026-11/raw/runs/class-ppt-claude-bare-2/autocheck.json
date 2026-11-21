@@ -1,0 +1,6 @@
+{
+ "check": {
+  "rc": 1,
+  "out": "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '【교사용 설명】'), (2, '【교사용 설명】'), (3, '【교사용 설명】'), (4, '【교사용 설명】'), (5, '【교사용 설명】'), (6, '【교사용 설명】'), (7, '【교사용 설명】'), (8, '【교사용 설명】')] ...(+2)\nFAIL text fits its box (estimate): [(4, '실사구시  實事求是', 1.65), (4, '이용후생  利用厚生', 1.65), (4, '경세치용  經世致用', 1.65)]\nPASS every shape inside the slide\nPASS no empty placeholder\nPASS text large enough to project (>= 11pt)\nPASS no empty-looking slide (visual weight)\n\nRESULT: FAIL (2 fail)\nNOT DONE: 위 FAIL을 고치고 이 점검을 다시 돌리세요. PASS가 될 때까지는 「다 됐어요」라고 하지 않아요. (모르는 값은 「우리 학교」·오늘 날짜처럼 그럴듯한 값으로 채우고 마지막에 한 줄로 알리기. 양식을 원한 경우만 --allow-blanks)\n"
+ }
+}

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배드민턴 월례 대회 대진표 · 점수판</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:#f3f6f4;color:#1c2a22}
+header{background:#1b6b45;color:#fff;padding:14px 20px}
+header h1{margin:0;font-size:22px}
+main{max-width:1100px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:10px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px #0002}
+h2{margin:0 0 10px;font-size:18px;color:#1b6b45}
+label{display:block;font-size:13px;margin:8px 0 3px;color:#456}
+input[type=text],input[type=number],select,textarea{padding:6px 8px;border:1px solid #bbb;border-radius:6px;font:inherit}
+textarea{width:100%;height:190px}
+.row{display:flex;gap:16px;flex-wrap:wrap}
+.row>div{flex:1;min-width:200px}
+button{background:#1b6b45;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer;margin:4px 4px 0 0}
+button.sub{background:#6c7a72}button.danger{background:#b3402f}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid #d5ddd8;padding:6px 8px;text-align:center;font-size:14px}
+th{background:#e4efe8}
+td.name{text-align:left;font-weight:bold}
+.sc{width:44px;text-align:center;padding:4px}
+.win{background:#dff3e5;font-weight:bold}
+.rank1{background:#fff3b0}.rank2{background:#eceff1}.rank3{background:#f3dfcf}
+.tabs button{background:#cfdcd4;color:#123}.tabs button.on{background:#1b6b45;color:#fff}
+.bracket{display:flex;gap:28px;overflow-x:auto;padding-bottom:10px}
+.round{display:flex;flex-direction:column;justify-content:space-around;min-width:230px}
+.round h3{text-align:center;margin:0 0 8px;font-size:15px}
+.m{border:1px solid #9bb;border-radius:8px;margin:8px 0;background:#fff;overflow:hidden}
+.m .t{display:flex;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid #e3e9e5;min-height:34px}
+.m .t:last-child{border:0}
+.m .t .n{flex:1;font-size:14px}
+.m .t.win{background:#dff3e5}
+.m .t .tbd{color:#999}
+.m small{display:block;background:#eef3f0;padding:2px 8px;color:#567;font-size:11px}
+.champ{font-size:20px;text-align:center;padding:10px;background:#fff3b0;border-radius:8px;margin-top:8px}
+.hide{display:none}
+.hint{font-size:12px;color:#678}
+@media print{header button,.noprint,.tabs{display:none!important}body{background:#fff}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}.sc{border:1px solid #888}}
+</style>
+</head>
+<body>
+<header><h1 id="title">🏸 배드민턴 월례 대회</h1></header>
+<main>
+
+<section class="card noprint" id="setup">
+  <h2>1. 대회 설정</h2>
+  <div class="row">
+    <div>
+      <label>대회 이름</label>
+      <input type="text" id="tname" value="동네 배드민턴 동호회 월례 대회" style="width:100%">
+      <label>경기 방식</label>
+      <select id="format">
+        <option value="rr">리그전 (모두와 한 번씩, 순위표)</option>
+        <option value="el">토너먼트 (단판 승부, 대진표)</option>
+      </select>
+      <label>세트 수</label>
+      <select id="sets">
+        <option value="1">1세트 (단판)</option>
+        <option value="3">3세트 (2선승)</option>
+      </select>
+      <label>코트 수 (리그전 코트 배정용)</label>
+      <input type="number" id="courts" value="2" min="1" max="12" style="width:80px">
+      <label><input type="checkbox" id="shuffle" checked> 참가자 순서 무작위 추첨</label>
+      <div class="hint">토너먼트에서 추첨을 끄면 입력 순서가 시드(1번이 1번 시드, 부전승 우선)입니다.</div>
+    </div>
+    <div>
+      <label>참가자 / 팀 (한 줄에 하나. 복식은 "철수·영희" 처럼 입력)</label>
+      <textarea id="players"></textarea>
+    </div>
+  </div>
+  <button onclick="generate()">대진표 만들기</button>
+  <button class="sub" onclick="fillSample()">예시 8명 채우기</button>
+</section>
+
+<section id="play" class="hide">
+  <div class="card noprint">
+    <button onclick="window.print()">🖨 인쇄</button>
+    <button class="sub" onclick="exportJson()">💾 결과 저장(JSON)</button>
+    <button class="danger" onclick="resetAll()">새 대회 시작</button>
+    <span class="hint">점수는 자동 저장됩니다. (이 브라우저에 보관)</span>
+  </div>
+  <div id="view"></div>
+</section>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const KEY='badminton_tourney_v1';
+let S=null; // 상태
+
+const SAMPLE=['김민수','이지은','박준호','최서연','정우진','한소희','오태양','윤하늘'];
+function fillSample(){ $('players').value=SAMPLE.join('\n'); }
+fillSample();
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function generate(){
+  let names=$('players').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(new Set(names).size!==names.length){alert('중복된 이름이 있습니다. 구분되게 수정해 주세요.');return;}
+  if(names.length<3){alert('최소 3명(팀) 이상 필요합니다.');return;}
+  if(names.length>64){alert('최대 64명까지 지원합니다.');return;}
+  if($('shuffle').checked) names=shuf(names);
+  S={name:$('tname').value.trim()||'배드민턴 대회',format:$('format').value,sets:+$('sets').value,
+     courts:Math.max(1,+$('courts').value||1),players:names,scores:{}};
+  if(S.format==='rr') S.sched=buildRR(names.length,S.courts); else S.seed=buildSeed(names.length);
+  save(); show();
+}
+
+// ---------- 리그전 일정 (서클 메서드) ----------
+function buildRR(n,courts){
+  const ids=[...Array(n).keys()]; if(n%2) ids.push(-1);
+  const m=ids.length, rounds=[];
+  let arr=ids.slice();
+  for(let r=0;r<m-1;r++){
+    const list=[];
+    for(let i=0;i<m/2;i++){
+      const a=arr[i],b=arr[m-1-i];
+      if(a>=0&&b>=0) list.push({a,b});
+    }
+    const rest=list.map((x,i)=>({...x,id:`${r}-${i}`,court:(i%courts)+1,slot:Math.floor(i/courts)+1}));
+    const bye=arr.find((x,i)=>x>=0&&arr[m-1-i]===-1);
+    rounds.push({matches:rest,bye:bye===undefined?null:bye});
+    arr=[arr[0],arr[m-1],...arr.slice(1,m-1)];
+  }
+  return rounds;
+}
+
+// ---------- 토너먼트 ----------
+function buildSeed(n){
+  let size=1;while(size<n)size*=2;
+  // 표준 시드 배치
+  let order=[1];
+  while(order.length<size){const l=order.length*2;order=order.flatMap(x=>[x,l+1-x]);}
+  return order.map(s=>s<=n?s-1:-1); // -1 = 부전승
+}
+
+// ---------- 점수 계산 ----------
+function res(key){ // {w:0|1|null, pa, pb, sa, sb}
+  const sc=S.scores[key]||[];
+  let sa=0,sb=0,pa=0,pb=0;
+  for(const s of sc){
+    if(!s||s[0]===''||s[1]===''||s[0]==null||s[1]==null)continue;
+    const x=+s[0],y=+s[1]; if(x===y)continue;
+    pa+=x;pb+=y; if(x>y)sa++;else sb++;
+  }
+  const need=Math.floor(S.sets/2)+1;
+  const w=sa>=need?0:sb>=need?1:null;
+  return {w,pa,pb,sa,sb};
+}
+function setScore(key,si,side,v){
+  S.scores[key]=S.scores[key]||[];
+  S.scores[key][si]=S.scores[key][si]||['',''];
+  S.scores[key][si][side]=v===''?'':Math.max(0,Math.min(99,parseInt(v)||0));
+  save();
+  const k=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.k:null;
+  render();
+  if(k){const e=document.querySelector(`[data-k="${k}"]`);if(e)e.focus();}
+}
+function scoreInputs(key){
+  const sc=S.scores[key]||[];let h='';
+  for(let i=0;i<S.sets;i++){
+    const a=sc[i]?sc[i][0]:'',b=sc[i]?sc[i][1]:'';
+    h+=`<input class="sc" type="number" min="0" max="99" value="${a}" data-k="${key}_${i}_0" onchange="setScore('${key}',${i},0,this.value)"> : `+
+       `<input class="sc" type="number" min="0" max="99" value="${b}" data-k="${key}_${i}_1" onchange="setScore('${key}',${i},1,this.value)">`+(i<S.sets-1?' &nbsp; ':'');
+  }
+  return h;
+}
+
+// ---------- 렌더 ----------
+let tab='sched';
+function show(){ $('setup').classList.add('hide'); $('play').classList.remove('hide'); render(); }
+function render(){
+  $('title').textContent='🏸 '+S.name;
+  $('view').innerHTML = S.format==='rr'?renderRR():renderEL();
+}
+function setTab(t){tab=t;render();}
+
+function standings(){
+  const T=S.players.map((n,i)=>({i,n,p:0,w:0,l:0,sw:0,sl:0,pf:0,pa:0}));
+  S.sched.forEach(r=>r.matches.forEach(m=>{
+    const x=res(m.id); if(x.w===null)return;
+    const A=T[m.a],B=T[m.b];
+    A.p++;B.p++;A.sw+=x.sa;A.sl+=x.sb;B.sw+=x.sb;B.sl+=x.sa;A.pf+=x.pa;A.pa+=x.pb;B.pf+=x.pb;B.pa+=x.pa;
+    if(x.w===0){A.w++;B.l++;}else{B.w++;A.l++;}
+  }));
+  T.forEach(t=>{t.d=t.pf-t.pa;t.sd=t.sw-t.sl;});
+  // 승수 → 세트득실 → 득실차 → 총득점 → (동률 시 공동순위)
+  const cmp=(a,b)=>b.w-a.w||b.sd-a.sd||b.d-a.d||b.pf-a.pf;
+  T.sort(cmp);
+  let r=1;T.forEach((t,i)=>{t.rank=(i>0&&cmp(T[i-1],t)===0)?T[i-1].rank:i+1;});
+  return T;
+}
+
+function renderRR(){
+  const st=standings();
+  const total=S.sched.reduce((s,r)=>s+r.matches.length,0);
+  const done=S.sched.reduce((s,r)=>s+r.matches.filter(m=>res(m.id).w!==null).length,0);
+  let h=`<div class="card tabs noprint"><button class="${tab==='sched'?'on':''}" onclick="setTab('sched')">경기 일정·점수 입력</button>
+    <button class="${tab==='rank'?'on':''}" onclick="setTab('rank')">순위표</button>
+    <button class="${tab==='both'?'on':''}" onclick="setTab('both')">전체 보기</button>
+    <span class="hint"> 진행 ${done} / ${total} 경기</span></div>`;
+  if(tab!=='rank') h+=schedHTML();
+  if(tab!=='sched') h+=rankHTML(st,done===total);
+  return h;
+}
+function schedHTML(){
+  let h='<div class="card"><h2>경기 일정 / 점수판</h2>';
+  S.sched.forEach((r,ri)=>{
+    h+=`<h3 style="margin:14px 0 6px">${ri+1}라운드${r.bye!==null?` <small class="hint">(휴식: ${esc(S.players[r.bye])})</small>`:''}</h3>
+    <table><tr><th style="width:60px">코트</th><th>선수 A</th><th>점수 (${S.sets===1?'A : B':'세트별 A : B'})</th><th>선수 B</th><th style="width:70px">결과</th></tr>`;
+    r.matches.forEach(m=>{
+      const x=res(m.id);
+      h+=`<tr><td>${m.court}코트${m.slot>1?`<br><small class="hint">${m.slot}순서</small>`:''}</td>
+      <td class="name ${x.w===0?'win':''}">${esc(S.players[m.a])}</td>
+      <td>${scoreInputs(m.id)}</td>
+      <td class="name ${x.w===1?'win':''}">${esc(S.players[m.b])}</td>
+      <td>${x.w===null?'-':(S.sets>1?`${x.sa}:${x.sb} `:'')+'승: '+esc(S.players[x.w===0?m.a:m.b])}</td></tr>`;
+    });
+    h+='</table>';
+  });
+  return h+'</div>';
+}
+function rankHTML(st,finished){
+  let h=`<div class="card"><h2>순위표 ${finished?'(최종)':'(진행 중)'}</h2>
+  <table><tr><th>순위</th><th>이름</th><th>경기</th><th>승</th><th>패</th>${S.sets>1?'<th>세트 득실</th>':''}<th>득점</th><th>실점</th><th>득실차</th></tr>`;
+  st.forEach(t=>{
+    const c=finished&&t.rank<=3?` rank${t.rank}`:'';
+    h+=`<tr class="${c}"><td>${t.p?t.rank:'-'}</td><td class="name">${esc(t.n)}</td><td>${t.p}</td><td>${t.w}</td><td>${t.l}</td>${S.sets>1?`<td>${t.sw}:${t.sl}</td>`:''}<td>${t.pf}</td><td>${t.pa}</td><td>${t.d>0?'+':''}${t.d}</td></tr>`;
+  });
+  h+=`</table><p class="hint">순위 기준: 승수 → ${S.sets>1?'세트 득실 → ':''}득실차 → 총득점. 모두 같으면 공동 순위입니다.</p>`;
+  if(finished){const w=st.filter(t=>t.rank===1);h+=`<div class="champ">🏆 우승: ${w.map(t=>esc(t.n)).join(', ')}</div>`;}
+  return h+'</div>';
+}
+
+// ----- 토너먼트 -----
+function slot(r,i,side){ // 선수 인덱스 | -1(부전승) | null(미정)
+  if(r===0) return S.seed[i*2+side];
+  return winnerOf(r-1,i*2+side);
+}
+function winnerOf(r,i){
+  const a=slot(r,i,0),b=slot(r,i,1);
+  if(a===-1&&b===-1)return -1;
+  if(b===-1)return a; if(a===-1)return b;
+  if(a===null||b===null)return null;
+  const x=res(`${r}-${i}`);
+  return x.w===null?null:(x.w===0?a:b);
+}
+function roundName(r,R){const left=R-r;return left===1?'결승':left===2?'준결승':left===3?'8강':left===4?'16강':left===5?'32강':`${r+1}라운드`;}
+function renderEL(){
+  const size=S.seed.length,R=Math.log2(size);
+  let h='<div class="card"><h2>토너먼트 대진표</h2><div class="bracket">';
+  for(let r=0;r<R;r++){
+    h+=`<div class="round"><h3>${roundName(r,R)}</h3>`;
+    for(let i=0;i<size/2**(r+1);i++){
+      const a=slot(r,i,0),b=slot(r,i,1);
+      const key=`${r}-${i}`;
+      const bye=a===-1||b===-1, ready=a!==null&&b!==null&&!bye;
+      const w=winnerOf(r,i);
+      const nm=p=>p===null?'<span class="tbd">(미정)</span>':p===-1?'<span class="tbd">부전승</span>':esc(S.players[p]);
+      h+=`<div class="m"><small>${r===R-1?'결승전':`${i+1}경기`}</small>
+        <div class="t ${w!==null&&w===a&&a>=0?'win':''}"><span class="n">${nm(a)}</span></div>
+        <div class="t ${w!==null&&w===b&&b>=0?'win':''}"><span class="n">${nm(b)}</span></div>
+        ${ready?`<div class="t">${scoreInputs(key)}</div>`:''}</div>`;
+    }
+    h+='</div>';
+  }
+  const ch=winnerOf(R-1,0);
+  h+='</div>';
+  if(ch!==null&&ch>=0)h+=`<div class="champ">🏆 우승: ${esc(S.players[ch])}</div>`;
+  h+=`<p class="hint">두 선수가 정해진 경기에 점수를 입력하면 승자가 자동으로 다음 라운드에 올라갑니다. 점수를 고치면 이후 대진도 즉시 바뀝니다.${S.sets>1?' 세트별 점수를 입력하세요(2세트 먼저 이기면 승리).':''}</p></div>`;
+  return h;
+}
+
+// ---------- 저장 ----------
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function resetAll(){
+  if(!confirm('현재 대회 기록이 모두 지워집니다. 새로 시작할까요?'))return;
+  try{localStorage.removeItem(KEY);}catch(e){}
+  S=null;$('play').classList.add('hide');$('setup').classList.remove('hide');$('title').textContent='🏸 배드민턴 월례 대회';
+}
+function exportJson(){
+  const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='badminton_result.json';a.click();
+}
+try{const t=localStorage.getItem(KEY);if(t){S=JSON.parse(t);$('players').value=S.players.join('\n');show();}}catch(e){}
+</script>
+</body>
+</html>

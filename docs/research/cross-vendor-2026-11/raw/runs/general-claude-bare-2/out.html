@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배드민턴 대진표 & 점수판</title>
+<style>
+*{box-sizing:border-box}
+body{font-family:"Malgun Gothic",system-ui,sans-serif;margin:0;background:#f1f5f9;color:#1e293b}
+header{background:#0f766e;color:#fff;padding:14px 20px}
+header h1{margin:0;font-size:22px}
+main{padding:16px;max-width:1400px;margin:auto}
+.panel{background:#fff;border-radius:10px;padding:14px 16px;margin-bottom:16px;box-shadow:0 1px 3px #0002}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start}
+label{display:block;font-size:13px;font-weight:bold;margin-bottom:4px}
+input[type=text],textarea,select{padding:6px 8px;border:1px solid #cbd5e1;border-radius:6px;font:inherit}
+textarea{width:240px;height:200px}
+button{background:#0f766e;color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+button.sub{background:#64748b}button.red{background:#dc2626}
+button:hover{opacity:.88}
+.bracket{display:flex;gap:28px;overflow-x:auto;padding-bottom:10px}
+.round{display:flex;flex-direction:column;justify-content:space-around;min-width:230px;gap:12px}
+.round h3{text-align:center;margin:0;font-size:14px;color:#0f766e}
+.match{border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;padding:6px 8px;font-size:14px}
+.match.done{border-color:#0f766e}
+.t{display:flex;align-items:center;gap:4px;padding:3px 0}
+.t .n{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.t.w .n{font-weight:bold;color:#0f766e}
+.t.l .n{color:#94a3b8}
+.t input{width:38px;text-align:center;padding:3px;border:1px solid #cbd5e1;border-radius:4px;font:inherit}
+.gh{font-size:11px;color:#64748b;display:flex;justify-content:flex-end;gap:4px;padding-right:0}
+.gh span{width:38px;text-align:center}
+.bye{color:#94a3b8;font-style:italic}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1px solid #e2e8f0;padding:6px 8px;text-align:center}
+th{background:#e2e8f0}
+td.l{text-align:left}
+tr.top td{background:#fef9c3;font-weight:bold}
+.champ{margin-top:12px;font-size:22px;font-weight:bold;color:#b45309;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.hint{font-size:12px;color:#64748b}
+@media print{header button,#setup,.noprint{display:none}body{background:#fff}.panel{box-shadow:none}}
+</style>
+</head>
+<body>
+<header><h1 id="ttl">🏸 월례 배드민턴 대회</h1></header>
+<main>
+<div class="panel" id="setup">
+ <div class="row">
+  <div><label>대회 이름</label><input type="text" id="title" style="width:240px"></div>
+  <div><label>방식</label>
+   <select id="format"><option value="single">토너먼트 (단판 승부)</option><option value="league">리그전 (풀리그)</option></select></div>
+  <div><label>경기 방식</label>
+   <select id="best"><option value="1">1게임</option><option value="3">3게임 2선승</option></select></div>
+  <div><label>게임 점수 / 참가팀 섞기</label>
+   <select id="shuffle"><option value="1">무작위 추첨</option><option value="0">입력 순서(시드)대로</option></select></div>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <div><label>참가자/팀 (한 줄에 하나)</label><textarea id="names"></textarea>
+   <div class="hint">복식은 "김철수/이영희"처럼 입력하세요.</div></div>
+  <div style="align-self:flex-end;display:flex;gap:8px;flex-direction:column">
+   <button onclick="generate()">대진표 생성</button>
+   <button class="sub" onclick="window.print()">인쇄</button>
+   <button class="red" onclick="resetScores()">점수만 초기화</button>
+  </div>
+ </div>
+</div>
+<div id="out"></div>
+</main>
+<script>
+const KEY='badminton_tournament_v1';
+const SAMPLE=['김민수/박지훈','이서준/최도윤','정하늘/강바다','윤재호/한성민','오세진/임태양','서준우/배현우','조영호/문상철','신동혁/류진호'];
+let S=JSON.parse(localStorage.getItem(KEY)||'null')||{title:'월례 배드민턴 대회',format:'single',best:3,names:SAMPLE.join('\n'),teams:[],matches:[]};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const save=()=>localStorage.setItem(KEY,JSON.stringify(S));
+const need=()=>Math.ceil(S.best/2);
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function generate(){
+  S.title=$('title').value.trim()||'배드민턴 대회';
+  S.format=$('format').value;S.best=+$('best').value;S.names=$('names').value;
+  let t=S.names.split('\n').map(x=>x.trim()).filter(Boolean);
+  if(t.length<2){alert('참가자를 2명(팀) 이상 입력하세요.');return}
+  if(S.matches.length&&!confirm('기존 대진표와 점수가 사라집니다. 새로 생성할까요?'))return;
+  if($('shuffle').value==='1')shuffle(t);
+  S.teams=t;S.matches=[];
+  if(S.format==='single'){
+    let n=2;while(n<t.length)n*=2;
+    let seeds=[1];while(seeds.length<n){const L=seeds.length*2+1;seeds=seeds.flatMap(s=>[s,L-s])}
+    const rounds=Math.log2(n);
+    for(let r=0;r<rounds;r++)for(let i=0;i<n/2**(r+1);i++){
+      const m={r,i,a:null,b:null,s:[]};
+      if(r===0){const x=seeds[2*i]-1,y=seeds[2*i+1]-1;m.a=x<t.length?x:null;m.b=y<t.length?y:null}
+      S.matches.push(m);
+    }
+  }else{
+    const ids=t.map((_,i)=>i);if(ids.length%2)ids.push(null);
+    const n=ids.length;let arr=ids.slice();
+    for(let r=0;r<n-1;r++){
+      for(let i=0;i<n/2;i++){const a=arr[i],b=arr[n-1-i];if(a!==null&&b!==null)S.matches.push({r,a,b,s:[]})}
+      arr=[arr[0],arr[n-1],...arr.slice(1,n-1)];
+    }
+  }
+  save();render();
+}
+
+function resetScores(){if(!confirm('모든 점수를 지울까요?'))return;S.matches.forEach(m=>m.s=[]);save();render()}
+
+// 경기 결과: 이긴 팀 인덱스 반환
+function winner(m){
+  if(m.a==null&&m.b!=null&&m.r===0&&S.format==='single')return m.b;
+  if(m.b==null&&m.a!=null&&m.r===0&&S.format==='single')return m.a;
+  if(m.a==null||m.b==null)return null;
+  let wa=0,wb=0;
+  (m.s||[]).forEach(g=>{if(!g||g[0]===''||g[1]===''||g[0]==null||g[1]==null)return;if(+g[0]>+g[1])wa++;else if(+g[1]>+g[0])wb++});
+  return wa>=need()?m.a:wb>=need()?m.b:null;
+}
+const isBye=m=>S.format==='single'&&m.r===0&&(m.a==null||m.b==null);
+
+// 토너먼트: 이전 라운드 승자를 다음 라운드로 전달
+function propagate(){
+  if(S.format!=='single')return;
+  const R=Math.max(...S.matches.map(m=>m.r));
+  for(let r=1;r<=R;r++)S.matches.filter(m=>m.r===r).forEach(m=>{
+    const prev=S.matches.filter(p=>p.r===r-1);
+    const a=winner(prev[2*m.i]),b=winner(prev[2*m.i+1]);
+    const na=a==null?null:a,nb=b==null?null:b;
+    if(m.a!==na||m.b!==nb){m.a=na;m.b=nb;m.s=[]}
+  });
+}
+
+function setScore(idx,g,side,v){
+  const m=S.matches[idx];m.s=m.s||[];m.s[g]=m.s[g]||['',''];
+  m.s[g][side]=v===''?'':Math.max(0,Math.min(99,parseInt(v)||0));
+  save();render();
+}
+
+function matchHTML(m,idx,label){
+  const w=winner(m);
+  const nm=x=>x==null?'<span class="bye">'+(isBye(m)?'부전승(BYE)':'대기중')+'</span>':esc(S.teams[x]);
+  if(isBye(m)){
+    return `<div class="match done"><div class="t ${m.a!=null?'w':'l'}"><span class="n">${nm(m.a)}</span></div><div class="t ${m.b!=null?'w':'l'}"><span class="n">${nm(m.b)}</span></div></div>`;
+  }
+  const ready=m.a!=null&&m.b!=null;
+  const row=(team,side)=>{
+    const cls=w==null?'':(w===team?'w':'l');
+    let ins='';
+    for(let g=0;g<S.best;g++){
+      const v=(m.s&&m.s[g]&&m.s[g][side]!=null)?m.s[g][side]:'';
+      ins+=`<input type="number" min="0" max="99" value="${v}" ${ready?'':'disabled'} onchange="setScore(${idx},${g},${side},this.value)">`;
+    }
+    return `<div class="t ${cls}"><span class="n">${nm(team)}</span>${ins}</div>`;
+  };
+  let hdr='';
+  if(S.best>1){hdr='<div class="gh">';for(let g=1;g<=S.best;g++)hdr+=`<span>${g}G</span>`;hdr+='</div>'}
+  return `<div class="match ${w!=null?'done':''}">${label?`<div class="hint">${label}</div>`:''}${hdr}${row(m.a,0)}${row(m.b,1)}</div>`;
+}
+
+function stats(){
+  const st=S.teams.map((n,i)=>({i,n,p:0,w:0,l:0,gw:0,gl:0,pf:0,pa:0}));
+  S.matches.forEach(m=>{
+    const w=winner(m);if(w==null)return;
+    st[m.a].p++;st[m.b].p++;
+    (m.s||[]).forEach(g=>{
+      if(!g||g[0]===''||g[1]===''||g[0]==null||g[1]==null)return;
+      const x=+g[0],y=+g[1];st[m.a].pf+=x;st[m.a].pa+=y;st[m.b].pf+=y;st[m.b].pa+=x;
+      if(x>y){st[m.a].gw++;st[m.b].gl++}else if(y>x){st[m.b].gw++;st[m.a].gl++}
+    });
+    const l=w===m.a?m.b:m.a;st[w].w++;st[l].l++;
+  });
+  return st.sort((a,b)=>b.w-a.w||(b.gw-b.gl)-(a.gw-a.gl)||(b.pf-b.pa)-(a.pf-a.pa)||a.i-b.i);
+}
+
+function render(){
+  $('title').value=S.title;$('format').value=S.format;$('best').value=S.best;$('names').value=S.names;
+  $('ttl').textContent='🏸 '+S.title;document.title=S.title;
+  const out=$('out');
+  if(!S.matches.length){out.innerHTML='<div class="panel">참가자를 입력하고 <b>대진표 생성</b>을 누르세요.</div>';return}
+  propagate();save();
+  let h='';
+  if(S.format==='single'){
+    const R=Math.max(...S.matches.map(m=>m.r));
+    const names=r=>r===R?'결승':r===R-1?'준결승':r===R-2?'8강':r===R-3?'16강':`${r+1}라운드`;
+    h+='<div class="panel"><div class="bracket">';
+    for(let r=0;r<=R;r++){
+      h+=`<div class="round"><h3>${names(r)}</h3>`;
+      S.matches.forEach((m,idx)=>{if(m.r===r)h+=matchHTML(m,idx,`${r+1}R-${m.i+1}`)});
+      h+='</div>';
+    }
+    h+='</div>';
+    const f=S.matches.find(m=>m.r===R),w=winner(f);
+    if(w!=null)h+=`<div class="champ">🏆 우승: ${esc(S.teams[w])}</div>`;
+    h+='</div>';
+    // 순위표 (탈락 라운드 기준 간이 결과)
+    h+='<div class="panel"><b>승패 현황</b>'+standingsTable()+'</div>';
+  }else{
+    h+='<div class="panel"><b>순위표</b>'+standingsTable(true)+'</div>';
+    const rounds=[...new Set(S.matches.map(m=>m.r))];
+    h+='<div class="panel"><b>경기 일정 / 점수 입력</b>';
+    rounds.forEach(r=>{
+      h+=`<h4>${r+1}라운드</h4><div class="grid">`;
+      S.matches.forEach((m,idx)=>{if(m.r===r)h+=matchHTML(m,idx,'')});
+      h+='</div>';
+    });
+    h+='</div>';
+    const done=S.matches.every(m=>winner(m)!=null);
+    if(done){const s=stats();h=`<div class="panel champ">🏆 우승: ${esc(s[0].n)}</div>`+h}
+  }
+  out.innerHTML=h;
+}
+
+function standingsTable(){
+  const s=stats();
+  let h='<table><tr><th>순위</th><th>팀</th><th>경기</th><th>승</th><th>패</th><th>게임 득실</th><th>점수 득실</th></tr>';
+  s.forEach((x,i)=>{
+    h+=`<tr class="${i===0&&x.p>0?'top':''}"><td>${i+1}</td><td class="l">${esc(x.n)}</td><td>${x.p}</td><td>${x.w}</td><td>${x.l}</td><td>${x.gw-x.gl>0?'+':''}${x.gw-x.gl}</td><td>${x.pf-x.pa>0?'+':''}${x.pf-x.pa} (${x.pf}:${x.pa})</td></tr>`;
+  });
+  return h+'</table>';
+}
+render();
+</script>
+</body>
+</html>

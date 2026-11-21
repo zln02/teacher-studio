@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경우의 수 수업 도우미 (중2 수학)</title>
+<style>
+:root{--bg:#fffaf0;--ink:#1f2a44;--muted:#4a5568;--card:#fff;--line:#d9d2bf;--pri:#1d5fd1;--pri-d:#12408f;--a:#e0561b;--b:#0b7a5a;--both:#7b2cbf;--ok:#0b7a3e;--bad:#b3261e;--hl:#ffe27a;}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:var(--bg);color:var(--ink);font-size:18px;line-height:1.6}
+header{background:#fff3c4;border-bottom:3px solid #f2c94c;padding:8px 12px;position:sticky;top:0;z-index:10}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px;justify-content:space-between}
+h1{font-size:1.25rem;margin:0}
+nav{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+button,input,select{font:inherit}
+button{cursor:pointer;min-height:44px;border-radius:10px;border:2px solid var(--pri);background:#fff;color:var(--pri-d);padding:4px 12px}
+button:hover{background:#e8f0ff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:4px solid #ff9f1c;outline-offset:2px}
+button.primary,nav button[aria-current="page"]{background:var(--pri);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+main{max-width:1100px;margin:0 auto;padding:12px}
+section.panel{display:none}
+section.panel.active{display:block}
+.card{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:12px 0}
+.card h2,.card h3{margin:.2em 0 .4em}
+h2{font-size:1.35rem}
+.rule{background:#eaf3ff;border-left:6px solid var(--pri);padding:8px 12px;border-radius:8px;margin:8px 0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.chip{min-width:48px;min-height:48px;font-size:1.2rem;border-radius:24px;border:2px solid #8a94a8;background:#fff;color:var(--ink);padding:2px 12px;display:inline-flex;align-items:center;justify-content:center}
+.chip.inA{border-color:var(--a);background:#ffe9dd}
+.chip.inB{border-color:var(--b);background:#dcf5ec}
+.chip.both{border-color:var(--both);background:#ead9fb;box-shadow:0 0 0 3px #c9a3ee}
+.chip.res{border-style:dashed;cursor:default}
+.chip.cur{background:var(--hl);border-color:#b58900}
+.chip.used{opacity:.45}
+.tag{display:inline-block;padding:0 8px;border-radius:8px;font-weight:bold}
+.tA{background:#ffe9dd;color:#8a2e00}.tB{background:#dcf5ec;color:#04503a}.tBoth{background:#ead9fb;color:#4b1b7a}
+.msg{min-height:1.6em;font-weight:bold}
+.ok{color:var(--ok)}.bad{color:var(--bad)}
+.formula{font-size:1.4rem;font-weight:bold;background:#fff8dc;border:2px dashed #e0b400;border-radius:10px;padding:6px 12px;display:inline-block;margin:4px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:4px;max-height:340px;overflow:auto;border:1px solid var(--line);padding:6px;border-radius:8px}
+.grid div{border:1px solid var(--line);border-radius:6px;padding:2px 6px;text-align:center;font-size:.95rem;background:#fafafa}
+.grid div.now{background:var(--hl);border:3px solid #b58900;font-weight:bold}
+.grid div.seen{background:#e6f7ea}
+.grid div.found{background:#d6f5df;border-color:var(--ok)}
+.grid div.dup{background:#fde0dd;text-decoration:line-through}
+.svgwrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:#fff;max-height:560px}
+label{font-weight:bold}
+input[type=range]{width:200px;height:32px}
+input[type=number]{width:6em;min-height:44px;font-size:1.1rem;border:2px solid #8a94a8;border-radius:8px;padding:0 8px}
+.teacher-only{display:none;background:#fff0f0;border:2px dashed var(--bad);border-radius:8px;padding:4px 10px;margin:6px 0}
+body.teacher .teacher-only{display:block}
+.q{border:2px solid var(--line);border-radius:12px;padding:10px;margin:10px 0;background:#fff}
+.q.right{border-color:var(--ok);background:#effaf2}.q.wrong{border-color:var(--bad);background:#fff3f2}
+.q .choices{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.q .choices button[aria-pressed="true"]{background:var(--pri);color:#fff}
+.expl{background:#f4f6fb;border-radius:8px;padding:6px 10px;margin-top:6px}
+.score{font-size:1.2rem;font-weight:bold}
+.mini{font-size:.9rem;color:var(--muted)}
+.boxes{display:flex;flex-wrap:wrap;gap:6px}
+.grp{display:flex;gap:2px;border:2px solid var(--pri);border-radius:6px;padding:2px;background:#eaf3ff}
+.grp i{display:block;width:12px;height:12px;background:var(--pri);border-radius:3px}
+@media (max-width:600px){body{font-size:17px}input[type=range]{width:150px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>🎲 경우의 수 수업 도우미</h1>
+    <div class="row">
+      <button id="btnTeacher" aria-pressed="false" aria-label="교사 모드 켜기 끄기">교사 모드: 꺼짐</button>
+      <button id="btnFull" aria-label="전체화면 전환">전체화면</button>
+    </div>
+  </div>
+  <nav id="nav" aria-label="단계 선택"></nav>
+</header>
+<main>
+
+<section class="panel" id="p0" aria-labelledby="h0">
+  <h2 id="h0">1. 합의 법칙 (또는 → 더한다)</h2>
+  <div class="rule"><b>합의 법칙</b>: 사건 A 또는 사건 B가 일어나는 <b>경우의 수</b>는 A의 경우의 수 + B의 경우의 수. 단, 두 사건에 <b>겹치는 경우</b>가 있으면 한 번만 세어야 해요(중복 제거).</div>
+  <div class="card">
+    <h3>직접 해 보기: 사건 A, B 고르기</h3>
+    <div class="row" role="group" aria-label="상황 선택">
+      <span>상황:</span>
+      <button id="ctxDice" class="primary">주사위 한 개 (1~6)</button>
+      <button id="ctxCard">숫자 카드 (1~12)</button>
+    </div>
+    <div class="row" role="radiogroup" aria-label="편집할 사건">
+      <b>① 편집할 사건:</b>
+      <button id="tgA" aria-pressed="true"><span class="tag tA">사건 A</span> 편집 중</button>
+      <button id="tgB" aria-pressed="false"><span class="tag tB">사건 B</span> 편집</button>
+      <button id="clr">모두 지우기</button>
+    </div>
+    <div><b>② 조건 버튼으로 채우기</b> (또는 아래 숫자를 직접 클릭):</div>
+    <div class="chips" id="presets" aria-label="조건 버튼"></div>
+    <div><b>③ 숫자를 클릭하면 선택한 사건에 넣거나 뺍니다.</b></div>
+    <div class="chips" id="uni" aria-label="전체 경우"></div>
+    <div class="mini">주황=A만, 초록=B만, 보라=A와 B 둘 다(겹침)</div>
+  </div>
+  <div class="card" aria-live="polite">
+    <h3>관찰: 결과</h3>
+    <div>A = <span id="sA"></span> (<b id="nA"></b>가지)</div>
+    <div>B = <span id="sB"></span> (<b id="nB"></b>가지)</div>
+    <div>겹침(A와 B 둘 다) = <span id="sI"></span> (<b id="nI"></b>가지)</div>
+    <div>A 또는 B = <span class="chips" id="sU" style="display:inline-flex"></span></div>
+    <div class="formula" id="f1"></div>
+    <div id="e1"></div>
+    <div class="teacher-only" id="t1"></div>
+  </div>
+  <div class="card">
+    <h3>확인: A 또는 B의 경우의 수는?</h3>
+    <div class="row"><input type="number" id="g1" aria-label="A 또는 B의 경우의 수 입력" min="0"><button id="c1" class="primary">확인</button><span class="msg" id="m1" aria-live="polite"></span></div>
+  </div>
+  <div class="card">
+    <h3>겹치지 않는 경우: 버스 또는 지하철</h3>
+    <div class="row"><label for="sb">버스 노선 수</label><input type="range" id="sb" min="1" max="6" value="3"><b id="vb"></b>
+    <label for="ss">지하철 노선 수</label><input type="range" id="ss" min="1" max="6" value="2"><b id="vs"></b></div>
+    <div class="chips" id="busChips"></div>
+    <div class="formula" id="busF"></div>
+    <div class="mini">버스와 지하철을 동시에 탈 수는 없으므로 겹치는 경우가 없어 그냥 더합니다.</div>
+  </div>
+</section>
+
+<section class="panel" id="p1" aria-labelledby="h1x">
+  <h2 id="h1x">2. 곱의 법칙 (그리고 → 곱한다)</h2>
+  <div class="rule"><b>곱의 법칙</b>: 사건 A가 일어나는 경우가 m가지, 그 각각에 대해 사건 B가 n가지이면, A <b>그리고(동시에·연이어)</b> B의 경우의 수는 m × n. <b>수형도</b>로 모든 경우를 나열해 확인해 봅시다.</div>
+  <div class="card">
+    <div class="row"><label for="tn">상의</label><input type="range" id="tn" min="1" max="5" value="3"><b id="vtn"></b>
+    <label for="tm">하의</label><input type="range" id="tm" min="1" max="5" value="2"><b id="vtm"></b>
+    <label for="tk">모자</label><input type="range" id="tk" min="0" max="3" value="0"><b id="vtk"></b><span class="mini">(0이면 모자 없음)</span></div>
+    <div class="formula" id="f2"></div>
+    <div id="chk2" class="msg ok"></div>
+    <div class="msg" id="leafMsg" aria-live="polite">수형도 맨 오른쪽 번호 칸을 클릭하면 그 경우의 길이 표시돼요.</div>
+    <div class="svgwrap"><svg id="tree" role="img" aria-label="수형도"></svg></div>
+    <div class="teacher-only" id="t2"></div>
+  </div>
+</section>
+
+<section class="panel" id="p2" aria-labelledby="h2x">
+  <h2 id="h2x">3. 동전·주사위 실험</h2>
+  <div class="rule">동전 <b>n</b>개와 주사위 <b>m</b>개를 동시에 던질 때 모든 <b>경우의 수</b> = 2<sup>n</sup> × 6<sup>m</sup> (곱의 법칙).</div>
+  <div class="card">
+    <div class="row"><label for="cn">동전 개수</label><input type="range" id="cn" min="1" max="4" value="2"><b id="vcn"></b>
+    <label for="cm">주사위 개수</label><input type="range" id="cm" min="1" max="2" value="1"><b id="vcm"></b></div>
+    <div class="row"><button class="primary" id="th1">던지기 1번</button><button id="th10">10번 던지기</button><button id="th100">100번 던지기</button><button id="thR">기록 지우기</button></div>
+    <div class="formula" id="f3"></div>
+    <div class="msg" id="chk3"></div>
+    <div>방금 결과: <b id="now3">아직 던지지 않았어요</b></div>
+    <div>던진 횟수: <b id="tot3">0</b>번, 나온 서로 다른 경우: <b id="seen3">0</b>가지</div>
+    <h3>가능한 모든 경우 (노란색=방금, 초록=한 번 이상 나옴, ×숫자=나온 횟수)</h3>
+    <div class="grid" id="tbl" tabindex="0" aria-label="모든 경우 표"></div>
+    <h3>최근 기록 (최대 20개)</h3>
+    <div class="chips" id="log3"></div>
+  </div>
+</section>
+
+<section class="panel" id="p3" aria-labelledby="h3x">
+  <h2 id="h3x">4. 한 줄로 세우기 (순열)</h2>
+  <div class="rule"><b>한 줄로 세우기</b>: n명 중 r명을 뽑아 순서를 정해 한 줄로 세우면 n × (n-1) × … (r개 곱)가지. 순서가 다르면 다른 경우! (기호 P: <sub>n</sub>P<sub>r</sub>)</div>
+  <div class="card">
+    <div class="row"><label for="pn">전체 사람 수 n</label><input type="range" id="pn" min="2" max="6" value="3"><b id="vpn"></b>
+    <label for="pr">세울 사람 수 r</label><input type="range" id="pr" min="1" max="3" value="3"><b id="vpr"></b></div>
+    <div class="row"><label><input type="checkbox" id="pcond"> 조건: <span id="pcname"></span> 두 사람이 이웃 (r = n일 때)</label></div>
+    <div><b>이름을 클릭한 순서대로 줄이 세워져요:</b></div>
+    <div class="chips" id="pnames" aria-label="이름 선택"></div>
+    <div class="chips" id="pline" aria-label="지금 세운 줄" style="min-height:56px;background:#f4f6fb;border-radius:10px;padding:4px"></div>
+    <div class="row"><button id="pundo">한 명 되돌리기</button><button id="pclr">줄 새로 시작</button></div>
+    <div class="msg" id="pmsg" aria-live="polite"></div>
+    <div class="formula" id="f4"></div>
+    <div>찾은 경우: <b id="pfound">0</b> / <b id="ptot"></b>가지</div>
+    <div id="pnote" class="mini"></div>
+    <div class="grid" id="plist" aria-label="모든 경우 목록"></div>
+    <div class="teacher-only" id="t4"></div>
+  </div>
+  <div class="card" id="condCard">
+    <h3>특별한 조건 연습: 이웃하게 세우기</h3>
+    <div id="condExp"></div>
+    <div class="row"><label for="pg">조건을 만족하는 경우의 수는?</label><input type="number" id="pg" min="0"><button id="pgc" class="primary">확인</button><span class="msg" id="pgm" aria-live="polite"></span></div>
+  </div>
+</section>
+
+<section class="panel" id="p4" aria-labelledby="h4x">
+  <h2 id="h4x">5. 대표 뽑기 (조합)</h2>
+  <div class="rule"><b>대표 뽑기</b>: n명 중 자격 구별 없이 r명을 뽑는 경우의 수 = (한 줄로 세우는 경우의 수) ÷ r!. 같은 사람들이면 순서가 달라도 <b>같은 경우</b>예요. (기호 C: <sub>n</sub>C<sub>r</sub>)</div>
+  <div class="card">
+    <div class="row"><label for="cn5">전체 사람 수 n</label><input type="range" id="cn5" min="2" max="8" value="4"><b id="vcn5"></b>
+    <label for="cr5">뽑을 대표 수 r</label><input type="range" id="cr5" min="0" max="4" value="2"><b id="vcr5"></b></div>
+    <div><b>사람을 클릭해서 대표 r명을 고른 뒤 [기록하기]를 누르세요. 순서를 바꿔 같은 사람들을 또 뽑으면 걸러내요!</b></div>
+    <div class="chips" id="cnames" aria-label="사람 선택"></div>
+    <div class="row">현재 선택(순서대로): <span class="chips" id="csel" style="display:inline-flex"></span></div>
+    <div class="row"><button class="primary" id="crec">기록하기</button><button id="cclr">선택 지우기</button><button id="creset">기록 모두 지우기</button></div>
+    <div class="msg" id="cmsg" aria-live="polite"></div>
+    <h3>기록: 새 조합 <b id="cfound">0</b>개 / 걸러낸 중복 <b id="cdupn">0</b>개</h3>
+    <div class="grid" id="clist" aria-label="기록된 대표 조합"></div>
+    <div class="row"><label for="cg">대표를 뽑는 경우의 수는 모두 몇 가지일까요?</label><input type="number" id="cg" min="0"><button id="cgc" class="primary">확인</button><span class="msg" id="cgm" aria-live="polite"></span></div>
+    <div class="teacher-only" id="t5"></div>
+  </div>
+  <div class="card">
+    <h3>한 줄로 세우기 ÷ r! 관계</h3>
+    <div class="formula" id="f5"></div>
+    <div class="mini">아래 한 묶음(파란 테두리) = 같은 대표 r명을 순서만 바꿔 한 줄로 세운 r!가지. 묶음의 개수가 대표 뽑기의 경우의 수예요. (줄 세우기가 120가지를 넘으면 그림은 생략)</div>
+    <div class="boxes" id="grpBoxes"></div>
+    <div class="mini" id="zeroNote"></div>
+  </div>
+  <div class="card">
+    <h3>짝 만들기: 악수 · 선분</h3>
+    <div class="row"><label for="hn">사람(점) 수</label><input type="range" id="hn" min="2" max="8" value="5"><b id="vhn"></b></div>
+    <div class="mini">두 사람이 한 번씩 악수 = 두 점을 잇는 선분 1개 = 2명을 뽑는 대표 뽑기. 순서가 없으므로 (A,B)와 (B,A)는 같아요.</div>
+    <div class="formula" id="f6"></div>
+    <svg id="hsvg" width="260" height="260" viewBox="0 0 260 260" role="img" aria-label="악수 선분 그림"></svg>
+  </div>
+</section>
+
+<section class="panel" id="p5" aria-labelledby="h5x">
+  <h2 id="h5x">6. 연습문제</h2>
+  <div class="card">
+    <div class="score" id="score" aria-live="polite"></div>
+    <div class="row"><button id="qnew" class="primary">새 문제 세트 (숫자가 바뀌어요)</button><button id="qwrong">오답만 다시 풀기</button><button id="qclear">저장 기록 지우기</button></div>
+    <div class="mini" id="stat"></div>
+    <div class="mini" id="storeNote"></div>
+  </div>
+  <div id="qs"></div>
+</section>
+</main>
+
+<script id="core">
+/* 순수 계산 코어 (DOM 없음) */
+var Core=(function(){
+  function fact(n){var r=1;for(var i=2;i<=n;i++)r*=i;return r;}
+  function perm(n,r){if(r<0||r>n)return 0;var p=1;for(var i=0;i<r;i++)p*=n-i;return p;}
+  function comb(n,r){if(r<0||r>n)return 0;return perm(n,r)/fact(r);}
+  function enumPerms(items,r){var out=[];(function rec(cur,used){if(cur.length===r){out.push(cur.slice());return;}for(var i=0;i<items.length;i++){if(used[i])continue;used[i]=true;cur.push(items[i]);rec(cur,used);cur.pop();used[i]=false;}})([],[]);return out;}
+  function enumCombs(items,r){var out=[];(function rec(st,cur){if(cur.length===r){out.push(cur.slice());return;}for(var i=st;i<items.length;i++){cur.push(items[i]);rec(i+1,cur);cur.pop();}})(0,[]);return out;}
+  function product(arrs){var out=[[]];arrs.forEach(function(a){var nx=[];out.forEach(function(p){a.forEach(function(x){nx.push(p.concat([x]));});});out=nx;});return out;}
+  function union(A,B){var s=[];A.concat(B).forEach(function(x){if(s.indexOf(x)<0)s.push(x);});return s.sort(function(a,b){return a-b;});}
+  function inter(A,B){return A.filter(function(x){return B.indexOf(x)>=0;});}
+  function range(a,b){var r=[];for(var i=a;i<=b;i++)r.push(i);return r;}
+  function ri(rng,a,b){return a+Math.floor(rng()*(b-a+1));}
+  function shuffle(a,rng){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(rng()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+  function digits(p){return p[0]*10+p[1];}
+  function num(p){return p.reduce(function(s,d){return s*10+d;},0);}
+
+  function mkChoices(ans,wrongs,rng){
+    var set=[];wrongs.concat([ans+1,ans-1,ans*2,ans+2,ans-2,ans+10,ans+3]).forEach(function(w){if(w>0&&w!==ans&&set.indexOf(w)<0&&Math.floor(w)===w)set.push(w);});
+    var pick=set.slice(0,3);var k=ans+4;while(pick.length<3){if(pick.indexOf(k)<0&&k!==ans)pick.push(k);k++;}
+    return shuffle(pick.concat([ans]),rng);
+  }
+  /* 각 생성기: {type,q,answer(공식),enumAnswer(열거),steps,wrong} */
+  var GENS=[
+    function(rng){var a=ri(rng,2,3),b=ri(rng,4,6),U=range(1,6);var A=U.filter(function(x){return x%a===0;}),B=U.filter(function(x){return b%x===0;});
+      var u=union(A,B),i=inter(A,B);
+      return{type:'합',q:'주사위 한 개를 던질 때 '+a+'의 배수 또는 '+b+'의 약수가 나오는 경우의 수는?',answer:A.length+B.length-i.length,enumAnswer:u.length,wrong:[A.length+B.length],
+        steps:['A('+a+'의 배수)={'+A.join(', ')+'} → '+A.length+'가지','B('+b+'의 약수 중 1~6)={'+B.join(', ')+'} → '+B.length+'가지','겹치는 수: '+(i.length?'{'+i.join(', ')+'}이므로 한 번 빼 줍니다':'없음')+' (합의 법칙)','답: '+A.length+' + '+B.length+(i.length?' - '+i.length:'')+' = '+u.length+'가지']};},
+    function(rng){var a=ri(rng,2,6),b=ri(rng,2,6),c=ri(rng,2,4);var routes=[];for(var i=0;i<a;i++)routes.push('버스'+i);for(i=0;i<b;i++)routes.push('지하철'+i);for(i=0;i<c;i++)routes.push('택시'+i);
+      return{type:'합',q:'집에서 학교까지 버스 '+a+'가지, 지하철 '+b+'가지, 택시 '+c+'가지 방법이 있습니다. 한 가지 교통수단으로 가는 경우의 수는?',answer:a+b+c,enumAnswer:routes.length,wrong:[a*b*c],
+        steps:['버스, 지하철, 택시는 동시에 탈 수 없으므로 겹치지 않아요.','"또는"이므로 합의 법칙: '+a+' + '+b+' + '+c+' = '+(a+b+c)+'가지']};},
+    function(rng){var s=ri(rng,2,12),t;do{t=ri(rng,2,12);}while(t===s);var cnt=0,cs=0,ct=0;for(var x=1;x<=6;x++)for(var y=1;y<=6;y++){if(x+y===s){cs++;cnt++;}else if(x+y===t){ct++;cnt++;}}
+      return{type:'합',q:'서로 다른 주사위 2개를 동시에 던질 때 눈의 합이 '+s+' 또는 '+t+'인 경우의 수는?',answer:cs+ct,enumAnswer:cnt,wrong:[cs*ct,cs],
+        steps:['합이 '+s+'인 경우: '+cs+'가지','합이 '+t+'인 경우: '+ct+'가지','합이 동시에 '+s+'와 '+t+'일 수 없으므로 겹침 없음 → 더합니다.','답: '+cs+' + '+ct+' = '+(cs+ct)+'가지']};},
+    function(rng){var n=ri(rng,2,6),m=ri(rng,2,6);var l=Core.product([range(1,n),range(1,m)]);
+      return{type:'곱',q:'상의 '+n+'벌, 하의 '+m+'벌이 있습니다. 상의와 하의를 하나씩 짝지어 입는 경우의 수는?',answer:n*m,enumAnswer:l.length,wrong:[n+m],
+        steps:['상의를 고르고 그리고 하의를 고르므로 곱의 법칙.','수형도: 상의 '+n+'가지 각각에 하의가 '+m+'가지씩 가지를 뻗어요.','답: '+n+' × '+m+' = '+(n*m)+'가지']};},
+    function(rng){var n=ri(rng,1,3),m=ri(rng,1,2);var arrs=[];for(var i=0;i<n;i++)arrs.push(['앞','뒤']);for(i=0;i<m;i++)arrs.push(range(1,6));var l=Core.product(arrs);
+      return{type:'곱',q:'동전 '+n+'개와 주사위 '+m+'개를 동시에 던질 때 나오는 모든 경우의 수는?',answer:Math.pow(2,n)*Math.pow(6,m),enumAnswer:l.length,wrong:[2*n+6*m,Math.pow(2,n)+Math.pow(6,m)],
+        steps:['동전 한 개는 2가지, 주사위 한 개는 6가지.','동전 '+n+'개: 2^'+n+' = '+Math.pow(2,n)+', 주사위 '+m+'개: 6^'+m+' = '+Math.pow(6,m),'답: '+Math.pow(2,n)+' × '+Math.pow(6,m)+' = '+Math.pow(2,n)*Math.pow(6,m)+'가지']};},
+    function(rng){var a=ri(rng,2,5),b=ri(rng,2,5),c=ri(rng,2,4);var l=Core.product([range(1,a),range(1,b),range(1,c)]);
+      return{type:'곱',q:'A시에서 B시까지 길이 '+a+'가지, B시에서 C시까지 길이 '+b+'가지, C시에서 D시까지 길이 '+c+'가지 있습니다. A시에서 B시, C시를 거쳐 D시까지 가는 경우의 수는?',answer:a*b*c,enumAnswer:l.length,wrong:[a+b+c],
+        steps:['연이어 가므로 곱의 법칙(그리고).','답: '+a+' × '+b+' × '+c+' = '+(a*b*c)+'가지']};},
+    function(rng){var n=ri(rng,3,6);var l=Core.enumPerms(range(1,n),n);
+      return{type:'한 줄로 세우기',q:n+'명을 한 줄로 세우는 경우의 수는?',answer:fact(n),enumAnswer:l.length,wrong:[n*n,fact(n-1)],
+        steps:['첫째 자리 '+n+'명, 둘째 자리 '+(n-1)+'명, … 마지막 1명.','답: '+range(1,n).reverse().join(' × ')+' = '+fact(n)+'가지']};},
+    function(rng){var n=ri(rng,4,7),r=ri(rng,2,3);var l=Core.enumPerms(range(1,n),r);var ex=[];for(var i=0;i<r;i++)ex.push(n-i);
+      return{type:'한 줄로 세우기',q:n+'명 중에서 '+r+'명을 뽑아 한 줄로 세우는 경우의 수는?',answer:perm(n,r),enumAnswer:l.length,wrong:[comb(n,r),n*r],
+        steps:['순서가 있으므로 한 줄로 세우기(순열).',ex.join(' × ')+' = '+perm(n,r)+'가지']};},
+    function(rng){var n=ri(rng,3,5);var l=Core.enumPerms(range(1,n),n).filter(function(p){return Math.abs(p.indexOf(1)-p.indexOf(2))===1;});
+      return{type:'한 줄로 세우기',q:n+'명을 한 줄로 세울 때 특정한 두 사람이 이웃하는 경우의 수는?',answer:2*fact(n-1),enumAnswer:l.length,wrong:[fact(n-1),fact(n)],
+        steps:['이웃하는 두 사람을 한 묶음으로 생각: '+(n-1)+'개를 한 줄로 → '+fact(n-1)+'가지','묶음 안에서 두 사람 자리를 바꾸는 경우 2가지.','답: '+fact(n-1)+' × 2 = '+2*fact(n-1)+'가지']};},
+    function(rng){var n=ri(rng,4,8),r=ri(rng,2,3);var l=Core.enumCombs(range(1,n),r);var top=[],bot=[];for(var i=0;i<r;i++){top.push(n-i);bot.push(r-i);}
+      return{type:'대표 뽑기',q:n+'명 중에서 대표 '+r+'명을 뽑는 경우의 수는? (대표 사이에 구별 없음)',answer:comb(n,r),enumAnswer:l.length,wrong:[perm(n,r),n*r],
+        steps:['자격 구별이 없으므로 대표 뽑기(조합).','한 줄로 세우기 '+top.join(' × ')+' = '+perm(n,r)+'가지','같은 대표끼리 순서만 다른 '+fact(r)+'가지가 중복되므로 ÷ '+bot.join(' × ')+'','답: '+perm(n,r)+' ÷ '+fact(r)+' = '+comb(n,r)+'가지']};},
+    function(rng){var n=ri(rng,4,9);var l=Core.enumCombs(range(1,n),2);
+      return{type:'대표 뽑기',q:n+'명이 모두 서로 한 번씩 악수를 할 때 악수의 총 횟수는?',answer:n*(n-1)/2,enumAnswer:l.length,wrong:[n*(n-1),n],
+        steps:['악수는 두 사람의 짝이고 순서가 없어요.',''+n+' × '+(n-1)+' = '+n*(n-1)+' (순서까지 구별한 수)','같은 짝이 2번씩 세어졌으므로 ÷ 2','답: '+n*(n-1)/2+'번']};},
+    function(rng){var tri=rng()<0.5;var n=tri?ri(rng,4,7):ri(rng,4,8);var r=tri?3:2;var l=Core.enumCombs(range(1,n),r);
+      return{type:'대표 뽑기',q:'한 원 위에 어느 세 점도 한 직선 위에 있지 않은 점 '+n+'개가 있습니다. 이 점들 중 '+r+'개를 이어 만들 수 있는 '+(tri?'삼각형':'선분')+'의 개수는?',answer:comb(n,r),enumAnswer:l.length,wrong:[perm(n,r)],
+        steps:[(tri?'삼각형은 꼭짓점 3개를 뽑는 것':'선분은 점 2개를 뽑는 것')+'이고 순서는 상관없어요.',perm(n,r)+' ÷ '+fact(r)+' = '+comb(n,r)+'개']};},
+    function(rng){var k=ri(rng,3,6);var l=Core.enumPerms(range(0,k),2).filter(function(p){return p[0]!==0;});
+      return{type:'정수 만들기',q:'0, 1, 2, …, '+k+'이 하나씩 적힌 카드 '+(k+1)+'장 중 2장을 뽑아 만들 수 있는 두 자리 정수의 개수는?',answer:k*k,enumAnswer:l.length,wrong:[(k+1)*k,k*(k-1)],
+        steps:['십의 자리에는 0이 올 수 없어요: '+k+'가지','일의 자리: 0을 포함해 십의 자리에 쓴 카드를 뺀 '+k+'가지','답: '+k+' × '+k+' = '+k*k+'개']};},
+    function(rng){var n=ri(rng,3,7);var l=Core.enumPerms(range(1,n),2);
+      return{type:'정수 만들기',q:'1부터 '+n+'까지 숫자가 하나씩 적힌 카드 '+n+'장 중 2장을 뽑아 만들 수 있는 두 자리 정수의 개수는?',answer:n*(n-1),enumAnswer:l.length,wrong:[n*n,comb(n,2)],
+        steps:['십의 자리 '+n+'가지, 일의 자리는 남은 '+(n-1)+'가지','답: '+n+' × '+(n-1)+' = '+n*(n-1)+'개']};},
+    function(rng){var k=ri(rng,3,5);var l=Core.enumPerms(range(0,k),3).filter(function(p){return p[0]!==0;});
+      return{type:'정수 만들기',q:'0, 1, 2, …, '+k+'이 하나씩 적힌 카드 '+(k+1)+'장 중 3장을 뽑아 만들 수 있는 세 자리 정수의 개수는?',answer:k*k*(k-1),enumAnswer:l.length,wrong:[k*(k+1)*(k-1),k*k*k],
+        steps:['백의 자리: 0 제외 '+k+'가지','십의 자리: 0을 포함해 남은 '+k+'가지','일의 자리: '+(k-1)+'가지','답: '+k+' × '+k+' × '+(k-1)+' = '+k*k*(k-1)+'개']};},
+    function(rng){var k=ri(rng,4,7);var l=Core.enumPerms(range(0,k),2).filter(function(p){return p[0]!==0&&p[1]%2===0;});var ev=Math.floor(k/2);
+      return{type:'정수 만들기',q:'0, 1, 2, …, '+k+'이 하나씩 적힌 카드 중 2장을 뽑아 만들 수 있는 두 자리 짝수의 개수는?',answer:k+ev*(k-1),enumAnswer:l.length,wrong:[k*k,ev*k],
+        steps:['일의 자리가 0이면: 십의 자리 '+k+'가지 → '+k+'개','일의 자리가 0이 아닌 짝수('+ev+'가지)이면: 십의 자리는 0과 일의 자리 숫자를 뺀 '+(k-1)+'가지 → '+ev+' × '+(k-1)+' = '+ev*(k-1)+'개','합의 법칙: '+k+' + '+ev*(k-1)+' = '+(k+ev*(k-1))+'개']};},
+    function(rng){var n=ri(rng,4,8);var l=Core.enumPerms(range(1,n),2);
+      return{type:'한 줄로 세우기',q:n+'명의 후보 중에서 회장 1명, 부회장 1명을 뽑는 경우의 수는?',answer:perm(n,2),enumAnswer:l.length,wrong:[comb(n,2),n+n-1],
+        steps:['회장과 부회장은 자격이 달라 순서가 중요해요(한 줄로 세우기).',n+' × '+(n-1)+' = '+perm(n,2)+'가지']};},
+    function(rng){var a=ri(rng,2,6),b=ri(rng,2,6);var l=Core.product([range(1,a),range(1,b)]);
+      return{type:'곱',q:'남학생 '+a+'명, 여학생 '+b+'명 중에서 남학생 대표 1명, 여학생 대표 1명을 뽑는 경우의 수는?',answer:a*b,enumAnswer:l.length,wrong:[a+b,comb(a+b,2)],
+        steps:['남학생 1명 그리고 여학생 1명 → 곱의 법칙','답: '+a+' × '+b+' = '+a*b+'가지']};}
+  ];
+  function makeSession(rng){rng=rng||Math.random;return GENS.map(function(g,i){var p=g(rng);p.id=i;p.kind=(i%2===0)?'choice':'input';if(p.kind==='choice')p.choices=mkChoices(p.answer,p.wrong||[],rng);return p;});}
+  return{fact:fact,perm:perm,comb:comb,enumPerms:enumPerms,enumCombs:enumCombs,product:product,union:union,inter:inter,range:range,makeSession:makeSession,GENS:GENS};
+})();
+if(typeof module!=='undefined')module.exports=Core;
+</script>
+
+<script id="ui">
+(function(){
+"use strict";
+var $=function(id){return document.getElementById(id);};
+function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;}
+function setMsg(id,t,ok){var e=$(id);e.textContent=t;e.className='msg '+(ok===true?'ok':ok===false?'bad':'');}
+var store={get:function(k){try{return window.localStorage.getItem(k);}catch(e){return null;}},set:function(k,v){try{window.localStorage.setItem(k,v);return true;}catch(e){return false;}},del:function(k){try{window.localStorage.removeItem(k);}catch(e){}}};
+var teacher=false;
+
+/* 내비게이션 */
+var TABS=['1 합의 법칙','2 곱의 법칙','3 동전·주사위','4 한 줄로 세우기','5 대표 뽑기','6 연습문제'];
+var navEl=$('nav');
+TABS.forEach(function(t,i){var b=el('button',null,t);b.setAttribute('aria-label',t+' 탭');b.addEventListener('click',function(){show(i);});navEl.appendChild(b);});
+function show(i){for(var k=0;k<TABS.length;k++){$('p'+k).classList.toggle('active',k===i);var b=navEl.children[k];if(k===i)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');}window.scrollTo(0,0);}
+$('btnTeacher').addEventListener('click',function(){teacher=!teacher;document.body.classList.toggle('teacher',teacher);this.setAttribute('aria-pressed',teacher);this.textContent='교사 모드: '+(teacher?'켜짐':'꺼짐');renderAll();});
+$('btnFull').addEventListener('click',function(){try{if(!document.fullscreenElement){document.documentElement.requestFullscreen();}else{document.exitFullscreen();}}catch(e){}});
+
+/* ===== 1. 합의 법칙 ===== */
+var s1={ctx:'dice',target:'A',A:[3,6],B:[1,5]};
+var PRE={dice:[['3의 배수',function(x){return x%3===0;}],['5의 약수',function(x){return 5%x===0;}],['짝수',function(x){return x%2===0;}],['홀수',function(x){return x%2===1;}],['소수',function(x){return [2,3,5].indexOf(x)>=0;}],['4의 약수',function(x){return 4%x===0;}],['6의 약수',function(x){return 6%x===0;}],['4 이상',function(x){return x>=4;}]],
+ card:[['3의 배수',function(x){return x%3===0;}],['4의 배수',function(x){return x%4===0;}],['6의 약수',function(x){return 6%x===0;}],['짝수',function(x){return x%2===0;}],['홀수',function(x){return x%2===1;}],['소수',function(x){return [2,3,5,7,11].indexOf(x)>=0;}],['10 이상',function(x){return x>=10;}]]};
+function uni(){return s1.ctx==='dice'?Core.range(1,6):Core.range(1,12);}
+function sortNum(a){return a.slice().sort(function(x,y){return x-y;});}
+function txt(a){return a.length?'{'+a.join(', ')+'}':'{ } (없음)';}
+function render1(){
+  var U=uni();var A=sortNum(s1.A),B=sortNum(s1.B),I=Core.inter(A,B),Un=Core.union(A,B);
+  $('ctxDice').className=s1.ctx==='dice'?'primary':'';$('ctxCard').className=s1.ctx==='card'?'primary':'';
+  $('tgA').setAttribute('aria-pressed',s1.target==='A');$('tgB').setAttribute('aria-pressed',s1.target==='B');
+  $('tgA').className=s1.target==='A'?'primary':'';$('tgB').className=s1.target==='B'?'primary':'';
+  var pe=$('presets');pe.textContent='';PRE[s1.ctx].forEach(function(p){var b=el('button',null,p[0]);b.setAttribute('aria-label',p[0]+'을 사건 '+s1.target+'로 채우기');b.addEventListener('click',function(){s1[s1.target]=U.filter(p[1]);render1();});pe.appendChild(b);});
+  var ue=$('uni');ue.textContent='';U.forEach(function(x){var inA=A.indexOf(x)>=0,inB=B.indexOf(x)>=0;var b=el('button','chip'+(inA&&inB?' both':inA?' inA':inB?' inB':''),String(x));b.setAttribute('aria-pressed',inA||inB);b.setAttribute('aria-label',x+(inA?' A에 포함':'')+(inB?' B에 포함':''));b.addEventListener('click',function(){var t=s1[s1.target];var k=t.indexOf(x);if(k>=0)t.splice(k,1);else t.push(x);render1();});ue.appendChild(b);});
+  $('sA').textContent=txt(A);$('sB').textContent=txt(B);$('sI').textContent=txt(I);$('nA').textContent=A.length;$('nB').textContent=B.length;$('nI').textContent=I.length;
+  var su=$('sU');su.textContent='';Un.forEach(function(x){su.appendChild(el('span','chip res'+(I.indexOf(x)>=0?' both':''),String(x)));});if(!Un.length)su.textContent='(없음)';
+  var f=A.length+' + '+B.length+(I.length?' - '+I.length:'')+' = '+Un.length+'가지';
+  if(A.length+B.length-I.length!==Un.length)f+=' (검증 오류!)';
+  $('f1').textContent=f;
+  $('e1').textContent=I.length?'겹치는 '+txt(I)+'을(를) A와 B에서 두 번 세었으므로 한 번 빼 줍니다 (중복 제거).':(A.length||B.length?'겹치는 경우가 없으므로 합의 법칙 그대로 더하면 됩니다.':'사건을 골라 보세요.');
+  $('t1').textContent='[교사용] A 또는 B = '+txt(Un)+' → '+Un.length+'가지';
+  setMsg('m1','');
+}
+$('ctxDice').addEventListener('click',function(){s1.ctx='dice';s1.A=[3,6];s1.B=[1,5];render1();});
+$('ctxCard').addEventListener('click',function(){s1.ctx='card';s1.A=[3,6,9,12];s1.B=[1,2,3,6];render1();});
+$('tgA').addEventListener('click',function(){s1.target='A';render1();});
+$('tgB').addEventListener('click',function(){s1.target='B';render1();});
+$('clr').addEventListener('click',function(){s1.A=[];s1.B=[];render1();});
+function chk1(){var v=$('g1').value;if(v==='')return;var Un=Core.union(s1.A,s1.B);if(+v===Un.length)setMsg('m1','정답! 겹침을 잘 처리했어요 👏',true);else setMsg('m1','다시 생각해 봐요. 겹치는 숫자를 확인했나요?',false);}
+$('c1').addEventListener('click',chk1);$('g1').addEventListener('keydown',function(e){if(e.key==='Enter')chk1();});
+function renderBus(){var a=+$('sb').value,b=+$('ss').value;$('vb').textContent=a;$('vs').textContent=b;var c=$('busChips');c.textContent='';var n=0;for(var i=1;i<=a;i++){c.appendChild(el('span','chip inA res','🚌'+i));n++;}for(i=1;i<=b;i++){c.appendChild(el('span','chip inB res','🚇'+i));n++;}
+  $('busF').textContent='버스 '+a+' + 지하철 '+b+' = '+(a+b)+'가지'+(n===a+b?'':' (검증 오류)');}
+$('sb').addEventListener('input',renderBus);$('ss').addEventListener('input',renderBus);
+
+/* ===== 2. 곱의 법칙 / 수형도 ===== */
+var NS='http://www.w3.org/2000/svg';
+function sv(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e;}
+function render2(){
+  var n=+$('tn').value,m=+$('tm').value,k=+$('tk').value;$('vtn').textContent=n;$('vtm').textContent=m;$('vtk').textContent=k;
+  var lv=[Core.range(1,n).map(function(i){return '상의'+i;}),Core.range(1,m).map(function(i){return '하의'+i;})];if(k>0)lv.push(Core.range(1,k).map(function(i){return '모자'+i;}));
+  var combos=Core.product(lv);var total=combos.length;var theory=n*m*(k>0?k:1);
+  $('f2').textContent=n+' × '+m+(k>0?' × '+k:'')+' = '+theory+'가지';
+  $('chk2').textContent=(total===theory?'✔ 수형도의 끝 가지 수 '+total+'개 = 곱셈식 '+theory+'가지 (일치)':'❌ 불일치');
+  $('t2').textContent='[교사용] 총 '+theory+'가지: '+combos.slice(0,6).map(function(c){return c.join('-');}).join(', ')+(total>6?' …':'');
+  var svg=$('tree');svg.textContent='';var RH=26,colW=130,W=60,levels=lv.length;
+  var H=total*RH+20,Wd=(levels+1)*colW+80;svg.setAttribute('width',Wd);svg.setAttribute('height',H);svg.setAttribute('viewBox','0 0 '+Wd+' '+H);
+  var counter=0;
+  var lines=sv('g',{stroke:'#8a94a8','stroke-width':1.5}),nodeG=sv('g',{});svg.appendChild(lines);svg.appendChild(nodeG);
+  function line(x1,y1,x2,y2){lines.appendChild(sv('line',{x1:x1,y1:y1,x2:x2,y2:y2}));}
+  function box(x,y,t,cls){var g=sv('g',{});var r=sv('rect',{x:x-W/2+10,y:y-10,width:W,height:20,rx:6,fill:cls||'#eaf3ff',stroke:'#1d5fd1'});var tx=sv('text',{x:x+10,y:y+5,'text-anchor':'middle','font-size':13,fill:'#1f2a44'});tx.textContent=t;g.appendChild(r);g.appendChild(tx);nodeG.appendChild(g);return g;}
+  function layout(depth,path,parent){var res=[];var names=lv[depth];names.forEach(function(nm){var node={nm:nm,depth:depth,path:path.concat([nm]),kids:[]};
+      if(depth===levels-1){node.y=10+counter*RH+RH/2;counter++;node.no=counter;}
+      else{node.kids=layout(depth+1,node.path,node);node.y=(node.kids[0].y+node.kids[node.kids.length-1].y)/2;}
+      res.push(node);});return res;}
+  var tops=layout(0,[],null);var rootY=(tops[0].y+tops[tops.length-1].y)/2;
+  var rx=20;box(rx+W/2-10,rootY,'시작','#fff3c4');
+  function draw(node,px,py){var x=(node.depth+1)*colW;line(px+W/2,py,x-W/2+10,node.y);var g=box(x,node.y,node.nm);
+    node.kids.forEach(function(c){draw(c,x+10,node.y);});
+    if(!node.kids.length){var xr=x+W/2+20;var nb=sv('g',{tabindex:0,role:'button','aria-label':node.no+'번째 경우: '+node.path.join(', '),style:'cursor:pointer'});var rr=sv('rect',{x:xr,y:node.y-10,width:32,height:20,rx:10,fill:'#fff8dc',stroke:'#e0b400'});var t=sv('text',{x:xr+16,y:node.y+5,'text-anchor':'middle','font-size':12,fill:'#1f2a44'});t.textContent=node.no;nb.appendChild(rr);nb.appendChild(t);
+      var act=function(){$('leafMsg').textContent=node.no+'번째 경우: '+node.path.join(' → ');$('leafMsg').className='msg ok';};nb.addEventListener('click',act);nb.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();act();}});nodeG.appendChild(nb);}
+  }
+  tops.forEach(function(t){draw(t,rx+W/2-10+10,rootY);});
+  $('leafMsg').textContent='수형도 맨 오른쪽 번호 칸을 클릭하면 그 경우의 길이 표시돼요.';$('leafMsg').className='msg';
+}
+['tn','tm','tk'].forEach(function(i){$(i).addEventListener('input',render2);});
+
+/* ===== 3. 동전·주사위 ===== */
+var s3={counts:{},total:0,last:null,log:[],keys:[]};
+function outcomes3(){var n=+$('cn').value,m=+$('cm').value;var arrs=[];for(var i=0;i<n;i++)arrs.push(['앞','뒤']);for(i=0;i<m;i++)arrs.push(Core.range(1,6));return{n:n,m:m,list:Core.product(arrs)};}
+function lab3(o,n){return '🪙'+o.slice(0,n).join('')+' 🎲'+o.slice(n).join(',');}
+function render3(){
+  var O=outcomes3();var n=O.n,m=O.m;$('vcn').textContent=n;$('vcm').textContent=m;
+  var th=Math.pow(2,n)*Math.pow(6,m);
+  $('f3').textContent='2^'+n+' × 6^'+m+' = '+Math.pow(2,n)+' × '+Math.pow(6,m)+' = '+th+'가지';
+  $('chk3').textContent=(O.list.length===th?'✔ 표의 칸 수 '+O.list.length+'개 = 이론값 '+th+' (일치)':'❌ 불일치');$('chk3').className='msg '+(O.list.length===th?'ok':'bad');
+  var g=$('tbl');g.textContent='';var seen=0;
+  O.list.forEach(function(o){var key=o.join('|');var c=s3.counts[key]||0;if(c)seen++;var d=el('div',(s3.last===key?'now':c?'seen':''),lab3(o,n)+(c?' ×'+c:''));d.dataset.key=key;g.appendChild(d);});
+  $('tot3').textContent=s3.total;$('seen3').textContent=seen;
+  var nowEl=g.querySelector('.now');if(nowEl&&nowEl.scrollIntoView){try{g.scrollTop=Math.max(0,nowEl.offsetTop-g.offsetTop-60);}catch(e){}}
+  $('now3').textContent=s3.last?lab3(s3.last.split('|').map(function(x){return /^\d$/.test(x)?+x:x;}),n):'아직 던지지 않았어요';
+  var l=$('log3');l.textContent='';s3.log.slice(-20).forEach(function(k){l.appendChild(el('span','chip res',lab3(k.split('|'),n)));});
+}
+function throwN(c){var O=outcomes3();var n=O.n,m=O.m;for(var t=0;t<c;t++){var o=[];for(var i=0;i<n;i++)o.push(Math.random()<0.5?'앞':'뒤');for(i=0;i<m;i++)o.push(1+Math.floor(Math.random()*6));var key=o.join('|');s3.counts[key]=(s3.counts[key]||0)+1;s3.total++;s3.last=key;s3.log.push(key);}render3();}
+function reset3(){s3={counts:{},total:0,last:null,log:[]};render3();}
+$('th1').addEventListener('click',function(){throwN(1);});$('th10').addEventListener('click',function(){throwN(10);});$('th100').addEventListener('click',function(){throwN(100);});$('thR').addEventListener('click',reset3);
+$('cn').addEventListener('input',reset3);$('cm').addEventListener('input',reset3);
+
+/* ===== 4. 한 줄로 세우기 ===== */
+var NAMES=['민수','지아','하준','서윤','도윤','예린','수아','지후'];
+var s4={line:[],found:{}};
+function adjacent(p){var a=p.indexOf(NAMES[0]),b=p.indexOf(NAMES[1]);return a>=0&&b>=0&&Math.abs(a-b)===1;}
+function p4n(){return +$('pn').value;}function p4r(){return Math.min(+$('pr').value,p4n());}
+function condOn(){return $('pcond').checked&&p4r()===p4n();}
+function render4(){
+  var n=p4n();var pr=$('pr');pr.max=n;if(+pr.value>n)pr.value=n;var r=p4r();$('vpn').textContent=n;$('vpr').textContent=r;
+  $('pcname').textContent=NAMES[0]+'·'+NAMES[1];$('pcond').disabled=(r!==n);if(r!==n)$('pcond').checked=false;
+  var items=NAMES.slice(0,n);var all=Core.enumPerms(items,r);var cond=condOn();var list=cond?all.filter(adjacent):all;
+  var th=Core.perm(n,r);if(all.length!==th)console.error('순열 불일치');
+  var ex=[];for(var i=0;i<r;i++)ex.push(n-i);
+  var fm=ex.join(' × ')+' = '+th+'가지  ('+n+'명 중 '+r+'명을 한 줄로 세우기'+(r===n?', '+n+'! = '+th:'')+')';
+  if(cond){fm='이웃 조건: 2 × '+Core.fact(n-1)+' = '+list.length+'가지';}
+  $('f4').textContent=fm;
+  var ne=$('pnames');ne.textContent='';items.forEach(function(nm){var used=s4.line.indexOf(nm)>=0;var b=el('button','chip'+(used?' used':''),nm);b.setAttribute('aria-label',nm+' 세우기');b.disabled=false;b.addEventListener('click',function(){click4(nm);});ne.appendChild(b);});
+  var le=$('pline');le.textContent='';for(i=0;i<r;i++){le.appendChild(el('span','chip res'+(s4.line[i]?' cur':''),s4.line[i]||(i+1)+'번째'));}
+  var foundN=list.filter(function(p){return s4.found[p.join('-')];}).length;$('pfound').textContent=foundN;$('ptot').textContent=list.length;
+  var g=$('plist');g.textContent='';var full=n<=4;var show=full?list:list.slice(0,12);
+  if(!full){var fs=list.filter(function(p){return s4.found[p.join('-')]&&show.indexOf(p)<0;});show=show.concat(fs);}
+  show.forEach(function(p){g.appendChild(el('div',s4.found[p.join('-')]?'found':'',p.join(' → ')));});
+  $('pnote').textContent=full?'n이 4 이하이므로 모든 경우를 나열했어요.':'n이 5 이상이면 일부 12개와 찾은 경우만 보여 줘요. 전체는 '+list.length+'가지입니다 (나머지 '+Math.max(0,list.length-12)+'가지 이상 생략).';
+  $('t4').textContent='[교사용] 전체 '+list.length+'가지 ('+fm+')';
+  var ce=$('condExp');var cn=Math.min(n,5);
+  if(n>=2){var cnt=2*Core.fact(n-1);var chk=Core.enumPerms(NAMES.slice(0,n),n).filter(adjacent).length;
+    ce.innerHTML='<div class="rule">'+NAMES[0]+'와 '+NAMES[1]+'가 이웃하게 '+n+'명을 한 줄로 세우기: 이웃한 두 사람을 <b>한 묶음</b>으로 보면 '+(n-1)+'개를 한 줄로 세우는 경우 <b>'+Core.fact(n-1)+'가지</b>, 묶음 안에서 두 사람이 자리를 바꾸는 경우 <b>2가지</b> → 곱의 법칙으로 2 × '+Core.fact(n-1)+'.</div><div class="mini">위의 "조건" 체크(r = n일 때)를 켜면 이웃인 경우만 나열해 직접 확인할 수 있어요. 열거 결과: '+chk+'가지 '+(chk===cnt?'(공식과 일치 ✔)':'(불일치!)')+'</div><div class="teacher-only">[교사용] 정답: '+cnt+'가지</div>';
+    $('pg').dataset.ans=cnt;}
+}
+function click4(nm){if(s4.line.length>=p4r())s4.line=[];if(s4.line.indexOf(nm)>=0)return;s4.line.push(nm);var r=p4r();
+  if(s4.line.length===r){var key=s4.line.join('-');var cond=condOn();
+    if(cond&&!adjacent(s4.line)){setMsg('pmsg','조건 불충족: '+NAMES[0]+'와 '+NAMES[1]+'가 이웃하지 않아요. (기록 안 됨)',false);}
+    else if(s4.found[key]){setMsg('pmsg','이미 세워 본 줄이에요. 순서를 바꿔 다른 줄을 찾아봐요!',false);}
+    else{s4.found[key]=true;setMsg('pmsg','새로운 경우를 찾았어요! ✨',true);}}
+  else setMsg('pmsg',(r-s4.line.length)+'명 더 세워 주세요.');
+  render4();}
+$('pundo').addEventListener('click',function(){s4.line.pop();render4();});
+$('pclr').addEventListener('click',function(){s4.line=[];setMsg('pmsg','');render4();});
+function reset4(){s4={line:[],found:{}};setMsg('pmsg','');render4();}
+$('pn').addEventListener('input',reset4);$('pr').addEventListener('input',reset4);$('pcond').addEventListener('change',reset4);
+function chk4(){var v=$('pg').value;if(v==='')return;if(+v===+$('pg').dataset.ans)setMsg('pgm','정답! 묶음 아이디어를 잘 썼어요 👏',true);else setMsg('pgm','다시! 묶음의 줄 세우기 × 묶음 안 자리바꿈(2)을 곱해 보세요.',false);}
+$('pgc').addEventListener('click',chk4);$('pg').addEventListener('keydown',function(e){if(e.key==='Enter')chk4();});
+
+/* ===== 5. 대표 뽑기 ===== */
+var s5={sel:[],rec:{},dup:0,order:[]};
+function render5(){
+  var n=+$('cn5').value;var cr=$('cr5');cr.max=Math.min(4,n);if(+cr.value>n)cr.value=n;var r=+cr.value;$('vcn5').textContent=n;$('vcr5').textContent=r;
+  var items=NAMES.slice(0,n);var P=Core.perm(n,r),F=Core.fact(r),C=Core.comb(n,r);
+  var enumC=Core.enumCombs(items,r).length;var pe=Core.enumPerms(items,r).length;
+  var ok=(P/F===C)&&enumC===C&&pe===P;
+  $('f5').textContent='한 줄로 세우기 '+P+'가지 ÷ '+r+'! ('+F+') = '+C+'가지'+(ok?' ✔':' (검증 오류)');
+  var ne=$('cnames');ne.textContent='';items.forEach(function(nm){var on=s5.sel.indexOf(nm)>=0;var b=el('button','chip'+(on?' cur':''),nm);b.setAttribute('aria-pressed',on);b.setAttribute('aria-label',nm+(on?' 선택 해제':' 선택'));b.addEventListener('click',function(){var k=s5.sel.indexOf(nm);if(k>=0)s5.sel.splice(k,1);else if(s5.sel.length<r)s5.sel.push(nm);else setMsg('cmsg','이미 '+r+'명을 골랐어요. 하나를 빼거나 기록하세요.',false);render5();});ne.appendChild(b);});
+  var se=$('csel');se.textContent='';s5.sel.forEach(function(x){se.appendChild(el('span','chip res cur',x));});if(!s5.sel.length)se.textContent=(r===0?'(아무도 뽑지 않음)':'(없음)');
+  $('crec').disabled=(s5.sel.length!==r);
+  var keys=Object.keys(s5.rec);$('cfound').textContent=keys.length;$('cdupn').textContent=s5.dup;
+  var g=$('clist');g.textContent='';s5.order.forEach(function(o){g.appendChild(el('div',o.dup?'dup':'found',(o.items.length?o.items.join(', '):'(아무도 안 뽑음)')+(o.dup?' (중복)':'')));});
+  $('t5').textContent='[교사용] 정답: '+C+'가지 / 한 팀당 순서 '+F+'가지 / 예: '+Core.enumCombs(items,r).slice(0,5).map(function(c){return c.join('')||'∅';}).join(', ')+(C>5?' …':'');
+  var b=$('grpBoxes');b.textContent='';if(P<=120){for(var i=0;i<C;i++){var gp=el('div','grp');gp.setAttribute('aria-hidden','true');for(var j=0;j<F;j++)gp.appendChild(el('i'));b.appendChild(gp);}}else b.textContent='(그림 생략: '+C+'묶음 × '+F+'가지)';
+  $('zeroNote').textContent=r===0?'0명을 뽑는 경우: "아무도 뽑지 않는다"는 방법 1가지 (0! = 1, C(n,0) = 1). r = n이면 모두 뽑는 1가지.':(r===n?'n명 중 n명 모두 뽑으면 1가지 (n! ÷ n! = 1).':'');
+}
+$('crec').addEventListener('click',function(){var r=+$('cr5').value;if(s5.sel.length!==r)return;var key=s5.sel.slice().sort().join(',');
+  if(s5.rec[key]){s5.dup++;s5.order.push({items:s5.sel.slice(),dup:true});setMsg('cmsg','같은 사람들이에요! 순서만 다르니 같은 경우로 걸러냈어요 (중복).',false);}
+  else{s5.rec[key]=true;s5.order.push({items:s5.sel.slice(),dup:false});setMsg('cmsg','새로운 조합이에요! ✨ (이 팀을 한 줄로 세우면 '+Core.fact(r)+'가지지만 대표 뽑기에서는 1가지)',true);}
+  s5.sel=[];render5();});
+$('cclr').addEventListener('click',function(){s5.sel=[];render5();});
+function reset5(){s5={sel:[],rec:{},dup:0,order:[]};setMsg('cmsg','');setMsg('cgm','');render5();}
+$('creset').addEventListener('click',reset5);$('cn5').addEventListener('input',reset5);$('cr5').addEventListener('input',reset5);
+function chk5(){var v=$('cg').value;if(v==='')return;var C=Core.comb(+$('cn5').value,+$('cr5').value);if(+v===C)setMsg('cgm','정답! 대단해요 🎉 '+C+'가지!',true);else setMsg('cgm','아직이에요. 한 줄로 세우는 수를 r!로 나눠 보세요.',false);}
+$('cgc').addEventListener('click',chk5);$('cg').addEventListener('keydown',function(e){if(e.key==='Enter')chk5();});
+function renderH(){var n=+$('hn').value;$('vhn').textContent=n;var s=$('hsvg');s.textContent='';var pts=[];for(var i=0;i<n;i++){var a=-Math.PI/2+2*Math.PI*i/n;pts.push([130+95*Math.cos(a),130+95*Math.sin(a)]);}
+  var cnt=0;for(i=0;i<n;i++)for(var j=i+1;j<n;j++){s.appendChild(sv('line',{x1:pts[i][0],y1:pts[i][1],x2:pts[j][0],y2:pts[j][1],stroke:'#1d5fd1','stroke-width':1.5,opacity:.7}));cnt++;}
+  pts.forEach(function(p,i){s.appendChild(sv('circle',{cx:p[0],cy:p[1],r:13,fill:'#ffe27a',stroke:'#b58900'}));var t=sv('text',{x:p[0],y:p[1]+5,'text-anchor':'middle','font-size':14});t.textContent=String.fromCharCode(65+i);s.appendChild(t);});
+  var th=Core.comb(n,2);$('f6').textContent=n+' × '+(n-1)+' ÷ 2 = '+th+'번(개)'+(cnt===th&&Core.enumCombs(Core.range(1,n),2).length===th?' ✔ (그린 선분 수와 일치)':' (검증 오류)');}
+$('hn').addEventListener('input',renderH);
+
+/* ===== 6. 연습문제 ===== */
+var KEY='gyeongusu_v1';
+var S={qs:[],st:[],only:false};
+var hist={tried:0,correct:0,types:{},sets:[]};
+(function(){var r=store.get(KEY);if(r){try{var o=JSON.parse(r);if(o&&typeof o.tried==='number')hist=o;}catch(e){}}})();
+function saveHist(){var ok=store.set(KEY,JSON.stringify(hist));$('storeNote').textContent=ok?'기록은 이 브라우저에 저장됩니다.':'저장소를 쓸 수 없어 이번 접속 동안만 기록돼요.';}
+function newSet(){S.qs=Core.makeSession();S.st=S.qs.map(function(){return{given:null,done:false,right:false,pick:null};});S.only=false;renderQ();}
+function renderQ(){
+  var box=$('qs');box.textContent='';var done=0,right=0;S.st.forEach(function(s){if(s.done){done++;if(s.right)right++;}});
+  $('score').textContent='이번 세트: '+done+' / '+S.qs.length+'문제 풀이, 정답 '+right+'개, 정답률 '+(done?Math.round(right/done*100):0)+'%';
+  var ty=Object.keys(hist.types).map(function(k){var t=hist.types[k];return k+' '+t[1]+'/'+t[0];}).join(' · ');
+  $('stat').textContent='누적: '+hist.tried+'번 풀어 '+hist.correct+'번 정답 (정답률 '+(hist.tried?Math.round(hist.correct/hist.tried*100):0)+'%)'+(ty?' | 유형별 정답/시도: '+ty:'');
+  S.qs.forEach(function(q,i){var s=S.st[i];if(S.only&&!(s.done&&!s.right)&&!s.retry)return;
+    var d=el('div','q'+(s.done?(s.right?' right':' wrong'):''));d.appendChild(el('div',null,(i+1)+'. ['+q.type+'] '+q.q));
+    if(q.kind==='choice'){var cw=el('div','choices');cw.setAttribute('role','group');cw.setAttribute('aria-label','보기');q.choices.forEach(function(c,ci){var b=el('button',null,'①②③④'.charAt(ci)+' '+c);b.setAttribute('aria-pressed',s.pick===c);b.disabled=s.done;b.addEventListener('click',function(){s.pick=c;renderQ();});cw.appendChild(b);});d.appendChild(cw);}
+    var row=el('div','row');
+    if(q.kind==='input'){var inp=document.createElement('input');inp.type='number';inp.value=s.given!=null?s.given:'';inp.disabled=s.done;inp.setAttribute('aria-label',(i+1)+'번 답 입력');inp.addEventListener('input',function(){s.given=inp.value;});inp.addEventListener('keydown',function(e){if(e.key==='Enter'){s.given=inp.value;check(i);}});row.appendChild(inp);}
+    var cb=el('button','primary','정답 확인');cb.disabled=s.done;cb.addEventListener('click',function(){check(i);});row.appendChild(cb);
+    var rs=el('span','msg');if(s.done){rs.textContent=s.right?'정답! 잘했어요 🎉':'오답. 정답은 '+q.answer+'입니다.';rs.className='msg '+(s.right?'ok':'bad');}row.appendChild(rs);d.appendChild(row);
+    var ex=el('div','expl');ex.appendChild(el('b',null,'풀이'));var ol=el('ol');q.steps.forEach(function(t){ol.appendChild(el('li',null,t));});ex.appendChild(ol);
+    if(s.done){d.appendChild(ex);}else if(teacher){var tp=el('div','teacher-only','[교사용] 정답 '+q.answer);tp.style.display='block';tp.appendChild(ex);d.appendChild(tp);}
+    box.appendChild(d);});
+  if(S.only&&!box.children.length)box.appendChild(el('div','card','다시 풀 오답이 없어요. 훌륭해요!'));
+}
+function check(i){var q=S.qs[i],s=S.st[i];if(s.done)return;var v=q.kind==='choice'?s.pick:(s.given===''||s.given==null?null:+s.given);
+  if(v==null){alert('먼저 답을 고르거나 입력해 주세요.');return;}
+  s.done=true;s.retry=false;s.right=(+v===q.answer);hist.tried++;if(s.right)hist.correct++;var t=hist.types[q.type]||[0,0];t[0]++;if(s.right)t[1]++;hist.types[q.type]=t;
+  var done=0,right=0;S.st.forEach(function(x){if(x.done){done++;if(x.right)right++;}});if(done===S.qs.length){hist.sets.push({d:new Date().toISOString().slice(0,10),t:done,c:right});hist.sets=hist.sets.slice(-20);}
+  saveHist();renderQ();}
+$('qnew').addEventListener('click',newSet);
+$('qwrong').addEventListener('click',function(){var any=false;S.st.forEach(function(s){if(s.done&&!s.right){s.done=false;s.given=null;s.pick=null;s.retry=true;any=true;}});S.only=true;if(!any)S.only=true;renderQ();});
+$('qclear').addEventListener('click',function(){hist={tried:0,correct:0,types:{},sets:[]};store.del(KEY);saveHist();store.del(KEY);renderQ();});
+
+function renderAll(){render1();renderBus();render2();render3();render4();render5();renderH();renderQ();}
+newSet();saveHist();renderAll();show(0);
+})();
+</script>
+</body>
+</html>

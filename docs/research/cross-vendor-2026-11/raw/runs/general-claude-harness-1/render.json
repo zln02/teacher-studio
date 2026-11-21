@@ -1,0 +1,14 @@
+{
+ "pngs": [
+  "html-1-01-start.png",
+  "html-1-02-click1.png",
+  "html-1-03-click2.png",
+  "html-2-01-start.png",
+  "html-2-02-click1.png",
+  "html-2-03-click2.png"
+ ],
+ "notes": [
+  "[badminton_bracket.html] js_errors=[]",
+  "[badminton_scoreboard.html] js_errors=[]"
+ ]
+}

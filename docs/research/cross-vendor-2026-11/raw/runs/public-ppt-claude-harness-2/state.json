@@ -1,0 +1,37 @@
+{
+ "secs": 104,
+ "timed_out": false,
+ "cost": 0.3678782,
+ "out_tok": 9418,
+ "turns": 16,
+ "is_error": false,
+ "last": "2026학년도 늘봄학교 운영 결과 발표자료를 14장짜리 PPT로 만들어, 현재 폴더에 저장했습니다. 파일 검사는 모두 통과했습니다.\n\n**파일:** `C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\xv\\runs\\public-ppt-claude-harness-2\\work\\늘봄학교_운영결과_보고.pptx`\n\nPowerPoint에서 열면 글, 표, 그래프를 모두 직접 고칠 수 있습니다.\n\n**구성:** 표지, 목차, 요약, 본문 10장, 마무리 순서입니다.\n- **추진 배경:** 목적, 추진 체계\n- **운영 실적:** 참여 현황, 학년별 참여율, 프로그램별 운영 현황\n- **예산 집행:** 편성, 집행, 집행률 표\n- **운영 성과:** 만족도 비교, 성과와 개선 과제\n- **향후 계획:** 2027학년도 일정과 중점 과제\n\n**확인한 것**\n- 빈칸이나 자리표시 문구가 남아 있지 않습니다.\n- 글자가 상자를 넘치지 않고, 빈 슬라이드도 없습니다.\n- 숫자가 슬라이드마다 서로 맞습니다. 예를 들어 357/420은 85.0 %이고, 224,950/235,000은 95.7 %입니다.\n- 미리보기는 도형 위치로 그린 대략적인 그림입니다. LibreOffice로 실제처럼 그려 보지 않았으니, 글자가 넘치는지는 PowerPoint에서 한 번 열어 확인해 주세요.\n- 글꼴은 Noto Sans KR입니다. PC에 없으면 비슷한 글꼴로 바뀝니다.\n\n**가정한 것**\n- 보고 기관은 「우리 학교」, 부서는 「교육연구부」, 날짜는 2026. 11. 21.입니다. 교육지원청에 보고하는 학교 입장으로 만들었습니다.\n- 학생 수, 참여 인원, 예산, 만족도 등 모든 수치는 가상 예시입니다. 각 슬라이드 하단에 「예시 자료(가상 수치)」라고 표시했습니다.\n\n**바꿔 넣을 곳:** 실제 학교명과 부서명, 전교생 수와 학년별 인원, 월별 참여 인원, 돌봄교실과 강좌 현황, 예산 집행액, 만족도 점수, 2027학년도 계획입니다.\n\n글자 크기나 분위기(색, 표지 느낌)는 말씀만 하시면 바꿔 드립니다. 실제 수치를 알려 주시면 그대로 교체해 다시 만들겠습니다.",
+ "denials": [
+  [
+   "Bash",
+   "cd \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-slides\"; ls assets/spec-examples/context/; grep -n \"public\" -i r"
+  ],
+  [
+   "Bash",
+   "cd \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-slides\" && (python scripts/deck.py --spec \"../../../xv/runs/publ"
+  ],
+  [
+   "PowerShell",
+   "$s='C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad'; python \"$s\\cfg-harness\\skills\\teacher-slides\\scripts\\deck.py\" --spec \"$s\\xv\\runs\\public-p"
+  ],
+  [
+   "PowerShell",
+   "Set-Location 'C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad'; python 'cfg-harness\\skills\\teacher-slides\\scripts\\deck.py' --spec 'xv\\runs\\publ"
+  ]
+ ],
+ "name": "public-ppt-claude-harness-2",
+ "task": "public-ppt",
+ "vendor": "claude",
+ "cond": "harness",
+ "run": 2,
+ "file": "늘봄학교_운영결과_보고.pptx",
+ "all_files": [
+  "늘봄학교_운영결과_보고.pptx"
+ ],
+ "opens": true
+}

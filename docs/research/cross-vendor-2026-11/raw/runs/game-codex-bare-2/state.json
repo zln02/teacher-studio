@@ -1,0 +1,27 @@
+{
+ "secs": 473,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 21123,
+ "tok": {
+  "input": 558715,
+  "cached": 516352,
+  "output": 21123,
+  "reasoning": 2323
+ },
+ "turns": 12,
+ "failed_cmds": 4,
+ "is_error": false,
+ "errors": [],
+ "last": "초등학교 6학년 과학 복습 게임 **소화 탐험대**를 현재 폴더에 만들었습니다. [index.html](C:/Users/User/Downloads/xv-eval-work/game-codex-bare-2/work/index.html)을 브라우저에서 열면 인터넷 연결 없이 바로 플레이할 수 있어요.\n\n몸속 지도에서 소화 기관 6곳을 눌러 살펴보고, 기관 찾기·하는 일·이동 순서의 세 단계에서 총 9문제를 풀어요. 답을 고르면 해설이 나오고, 마지막에 틀린 문제를 다시 볼 수 있어요.\n\n9문제의 채점, 순서 선택 취소, 오답 복습, 다시 시작은 자동 테스트로 확인했습니다. 실행 환경에서 브라우저가 시작되지 않아 실제 화면은 확인하지 못했습니다.",
+ "name": "game-codex-bare-2",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

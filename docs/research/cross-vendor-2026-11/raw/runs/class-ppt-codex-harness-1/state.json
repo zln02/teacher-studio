@@ -1,0 +1,38 @@
+{
+ "secs": 571,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 11720,
+ "tok": {
+  "input": 3489413,
+  "cached": 3398912,
+  "output": 11720,
+  "reasoning": 1140
+ },
+ "turns": 24,
+ "failed_cmds": 6,
+ "is_error": false,
+ "errors": [],
+ "last": "[조선 후기 실학의 등장.pptx](<C:/Users/User/Downloads/xv-eval-work/class-ppt-codex-harness-1/work/조선 후기 실학의 등장.pptx>)를 현재 폴더에 저장했습니다.\n\n중학교 3학년 **45분 수업용 10장**입니다. 실학의 등장 배경과 두 개혁 흐름을 비교하고, 짝 활동과 확인 문제로 배운 내용을 적용하도록 구성했습니다. 활동 예시 답안과 진행 시간, 참고 자료는 발표자 노트에 넣었습니다.\n\nPowerPoint에서 열어 편집할 수 있습니다. 빈칸과 글자 넘침을 점검했고, 전체 배치는 파일에서 만든 근사 미리보기로 확인했습니다.",
+ "name": "class-ppt-codex-harness-1",
+ "task": "class-ppt",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "조선 후기 실학의 등장.pptx",
+ "all_files": [
+  ".ppt-review\\chrome\\CrashpadMetrics-active.pma",
+  ".ppt-review\\chrome\\Crashpad\\metadata",
+  ".ppt-review\\chrome\\Crashpad\\reports\\c1f9e8ac-4d2e-4b36-8f24-9adf99413be8.dmp",
+  ".ppt-review\\chrome\\Crashpad\\settings.dat",
+  ".ppt-review\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.db",
+  ".ppt-review\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.db-wal",
+  ".ppt-review\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.journal",
+  ".ppt-review\\chrome\\Local State",
+  ".ppt-review\\chrome\\Variations",
+  ".ppt-review\\chrome\\VariationsSafeSeedV2",
+  ".ppt-review\\chrome\\VariationsSeedV2",
+  "조선 후기 실학의 등장.pptx"
+ ],
+ "opens": true
+}

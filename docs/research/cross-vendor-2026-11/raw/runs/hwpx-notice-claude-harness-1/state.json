@@ -1,0 +1,31 @@
+{
+ "secs": 28,
+ "timed_out": false,
+ "cost": 0.1729954,
+ "out_tok": 2812,
+ "turns": 9,
+ "is_error": false,
+ "last": "3학년 생존 수영 실기교육 안내 가정통신문을 한글(HWPX) 파일로 만들었습니다. 자동 점검(파일 구조, 빈칸, 개인정보, 날짜 형식, 띄어쓰기, 글꼴)은 모두 통과했습니다. 한글 프로그램에서 직접 열어 보지는 못했습니다.\n\n- 파일: `3학년_생존수영_실기교육_안내.hwpx`\n- 확인용 미리보기: `3학년_생존수영_실기교육_안내.preview.html`. 한글 화면의 근사치라서 실제 줄바꿈은 조금 다를 수 있습니다.\n\n**내용:** 안내 인사말, 기간·시간·장소·대상·교육 내용, 4일 일정표, 준비물, 건강·안전 유의 사항, 문의, 날짜와 학교장 발신, 그리고 절취선 아래 참가 회신서(참가 여부, 건강상 알릴 사항, 보호자 서명)가 들어 있습니다.\n\n**제가 임의로 정한 값**(실제와 다르면 한글에서 고쳐 주세요):\n- 학교명은 「우리 학교」, 발신은 「우리 학교장」입니다.\n- 교육 기간은 2026. 12. 8.(화)∼12. 11.(금) 4일입니다.\n- 시간은 09:30∼12:00이고, 학교 출발은 09:00, 도착은 12:30입니다.\n- 장소는 학교 인근 실내 수영장이고, 버스로 이동합니다.\n- 일정표는 1∼3반과 4∼6반으로 나눴고, 회신 마감은 12월 4일(금)입니다.\n- 문서 날짜는 2026. 11. 21.입니다.",
+ "denials": [
+  [
+   "Bash",
+   "cd \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-docs\"; ls assets/examples; cat assets/examples/*notice*.json | h"
+  ],
+  [
+   "Bash",
+   "S=\"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-docs\"; ls $S/assets/examples; cat $S/assets/examples/*notice*.jso"
+  ]
+ ],
+ "name": "hwpx-notice-claude-harness-1",
+ "task": "hwpx-notice",
+ "vendor": "claude",
+ "cond": "harness",
+ "run": 1,
+ "file": "3학년_생존수영_실기교육_안내.hwpx",
+ "all_files": [
+  "3학년_생존수영_실기교육_안내.hwpx",
+  "3학년_생존수영_실기교육_안내.preview.html",
+  "spec.json"
+ ],
+ "opens": true
+}

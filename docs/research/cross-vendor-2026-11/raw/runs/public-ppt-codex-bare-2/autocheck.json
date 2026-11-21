@@ -1,0 +1,6 @@
+{
+ "check": {
+  "rc": 1,
+  "out": "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '[학교명]'), (1, '[관할 교육지원청]'), (1, '[연. 월. 일.]'), (1, '[직위·성명]'), (1, '학교명'), (2, '[확인된 성과 1건과 이를 뒷받침하는 수치 또는 기록]'), (2, '[운영 과정에서 확인된 문제 1건과 필요한 후속 조치]'), (2, '[시작일 ~ 보고 기준일]')] ...(+51)\nPASS text fits its box (estimate)\nPASS every shape inside the slide\nPASS no empty placeholder\nFAIL text large enough to project (>= 11pt): 4 runs under 11pt, e.g. [(2, '유형 간 중복 참여 제거', 10.0), (2, '보고 기준일까지 운영한 프', 10.0), (2, '유효 응답 [  ]명', 10.0)] -> 글자를 키우고 내용을 줄이거나 두 장으로\nNOTE 128 text runs are 11-14pt (e.g. [(1, '보고 기준일 [연. 월. ', 13.0), (2, '운영 요약', 12.0)]): 뒷자리에서는 읽기 어려워요. 꼭 필요한 주석이 아니면 14pt 이상으로\nPASS no empty-looking slide (visual weight)\n\nRESULT: FAIL (2 fail)\nNOT DONE: 위 FAIL을 고치고 이 점검을 다시 돌리세요. PASS가 될 때까지는 「다 됐어요」라고 하지 않아요. (모르는 값은 「우리 학교」·오늘 날짜처럼 그럴듯한 값으로 채우고 마지막에 한 줄로 알리기. 양식을 원한 경우만 --allow-blanks)\n"
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "secs": 202,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 8413,
+ "tok": {
+  "input": 413412,
+  "cached": 382336,
+  "output": 8413,
+  "reasoning": 227
+ },
+ "turns": 7,
+ "failed_cmds": 2,
+ "is_error": false,
+ "errors": [],
+ "last": "[2026학년도 늘봄학교 운영 결과.pptx](<C:/Users/User/Downloads/xv-eval-work/public-ppt-codex-bare-1/work/2026학년도 늘봄학교 운영 결과.pptx>)를 현재 폴더에 저장했습니다.\n\n교육지원청 보고용 11장으로 구성했습니다. 유형별 참여 실적, 돌봄 배정, 안전관리, 만족도, 예산 집행, 운영 사례, 차년도 개선 과제를 담았습니다. 표와 문구는 PowerPoint에서 편집할 수 있으며, 슬라이드마다 발표자 노트를 넣었습니다.\n\n학교 운영 기록이 제공되지 않아 학교명과 실적 수치는 입력란으로 남겨 두었습니다. 제출 전 학교 기록을 바탕으로 해당 항목을 채워 주세요.",
+ "name": "public-ppt-codex-bare-1",
+ "task": "public-ppt",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 1,
+ "file": "2026학년도 늘봄학교 운영 결과.pptx",
+ "all_files": [
+  "2026학년도 늘봄학교 운영 결과.pptx"
+ ],
+ "opens": true
+}

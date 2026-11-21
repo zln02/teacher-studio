@@ -1,0 +1,40 @@
+{
+ "secs": 260,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 5782,
+ "tok": {
+  "input": 860135,
+  "cached": 816256,
+  "output": 5782,
+  "reasoning": 610
+ },
+ "turns": 20,
+ "failed_cmds": 8,
+ "is_error": false,
+ "errors": [],
+ "last": "[3학년 생존수영 실기교육 안내 가정통신문.hwpx](<C:/Users/User/Downloads/xv-eval-work/hwpx-notice-codex-harness-2/work/3학년 생존수영 실기교육 안내 가정통신문.hwpx>)를 현재 폴더에 저장했습니다.\n\n실기교육 내용, 준비물, 수영장 안전수칙, 참여가 어려울 때의 연락 방법을 담았습니다. 학교 이름, 반별 일정, 수영장, 이동 방법, 비용 등은 배포 전에 확인할 수 있도록 **교사 초안**에 표시했습니다.\n\nHWPX 파일 구조 검사를 통과했고, 미리보기에서 A4 한 장에 들어가는 것을 확인했습니다. 실제 한글 화면의 줄바꿈은 확인하지 못했습니다.",
+ "name": "hwpx-notice-codex-harness-2",
+ "task": "hwpx-notice",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "3학년 생존수영 실기교육 안내 가정통신문.hwpx",
+ "all_files": [
+  ".notice-build\\3학년 생존수영 실기교육 안내 가정통신문.hwpx",
+  ".notice-build\\3학년 생존수영 실기교육 안내 가정통신문.preview.html",
+  ".notice-build\\chrome-review\\CrashpadMetrics-active.pma",
+  ".notice-build\\chrome-review\\Crashpad\\metadata",
+  ".notice-build\\chrome-review\\Crashpad\\reports\\91928bf3-432e-435b-9c4e-b04895716bea.dmp",
+  ".notice-build\\chrome-review\\Crashpad\\settings.dat",
+  ".notice-build\\chrome-review\\Local State",
+  ".notice-build\\chrome-review\\Variations",
+  ".notice-build\\chrome-review\\VariationsSafeSeedV2",
+  ".notice-build\\chrome-review\\VariationsSeedV2",
+  ".notice-build\\layout-review.pdf",
+  ".notice-build\\notice.json",
+  ".notice-build\\preview.png",
+  "3학년 생존수영 실기교육 안내 가정통신문.hwpx"
+ ],
+ "opens": true
+}

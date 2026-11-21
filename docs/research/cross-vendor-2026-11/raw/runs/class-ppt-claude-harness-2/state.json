@@ -1,0 +1,67 @@
+{
+ "secs": 164,
+ "timed_out": false,
+ "cost": 0.6081903000000001,
+ "out_tok": 3931,
+ "turns": 4,
+ "is_error": false,
+ "last": "조선 후기 실학 수업용 PPT를 만들었고, 빌드 검사를 모두 통과했습니다(`READY`). 총 12장으로, 확인 문제 정답 슬라이드 1장을 포함합니다.\n\n**파일:** `C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\xv\\runs\\class-ppt-claude-harness-2\\work\\조선후기_실학의_등장.pptx`\n\n**슬라이드 구성**\n1. 표지, 도입 질문이 부제로 들어 있습니다.\n2. 학습 목표\n3. 등장 배경과 실학의 정의(실사구시·경세치용·이용후생)\n4. 중농학파: 유형원·이익·정약용 (표)\n5. 중상학파: 유수원·홍대용·박지원·박제가 (표)\n6. 두 학파 비교\n7. 국학 연구 확대: 역사·지리·언어·백과\n8. 실학의 의의와 한계\n9. 확인 문제: 정답과 해설 포함\n10. 모둠 활동: 8분\n11. 정리\n12. 확인 문제 정답(자동 추가)\n\n**알아 둘 점**\n- 미리보기는 LibreOffice 없이 만든 근사 그림입니다. 글자 넘침이나 줄바꿈은 PowerPoint에서 한 번 열어 확인해 주세요. 글꼴이 PC에 없으면 비슷한 글꼴로 바뀝니다.\n- 12장 한도 때문에 확인 문제는 1문항만 넣었습니다. 더 필요하면 늘리고 다른 슬라이드를 합칠 수 있습니다.\n- 정약용의 여전론과 \"실천보다 이론에 머문 경우가 많음\"이라는 한계 항목은 교과서 표현을 확인하라고 슬라이드와 노트에 표시해 두었습니다.\n- 학교명과 교사명은 넣지 않았습니다. 두 학파의 출신 배경은 \"대체로 남인 계열 / 노론 북학파\"로 단순화했습니다.",
+ "denials": [
+  [
+   "Bash",
+   "mkdir -p \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/xv/runs/class-ppt-claude-harness-2/work/review\"; cat > \"C:/Users/User/AppData/Local/T"
+  ],
+  [
+   "PowerShell",
+   "$W='C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\xv\\runs\\class-ppt-claude-harness-2\\work'\nNew-Item -ItemType Directory -Force \"$W\\review\" | "
+  ],
+  [
+   "PowerShell",
+   "Set-Location 'C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\cfg-harness\\skills\\teacher-slides'\n$W='C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30"
+  ],
+  [
+   "Bash",
+   "cd /c/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-slides\nW=/c/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30"
+  ],
+  [
+   "Bash",
+   "cd /c/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness/skills/teacher-slides && python scripts/deck.py --spec /c/Users/User/AppData/Loc"
+  ]
+ ],
+ "name": "class-ppt-claude-harness-2",
+ "task": "class-ppt",
+ "vendor": "claude",
+ "cond": "harness",
+ "run": 2,
+ "file": "조선후기_실학의_등장.pptx",
+ "all_files": [
+  "deck.json",
+  "review\\_approx-01.html",
+  "review\\_approx-01.png",
+  "review\\_approx-02.html",
+  "review\\_approx-02.png",
+  "review\\_approx-03.html",
+  "review\\_approx-03.png",
+  "review\\_approx-04.html",
+  "review\\_approx-04.png",
+  "review\\_approx-05.html",
+  "review\\_approx-05.png",
+  "review\\_approx-06.html",
+  "review\\_approx-06.png",
+  "review\\_approx-07.html",
+  "review\\_approx-07.png",
+  "review\\_approx-08.html",
+  "review\\_approx-08.png",
+  "review\\_approx-09.html",
+  "review\\_approx-09.png",
+  "review\\_approx-10.html",
+  "review\\_approx-10.png",
+  "review\\_approx-11.html",
+  "review\\_approx-11.png",
+  "review\\_approx-12.html",
+  "review\\_approx-12.png",
+  "review\\조선후기_실학의_등장-approx-sheet.png",
+  "조선후기_실학의_등장.pptx"
+ ],
+ "opens": true
+}

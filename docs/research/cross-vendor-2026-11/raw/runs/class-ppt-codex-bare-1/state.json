@@ -1,0 +1,27 @@
+{
+ "secs": 269,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 9944,
+ "tok": {
+  "input": 545838,
+  "cached": 503808,
+  "output": 9944,
+  "reasoning": 493
+ },
+ "turns": 7,
+ "failed_cmds": 2,
+ "is_error": false,
+ "errors": [],
+ "last": "[조선 후기 실학의 등장.pptx](<C:/Users/User/Downloads/xv-eval-work/class-ppt-codex-bare-1/work/조선 후기 실학의 등장.pptx>)를 현재 폴더에 저장했습니다.\n\n중학교 3학년 역사 수업용으로 10장으로 구성했습니다. 실학의 등장 배경, 중농·중상 학파의 비교, 대표 학자들의 주장, 『북학의』를 읽는 3분 짝 활동, 확인 문제와 정답을 담았습니다. 교사용 진행 안내와 짝 활동 예시 답안은 발표자 노트에 넣었습니다.\n\n슬라이드 미리보기와 파일 구조를 확인했습니다. PowerPoint 앱에서의 재생은 확인하지 못했습니다.",
+ "name": "class-ppt-codex-bare-1",
+ "task": "class-ppt",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 1,
+ "file": "조선 후기 실학의 등장.pptx",
+ "all_files": [
+  "조선 후기 실학의 등장.pptx"
+ ],
+ "opens": true
+}

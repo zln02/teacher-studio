@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>배드민턴 월례 대회</title>
+<style>
+  :root { color-scheme: light; --ink:#162e28; --muted:#4e645c; --line:#ccd9d1; --paper:#f1f5ef; --green:#155640; --dark:#103a2f; --lime:#dcf896; font-family:'Malgun Gothic','Apple SD Gothic Neo',system-ui,sans-serif; }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); background:var(--paper); }
+  button,input,textarea,select { font:inherit; }
+  button { cursor:pointer; }
+  button:disabled { cursor:default; opacity:.48; }
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,summary:focus-visible { outline:3px solid #377fbd; outline-offset:3px; }
+  .shell { max-width:1440px; margin:auto; padding:0 clamp(15px,4vw,60px); }
+  header { background:var(--dark); color:white; border-bottom:5px solid var(--lime); }
+  header .shell { padding-block:30px 34px; }
+  header p { margin:0 0 8px; color:var(--lime); font-weight:700; font-size:.87rem; }
+  h1 { margin:0; font-size:clamp(1.8rem,4vw,3.2rem); line-height:1.14; overflow-wrap:anywhere; }
+  h2 { margin:0; font-size:1.29rem; }
+  main.shell { padding-block:22px 44px; }
+  .panel { background:white; border:1px solid var(--line); border-radius:14px; margin-bottom:16px; }
+  summary { cursor:pointer; padding:14px 18px; font-weight:750; }
+  .setup { padding:0 18px 17px; }
+  .fields { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .fields label { display:grid; align-content:start; gap:5px; font-size:.89rem; font-weight:700; }
+  .settings { display:grid; gap:9px; align-content:start; }
+  .help,.meta,.result { color:var(--muted); font-size:.84rem; margin:0; }
+  input:not([type=checkbox]),textarea,select { width:100%; min-width:0; border:1px solid #9eb4a8; background:white; color:var(--ink); border-radius:7px; padding:8px 10px; }
+  textarea { min-height:106px; resize:vertical; }
+  .check { display:flex!important; align-items:center; }
+  .actions { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .setup .actions { margin-top:12px; }
+  .btn { border:1px solid #9eb4a8; color:var(--ink); background:white; border-radius:7px; padding:7px 12px; font-weight:700; font-size:.84rem; }
+  .btn:not(:disabled):hover { background:#e9f2e9; }
+  .primary { background:var(--green); border-color:var(--green); color:white; }
+  .primary:not(:disabled):hover { background:#0b4433; }
+  #feedback { margin:8px 0 0; font-size:.85rem; }
+  #feedback:empty { display:none; }
+  .error { color:#96272b; }
+  .section-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:9px 15px; padding:15px 17px; }
+  .section-head .meta { margin-top:4px; }
+  .bracket-wrap { overflow-x:auto; padding:0 17px 13px; }
+  .bracket { display:grid; grid-template-columns:repeat(var(--rounds), minmax(164px,1fr)); gap:24px; }
+  .round { display:flex; flex-direction:column; min-width:0; }
+  .round h3 { font-size:.83rem; margin:0 0 6px; padding:5px 8px; color:var(--green); background:#eaf2e7; border-radius:5px; }
+  .matches { flex:1; display:flex; flex-direction:column; }
+  .match-slot { flex:1; display:flex; align-items:center; position:relative; padding:4px 0; }
+  .round:not(:last-child) .match-slot::after { content:''; position:absolute; pointer-events:none; right:-12px; width:12px; height:50%; border-right:1px solid #8aa395; }
+  .round:not(:last-child) .match-slot:nth-child(odd)::after { top:50%; border-top:1px solid #8aa395; }
+  .round:not(:last-child) .match-slot:nth-child(even)::after { bottom:50%; border-bottom:1px solid #8aa395; }
+  .round:not(:first-child) .match-slot::before { content:''; position:absolute; left:-12px; width:12px; top:50%; border-top:1px solid #8aa395; }
+  .match { width:100%; padding:6px 7px; text-align:left; color:var(--ink); background:white; border:1px solid var(--line); border-radius:7px; min-width:0; }
+  .match:disabled { opacity:1; background:#f5f7f5; }
+  .match:not(:disabled):hover { background:#f0f6ed; }
+  .match[aria-pressed=true] { border-color:var(--green); box-shadow:inset 0 0 0 1px var(--green); }
+  .match-label,.entry { display:flex; justify-content:space-between; align-items:baseline; gap:5px; }
+  .match-label { color:var(--muted); font-size:.69rem; margin-bottom:2px; }
+  .entry { padding:2px 3px; font-size:.81rem; border-radius:3px; }
+  .entry span:first-child { overflow-wrap:anywhere; }
+  .entry span:last-child { flex-shrink:0; font-variant-numeric:tabular-nums; }
+  .winner { background:#e9f5cf; font-weight:750; }
+  #champion { margin:0 17px 13px; padding:8px 10px; border-radius:6px; background:#e9f5cf; font-weight:750; overflow-wrap:anywhere; }
+  #scoreboard { background:var(--dark); color:white; border-color:var(--dark); }
+  #scoreboard .meta { color:#dae8de; }
+  .score-body { padding:0 17px 15px; }
+  .court { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .side { background:#1c4a3d; border:1px solid #588071; border-radius:9px; padding:10px; min-width:0; text-align:center; }
+  .side h3 { margin:0; font-size:clamp(1rem,2.7vw,1.45rem); overflow-wrap:anywhere; }
+  .side strong { display:block; font-size:clamp(3rem,9vw,6.5rem); font-variant-numeric:tabular-nums; line-height:1.06; margin:4px 0; }
+  .side .games { margin:2px 0 8px; color:#e0ebe4; font-size:.84rem; }
+  .add { min-height:43px; width:100%; background:var(--lime); border-color:var(--lime); color:#17362c; }
+  .add:not(:disabled):hover { background:#eeffc2; }
+  .score-tools { margin-top:10px; }
+  #game-history { margin:9px 0; font-size:.85rem; color:#e4eee7; overflow-wrap:anywhere; }
+  #score-note { margin:0 0 9px; color:var(--lime); font-weight:750; overflow-wrap:anywhere; }
+  #scoreboard:fullscreen { display:flex; flex-direction:column; justify-content:center; padding:clamp(12px,4vw,48px); overflow:auto; border-radius:0; }
+  #scoreboard:fullscreen .side strong { font-size:clamp(5rem,20vw,15rem); }
+  [hidden] { display:none!important; }
+  @media(max-width:640px) { .fields { grid-template-columns:1fr; } }
+  @page { size:A4 landscape; margin:8mm; }
+  @media print {
+    body,header,.panel { background:white; color:black; }
+    .shell { max-width:none; padding:0; }
+    header { border:0; }
+    header .shell { padding:0 0 3mm; }
+    header p { color:black; margin:0 0 1mm; }
+    h1 { font-size:19pt; }
+    main { padding:0!important; }
+    details,#scoreboard,#bracket-panel .actions,#feedback,#save-status { display:none!important; }
+    #bracket-panel { border:none; margin:0; }
+    .section-head,.bracket-wrap { padding:0 0 2mm; overflow:visible; }
+    .bracket { grid-template-columns:repeat(var(--rounds),minmax(0,1fr)); gap:4mm; break-inside:avoid; }
+    .round h3 { padding:0; margin:0 0 1mm; font-size:9pt; }
+    .match-slot { padding:1px 0; }
+    .match { padding:1px 3px; border-radius:2px; box-shadow:none!important; }
+    .round:not(:last-child) .match-slot::after { right:-2mm; width:2mm; }
+    .round:not(:first-child) .match-slot::before { left:-2mm; width:2mm; }
+    .match-label { font-size:6pt; margin:0; }
+    .entry { font-size:7pt; line-height:1.15; padding:0 1px; }
+    .winner { font-weight:900; text-decoration:underline; }
+    #champion { margin:0; padding:1mm 0; }
+  }
+</style>
+</head>
+<body>
+<header><div class="shell"><p>배드민턴 월례 대회</p><h1 id="heading"></h1></div></header>
+<main class="shell">
+  <details class="panel" id="setup-panel">
+    <summary>대회 설정</summary>
+    <form class="setup" id="setup">
+      <div class="fields">
+        <label>참가자 또는 팀 이름
+          <textarea id="team-input" spellcheck="false" required></textarea>
+          <span class="help">2~32팀 · 한 줄에 한 팀 · 복식은 ‘이름 / 이름’으로 입력</span>
+        </label>
+        <div class="settings">
+          <label>대회 이름<input id="title-input" maxlength="70" required></label>
+          <label>경기 방식<select id="rule-input">
+            <option value="21-3">21점 · 3게임 2선승</option>
+            <option value="21-1">21점 · 1게임</option>
+            <option value="15-3">15점 · 3게임 2선승</option>
+            <option value="15-1">15점 · 1게임</option>
+          </select></label>
+          <label class="check"><input type="checkbox" id="shuffle" checked> 무작위 추첨</label>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="submit">대진표 만들기</button>
+        <button class="btn" type="button" id="download">기록 저장 파일 받기</button>
+        <button class="btn" type="button" id="upload">기록 파일 열기</button>
+        <input id="file" type="file" accept=".json,application/json" hidden>
+      </div>
+      <p id="feedback" role="status"></p>
+    </form>
+  </details>
+  <section class="panel" id="scoreboard" aria-labelledby="score-heading">
+    <div class="section-head">
+      <div><h2 id="score-heading">점수판</h2><p class="meta" id="score-match"></p></div>
+      <button class="btn" id="fullscreen" type="button">전체 화면</button>
+    </div>
+    <div class="score-body">
+      <p id="score-note" aria-live="polite"></p>
+      <div class="court" id="court">
+        <div class="side"><h3 id="team-0"></h3><strong id="points-0"></strong><p class="games" id="games-0"></p><button class="btn add" id="add-0" type="button">+1점</button></div>
+        <div class="side"><h3 id="team-1"></h3><strong id="points-1"></strong><p class="games" id="games-1"></p><button class="btn add" id="add-1" type="button">+1점</button></div>
+      </div>
+      <p id="game-history"></p>
+      <div class="actions score-tools">
+        <button class="btn" id="undo" type="button">마지막 득점 취소</button>
+        <button class="btn" id="next" type="button" hidden>다음 경기 열기</button>
+      </div>
+    </div>
+  </section>
+  <section class="panel" id="bracket-panel" aria-labelledby="bracket-heading">
+    <div class="section-head">
+      <div><h2 id="bracket-heading">대진표</h2><p class="meta"><span id="bracket-meta"></span><span id="save-status"></span></p></div>
+      <div class="actions"><button class="btn" id="print" type="button">대진표 인쇄 / PDF</button></div>
+    </div>
+    <div class="bracket-wrap"><div class="bracket" id="bracket"></div></div>
+    <p id="champion" hidden></p>
+  </section>
+</main>
+<script>
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const storageKey = 'badminton-monthly-tournament-v1';
+  const rules = {
+    '21-3': { target:21, cap:30, wins:2 }, '21-1': { target:21, cap:30, wins:1 },
+    '15-3': { target:15, cap:21, wins:2 }, '15-1': { target:15, cap:21, wins:1 }
+  };
+  const exampleTeams = Array.from({length:8}, (_, index) => `예시 ${index + 1}팀`);
+  const roundName = size => ({2:'결승', 4:'준결승', 8:'8강', 16:'16강', 32:'32강'})[size];
+
+  function tally(log, rule) {
+    const wins = [0, 0];
+    const games = [];
+    let points = [0, 0];
+    let winner = null;
+    for (const side of log) {
+      if ((side !== 0 && side !== 1) || winner !== null) throw new Error('득점 기록이 올바르지 않습니다.');
+      points[side]++;
+      if (points[side] === rule.cap || (points[side] >= rule.target && points[side] - points[1 - side] >= 2)) {
+        games.push(points);
+        wins[side]++;
+        if (wins[side] === rule.wins) winner = side;
+        else points = [0, 0];
+      }
+    }
+    return { wins, games, points, winner };
+  }
+
+  function buildBracket(tournament) {
+    const { teams, logs } = tournament;
+    const size = 2 ** Math.ceil(Math.log2(teams.length));
+    let seeds = [0, 1];
+    while (seeds.length < size) {
+      const nextSize = seeds.length * 2;
+      seeds = seeds.flatMap(seed => [seed, nextSize - 1 - seed]);
+    }
+    const rounds = [];
+    let sources = seeds.map(seed => ({ team:teams[seed] ?? null, label:'부전승' }));
+    let number = 0;
+    while (sources.length > 1) {
+      const matches = [];
+      for (let index = 0; index < sources.length; index += 2) {
+        const sides = sources.slice(index, index + 2);
+        const [left, right] = sides.map(side => side.team);
+        const id = `M${++number}`;
+        const ready = left !== null && right !== null;
+        const bye = rounds.length === 0 && !ready;
+        const log = Object.hasOwn(logs, id) ? logs[id] : [];
+        if (!Array.isArray(log) || (!ready && log.length)) throw new Error('아직 진행할 수 없는 경기의 기록이 있습니다.');
+        const result = tally(log, rules[tournament.rule]);
+        const winner = bye ? left ?? right : result.winner === null ? null : sides[result.winner].team;
+        matches.push({ id, sides, ready, bye, log, winner, result, round:roundName(sources.length), next:null });
+      }
+      if (rounds.length) rounds.at(-1).forEach((match, index) => { match.next = matches[Math.floor(index / 2)]; });
+      rounds.push(matches);
+      sources = matches.map(match => ({team:match.winner, label:`${match.id} 승자`}));
+    }
+    return rounds;
+  }
+
+  function validate(tournament) {
+    if (!tournament || tournament.version !== 1 || typeof tournament.title !== 'string' ||
+        !tournament.title.trim() || tournament.title.length > 70 || !Object.hasOwn(rules, tournament.rule) ||
+        !Array.isArray(tournament.teams) || tournament.teams.length < 2 || tournament.teams.length > 32 ||
+        tournament.teams.some(team => typeof team !== 'string' || !team.trim() || team.length > 60 || /[\r\n]/.test(team)) ||
+        new Set(tournament.teams.map(team => team.trim())).size !== tournament.teams.length ||
+        !tournament.logs || typeof tournament.logs !== 'object' || Array.isArray(tournament.logs)) {
+      throw new Error('대회 이름, 참가팀, 경기 방식 또는 파일 형식을 확인해 주세요.');
+    }
+    const rounds = buildBracket(tournament);
+    const ids = new Set(rounds.flat().map(match => match.id));
+    if (Object.keys(tournament.logs).some(id => !ids.has(id))) throw new Error('대진에 없는 경기의 점수가 있습니다.');
+    return tournament;
+  }
+
+  let state = { version:1, title:'월례 대회 예시', teams:exampleTeams, rule:'21-3', logs:{}, example:true };
+  let selected = null;
+  let matches = [];
+  let rounds = [];
+  let nextMatch = null;
+  let saveFailed = false;
+  try {
+    const stored = localStorage.getItem(storageKey);
+    if (stored) state = validate(JSON.parse(stored));
+  } catch { saveFailed = true; }
+
+  function feedback(message, error = false) {
+    $('feedback').textContent = message;
+    $('feedback').classList.toggle('error', error);
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+      saveFailed = false;
+    } catch {
+      saveFailed = true;
+    }
+  }
+
+  function hydrateForm() {
+    $('title-input').value = state.example ? '배드민턴 월례 대회' : state.title;
+    $('team-input').value = state.example ? '' : state.teams.join('\n');
+    $('rule-input').value = state.rule;
+  }
+
+  function textNode(tag, content, className) {
+    const node = document.createElement(tag);
+    node.textContent = content;
+    if (className) node.className = className;
+    return node;
+  }
+
+  function renderBracket() {
+    $('bracket').style.setProperty('--rounds', rounds.length);
+    const columns = rounds.map(round => {
+      const column = textNode('div', '', 'round');
+      const list = textNode('div', '', 'matches');
+      column.append(textNode('h3', round[0].round), list);
+      for (const match of round) {
+        const slot = textNode('div', '', 'match-slot');
+        const card = textNode('button', '', 'match');
+        card.type = 'button';
+        card.id = `pick-${match.id}`;
+        card.disabled = !match.ready;
+        if (match.ready) card.setAttribute('aria-pressed', String(selected === match.id));
+        const status = match.bye ? '부전승' : match.winner ? '종료' : match.log.length ? '진행 중' : match.ready ? '경기 가능' : '대기';
+        const label = textNode('span', '', 'match-label');
+        label.append(textNode('span', match.id), textNode('span', status));
+        card.append(label);
+        match.sides.forEach((side, index) => {
+          const entry = textNode('span', '', 'entry');
+          if (side.team !== null && side.team === match.winner) entry.classList.add('winner');
+          const scores = match.result.games.map(game => game[index]);
+          if (match.log.length && !match.winner && match.result.points.some(Boolean)) scores.push(match.result.points[index]);
+          entry.append(textNode('span', side.team ?? side.label), textNode('span', scores.join(' · ')));
+          card.append(entry);
+        });
+        card.addEventListener('click', () => {
+          selected = match.id;
+          render();
+          $(`pick-${match.id}`).focus({preventScroll:true});
+          $('scoreboard').scrollIntoView({block:'nearest'});
+        });
+        slot.append(card);
+        list.append(slot);
+      }
+      return column;
+    });
+    $('bracket').replaceChildren(...columns);
+  }
+
+  function render() {
+    rounds = buildBracket(state);
+    matches = rounds.flat();
+    const match = matches.find(item => item.id === selected && item.ready)
+      ?? matches.find(item => item.ready && !item.winner) ?? matches.findLast(item => item.ready);
+    selected = match.id;
+    const rule = rules[state.rule];
+    const played = matches.filter(item => item.ready && item.winner).length;
+    const champion = rounds.at(-1)[0].winner;
+    $('heading').textContent = state.title;
+    $('bracket-meta').textContent = `${state.teams.length}팀 · ${rule.target}점 ${rule.wins === 1 ? '1게임' : '3게임 2선승'} · ${played}/${state.teams.length - 1}경기 완료`;
+    $('champion').hidden = !champion;
+    $('champion').textContent = champion ? `우승 · ${champion}` : '';
+    $('score-match').textContent = `${match.round} · ${match.id} · ${rule.target}점제 (동점 시 2점 차, ${rule.cap}점 상한)`;
+    const { games, points, wins } = match.result;
+    $('score-note').textContent = match.winner ? `${match.winner} 승리` : `${games.length + 1}게임 진행`;
+    for (const index of [0, 1]) {
+      const team = match.sides[index].team;
+      $(`team-${index}`).textContent = team;
+      $(`points-${index}`).textContent = points[index];
+      $(`games-${index}`).textContent = `${wins[index]}게임 승`;
+      $(`add-${index}`).disabled = Boolean(match.winner);
+      $(`add-${index}`).setAttribute('aria-label', `${team} 1점 추가`);
+    }
+    $('game-history').textContent = games.length ? games.map(([left, right], index) => `${index + 1}게임 ${left}–${right}`).join(' / ') : '';
+    const locked = Boolean(match.next?.log.length);
+    $('undo').disabled = !match.log.length || locked;
+    $('undo').textContent = locked ? '다음 경기 득점 후에는 취소할 수 없음' : '마지막 득점 취소';
+    nextMatch = match.winner ? matches.find(item => item.ready && !item.winner) : null;
+    $('next').hidden = !nextMatch;
+    renderBracket();
+    $('save-status').textContent = saveFailed ? ' · 자동 저장 불가, 기록 파일 저장 필요' : ' · 이 브라우저에 자동 저장';
+  }
+
+  function canReplace() {
+    return !Object.values(state.logs).some(log => log.length) || confirm('현재 대진과 점수 기록을 교체할까요? 필요한 기록은 먼저 저장 파일로 받아 두세요.');
+  }
+
+  function applyTournament(tournament) {
+    state = tournament;
+    selected = null;
+    save();
+    hydrateForm();
+    render();
+    feedback(saveFailed ? '자동 저장을 사용할 수 없습니다. 기록 저장 파일을 받아 보관하세요.' : '대진을 불러왔습니다. 대진표에서 경기를 선택할 수 있습니다.', saveFailed);
+    if (!saveFailed) $('setup-panel').open = false;
+  }
+
+  $('setup').addEventListener('submit', event => {
+    event.preventDefault();
+    const teams = $('team-input').value.split(/\r?\n/).map(team => team.trim()).filter(Boolean);
+    if (teams.length < 2 || teams.length > 32 || teams.some(team => team.length > 60) || new Set(teams).size !== teams.length) {
+      feedback('서로 다른 팀 이름을 2~32개 입력하세요. 팀 이름은 60자까지 입력할 수 있습니다.', true);
+      return;
+    }
+    const title = $('title-input').value.trim();
+    if (!title) { feedback('대회 이름을 입력하세요.', true); return; }
+    if (!canReplace()) return;
+    if ($('shuffle').checked) {
+      for (let index = teams.length - 1; index > 0; index--) {
+        const other = Math.floor(Math.random() * (index + 1));
+        [teams[index], teams[other]] = [teams[other], teams[index]];
+      }
+    }
+    applyTournament({version:1, title, teams, rule:$('rule-input').value, logs:{}});
+  });
+
+  for (const side of [0, 1]) {
+    $(`add-${side}`).addEventListener('click', () => {
+      const match = matches.find(item => item.id === selected);
+      if (!match.ready || match.winner) return;
+      (state.logs[match.id] ??= []).push(side);
+      save();
+      render();
+    });
+  }
+
+  $('undo').addEventListener('click', () => {
+    const match = matches.find(item => item.id === selected);
+    if (!match.log.length || match.next?.log.length) return;
+    match.log.pop();
+    if (!match.log.length) delete state.logs[match.id];
+    save();
+    render();
+  });
+
+  $('next').addEventListener('click', () => {
+    if (!nextMatch) return;
+    selected = nextMatch.id;
+    render();
+    $('add-0').focus({preventScroll:true});
+  });
+
+  $('print').addEventListener('click', () => window.print());
+  if (!document.fullscreenEnabled) $('fullscreen').hidden = true;
+  $('fullscreen').addEventListener('click', async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await $('scoreboard').requestFullscreen();
+    } catch { $('fullscreen').textContent = '전체 화면을 사용할 수 없음'; }
+  });
+  document.addEventListener('fullscreenchange', () => {
+    $('fullscreen').textContent = document.fullscreenElement ? '전체 화면 닫기' : '전체 화면';
+  });
+
+  $('download').addEventListener('click', () => {
+    const content = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(content);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${state.title.replace(/[<>:"/\\|?*\u0000-\u001f]/g, '-')}-경기기록.json`;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  $('upload').addEventListener('click', () => $('file').click());
+  $('file').addEventListener('change', async event => {
+    const file = event.target.files[0];
+    event.target.value = '';
+    if (!file) return;
+    try {
+      if (file.size > 200000) throw new Error('이 파일은 대회 기록 파일로 열 수 없습니다.');
+      const tournament = validate(JSON.parse(await file.text()));
+      if (canReplace()) applyTournament(tournament);
+    } catch (error) {
+      feedback(error instanceof SyntaxError ? '올바른 JSON 기록 파일을 선택하세요.' : error.message, true);
+    }
+  });
+
+  hydrateForm();
+  $('setup-panel').open = Boolean(state.example || saveFailed);
+  render();
+</script>
+</body>
+</html>

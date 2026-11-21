@@ -1,0 +1,525 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#f7f8f2">
+<title>한 입의 여행 | 소화 기관 복습 게임</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #182e2c; --muted: #526862; --green: #116b52; --dark: #0d5945;
+  --line: #dce5dd; --paper: #f7f8f2; --white: #fff; --mint: #daf2e6;
+  font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); word-break: keep-all; }
+button { font: inherit; cursor: pointer; }
+button:disabled { cursor: default; }
+button:focus-visible, summary:focus-visible { outline: 3px solid #126c53; outline-offset: 4px; }
+[hidden] { display: none !important; }
+header { background: #fff; border-bottom: 1px solid #e6ebe2; }
+.top, main, footer { width: min(1100px, calc(100% - 48px)); margin-inline: auto; }
+.top { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.brand, .top-actions, .score, .guide, .progress-head, .mission, .mission-icon, .art-label, .art-caption { display: flex; align-items: center; }
+.brand { gap: 11px; font-size: 18px; font-weight: 900; letter-spacing: -.055em; }
+.brand-icon { width: 37px; height: 37px; position: relative; border-radius: 12px; background: #136e55; flex: none; }
+.brand-icon::before { content: ""; position: absolute; width: 17px; height: 12px; border: 2px solid #e6fff1; border-top: 0; border-radius: 2px 2px 12px 12px; left: 8px; top: 13px; }
+.brand-icon::after { content: ""; position: absolute; width: 5px; height: 8px; background: #f9d172; border-radius: 90% 0 90% 0; left: 21px; top: 6px; transform: rotate(14deg); }
+.top-actions { gap: 10px; }
+.guide, .score { gap: 8px; border-radius: 10px; padding: 9px 12px; min-height: 40px; font-size: 14px; font-weight: 800; white-space: nowrap; }
+.guide { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+.guide:hover { background: #eff9f3; }
+.book { width: 16px; height: 13px; display: inline-block; border: 1.6px solid currentColor; border-radius: 2px 2px 3px 3px; position: relative; flex: none; }
+.book::after { content: ""; position: absolute; inset: 0 auto 0 50%; border-left: 1.6px solid currentColor; }
+.score { background: #fff3d2; color: #634916; border: 1px solid #f2e4b8; }
+.star { color: #8a5a00; font-size: 17px; line-height: 1; }
+main { padding-top: 30px; }
+.intro { margin-bottom: 21px; }
+.eyebrow { margin: 0 0 6px; color: var(--green); font-size: 14px; font-weight: 850; }
+h1 { font-size: clamp(29px, 4vw, 43px); line-height: 1.22; letter-spacing: -.075em; margin: 0 0 8px; font-weight: 900; }
+.intro p:last-child { margin: 0; line-height: 1.55; color: var(--muted); }
+.missions { list-style: none; margin: 0 0 17px; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 11px; }
+.mission { gap: 11px; border: 1px solid var(--line); border-radius: 13px; padding: 9px 12px; background: #fff; min-width: 0; }
+.mission[aria-current="step"] { border-color: #7dbca3; background: #e8f6ed; }
+.mission-icon { justify-content: center; width: 34px; height: 34px; border-radius: 9px; background: #edf0eb; color: #50645c; font-weight: 900; flex: none; font-size: 14px; }
+.mission[aria-current="step"] .mission-icon, .mission[data-done] .mission-icon { background: var(--green); color: white; }
+.mission strong { display: block; font-size: 14px; }
+.mission small { display: block; margin-top: 2px; font-size: 12px; color: var(--muted); }
+.game { display: grid; grid-template-columns: minmax(0, .86fr) minmax(0, 1.14fr); gap: 17px; align-items: stretch; }
+.art { position: relative; isolation: isolate; min-height: 505px; background: radial-gradient(ellipse at 48% 40%, #d9f6e5, #c4ead8 82%); border: 1px solid #afdbc6; border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0; }
+.art::before { content: ""; z-index: -1; position: absolute; inset: 0; opacity: .52; background-image: radial-gradient(#7db8a1 1px, transparent 1px); background-size: 18px 18px; mask-image: radial-gradient(ellipse, transparent 24%, #000 79%); }
+.art-label { position: absolute; left: 18px; top: 18px; gap: 7px; margin: 0; background: #f1fbf5; color: #195840; border: 1px solid #b1dbc7; border-radius: 999px; padding: 7px 12px; font-size: 13px; font-weight: 900; z-index: 1; }
+.art-label::before { content: ""; width: 8px; height: 8px; background: #218864; border-radius: 50%; }
+.art canvas { display: block; position: relative; width: min(100%, 435px); height: auto; margin: 7px auto 36px; }
+.art-caption { position: absolute; bottom: 18px; left: 18px; right: 18px; justify-content: center; text-align: center; gap: 8px; padding: 10px 9px; border-radius: 10px; border: 1px solid #bce1cf; background: #effaf3; color: #245b46; font-size: 14px; font-weight: 750; }
+.compass { width: 15px; height: 15px; border: 1.6px solid currentColor; border-radius: 50%; position: relative; flex: none; }
+.compass::after { content: ""; position: absolute; width: 3px; height: 7px; background: currentColor; left: 4.5px; top: 2px; border-radius: 4px; transform: rotate(37deg); }
+.card { border: 1px solid var(--line); border-radius: 22px; background: #fff; padding: clamp(20px, 3vw, 32px); box-shadow: 0 4px 0 #e9eee5; min-width: 0; }
+.progress-head { gap: 6px; justify-content: space-between; font-size: 14px; font-weight: 850; color: var(--green); }
+.progress-head span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress { height: 7px; background: #eaf0eb; margin: 10px 0 20px; overflow: hidden; border-radius: 99px; }
+.progress span { display: block; height: 100%; background: #3a9a76; border-radius: 99px; transition: width .25s ease; }
+h2 { margin: 0; font-size: clamp(23px, 3vw, 31px); letter-spacing: -.062em; line-height: 1.35; font-weight: 900; }
+h2:focus { outline: none; }
+.instruction { color: var(--muted); line-height: 1.55; margin: 7px 0 15px; font-size: 15px; }
+.options { display: grid; gap: 8px; }
+.option { display: flex; gap: 11px; align-items: center; text-align: left; width: 100%; min-height: 49px; padding: 7px 11px; border: 1px solid #dce5df; border-radius: 10px; background: #fff; color: var(--ink); font-weight: 800; }
+.option:hover:not(:disabled), .option[aria-pressed="true"] { border-color: #56a78b; background: #eef9f3; }
+.option[aria-pressed="true"] { box-shadow: inset 0 0 0 1px #56a78b; }
+.choice-key { display: grid; place-items: center; border-radius: 6px; background: #eff3ee; color: #466056; width: 27px; min-height: 27px; flex: none; font-size: 13px; }
+.option[aria-pressed="true"] .choice-key, .option[data-result="correct"] .choice-key { background: #17775a; color: white; }
+.option[data-result="correct"] { border-color: #5cae8d; background: #eaf8ef; }
+.option[data-result="wrong"] { border-color: #cf8172; background: #fff2ee; }
+.option[data-result="wrong"] .choice-key { background: #a6493a; color: white; }
+.option-state { margin-left: auto; color: #31604d; font-size: 13px; flex: none; }
+.option[data-result="wrong"] .option-state { color: #983e32; }
+.actions { margin-top: 16px; display: flex; gap: 8px; }
+.primary, .secondary { min-height: 46px; border-radius: 10px; font-weight: 850; padding: 9px 14px; }
+.primary { flex: 1; border: 1px solid transparent; background: var(--green); color: white; }
+.primary:hover:not(:disabled) { background: var(--dark); }
+.primary:disabled { color: #536861; background: #ecf1ec; }
+.secondary { border: 1px solid var(--line); background: #fff; color: var(--dark); }
+.secondary:hover:not(:disabled) { background: #eef9f3; }
+.secondary:disabled { opacity: .55; }
+.feedback { margin-top: 12px; border-radius: 10px; padding: 11px 13px; background: #eaf8ef; border: 1px solid #b6dcc8; font-size: 14px; line-height: 1.55; }
+.feedback.wrong { background: #fff5e7; border-color: #ebd5af; }
+.feedback strong, .feedback span { display: block; }
+.sequence { display: flex; gap: 5px; margin: 0 0 9px; padding: 0; list-style: none; }
+.sequence li { display: grid; place-items: center; text-align: center; padding: 5px 2px; flex: 1; min-width: 0; min-height: 42px; font-size: 13px; font-weight: 850; color: #557068; border: 1px dashed #b7ccc1; border-radius: 8px; background: #f7faf7; }
+.sequence li.filled { color: var(--dark); border-style: solid; border-color: #90c6af; background: #e8f7ee; }
+.order-options { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.order-options .option:disabled { color: #53665e; background: #f0f4ef; }
+footer { padding: 19px 0 22px; color: #52645c; font-size: 13px; text-align: center; }
+.result-label { font-weight: 850; color: var(--green); margin: 0 0 6px; }
+.result-score { font-weight: 900; font-size: 44px; letter-spacing: -.06em; color: var(--green); margin: 12px 0 0; }
+.review { margin-top: 18px; }
+.review h3 { font-size: 17px; margin-bottom: 8px; }
+.review details { padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; line-height: 1.55; }
+.review summary { cursor: pointer; font-weight: 800; }
+.review details p { margin: 6px 0 0; color: #354d45; }
+dialog { color: var(--ink); border: 1px solid var(--line); border-radius: 19px; width: min(520px, calc(100% - 32px)); max-height: calc(100% - 32px); padding: 22px; box-shadow: 0 15px 65px #18382d40; }
+dialog::backdrop { background: #12382b82; }
+.dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.dialog-head h2 { font-size: 24px; }
+.organ-list { padding-left: 25px; line-height: 1.55; }
+.organ-list li { padding: 5px 0; }
+.organ-list strong { color: var(--green); }
+.guide-note { font-size: 14px; background: #eaf7ee; padding: 10px 13px; border-radius: 9px; line-height: 1.55; }
+@media (max-width: 760px) {
+  .top, main, footer { width: min(530px, calc(100% - 28px)); }
+  main { padding-top: 21px; }
+  .game { grid-template-columns: 1fr; gap: 12px; }
+  .art { min-height: 0; }
+  .art canvas { width: min(66%, 320px); margin-top: 5px; }
+  .missions { gap: 5px; margin-bottom: 12px; }
+  .mission { justify-content: center; gap: 5px; padding: 7px 3px; min-height: 43px; }
+  .mission-icon { width: 22px; height: 22px; font-size: 11px; border-radius: 6px; }
+  .mission strong { font-size: 12px; }
+  .mission small { display: none; }
+  .art-label { left: 10px; top: 10px; padding: 5px 8px; font-size: 12px; }
+  .art-caption { left: 10px; right: 10px; bottom: 10px; padding: 7px 5px; font-size: 13px; }
+  .card { padding: 18px; }
+}
+@media (max-width: 370px) {
+  .brand { font-size: 16px; gap: 5px; }
+  .top-actions { gap: 4px; }
+  .guide, .score { padding-inline: 7px; gap: 5px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <div class="brand"><span class="brand-icon" aria-hidden="true"></span>한 입의 여행</div>
+    <div class="top-actions">
+      <button class="guide" id="guide" type="button"><span class="book" aria-hidden="true"></span>기관 도감</button>
+      <div class="score" aria-label="점수" aria-live="polite"><span class="star" aria-hidden="true">★</span><span id="score">0점</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="intro">
+    <p class="eyebrow">초등 6학년 과학</p>
+    <h1>우리 몸의 소화 기관</h1>
+    <p>한 입 먹은 음식이 몸속에서 어떤 여행을 하는지 알아보세요.</p>
+  </div>
+  <ol class="missions" aria-label="탐험 단계">
+    <li class="mission" aria-current="step"><span class="mission-icon" aria-hidden="true">1</span><div><strong>소화 길 찾기</strong><small>음식물이 지나가는 순서</small></div></li>
+    <li class="mission"><span class="mission-icon" aria-hidden="true">2</span><div><strong>기관의 역할</strong><small>기관마다 하는 일</small></div></li>
+    <li class="mission"><span class="mission-icon" aria-hidden="true">3</span><div><strong>소화 탐정</strong><small>배운 내용 적용하기</small></div></li>
+  </ol>
+
+  <div class="game">
+    <figure class="art">
+      <span class="art-label">몸속 탐험 지도</span>
+      <canvas id="map" width="880" height="860" role="img" aria-label="입, 식도, 위, 작은창자, 큰창자, 항문을 그린 소화 기관 모식도">입에서 항문까지 이어지는 소화 기관 모식도입니다.</canvas>
+      <figcaption class="art-caption"><span class="compass" aria-hidden="true"></span><span id="mapCaption">한 입 먹은 음식의 여행을 시작해요.</span></figcaption>
+    </figure>
+    <section class="card" aria-label="복습 문제">
+      <div id="quiz">
+        <div class="progress-head"><span id="phase">소화 길 찾기</span><span id="counter">1 / 9 문제</span></div>
+        <div class="progress" id="progressBar" role="progressbar" aria-label="문제 진행" aria-valuemin="0" aria-valuemax="9" aria-valuenow="1"><span id="progressFill"></span></div>
+        <h2 id="question" tabindex="-1"></h2>
+        <p class="instruction" id="instruction"></p>
+        <ol class="sequence" id="sequence" aria-label="선택한 순서" hidden></ol>
+        <div class="options" id="options" role="group" aria-labelledby="question" aria-describedby="instruction"></div>
+        <div class="feedback" id="feedback" role="status" aria-atomic="true"></div>
+        <div class="actions">
+          <button class="secondary" id="undo" type="button" hidden>한 칸 되돌리기</button>
+          <button class="primary" id="submit" type="button" disabled>정답 확인</button>
+          <button class="primary" id="next" type="button" aria-describedby="feedback" hidden>다음 문제</button>
+        </div>
+      </div>
+
+      <div id="result" hidden>
+        <p class="result-label">탐험 완료</p>
+        <h2 id="resultTitle" tabindex="-1">음식물의 여행을 마쳤어요!</h2>
+        <p class="result-score" id="resultScore"></p>
+        <p class="instruction" id="resultSummary"></p>
+        <div class="review" id="review"></div>
+        <div class="actions">
+          <button class="secondary" id="retryWrong" type="button" hidden>틀린 문제 다시 풀기</button>
+          <button class="primary" id="restart" type="button">처음부터 다시 하기</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>기관 도감은 문제를 푸는 중에도 열어 볼 수 있어요.</footer>
+
+<dialog id="atlas" aria-labelledby="atlasTitle">
+  <div class="dialog-head">
+    <h2 id="atlasTitle">소화 기관 도감</h2>
+    <form method="dialog"><button class="secondary" autofocus>닫기</button></form>
+  </div>
+  <p class="instruction">음식물이 우리 몸을 지나는 순서예요.</p>
+  <ol class="organ-list">
+    <li><strong>입</strong> 이로 음식을 잘게 씹고 침과 섞어요. 소화가 시작돼요.</li>
+    <li><strong>식도</strong> 근육이 움직여 음식물을 위로 보내요.</li>
+    <li><strong>위</strong> 음식물을 위액과 섞어 소화해요.</li>
+    <li><strong>작은창자(소장)</strong> 소화가 이어지고 영양소 대부분을 흡수해요.</li>
+    <li><strong>큰창자(대장)</strong> 남은 내용물에서 물을 더 흡수하고 대변이 만들어져요.</li>
+    <li><strong>항문</strong> 대변이 몸 밖으로 나가는 곳이에요.</li>
+  </ol>
+  <p class="guide-note">간에서 만들어진 쓸개즙은 지방의 소화를 돕고, 이자에서 만들어진 이자액은 여러 영양소의 소화를 도와요.</p>
+</dialog>
+
+<script>
+"use strict";
+
+const phases = ["소화 길 찾기", "기관의 역할", "소화 탐정"];
+const questions = [
+  { phase: 0, prompt: "음식물이 가장 먼저 지나는 곳은 어디일까요?", choices: ["입", "식도", "위", "작은창자"], answer: 0, organs: ["mouth"], explanation: "음식은 입으로 들어와 이로 잘게 씹히고 침과 섞여요. 소화는 입에서 시작돼요." },
+  { phase: 0, prompt: "음식물이 지나가는 길을 순서대로 만들어 볼까요?", choices: ["큰창자", "위", "항문", "작은창자", "입", "식도"], order: [4, 5, 1, 3, 0, 2], organs: ["mouth", "throat", "stomach", "small", "large", "exit"], explanation: "입 → 식도 → 위 → 작은창자 → 큰창자 → 항문 순서로 지나가요." },
+  { phase: 0, prompt: "위에서 나온 음식물은 어디로 갈까요?", choices: ["큰창자", "항문", "식도", "작은창자"], answer: 3, organs: ["small"], explanation: "위에서 나온 음식물은 작은창자로 가요. 작은창자에서 소화가 이어지고 영양소가 흡수돼요." },
+  { phase: 1, prompt: "식도는 어떤 일을 할까요?", choices: ["대변을 몸 밖으로 보내요", "음식물을 위로 보내요", "영양소 대부분을 흡수해요", "이로 음식물을 잘게 부숴요"], answer: 1, organs: ["throat"], explanation: "식도 근육이 차례로 움직이면서 삼킨 음식물을 입 쪽에서 위 쪽으로 밀어 내려요." },
+  { phase: 1, prompt: "위에서 음식물에 일어나는 일은 무엇일까요?", choices: ["대변이 몸 밖으로 나가요", "음식물이 이로 잘게 씹혀요", "위액과 섞여 소화돼요", "영양소 대부분이 흡수돼요"], answer: 2, organs: ["stomach"], explanation: "위는 근육을 움직여 음식물을 위액과 섞어요. 위액은 음식물 속 단백질의 소화를 도와요." },
+  { phase: 1, prompt: "영양소 대부분을 흡수하는 기관은 어디일까요?", choices: ["식도", "큰창자", "입", "작은창자"], answer: 3, organs: ["small"], explanation: "작은창자에서 소화가 이어지고 영양소 대부분이 우리 몸 안으로 흡수돼요." },
+  { phase: 2, prompt: "남은 내용물에서 물을 더 흡수해 대변을 만드는 곳은 어디일까요?", choices: ["위", "큰창자", "식도", "입"], answer: 1, organs: ["large"], explanation: "큰창자는 작은창자를 지나고 남은 내용물에서 물을 더 흡수해요. 이 과정에서 대변이 만들어져요." },
+  { phase: 2, prompt: "음식물이 간을 직접 지나갈까요?", choices: ["네, 간을 직접 지나가요", "아니요, 간을 지나가지 않아요"], answer: 1, organs: ["liver"], explanation: "음식물은 간을 직접 지나가지 않아요. 간에서 만들어진 쓸개즙은 작은창자로 흘러가 지방의 소화를 도와요." },
+  { phase: 2, prompt: "소화가 무엇인지 바르게 설명한 것은 무엇일까요?", choices: ["온몸에 산소를 보내는 과정", "몸속에서 혈액을 움직이는 과정", "음식물을 몸이 흡수할 수 있게 잘게 분해하는 과정", "음식물을 몸 밖으로 내보내는 과정"], answer: 2, organs: ["mouth", "stomach", "small"], explanation: "소화는 음식물을 몸이 흡수할 수 있을 만큼 작은 물질로 분해하는 과정이에요. 잘게 씹는 일과 소화액으로 분해하는 일이 모두 소화에 도움이 돼요." }
+];
+
+const get = id => document.getElementById(id);
+const pieces = {
+  mouth: "M180 106 Q193 97 207 101 Q218 105 230 104 Q213 122 193 119 Q183 116 180 106 Z",
+  throat: "M224 109 C231 119 220 141 222 164 C224 182 229 191 240 204",
+  stomach: "M230 188 C242 191 245 208 255 208 C274 208 270 184 287 183 C305 182 316 199 313 218 C310 239 294 253 275 251 C259 250 250 237 235 239 C227 240 225 248 217 245 C209 240 214 226 222 220 C238 209 234 201 230 188 Z",
+  liver: "M153 207 C157 190 174 181 198 182 C219 183 237 179 251 185 C253 195 239 209 226 211 C202 214 195 231 170 232 C158 232 149 223 153 207 Z",
+  small: "M218 250 C214 258 194 248 193 264 C192 276 207 277 219 275 L244 274 C263 273 266 289 247 291 L203 292 C186 293 187 310 205 311 L245 307 C263 305 267 322 249 326 L224 330 C211 334 195 341 181 329",
+  large: "M181 329 C165 320 172 295 169 280 C165 263 173 250 189 249 C210 246 224 258 253 254 C269 251 285 241 291 258 C296 276 286 291 289 308 C294 331 285 346 264 348 C250 346 239 348 239 365",
+  exit: "M239 360 Q239 372 235 383"
+};
+const marks = { mouth:[200,110], throat:[223,156], stomach:[285,218], small:[228,305], large:[172,282], exit:[236,381], liver:[174,206] };
+const atlas = get("atlas");
+const buttons = { submit: get("submit"), next: get("next"), undo: get("undo") };
+const missionItems = [...document.querySelectorAll(".mission")];
+let round = [];
+let index = 0;
+let selected = [];
+let responses = [];
+let locked = false;
+let retry = false;
+let points = 0;
+let question;
+
+function drawMap(active = []) {
+  const ctx = get("map").getContext("2d");
+  ctx.setTransform(2, 0, 0, 2, 0, 0);
+  ctx.clearRect(0, 0, 440, 430);
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+
+  function shape(data, fill, stroke, width = 2) {
+    const path = new Path2D(data);
+    if (fill) { ctx.fillStyle = fill; ctx.fill(path); }
+    if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = width; ctx.stroke(path); }
+  }
+  function circle(x, y, radius, fill, stroke) {
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI * 2);
+    ctx.fillStyle = fill;
+    ctx.fill();
+    if (stroke) { ctx.lineWidth = 1.5; ctx.strokeStyle = stroke; ctx.stroke(); }
+  }
+  function sparkle(x, y, size, color) {
+    shape(`M${x-size} ${y} Q${x} ${y-2} ${x} ${y-size} Q${x+2} ${y} ${x+size} ${y} Q${x} ${y+2} ${x} ${y+size} Q${x-2} ${y} ${x-size} ${y} Z`, color);
+  }
+
+  circle(220, 220, 171, "#e8f9ed", "#bce5d0");
+  circle(220, 220, 151, "#dcf5e7", "#c2ead6");
+  ctx.setLineDash([2, 8]);
+  shape("M62 295 C22 223 78 122 124 113 C171 103 144 60 190 46 M330 94 C380 107 407 179 390 231 C375 272 380 317 343 348", null, "#63a88e", 2.4);
+  ctx.setLineDash([]);
+  for (const [x,y,r] of [[57,224,4],[96,131,3],[349,113,4],[388,246,5],[90,344,3],[330,360,4],[133,69,3]]) {
+    circle(x, y, r, "#8cc5ac");
+  }
+  sparkle(90, 181, 12, "#519f82");
+  sparkle(341, 137, 10, "#53a383");
+  sparkle(350, 300, 15, "#f4bd57");
+  sparkle(125, 319, 9, "#5dac8e");
+
+  const body = "M240 47 C220 37 198 45 189 59 C185 67 188 78 181 83 L168 94 Q165 98 171 100 L181 102 Q177 107 181 110 L184 112 Q180 117 187 121 L189 129 Q191 138 207 134 L215 132 Q216 148 206 157 C194 165 169 159 152 171 C130 186 129 217 132 240 L139 354 Q138 384 160 392 Q219 408 281 392 Q307 386 310 357 L319 232 C324 195 319 175 296 165 C278 156 261 163 255 155 Q244 143 248 124 C268 109 274 83 263 64 Q255 51 240 47 Z";
+  ctx.save();
+  ctx.shadowColor = "#1e6d4a25";
+  ctx.shadowBlur = 16;
+  ctx.shadowOffsetY = 6;
+  shape(body, "#fff5e5");
+  ctx.restore();
+  shape(body, "#fff5e5", "#647e6e", 2.2);
+  shape("M144 201 Q156 178 180 177 M297 186 Q309 200 307 225 M148 345 Q147 377 169 383", null, "#ead8bf", 2.2);
+  shape("M191 78 Q197 73 203 77 M183 91 L189 92", null, "#647e6e", 2);
+  circle(197, 79, 2.2, "#3b6452");
+  shape("M232 86 C240 70 252 83 246 96 Q242 103 236 101", null, "#dba98f", 2);
+
+  shape(pieces.throat, null, "#9d4e4e", 16);
+  shape(pieces.throat, null, "#e89b84", 12);
+  shape("M225 121 Q224 136 225 152", null, "#ffd0ae", 2.4);
+  shape(pieces.mouth, "#e78979", "#a34e51");
+  shape("M183 106 Q202 103 215 108", null, "#fff1de", 2.2);
+  shape(pieces.liver, "#b86860", "#904945");
+  shape("M160 208 C170 192 194 189 224 188", null, "#e49b82", 2.8);
+  shape("M214 211 Q226 217 219 225 Q209 225 214 211 Z", "#91a368", "#647d53", 1.5);
+  shape(pieces.stomach, "#ef9c82", "#a95250", 2.7);
+  shape("M281 192 C297 187 305 203 302 217 C298 230 287 234 278 236", null, "#ffd1ae", 3.4);
+  shape("M192 247 Q223 237 259 246 Q270 251 257 257 L213 259 Z", "#f4c277", "#ae7953", 1.8);
+  shape(pieces.exit, null, "#995047", 15);
+  shape(pieces.exit, null, "#e79b82", 10);
+  shape(pieces.small, null, "#b86b51", 15);
+  shape(pieces.small, null, "#ffd39a", 11);
+  shape(pieces.large, null, "#995047", 23);
+  shape(pieces.large, null, "#e49179", 18);
+  shape("M176 310 C173 291 172 269 181 258 C187 251 201 252 212 254 M262 258 Q284 251 287 265 M288 321 Q283 339 270 340", null, "#ffb79a", 3.3);
+  for (const [x,y,dx,dy] of [[174,275,8,2],[174,297,8,0],[178,319,7,-2],[191,251,1,7],[219,256,0,6],[248,256,0,6],[275,252,2,7],[290,279,-6,0],[288,303,-6,-1],[283,331,-6,-3],[261,348,0,-6]]) {
+    shape(`M${x} ${y} l${dx} ${dy}`, null, "#ac5b53", 1.6);
+  }
+
+  for (const organ of active) {
+    const [x,y] = marks[organ];
+    circle(x, y, 13, "#fffef0b3", "#176b50");
+    circle(x, y, 5, "#17775a");
+  }
+
+  // A small explorer accompanies the map.
+  shape("M71 324 Q56 326 53 315 M112 329 Q127 330 132 319 M75 349 L65 362 M104 350 L116 361", null, "#325e4d", 3);
+  shape("M66 310 Q72 287 90 290 Q109 286 118 308 L117 334 Q114 355 91 357 Q69 355 63 336 Z", "#e7a653", "#755138", 2.5);
+  shape("M73 310 Q79 296 92 298 Q106 295 112 310 L111 335 Q105 351 91 351 Q75 348 69 334 Z", "#ffe5a3");
+  shape("M87 291 Q69 276 57 284 Q65 299 87 291 Z", "#65b88b", "#335f4b", 1.8);
+  shape("M87 292 Q89 271 106 270 Q107 285 87 292 Z", "#50a77a", "#335f4b", 1.8);
+  circle(82, 322, 2.4, "#354639");
+  circle(101, 322, 2.4, "#354639");
+  circle(76, 330, 3.5, "#f5a18d");
+  circle(107, 330, 3.5, "#f5a18d");
+  shape("M88 329 Q92 335 96 329", null, "#534139", 1.9);
+  circle(129, 306, 11, "#f9f8da", "#35644d");
+  shape("M137 314 L144 321", null, "#35644d", 3.2);
+  sparkle(129, 306, 5, "#5a9d76");
+}
+
+function updateMissions(finished = false) {
+  missionItems.forEach((item, phase) => {
+    const remaining = round.slice(index).some(entry => entry.phase === phase);
+    const included = round.some(entry => entry.phase === phase);
+    const current = !finished && phase === question.phase;
+    item.toggleAttribute("data-done", included && (finished || !remaining));
+    if (current) item.setAttribute("aria-current", "step");
+    else item.removeAttribute("aria-current");
+    item.firstElementChild.textContent = item.hasAttribute("data-done") ? "✓" : phase + 1;
+  });
+}
+
+function renderOptions() {
+  const list = get("options");
+  const sequence = get("sequence");
+  const order = question.order;
+  list.classList.toggle("order-options", Boolean(order));
+  sequence.hidden = !order;
+  sequence.replaceChildren();
+  if (order) {
+    order.forEach((_, slot) => {
+      const item = document.createElement("li");
+      const choice = selected[slot];
+      item.textContent = choice === undefined ? slot + 1 : question.choices[choice];
+      item.classList.toggle("filled", choice !== undefined);
+      sequence.append(item);
+    });
+  }
+  question.choices.forEach((choice, choiceIndex) => {
+    const button = list.children[choiceIndex] || document.createElement("button");
+    button.type = "button";
+    button.className = "option";
+    const position = selected.indexOf(choiceIndex);
+    const chosen = position !== -1;
+    if (!order) button.setAttribute("aria-pressed", String(chosen));
+    button.disabled = locked || Boolean(order && chosen);
+    const badge = document.createElement("span");
+    badge.className = "choice-key";
+    badge.setAttribute("aria-hidden", "true");
+    badge.textContent = order && chosen ? position + 1 : String.fromCharCode(65 + choiceIndex);
+    button.replaceChildren(badge, document.createTextNode(choice));
+    if (order && chosen) button.setAttribute("aria-label", choice + ", " + (position + 1) + "번째");
+    else button.removeAttribute("aria-label");
+
+    if (locked && !order && (choiceIndex === question.answer || chosen)) {
+      const correct = choiceIndex === question.answer;
+      button.dataset.result = correct ? "correct" : "wrong";
+      const label = document.createElement("span");
+      label.className = "option-state";
+      label.textContent = correct ? "정답" : "내 답";
+      button.append(label);
+    }
+    button.onclick = () => {
+      if (locked || (order && selected.includes(choiceIndex))) return;
+      selected = order ? [...selected, choiceIndex] : [choiceIndex];
+      renderOptions();
+      if (order) (list.querySelector("button:not(:disabled)") || buttons.submit).focus();
+    };
+    if (!list.children[choiceIndex]) list.append(button);
+  });
+  buttons.submit.disabled = locked || selected.length !== (order ? order.length : 1);
+  buttons.undo.hidden = !order || locked;
+  buttons.undo.disabled = locked || selected.length === 0;
+}
+
+function renderQuestion(focus = true) {
+  question = round[index];
+  selected = [];
+  locked = false;
+  updateMissions();
+  get("phase").textContent = (retry ? "다시 풀기 · " : "") + phases[question.phase];
+  get("counter").textContent = (index + 1) + " / " + round.length + " 문제";
+  get("progressBar").setAttribute("aria-valuemax", round.length);
+  get("progressBar").setAttribute("aria-valuenow", index + 1);
+  get("progressFill").style.width = (index + 1) / round.length * 100 + "%";
+  get("question").textContent = question.prompt;
+  get("instruction").textContent = question.order ? "기관을 첫 번째부터 차례대로 선택하세요." : "답을 하나 선택하고 정답을 확인하세요.";
+  get("options").replaceChildren();
+  const feedback = get("feedback");
+  feedback.hidden = true;
+  feedback.replaceChildren();
+  buttons.next.hidden = true;
+  buttons.submit.hidden = false;
+  get("mapCaption").textContent = index === 0 && !retry ? "한 입 먹은 음식의 여행을 시작해요." : "정답을 확인하면 관련 기관이 지도에 표시돼요.";
+  drawMap();
+  renderOptions();
+  if (focus) get("question").focus();
+}
+
+function startRound(entries, isRetry = false, focus = true) {
+  round = entries;
+  index = 0;
+  responses = [];
+  points = 0;
+  retry = isRetry;
+  get("score").textContent = "0점";
+  get("result").hidden = true;
+  get("quiz").hidden = false;
+  renderQuestion(focus);
+}
+
+function showResult() {
+  updateMissions(true);
+  const misses = responses.filter(response => !response.correct);
+  get("quiz").hidden = true;
+  get("result").hidden = false;
+  get("resultScore").textContent = points + " / " + (round.length * 10) + "점";
+  get("resultSummary").textContent = misses.length
+    ? round.length + "문제 중 " + (round.length - misses.length) + "문제를 맞혔어요. 아래에서 틀린 문제를 확인해 보세요."
+    : round.length + "문제를 모두 맞혔어요!";
+  get("retryWrong").hidden = misses.length === 0;
+  get("retryWrong").onclick = () => startRound(misses.map(response => response.entry), true);
+  const review = get("review");
+  review.replaceChildren();
+  if (misses.length) {
+    const heading = document.createElement("h3");
+    heading.textContent = "틀린 문제 복습";
+    review.append(heading);
+  }
+  for (const { entry, answer } of misses) {
+    const details = document.createElement("details");
+    const summary = document.createElement("summary");
+    const yourAnswer = document.createElement("p");
+    const explanation = document.createElement("p");
+    summary.textContent = entry.prompt;
+    yourAnswer.textContent = "내 답 · " + answer.map(choice => entry.choices[choice]).join(" → ");
+    explanation.textContent = "해설 · " + entry.explanation;
+    details.append(summary, yourAnswer, explanation);
+    review.append(details);
+  }
+  drawMap(Object.keys(marks));
+  get("mapCaption").textContent = "입에서 항문까지, 소화 기관을 한눈에 살펴봐요.";
+  get("resultTitle").focus();
+}
+
+buttons.submit.onclick = () => {
+  if (buttons.submit.disabled || locked) return;
+  locked = true;
+  const correct = question.order
+    ? question.order.every((choice, position) => selected[position] === choice)
+    : selected[0] === question.answer;
+  responses.push({ entry: question, correct, answer: [...selected] });
+  if (correct) {
+    points += 10;
+    get("score").textContent = points + "점";
+  }
+  const feedback = get("feedback");
+  const heading = document.createElement("strong");
+  const explanation = document.createElement("span");
+  heading.textContent = correct ? "정답이에요! +10점" : "다음에 다시 도전해 봐요!";
+  explanation.textContent = question.explanation;
+  feedback.classList.toggle("wrong", !correct);
+  feedback.hidden = false;
+  feedback.append(heading, explanation);
+  get("mapCaption").textContent = "초록색 표시가 이 문제와 관련된 기관이에요.";
+  drawMap(question.organs);
+  renderOptions();
+  buttons.submit.hidden = true;
+  buttons.next.hidden = false;
+  buttons.next.textContent = index === round.length - 1 ? "결과 보기" : "다음 문제";
+  buttons.next.focus();
+};
+
+buttons.next.onclick = () => {
+  if (!locked) return;
+  index += 1;
+  if (index === round.length) showResult();
+  else renderQuestion();
+};
+buttons.undo.onclick = () => {
+  if (locked || !selected.length) return;
+  const removed = selected.pop();
+  renderOptions();
+  get("options").children[removed].focus();
+};
+get("restart").onclick = () => startRound(questions);
+get("guide").onclick = () => atlas.showModal();
+
+startRound(questions, false, false);
+</script>
+</body>
+</html>
+

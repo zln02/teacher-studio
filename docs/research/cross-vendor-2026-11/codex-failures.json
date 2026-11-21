@@ -1,0 +1,310 @@
+{
+ "runs": [
+  {
+   "run": "class-ppt-codex-bare-1",
+   "cmds": 7,
+   "scripts": []
+  },
+  {
+   "run": "class-ppt-codex-bare-2",
+   "cmds": 8,
+   "scripts": []
+  },
+  {
+   "run": "class-ppt-codex-harness-1",
+   "cmds": 24,
+   "scripts": [
+    "teacher-slides/deck.py",
+    "teacher-slides/pptx_render.py"
+   ]
+  },
+  {
+   "run": "class-ppt-codex-harness-2",
+   "cmds": 24,
+   "scripts": [
+    "teacher-slides/deck.py",
+    "teacher-slides/pptx_check.py"
+   ]
+  },
+  {
+   "run": "game-codex-bare-1",
+   "cmds": 14,
+   "scripts": []
+  },
+  {
+   "run": "game-codex-bare-2",
+   "cmds": 12,
+   "scripts": []
+  },
+  {
+   "run": "game-codex-harness-1",
+   "cmds": 17,
+   "scripts": [
+    "teacher-game/build.py",
+    "teacher-studio/deliver.py"
+   ]
+  },
+  {
+   "run": "game-codex-harness-2",
+   "cmds": 36,
+   "scripts": [
+    "teacher-game/build.py",
+    "teacher-game/check_game.py",
+    "teacher-studio/deliver.py",
+    "teacher-studio/studio.py"
+   ]
+  },
+  {
+   "run": "general-codex-bare-1",
+   "cmds": 15,
+   "scripts": []
+  },
+  {
+   "run": "general-codex-bare-2",
+   "cmds": 8,
+   "scripts": []
+  },
+  {
+   "run": "general-codex-harness-1",
+   "cmds": 17,
+   "scripts": [
+    "teacher-class-tools/build_tool.py",
+    "teacher-studio/deliver.py"
+   ]
+  },
+  {
+   "run": "general-codex-harness-2",
+   "cmds": 13,
+   "scripts": [
+    "teacher-class-tools/build_tool.py",
+    "teacher-studio/deliver.py"
+   ]
+  },
+  {
+   "run": "hwpx-notice-codex-bare-1",
+   "cmds": 12,
+   "scripts": []
+  },
+  {
+   "run": "hwpx-notice-codex-bare-2",
+   "cmds": 21,
+   "scripts": []
+  },
+  {
+   "run": "hwpx-notice-codex-harness-1",
+   "cmds": 22,
+   "scripts": [
+    "teacher-docs/docmodel.py",
+    "teacher-docs/docs.py"
+   ]
+  },
+  {
+   "run": "hwpx-notice-codex-harness-2",
+   "cmds": 20,
+   "scripts": [
+    "teacher-docs/docs.py"
+   ]
+  },
+  {
+   "run": "public-ppt-codex-bare-1",
+   "cmds": 7,
+   "scripts": []
+  },
+  {
+   "run": "public-ppt-codex-bare-2",
+   "cmds": 6,
+   "scripts": []
+  },
+  {
+   "run": "public-ppt-codex-harness-1",
+   "cmds": 21,
+   "scripts": [
+    "teacher-slides/deck.py",
+    "teacher-slides/pptx_render.py"
+   ]
+  },
+  {
+   "run": "public-ppt-codex-harness-2",
+   "cmds": 27,
+   "scripts": [
+    "teacher-slides/deck.py",
+    "teacher-slides/pptx_check.py",
+    "teacher-slides/pptx_draw.py"
+   ]
+  },
+  {
+   "run": "webapp-codex-bare-1",
+   "cmds": 22,
+   "scripts": []
+  },
+  {
+   "run": "webapp-codex-bare-2",
+   "cmds": 9,
+   "scripts": []
+  },
+  {
+   "run": "webapp-codex-harness-1",
+   "cmds": 28,
+   "scripts": [
+    "teacher-studio/build_webapp.py",
+    "teacher-studio/deliver.py"
+   ]
+  },
+  {
+   "run": "webapp-codex-harness-2",
+   "cmds": 21,
+   "scripts": [
+    "teacher-studio/build_webapp.py",
+    "teacher-studio/deliver.py"
+   ]
+  }
+ ],
+ "categories": {
+  "bare": {
+   "other (script error, assertion, wrong argument)": 44,
+   "access denied (other path or process)": 6
+  },
+  "harness": {
+   "other (script error, assertion, wrong argument)": 44,
+   "temp folder write denied (PermissionError)": 17,
+   "access denied (other path or process)": 16
+  }
+ },
+ "examples": {
+  "bare|other (script error, assertion, wrong argument)": [
+   [
+    "class-ppt-codex-bare-1",
+    " \"Get-ChildItem -Force | Select-Object Name,Mode; Get-Command python,py,node,soffice,powerpnt -ErrorAction SilentlyContinue | Select-Object Name,Source; rg --fi",
+    "-----                                                          \r | python.exe C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\r | py.exe     C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Launcher\\py.exe     \r | node.exe   C:\\Program Files\\nodejs\\node.exe                                \r | \r | \r | "
+   ],
+   [
+    "class-ppt-codex-bare-1",
+    " 'python build_lesson.py'",
+    "^^^^^^^^^^^^^\r |   File \"C:\\Users\\User\\Downloads\\xv-eval-work\\class-ppt-codex-bare-1\\work\\build_lesson.py\", line 124, in txt\r |     assert length <= coord(w) + 1, (len(ppt.slides), content, round(length / PX, 2), w)\r |            ^^^^^^^^^^^^^^^^^^^^^^\r | AssertionError: (5, '소비를 늘려 생산을 키우자.', 2.72, 2.64)\r | "
+   ],
+   [
+    "class-ppt-codex-bare-2",
+    " \"python -m pip list --format=freeze | Select-String -Pattern 'Aspose|pymupdf|cairo|pillow|reportlab'; Get-ItemProperty 'Registry::HKEY_CLASSES_ROOT\\\\PowerPoint",
+    "\r | aspose_slides==26.11.0\r | pillow==11.3.0\r | PyMuPDF==1.27.2.2\r | reportlab==4.4.3\r | \r | \r | "
+   ],
+   [
+    "class-ppt-codex-bare-2",
+    " \"@' from pathlib import Path from PIL import Image, ImageOps import aspose.slides as slides  path = next(Path('.').glob('*.pptx')) sheet = Image.new('RGB', (10",
+    "n313\\Lib\\site-packages\\asposeslides\\_runtime.py\", line 660, in _resolve_bridge_functions\r |     raise RuntimeError(\r |         \"Failed to resolve bridge method '%s' (0x%08x)\" % (\r |             method_name, rc & 0xFFFFFFFF))\r | RuntimeError: Failed to resolve bridge method 'Bridge_Initialize' (0x800711c7)\r | "
+   ],
+   [
+    "game-codex-bare-1",
+    " \"Get-ChildItem -Force; rg --files --hidden -g AGENTS.md -g '\"'!/.git'\"'\"",
+    ""
+   ]
+  ],
+  "harness|other (script error, assertion, wrong argument)": [
+   [
+    "class-ppt-codex-harness-1",
+    " 'Get-ChildItem -Force | Select-Object Name; Get-Command python,node,soffice -ErrorAction SilentlyContinue | Select-Object Name,Source'",
+    "ource                                                          \r | ----       ------                                                          \r | python.exe C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\r | node.exe   C:\\Program Files\\nodejs\\node.exe                                \r | \r | \r | "
+   ],
+   [
+    "class-ppt-codex-harness-1",
+    " '$env:PYTHONIOENCODING = '\"'utf-8' \"'$env:PYTHONPATH = '\"'C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratch",
+    "Traceback (most recent call last):\r |   File \"<stdin>\", line 19, in <module>\r | AssertionError\r | "
+   ],
+   [
+    "class-ppt-codex-harness-1",
+    " '$env:LESSON_FONT_DIR = '\"'C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/xv/codex-harness/skills/tea",
+    "back (most recent call last):\r |   File \"<stdin>\", line 74, in <module>\r |   File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\site-packages\\pptx\\shapes\\autoshape.py\", line 278, in auto_shape_type\r |     raise ValueError(\"shape is not an auto shape\")\r | ValueError: shape is not an auto shape\r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " 'Get-ChildItem -Force | Select-Object Name; Get-Command python,node,soffice,pdftoppm -ErrorAction SilentlyContinue | Select-Object Name,Source'",
+    "ource                                                          \r | ----       ------                                                          \r | python.exe C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\python.exe\r | node.exe   C:\\Program Files\\nodejs\\node.exe                                \r | \r | \r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " \"python -c \\\"import pptx,PIL; print(pptx.__version__)\\\"; Get-ItemProperty 'Registry::HKEY_CLASSES_ROOT\\\\PowerPoint.Application\\\\CLSID' -ErrorAction SilentlyCon",
+    "1.0.2\r | "
+   ]
+  ],
+  "harness|temp folder write denied (PermissionError)": [
+   [
+    "class-ppt-codex-harness-1",
+    " '$env:PYTHONIOENCODING = '\"'utf-8' New-Item -ItemType Directory -Path '.ppt-review' -Force | Out-Null \"'$spec = @'\"' {   \\\"context\\\": \\\"class\\\",   \\\"purpose\\\":",
+    "13\\Lib\\pathlib\\_local.py\", line 537, in open\r |     return io.open(self, mode, buffering, encoding, errors, newline)\r |            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [Errno 13] Permission denied: 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\deck-24b12tvc\\\\deck.html'\r | "
+   ],
+   [
+    "class-ppt-codex-harness-1",
+    " '$env:PYTHONIOENCODING = '\"'utf-8' \"'$pptScratch = (Resolve-Path -LiteralPath '\"'.ppt-review').Path \"'$env:TMP = $pptScratch $env:TEMP = $pptScratch $spec = @'",
+    " return io.open(self, mode, buffering, encoding, errors, newline)\r |            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [Errno 13] Permission denied: 'C:\\\\Users\\\\User\\\\Downloads\\\\xv-eval-work\\\\class-ppt-codex-harness-1\\\\work\\\\.ppt-review\\\\deck-e0lvf73q\\\\deck.html'\r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " \"@' {   \\\"title\\\": \\\"조선 후기 실학의 등장\\\",   \\\"context\\\": \\\"class\\\",   \\\"purpose\\\": \\\"수업\\\",   \\\"audience\\\": \\\"중학교 3학년\\\",   \\\"subject\\\": \\\"역사\\\",   \\\"mood\\\": \\\"차분하고 선명",
+    "13\\Lib\\pathlib\\_local.py\", line 537, in open\r |     return io.open(self, mode, buffering, encoding, errors, newline)\r |            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [Errno 13] Permission denied: 'C:\\\\Users\\\\User\\\\AppData\\\\Local\\\\Temp\\\\deck-phfmie7q\\\\deck.html'\r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " '$env:PYTHONUTF8='\"'1' \"'$env:PYTHONDONTWRITEBYTECODE='\"'1' \"'$env:TEMP=(Join-Path (Get-Location) '\"'.ppt-work') \"'$env:TMP=$env:TEMP python '\"'C:/Users/User/A",
+    "   return io.open(self, mode, buffering, encoding, errors, newline)\r |            ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [Errno 13] Permission denied: 'C:\\\\Users\\\\User\\\\Downloads\\\\xv-eval-work\\\\class-ppt-codex-harness-2\\\\work\\\\.ppt-work\\\\deck-x3iq5iaf\\\\deck.html'\r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " '$env:PYTHONUTF8='\"'1' \"'$env:PYTHONDONTWRITEBYTECODE='\"'1' python 'C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac",
+    "^^^^^\r |   File \"C:\\Users\\User\\AppData\\Local\\Programs\\Python\\Python313\\Lib\\asyncio\\windows_utils.py\", line 70, in pipe\r |     h2 = _winapi.CreateFile(\r |         address, access, 0, _winapi.NULL, _winapi.OPEN_EXISTING,\r |         flags_and_attribs, _winapi.NULL)\r | PermissionError: [WinError 5] 액세스가 거부되었습니다\r | "
+   ]
+  ],
+  "harness|access denied (other path or process)": [
+   [
+    "class-ppt-codex-harness-1",
+    " '$OutputEncoding = [Text.UTF8Encoding]::new($false) $env:PYTHONIOENCODING = '\"'utf-8' \"'$env:PYTHONPATH = '\"'C:/Users/User/AppData/Local/Temp/claude/30da2aaa5c",
+    "08] CreateFile: 액세스가 거부되었습니다. (0x5)\r | [498268:499924:1121/083123.551:FATAL:mojo\\public\\cpp\\platform\\platform_channel.cc:112] Check failed: . : 액세스가 거부되었습니다. (0x5)\r | [1121/083123.551:ERROR:third_party\\crashpad\\crashpad\\client\\crashpad_client_win.cc:145] crash server failed to launch, self-terminating\r | "
+   ],
+   [
+    "class-ppt-codex-harness-2",
+    " \"@' {   \\\"title\\\": \\\"조선 후기 실학의 등장\\\",   \\\"context\\\": \\\"class\\\",   \\\"purpose\\\": \\\"수업\\\",   \\\"audience\\\": \\\"중학교 3학년\\\",   \\\"subject\\\": \\\"역사\\\",   \\\"mood\\\": \\\"차분하고 선명",
+    "어 보세요.  ※ PPT 파일을 실제 화면처럼 그려서 글자가 넘치는지 눈으로 확인하려면 LibreOffice(무료 사무 프로그램)가 필요해요. 용량이 커요: 내려받기 약 350MB, 설치 후 약 700MB, 5~10분 걸려요. 설치할까요? (안 깔아도 돼요. 그럴 땐 도형 위치로 그린 '대략의 미리보기'로 확인하고, 그 사실을 알려 드려요.) (그림 저장은 건너뜀: [WinError 5] 액세스가 거부되었습니다)\r | sheet: .ppt-work\\review\\_approx-01.html\r | READY 조선 후기 실학의 등장.pptx\r | "
+   ],
+   [
+    "game-codex-harness-1",
+    " '$env:PYTHONIOENCODING = '\"'utf-8' @'  from pathlib import Path from playwright.sync_api import sync_playwright  root = Path.cwd() game = next(root.glob('*.htm",
+    "ateFile(\r |          ^^^^^^^^^^^^^^^^^^^\r |         address, access, 0, _winapi.NULL, _winapi.OPEN_EXISTING,\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r |         flags_and_attribs, _winapi.NULL)\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [WinError 5] 액세스가 거부되었습니다\r | "
+   ],
+   [
+    "game-codex-harness-1",
+    " \"Get-ChildItem -LiteralPath '.game-build' -Force | Select-Object Name,Mode; Get-ChildItem -LiteralPath '.game-build/chrome' -Force | Select-Object Name,Mode; G",
+    "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\r |     + CategoryInfo          : PermissionDenied: (C:\\Users\\User\\D...ild\\tmpr9wauz3u:String) [Get-ChildItem], Unauthoriz \r |    edAccessException\r |     + FullyQualifiedErrorId : DirUnauthorizedAccessError,Microsoft.PowerShell.Commands.GetChildItemCommand\r |  \r | \r | \r | "
+   ],
+   [
+    "game-codex-harness-2",
+    " '$env:PYTHONUTF8='\"'1' \"'$env:PYTHONDONTWRITEBYTECODE='\"'1' \"'$env:TEMP=(Resolve-Path '\"'.digestion-build').Path \"'$env:TMP=$env:TEMP $env:TMPDIR=$env:TEMP @'\"",
+    "uld not run ([WinError 5] 액세스가 거부되었습니다)\r | RESULT: PARTIAL (0 fail, 3 unchecked, 0 warn)\r | (33 checks passed; --verbose lists them)\r | DESIGN REVIEW: PARTIAL\r |   - 화면을 열 수 없어 디자인 점검을 건너뛰었어요 ([WinError 5] 액세스가 거부되었습니다)\r | PARTIAL C:\\Users\\User\\Downloads\\xv-eval-work\\game-codex-harness-2\\work\\소화 기관 탐험대.html\r | "
+   ]
+  ],
+  "bare|access denied (other path or process)": [
+   [
+    "game-codex-bare-2",
+    " \"@' from pathlib import Path from playwright.sync_api import sync_playwright, expect url = Path(\\\"index.html\\\").resolve().as_uri() with sync_playwright() as p:",
+    "ateFile(\r |          ^^^^^^^^^^^^^^^^^^^\r |         address, access, 0, _winapi.NULL, _winapi.OPEN_EXISTING,\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r |         flags_and_attribs, _winapi.NULL)\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [WinError 5] 액세스가 거부되었습니다\r | "
+   ],
+   [
+    "general-codex-bare-1",
+    " \"@' from pathlib import Path from io import BytesIO from pypdf import PdfReader from playwright.sync_api import sync_playwright source = next(Path.cwd().glob('",
+    "ateFile(\r |          ^^^^^^^^^^^^^^^^^^^\r |         address, access, 0, _winapi.NULL, _winapi.OPEN_EXISTING,\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r |         flags_and_attribs, _winapi.NULL)\r |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r | PermissionError: [WinError 5] 액세스가 거부되었습니다\r | "
+   ],
+   [
+    "general-codex-bare-1",
+    " '$browser='\"'C:\\\\Program Files\\\\Google\\\\Chrome\\\\Application\\\\chrome.exe' \"'$source=(Get-ChildItem -Filter *.html).FullName $profile=Join-Path $PWD '\"'badminton",
+    "08] CreateFile: 액세스가 거부되었습니다. (0x5)\r | [496924:496336:1121/074954.594:FATAL:mojo\\public\\cpp\\platform\\platform_channel.cc:112] Check failed: . : 액세스가 거부되었습니다. (0x5)\r | [1121/074954.595:ERROR:third_party\\crashpad\\crashpad\\client\\crashpad_client_win.cc:145] crash server failed to launch, self-terminating\r | "
+   ],
+   [
+    "general-codex-bare-1",
+    " '$browser='\"'C:\\\\Program Files (x86)\\\\Microsoft\\\\Edge\\\\Application\\\\msedge.exe' \"'$source=(Get-ChildItem -Filter *.html).FullName $profile=Join-Path $PWD '\"'ba",
+    " to set usagestats; result: 5\r | [497516:497092:1121/075005.673:ERROR:chrome\\browser\\net\\system_network_context_manager.cc:1499] Cannot use V8 Proxy resolver in single process mode.\r | [1121/075005.674:ERROR:third_party\\crashpad\\crashpad\\client\\crashpad_client_win.cc:159] crash server failed to launch\r | "
+   ],
+   [
+    "general-codex-bare-2",
+    " '$eventFile = Get-ChildItem -File -Filter '\"'*.html' | Select-Object -First 1; \"'$eventUrl = ([uri]$eventFile.FullName).AbsoluteUri; & '\"'C:/Program Files/Goog",
+    "08] CreateFile: 액세스가 거부되었습니다. (0x5)\r | [498408:495672:1121/082400.803:FATAL:mojo\\public\\cpp\\platform\\platform_channel.cc:112] Check failed: . : 액세스가 거부되었습니다. (0x5)\r | [1121/082400.803:ERROR:third_party\\crashpad\\crashpad\\client\\crashpad_client_win.cc:145] crash server failed to launch, self-terminating\r | "
+   ]
+  ]
+ }
+}

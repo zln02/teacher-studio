@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f7ef">
+  <title>소화 탐험대 · 6학년 과학 복습 게임</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f8f7ef;
+      --ink: #17392c;
+      --muted: #58685e;
+      --green: #245c43;
+      --line: #e3e6d8;
+      --white: #fffefa;
+      font-family: "Malgun Gothic", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; min-width: 300px; }
+    button { font: inherit; cursor: pointer; }
+    button:focus-visible, summary:focus-visible { outline: 3px solid #6c8239; outline-offset: 4px; }
+    button:disabled { cursor: default; }
+    [hidden] { display: none !important; }
+    .wrap { width: min(1140px, calc(100% - 56px)); margin-inline: auto; }
+    .topbar { border-bottom: 1px solid #e5e6d9; }
+    .topbar .wrap, .footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .topbar .wrap { min-height: 69px; }
+    .brand, .top-tools { display: flex; align-items: center; gap: 12px; }
+    .brand { font-size: 15px; font-weight: 800; letter-spacing: -.045em; }
+    .brand-icon {
+      display: grid; place-items: center; width: 36px; height: 36px; border-radius: 11px;
+      background: #285d45; color: #e9f2bb; font-size: 23px; line-height: 1;
+    }
+    .subject { color: #3e5547; background: #eaf0dd; border-radius: 99px; padding: 6px 11px; font-size: 12px; font-weight: 800; }
+    .sound {
+      display: grid; place-items: center; width: 36px; height: 36px; border: 1px solid #dedfd3;
+      border-radius: 11px; color: var(--green); background: var(--white);
+    }
+    .sound canvas { width: 19px; height: 19px; }
+    .hero { display: flex; justify-content: space-between; align-items: end; gap: 24px; padding: 29px 0 26px; }
+    .unit { color: #43614e; font-size: 13px; font-weight: 800; margin: 0 0 6px; letter-spacing: .01em; }
+    .unit::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: #6b843d; vertical-align: 1px; }
+    h1 { font-size: clamp(40px, 5.2vw, 68px); margin: 0; line-height: 1.11; letter-spacing: -.095em; font-weight: 900; }
+    .hero-copy { margin: 13px 0 0; color: var(--muted); font-size: 15px; line-height: 1.55; letter-spacing: -.035em; }
+    .progress {
+      flex: 0 0 220px; background: #eef1e2; border: 1px solid #e2e8d4; border-radius: 15px;
+      padding: 13px 15px; margin-bottom: 2px;
+    }
+    .progress span { font-size: 12px; font-weight: 800; }
+    .progress-top { display: flex; align-items: center; justify-content: space-between; }
+    .progress-top output { color: #3e5d49; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    progress { display: block; width: 100%; height: 7px; margin-top: 9px; appearance: none; border: 0; border-radius: 99px; background: #dbe3ca; overflow: hidden; }
+    progress::-webkit-progress-bar { background: #dbe3ca; }
+    progress::-webkit-progress-value { background: #538658; border-radius: 99px; transition: width .25s; }
+    progress::-moz-progress-bar { background: #538658; border-radius: 99px; }
+    .game { display: grid; grid-template-columns: 1fr 1.02fr; gap: 20px; align-items: stretch; }
+    .map, .quiz { border-radius: 24px; min-width: 0; overflow: hidden; }
+    .map {
+      position: relative; display: flex; flex-direction: column; color: #f7fae9;
+      background: radial-gradient(ellipse at 49% 62%, #2a644c 0%, #204d3c 48%, #17392f 100%);
+      border: 1px solid #2b5446;
+    }
+    .map-head { position: relative; z-index: 2; padding: 20px 21px 0; pointer-events: none; }
+    .map-head h2 { margin: 0; font-size: 19px; letter-spacing: -.055em; }
+    .map-head p { margin: 5px 0 0; color: #d0e5ce; font-size: 12px; }
+    .scene { position: relative; width: min(100%, 560px); aspect-ratio: 520 / 412; margin: auto; }
+    #body-map { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hotspot {
+      position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%);
+      width: 43px; height: 43px; display: grid; place-items: center; padding: 0;
+      border: 0; border-radius: 50%; background: transparent; color: #f4f5d5;
+    }
+    .hotspot::before {
+      content: "+"; line-height: 1; padding-bottom: 2px; display: grid; place-items: center; width: 24px; height: 24px;
+      background: #204b3b; border: 1.5px solid #edf2c9; border-radius: 50%; font-size: 18px;
+      box-shadow: 0 0 0 4px #eff6c333; transition: background .15s, color .15s, scale .15s;
+    }
+    .hotspot:hover::before, .hotspot[aria-pressed="true"]::before { background: #e9f4b7; color: #24543d; scale: 1.12; }
+    .hotspot:focus-visible { outline-color: #f0f5cd; outline-offset: -2px; }
+    .map-note {
+      display: flex; align-items: center; gap: 11px; position: relative; z-index: 2;
+      margin: 0 15px 15px; min-height: 62px; padding: 9px 12px; border-radius: 13px;
+      background: #102e25a6; border: 1px solid #85b49a44;
+    }
+    .map-note-icon {
+      flex: 0 0 30px; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px;
+      color: #ecf4bd; background: #497356; font-size: 17px;
+    }
+    .map-note strong { font-size: 13px; display: block; }
+    .map-note p { margin: 3px 0 0; color: #d7e8d7; font-size: 12px; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
+    .quiz {
+      display: flex; flex-direction: column; background: var(--white);
+      border: 1px solid var(--line); padding: 21px 24px 19px; box-shadow: 0 4px 13px #33472a08;
+    }
+    #play { display: flex; flex-direction: column; flex: 1; }
+    .stages { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin: 0; padding: 4px; list-style: none; background: #f2f3eb; border-radius: 12px; }
+    .stages li {
+      min-width: 0; color: #56665a; display: flex; gap: 5px; align-items: center; justify-content: center;
+      border-radius: 9px; font-size: 12px; font-weight: 800; min-height: 34px; white-space: nowrap;
+    }
+    .stages span {
+      display: grid; place-items: center; flex: 0 0 17px; height: 17px; border-radius: 50%;
+      color: #536452; background: #e4e9da; font-size: 10px;
+    }
+    .stages [aria-current="step"] { color: #1c4b32; background: #e3edc9; }
+    .stages [aria-current="step"] span, .stages .done span { color: #fff; background: #427557; }
+    .question-top { margin-top: 22px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .question-count { color: var(--green); font-size: 12px; font-weight: 900; letter-spacing: .035em; }
+    .question-type { border-radius: 99px; padding: 5px 8px; background: #f1f0df; color: #575e3a; font-size: 11px; font-weight: 800; }
+    .question { margin: 8px 0 0; font-size: clamp(21px, 2.25vw, 30px); line-height: 1.34; letter-spacing: -.065em; word-break: keep-all; overflow-wrap: anywhere; }
+    .instruction { color: var(--muted); font-size: 13px; line-height: 1.48; margin: 7px 0 15px; }
+    .choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .choice {
+      display: flex; align-items: center; gap: 10px; width: 100%; min-height: 54px; padding: 7px 10px;
+      text-align: left; color: var(--ink); background: #fcfcf7; border: 1px solid #e3e7d9; border-radius: 11px;
+      font-weight: 800; font-size: 14px; transition: background .15s, border-color .15s, transform .15s;
+      word-break: keep-all; overflow-wrap: anywhere;
+    }
+    .choice:hover:enabled { background: #eff3e3; border-color: #91ab84; transform: translateY(-1px); }
+    .choice-key { display: grid; flex: 0 0 27px; height: 27px; place-items: center; border-radius: 7px; background: #eaf0e0; color: #405d47; font-size: 12px; }
+    .choice.correct { border-color: #6b9b66; background: #e8f3df; }
+    .choice.correct .choice-key { background: #36704d; color: white; }
+    .choice.wrong { border-color: #d68d72; background: #faebe4; color: #883d2d; }
+    .choice.wrong .choice-key { background: #a7503a; color: white; }
+    .choice.used { opacity: .52; }
+    .sequence {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 5px; min-height: 43px;
+      background: #f0f3e7; border-radius: 10px; margin: 0 0 9px; padding: 6px 8px; color: #516457; font-size: 12px;
+    }
+    .sequence-item { padding: 5px 7px; color: #24543d; background: #dfead2; border-radius: 6px; font-weight: 800; }
+    .feedback {
+      margin: 13px 0 0; min-height: 62px; padding: 9px 11px; border-radius: 11px;
+      background: #f3f5eb; color: #42594a; font-size: 12px; line-height: 1.43;
+    }
+    .feedback strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 13px; }
+    .feedback.is-correct { background: #edf5e4; }
+    .feedback.is-wrong { background: #faeee5; color: #723e31; }
+    .feedback.is-wrong strong { color: #723e31; }
+    .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 12px; }
+    #play .actions { margin-top: auto; padding-top: 12px; }
+    .primary, .secondary {
+      min-height: 42px; border-radius: 10px; padding: 8px 15px; font-size: 13px; font-weight: 800;
+    }
+    .primary { color: #fff; background: #285e45; border: 1px solid #285e45; }
+    .primary:hover:enabled { background: #194a35; }
+    .primary:disabled { color: #586b5d; background: #e9eee3; border-color: #e9eee3; }
+    .secondary { color: #28543e; background: var(--white); border: 1px solid #d9e2d1; }
+    .secondary:hover:enabled { background: #eff4e8; }
+    .secondary:disabled { opacity: .58; }
+    .footer { padding: 15px 2px 22px; color: #536457; font-size: 12px; }
+    kbd { font: inherit; font-size: 11px; padding: 1px 5px 2px; color: #3d5143; border: 1px solid #dce0d3; background: #fffdf6; border-radius: 4px; }
+    .restart { color: #3c5948; background: transparent; border: 0; text-decoration: underline; text-underline-offset: 3px; padding: 5px; font-size: inherit; white-space: nowrap; }
+    .results { margin-top: 22px; }
+    .results .question { margin-top: 6px; }
+    .score {
+      display: flex; align-items: center; gap: 12px; padding: 13px; margin-block: 15px; background: #ecf1dd; border-radius: 11px;
+      color: #26543a; font-size: 13px;
+    }
+    .score strong { font-size: 25px; white-space: nowrap; }
+    .review { margin: 12px 0; font-size: 13px; border: 1px solid var(--line); border-radius: 11px; padding: 10px 12px; }
+    .review summary { cursor: pointer; font-weight: 800; color: var(--green); }
+    .review-list { margin: 10px 0 0; padding-left: 23px; color: var(--muted); line-height: 1.55; }
+    .review-list li + li { margin-top: 8px; }
+    .review-list strong { color: var(--ink); }
+    @media (min-width: 970px) {
+      .choices:not(.ordering) { grid-template-columns: 1fr; }
+      .choice { padding-inline: 12px; }
+    }
+    @media (max-width: 820px) {
+      .game { gap: 13px; }
+      .quiz { padding-inline: 15px; }
+      .map-head { padding-inline: 15px; }
+    }
+    @media (max-width: 680px) {
+      .wrap { width: calc(100% - 30px); }
+      .topbar .wrap { min-height: 56px; }
+      .top-tools { gap: 7px; }
+      .hero { display: grid; gap: 13px; padding: 21px 0 17px; }
+      .hero-copy { margin-top: 8px; }
+      .progress { margin: 0; }
+      .game { grid-template-columns: 1fr; }
+      .scene { width: min(100%, 390px); }
+      .quiz { padding: 15px; grid-row: 1; }
+      .question-top { margin-top: 15px; }
+      .footer { padding-top: 12px; }
+      .keyboard { display: none; }
+      .footer { justify-content: end; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand"><span class="brand-icon" aria-hidden="true">✦</span>몸속 과학실</div>
+      <div class="top-tools">
+        <span class="subject">6학년 과학</span>
+        <button type="button" class="sound" id="sound" aria-label="효과음" title="효과음 끄기 또는 켜기" aria-pressed="false">
+          <canvas id="sound-icon" width="38" height="38" aria-hidden="true"></canvas>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="unit">우리 몸의 소화 기관</p>
+        <h1 id="page-title">소화 탐험대</h1>
+        <p class="hero-copy">음식물이 몸속에서 어디로 가고, 어떻게 달라지는지 알아봐요.</p>
+      </div>
+      <div class="progress">
+        <div class="progress-top"><span id="progress-label">탐험 진행도</span><output id="progress-text" aria-hidden="true">0 / 9</output></div>
+        <progress id="progress" value="0" max="9" aria-labelledby="progress-label"></progress>
+      </div>
+    </section>
+    <div class="game">
+      <section class="map" aria-labelledby="map-title">
+        <header class="map-head">
+          <h2 id="map-title">몸속 탐험 지도</h2>
+          <p>+를 눌러 지도에서 소화 기관을 찾아봐요.</p>
+        </header>
+        <div class="scene">
+          <canvas id="body-map" width="1040" height="824" aria-hidden="true"></canvas>
+          <button class="hotspot" type="button" style="--x:39.42%;--y:19.90%" data-organ="mouth" aria-label="입 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+          <button class="hotspot" type="button" style="--x:49.23%;--y:36.65%" data-organ="esophagus" aria-label="식도 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+          <button class="hotspot" type="button" style="--x:62.69%;--y:49.76%" data-organ="stomach" aria-label="위 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+          <button class="hotspot" type="button" style="--x:52.50%;--y:67.96%" data-organ="small" aria-label="작은창자 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+          <button class="hotspot" type="button" style="--x:36.54%;--y:70.87%" data-organ="large" aria-label="큰창자 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+          <button class="hotspot" type="button" style="--x:49.23%;--y:88.35%" data-organ="anus" aria-label="항문 설명 보기" aria-controls="map-note" aria-pressed="false"></button>
+        </div>
+        <div class="map-note" id="map-note">
+          <span class="map-note-icon" aria-hidden="true">✧</span>
+          <div role="status"><strong id="map-name">음식물이 지나가는 길</strong><p id="map-fact">입에서 출발해 여러 소화 기관을 차례로 지나가요.</p></div>
+        </div>
+      </section>
+      <section class="quiz" aria-label="소화 퀴즈">
+        <ol class="stages" aria-label="탐험 단계">
+          <li aria-current="step"><span aria-hidden="true">1</span>기관 찾기</li>
+          <li><span aria-hidden="true">2</span>하는 일</li>
+          <li><span aria-hidden="true">3</span>이동 순서</li>
+        </ol>
+        <div id="play">
+          <div class="question-top">
+            <span class="question-count" id="question-count"></span>
+            <span class="question-type" id="question-type"></span>
+          </div>
+          <h2 class="question" id="question" tabindex="-1"></h2>
+          <p class="instruction" id="instruction"></p>
+          <div class="sequence" id="sequence" aria-live="polite" aria-label="선택한 기관의 순서" hidden></div>
+          <div class="choices" id="choices" role="group" aria-labelledby="question" aria-describedby="instruction"></div>
+          <div class="feedback" id="feedback" role="status"></div>
+          <div class="actions">
+            <button class="secondary" type="button" id="undo" hidden>한 칸 지우기</button>
+            <button class="primary" type="button" id="advance">다음 문제 <span aria-hidden="true">→</span></button>
+          </div>
+        </div>
+        <div class="results" id="results" hidden></div>
+      </section>
+    </div>
+    <footer class="footer">
+      <div class="keyboard"><kbd>1</kbd>–<kbd>4</kbd> 번호로 선택 · <kbd>Enter</kbd> 정답 확인 또는 다음 문제</div>
+      <button class="restart" type="button" id="restart">처음부터 다시</button>
+    </footer>
+  </main>
+  <script>
+    "use strict";
+
+    const byId = (id) => document.getElementById(id);
+    const organs = {
+      mouth: { name: "입", fact: "이로 음식물을 잘게 씹고, 침과 섞어요." },
+      esophagus: { name: "식도", fact: "근육이 움직여 삼킨 음식물을 위로 보내요." },
+      stomach: { name: "위", fact: "음식물을 위액과 섞고 소화해요." },
+      small: { name: "작은창자", fact: "소화가 더 이루어지고, 소화된 영양소가 대부분 흡수돼요." },
+      large: { name: "큰창자", fact: "남은 물질에서 물을 흡수하고, 남은 찌꺼기는 대변이 돼요." },
+      anus: { name: "항문", fact: "대변이 몸 밖으로 나가는 곳이에요." }
+    };
+    const questions = [
+      {
+        prompt: "음식물의 여행은 어디에서 시작할까요?",
+        choices: ["위", "입", "식도", "작은창자"], answer: 1, organ: "mouth",
+        explanation: "입에서 음식물을 이로 씹고 침과 섞으면서 소화가 시작돼요."
+      },
+      {
+        prompt: "입과 위를 이어 주는 긴 관은 무엇일까요?",
+        choices: ["큰창자", "작은창자", "항문", "식도"], answer: 3, organ: "esophagus",
+        explanation: "식도는 입에서 삼킨 음식물을 위로 보내요."
+      },
+      {
+        prompt: "지도에서 작은창자를 바깥쪽으로 둘러싸고 있는 기관은 무엇일까요?",
+        choices: ["큰창자", "입", "식도", "위"], answer: 0, organ: "large",
+        explanation: "큰창자는 구불구불한 작은창자 둘레에 있어요."
+      },
+      {
+        prompt: "음식물을 위액과 섞어 소화하는 기관은 어디일까요?",
+        choices: ["식도", "항문", "위", "큰창자"], answer: 2, organ: "stomach",
+        explanation: "위는 움직이면서 음식물을 위액과 섞고 소화해요."
+      },
+      {
+        prompt: "소화된 영양소가 대부분 흡수되는 곳은 어디일까요?",
+        choices: ["작은창자", "큰창자", "입", "식도"], answer: 0, organ: "small",
+        explanation: "작은창자에서는 소화가 더 이루어지고 영양소가 대부분 흡수돼요."
+      },
+      {
+        prompt: "큰창자가 하는 일은 무엇일까요?",
+        choices: ["음식물을 씹어요", "위액과 섞어요", "음식물을 위로 보내요", "남은 물질에서 물을 흡수해요"],
+        answer: 3, organ: "large",
+        explanation: "큰창자는 남은 물질에서 물을 흡수해요. 남은 찌꺼기는 대변이 돼요."
+      },
+      {
+        prompt: "입에서 위까지 가는 길을 만들어 볼까요?",
+        choices: ["식도", "위", "입"], answer: [2, 0, 1],
+        explanation: "입에서 삼킨 음식물은 식도를 지나 위로 가요."
+      },
+      {
+        prompt: "위에서 나온 음식물은 어느 창자부터 지날까요?",
+        choices: ["큰창자", "위", "작은창자"], answer: [1, 2, 0],
+        explanation: "위에서 나온 음식물은 작은창자를 지나고, 남은 찌꺼기는 큰창자로 가요."
+      },
+      {
+        prompt: "작은창자를 지난 찌꺼기는 어떻게 몸 밖으로 나갈까요?",
+        choices: ["항문", "작은창자", "큰창자"], answer: [1, 2, 0],
+        explanation: "작은창자를 지난 찌꺼기는 큰창자로 가요. 대변은 항문을 통해 몸 밖으로 나와요."
+      }
+    ];
+
+    const art = byId("body-map").getContext("2d");
+    art.scale(2, 2);
+
+    function shape(outline, fill, stroke, width = 1) {
+      const path = new Path2D(outline);
+      if (fill) {
+        art.fillStyle = fill;
+        art.fill(path);
+      }
+      if (stroke) {
+        art.strokeStyle = stroke;
+        art.lineWidth = width;
+        art.stroke(path);
+      }
+    }
+
+    function disc(x, y, rx, ry, fill) {
+      art.beginPath();
+      art.ellipse(x, y, rx, ry, 0, 0, Math.PI * 2);
+      art.fillStyle = fill;
+      art.fill();
+    }
+
+    function gradient(x, y, endX, endY, start, end) {
+      const color = art.createLinearGradient(x, y, endX, endY);
+      color.addColorStop(0, start);
+      color.addColorStop(1, end);
+      return color;
+    }
+
+    function drawMap() {
+      art.lineCap = "round";
+      art.lineJoin = "round";
+      const orbit = "M106 197 C98 91 166 32 267 29 C360 27 428 97 426 195 C424 298 375 372 274 382 C174 392 115 324 106 197Z";
+      shape(orbit, "#aec89309", "#c0dfaa20");
+      art.setLineDash([2, 7]);
+      shape("M87 202 C84 82 160 16 266 14 C373 12 446 90 446 201 C446 313 379 390 274 397 C163 406 91 326 87 202Z", null, "#b0d4a349");
+      art.setLineDash([]);
+
+      for (let point = 0; point < 65; point++) {
+        const x = 24 + (point * 173 % 472);
+        const y = 12 + (point * 103 % 380);
+        disc(x, y, point % 5 === 0 ? 1.6 : .8, point % 5 === 0 ? 1.6 : .8, point % 3 === 0 ? "#dcf0a55d" : "#a9c9a632");
+      }
+      for (const [x, y, size] of [[111, 163, 7], [386, 78, 8], [418, 168, 5], [95, 299, 6], [392, 326, 8], [128, 360, 5], [465, 238, 5]]) {
+        shape(`M${x - size} ${y} Q${x} ${y - 1} ${x} ${y - size} Q${x + 1} ${y} ${x + size} ${y} Q${x} ${y + 1} ${x} ${y + size} Q${x - 1} ${y} ${x - size} ${y}Z`, "#d5e8a4aa");
+      }
+      disc(260, 389, 123, 10, "#102f2585");
+
+      const torso = "M204 106 Q213 116 210 126 L173 137 Q140 145 133 176 L117 256 Q114 272 125 275 Q136 279 143 265 L164 205 Q167 198 170 200 Q174 215 175 236 Q178 270 167 306 Q157 343 165 375 Q174 391 202 392 L318 392 Q348 388 355 374 Q361 347 350 309 Q339 273 345 235 Q348 215 354 201 Q358 198 361 207 L380 263 Q386 278 397 275 Q408 273 404 257 L390 176 Q384 145 349 136 L291 123 Q280 119 279 102 Q288 81 287 61 Q284 29 257 21 Q232 14 212 28 Q198 39 197 56 L182 71 Q179 76 188 79 L193 80 L191 86 Q192 90 196 91 L195 97 Q197 104 204 106Z";
+      art.save();
+      art.shadowColor = "#0e302491";
+      art.shadowBlur = 20;
+      art.shadowOffsetY = 7;
+      shape(torso, gradient(170, 35, 375, 372, "#a3cba2", "#4e866c"), "#c5dfad", 1.6);
+      art.restore();
+      shape("M191 86 Q209 81 224 87 M206 60 Q212 56 218 59 M263 52 Q276 53 271 67 Q268 74 261 73 M214 126 Q232 144 256 145 Q277 143 291 123 M166 197 Q169 183 177 171 M345 173 Q352 184 355 198 M174 380 Q214 385 232 378 M288 378 Q313 385 343 377", null, "#d5e9be94", 1.5);
+      shape("M193 146 Q254 171 328 145 M189 163 Q256 184 331 163", null, "#dbedcb31");
+      shape("M200 178 Q261 158 319 179 Q339 199 333 240 L333 327 Q325 372 260 379 Q195 374 185 333 L184 242 Q180 198 200 178Z", gradient(240, 175, 304, 388, "#24553e38", "#1d503f98"));
+      shape("M188 201 Q180 232 186 266 M337 198 Q347 251 334 286 M184 321 Q187 351 204 365 M336 321 Q333 350 319 363", null, "#d3e6b963", 1.2);
+
+      const tube = "M207 82 Q218 79 235 87 Q247 93 249 114 C253 142 253 165 264 187 Q268 196 277 201";
+      shape(tube, null, "#714c43", 17);
+      shape(tube, null, gradient(205, 83, 277, 201, "#f9bb8d", "#d97a62"), 13.5);
+      shape("M221 83 Q246 84 249 115 Q251 157 260 178", null, "#ffe0b99e", 2.6);
+      shape("M191 83 Q209 76 225 83 Q229 88 223 92 Q207 96 193 89Z", "#753f43", "#925449", 1);
+      shape("M193 86 Q210 84 224 86 Q216 93 203 91Z", "#f6ac91");
+      shape("M194 84 Q207 80 217 83 Q210 87 196 86Z", "#fce4c5");
+
+      const stomachExit = "M291 212 Q271 213 267 229 Q268 240 281 244 Q289 251 278 258";
+      shape(stomachExit, null, "#754c43", 14);
+      shape(stomachExit, null, "#e89b66", 10.5);
+      const stomach = "M263 184 Q267 181 273 187 Q282 196 290 184 C303 165 325 163 339 179 C358 202 344 229 323 239 C306 247 291 243 281 232 Q274 223 260 229 Q251 234 249 224 Q246 215 259 209 Q273 200 263 184Z";
+      shape(stomach, gradient(287, 166, 326, 243, "#ffd49c", "#df806a"), "#754b44", 2);
+      shape("M298 188 Q313 175 327 188 Q338 200 333 210", null, "#fff0b7c0", 3);
+      shape("M292 224 Q311 234 327 222", null, "#ad5c5873", 2);
+
+      const coil = "M279 250 C294 251 296 265 279 269 L221 270 C205 271 206 286 222 287 L284 286 C300 286 300 302 284 304 L223 305 C207 306 209 321 226 322 L283 322 C305 325 294 346 275 343 L235 338 Q221 336 210 334";
+      shape(coil, null, "#724c43", 16);
+      shape(coil, null, gradient(224, 252, 294, 343, "#ffcf79", "#eda665"), 12.5);
+      shape("M274 266 L227 266 M231 283 L281 283 M280 301 L230 301 M233 319 L279 319", null, "#fff0b19d", 2);
+      const colon = "M209 335 Q193 340 192 322 L192 267 Q192 248 208 248 L302 248 Q321 248 321 267 L321 323 Q320 343 306 347 Q295 350 278 348 Q256 345 256 365";
+      shape(colon, null, "#774741", 26);
+      shape(colon, null, gradient(190, 235, 320, 362, "#f2b298", "#c66e5e"), 21);
+      shape("M188 319 L188 271 Q188 254 202 252 L297 252 Q316 252 317 264 L317 319 Q316 338 305 342", null, "#fbc7a99c", 3);
+      for (const x of [215, 231, 247, 263, 279, 295]) {
+        shape(`M${x} 240 Q${x + 3} 247 ${x} 255`, null, "#a4544f95", 2);
+      }
+      for (const y of [272, 287, 302, 317]) {
+        shape(`M184 ${y} Q191 ${y + 3} 199 ${y} M313 ${y} Q321 ${y + 3} 328 ${y}`, null, "#a4544f95", 2);
+      }
+      shape("M302 339 Q301 345 303 352 M284 339 Q282 345 284 353", null, "#a4544f95", 2);
+      disc(256, 365, 9, 4, "#954e47");
+
+      art.setLineDash([2, 5]);
+      shape("M113 109 Q139 94 172 91", null, "#f0e5acb5", 1.8);
+      art.setLineDash([]);
+      shape("M165 87 L174 91 L168 96", null, "#f0e5acb5", 1.8);
+      disc(90, 115, 28, 28, "#bad3911e");
+      disc(90, 115, 23, 23, "#d6e6a127");
+      shape("M89 108 Q86 101 93 96", null, "#f2d694", 2.3);
+      shape("M91 104 Q96 95 103 99 Q101 105 91 105Z", "#c4df8f");
+      shape("M91 108 C104 101 110 115 101 126 Q97 134 91 129 Q85 133 79 126 C71 114 78 103 91 108Z", gradient(82, 107, 101, 129, "#ffbf86", "#e77560"), "#93564a", 1.2);
+      shape("M80 116 Q81 112 85 111", null, "#ffe2b4", 2);
+    }
+
+    const progress = byId("progress");
+    const questionText = byId("question");
+    const choices = byId("choices");
+    const sequence = byId("sequence");
+    const feedback = byId("feedback");
+    const advance = byId("advance");
+    const undo = byId("undo");
+    const play = byId("play");
+    const results = byId("results");
+    const hotspots = [...document.querySelectorAll(".hotspot")];
+    const stages = [...document.querySelectorAll(".stages li")];
+    const soundButton = byId("sound");
+    let audioContext;
+    let index = 0;
+    let answers = [];
+    let picked = [];
+    let selectedOrgan = "";
+
+    function showOrgan(key) {
+      selectedOrgan = key;
+      const organ = organs[key];
+      byId("map-name").textContent = organ ? organ.name : "음식물이 지나가는 길";
+      byId("map-fact").textContent = organ ? organ.fact : "입에서 출발해 여러 소화 기관을 차례로 지나가요.";
+      for (const hotspot of hotspots) {
+        hotspot.setAttribute("aria-pressed", String(hotspot.dataset.organ === key));
+      }
+    }
+
+    function drawSoundIcon() {
+      const icon = byId("sound-icon").getContext("2d");
+      icon.clearRect(0, 0, 38, 38);
+      icon.strokeStyle = "#285e45";
+      icon.lineWidth = 2.6;
+      icon.lineCap = "round";
+      icon.lineJoin = "round";
+      icon.stroke(new Path2D("M6 15 H12 L20 9 V29 L12 23 H6 Z"));
+      const waves = soundButton.getAttribute("aria-pressed") === "true"
+        ? "M25 14 Q30 19 25 24 M29 10 Q38 19 29 28"
+        : "M25 15 L32 23 M32 15 L25 23";
+      icon.stroke(new Path2D(waves));
+    }
+
+    function playSound(correct) {
+      if (soundButton.getAttribute("aria-pressed") !== "true") return;
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      audioContext ??= new Audio();
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      const notes = correct ? [523.25, 659.25, 783.99] : [392, 329.63];
+      notes.forEach((pitch, position) => {
+        const start = audioContext.currentTime + position * .085;
+        const tone = audioContext.createOscillator();
+        const volume = audioContext.createGain();
+        tone.frequency.value = pitch;
+        volume.gain.setValueAtTime(.001, start);
+        volume.gain.exponentialRampToValueAtTime(.07, start + .018);
+        volume.gain.exponentialRampToValueAtTime(.001, start + .17);
+        tone.connect(volume).connect(audioContext.destination);
+        tone.start(start);
+        tone.stop(start + .18);
+      });
+    }
+
+    function syncProgress() {
+      progress.value = answers.length;
+      byId("progress-text").textContent = `${answers.length} / ${questions.length}`;
+      const active = Math.floor(index / 3);
+      stages.forEach((stage, number) => {
+        if (active === number) stage.setAttribute("aria-current", "step");
+        else stage.removeAttribute("aria-current");
+        const done = answers.length >= (number + 1) * 3;
+        stage.classList.toggle("done", done);
+        stage.firstElementChild.textContent = done ? "✓" : number + 1;
+        const name = ["기관 찾기", "하는 일", "이동 순서"][number];
+        stage.setAttribute("aria-label", done ? `${name}, 완료` : name);
+      });
+    }
+
+    function showFeedback(title, message, status = "") {
+      const heading = document.createElement("strong");
+      heading.textContent = title;
+      feedback.className = "feedback" + (status ? " is-" + status : "");
+      feedback.replaceChildren(heading, document.createTextNode(message));
+    }
+
+    function answerLabel(question) {
+      if (Array.isArray(question.answer)) return question.answer.map((item) => question.choices[item]).join(" → ");
+      return question.choices[question.answer];
+    }
+
+    function updateSequence() {
+      const question = questions[index];
+      const buttons = [...choices.children];
+      buttons.forEach((button, number) => {
+        const used = picked.includes(number);
+        button.disabled = used;
+        button.classList.toggle("used", used);
+      });
+      sequence.replaceChildren();
+      if (picked.length === 0) sequence.textContent = "선택한 순서가 여기에 나타나요.";
+      picked.forEach((number, position) => {
+        if (position) sequence.append("→");
+        const chip = document.createElement("span");
+        chip.className = "sequence-item";
+        chip.textContent = question.choices[number];
+        sequence.append(chip);
+      });
+      undo.disabled = picked.length === 0;
+      advance.disabled = picked.length !== question.answer.length;
+    }
+
+    function submitAnswer(correct, selectedChoice = -1) {
+      if (answers.length !== index) return;
+      const question = questions[index];
+      answers.push(correct);
+      if (question.organ) showOrgan(question.organ);
+      [...choices.children].forEach((button, number) => {
+        button.disabled = true;
+        if (number === question.answer) {
+          button.classList.add("correct");
+          button.firstElementChild.textContent = "✓";
+        } else if (number === selectedChoice) {
+          button.classList.add("wrong");
+          button.firstElementChild.textContent = "×";
+        }
+      });
+      undo.hidden = true;
+      advance.innerHTML = index === questions.length - 1
+        ? '결과 보기 <span aria-hidden="true">→</span>'
+        : '다음 문제 <span aria-hidden="true">→</span>';
+      advance.disabled = false;
+      showFeedback(correct ? "정답이에요!" : `정답은 ${answerLabel(question)}`, question.explanation, correct ? "correct" : "wrong");
+      syncProgress();
+      playSound(correct);
+      advance.focus();
+    }
+
+    function selectChoice(number) {
+      const button = choices.children[number];
+      if (answers.length !== index || !button || button.disabled) return;
+      const question = questions[index];
+      if (!Array.isArray(question.answer)) {
+        submitAnswer(number === question.answer, number);
+        return;
+      }
+      picked.push(number);
+      updateSequence();
+      const nextChoice = [...choices.children].find((choice) => !choice.disabled);
+      (advance.disabled ? nextChoice : advance).focus();
+    }
+
+    function renderQuestion(moveFocus = false) {
+      const question = questions[index];
+      const ordering = Array.isArray(question.answer);
+      picked = [];
+      play.hidden = false;
+      results.hidden = true;
+      showOrgan("");
+      syncProgress();
+      byId("question-count").textContent = `문제 ${String(index + 1).padStart(2, "0")} / ${questions.length}`;
+      byId("question-type").textContent = ordering ? "순서 맞추기" : "객관식";
+      questionText.textContent = question.prompt;
+      byId("instruction").textContent = ordering ? "출발하는 곳부터 기관을 차례로 골라요." : "보기 중 알맞은 답 하나를 골라요.";
+      sequence.hidden = !ordering;
+      undo.hidden = !ordering;
+      choices.classList.toggle("ordering", ordering);
+      choices.replaceChildren(...question.choices.map((label, number) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "choice";
+        const key = document.createElement("span");
+        key.className = "choice-key";
+        key.textContent = number + 1;
+        key.setAttribute("aria-hidden", "true");
+        button.append(key, document.createTextNode(label));
+        button.addEventListener("click", () => selectChoice(number));
+        return button;
+      }));
+      advance.innerHTML = ordering ? '정답 확인 <span aria-hidden="true">→</span>' : '다음 문제 <span aria-hidden="true">→</span>';
+      advance.disabled = true;
+      showFeedback(
+        ordering ? "선택한 순서를 확인해 보세요" : "탐험 방법",
+        ordering ? "모두 고른 뒤 ‘정답 확인’을 누르면 결과가 나와요." : "답을 고르면 바로 해설을 볼 수 있어요."
+      );
+      if (ordering) updateSequence();
+      if (moveFocus) questionText.focus();
+    }
+
+    function renderResults() {
+      play.hidden = true;
+      results.hidden = false;
+      showOrgan("");
+      syncProgress();
+      const score = answers.filter(Boolean).length;
+      results.innerHTML = `
+        <span class="question-count">탐험 완료</span>
+        <h2 class="question" tabindex="-1">소화 탐험을 마쳤어요!</h2>
+        <div class="score"><strong>${score} / ${questions.length}</strong><span>문제를 맞혔어요.</span></div>
+        <div class="feedback"><strong>음식물과 찌꺼기가 이동하는 순서</strong>입 → 식도 → 위 → 작은창자 → 큰창자 → 항문</div>
+        <details class="review"><summary>${score === questions.length ? "전체 문제 복습하기" : `틀린 문제 ${questions.length - score}개 복습하기`}</summary>
+        <ol class="review-list"></ol></details>
+        <div class="actions"><button type="button" class="primary">다시 도전하기 <span aria-hidden="true">↻</span></button></div>`;
+      const list = results.querySelector(".review-list");
+      questions.forEach((question, position) => {
+        if (score !== questions.length && answers[position]) return;
+        const item = document.createElement("li");
+        item.value = position + 1;
+        const heading = document.createElement("strong");
+        heading.textContent = question.prompt;
+        item.append(heading, document.createElement("br"), `정답 · ${answerLabel(question)}`, document.createElement("br"), question.explanation);
+        list.append(item);
+      });
+      results.querySelector("button").addEventListener("click", restart);
+      results.querySelector("h2").focus();
+    }
+
+    function restart() {
+      index = 0;
+      answers = [];
+      renderQuestion(true);
+    }
+
+    advance.addEventListener("click", () => {
+      if (answers.length > index) {
+        index++;
+        if (index === questions.length) renderResults();
+        else renderQuestion(true);
+        return;
+      }
+      const { answer } = questions[index];
+      if (Array.isArray(answer) && picked.length === answer.length) {
+        submitAnswer(answer.every((number, position) => picked[position] === number));
+      }
+    });
+    undo.addEventListener("click", () => {
+      const removed = picked.pop();
+      updateSequence();
+      choices.children[removed]?.focus();
+    });
+    byId("restart").addEventListener("click", restart);
+    soundButton.addEventListener("click", () => {
+      soundButton.setAttribute("aria-pressed", String(soundButton.getAttribute("aria-pressed") === "false"));
+      drawSoundIcon();
+      playSound(true);
+    });
+    hotspots.forEach((button) => {
+      button.addEventListener("click", () => showOrgan(selectedOrgan === button.dataset.organ ? "" : button.dataset.organ));
+    });
+    document.addEventListener("keydown", (event) => {
+      if (play.hidden || event.repeat || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return;
+      if (/^[1-4]$/.test(event.key)) {
+        event.preventDefault();
+        selectChoice(Number(event.key) - 1);
+      } else if (event.key === "Enter" && !advance.disabled && !event.target.closest("button, summary")) {
+        event.preventDefault();
+        advance.click();
+      }
+    });
+    drawMap();
+    drawSoundIcon();
+    renderQuestion();
+  </script>
+</body>
+</html>

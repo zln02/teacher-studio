@@ -1,0 +1,43 @@
+{
+ "secs": 277,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 10990,
+ "tok": {
+  "input": 964361,
+  "cached": 854400,
+  "output": 10990,
+  "reasoning": 478
+ },
+ "turns": 17,
+ "failed_cmds": 7,
+ "is_error": false,
+ "errors": [],
+ "last": "[한입의 여행.html](<C:/Users/User/Downloads/xv-eval-work/game-codex-harness-1/work/한입의 여행.html>)을 지금 폴더에 저장했습니다. 더블클릭하면 인터넷 없이 열리고, `F`를 누르면 전체 화면으로 전환됩니다.\n\n초등 6학년 두 모둠이 번갈아 푸는 **소화 기관 퀴즈 10문제**입니다. 답을 고르면 정답과 까닭이 나오고, 마지막에는 음식물이 지나가는 순서와 틀린 문제를 다시 볼 수 있습니다. 교사 메뉴에서 30초 제한을 끄거나 정답을 공개할 수 있습니다.\n\n10문제 진행, 채점, 시간 초과, 다시 시작을 코드로 점검했습니다. 이 환경에서 Chrome 화면 점검은 권한 제한으로 완료하지 못했고, 임시 점검 폴더 `.game-build`가 남아 있습니다. [소화 기관 내용 참고 자료](https://www.niddk.nih.gov/health-information/digestive-diseases/digestive-system-how-it-works)",
+ "name": "game-codex-harness-1",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 1,
+ "file": "한입의 여행.html",
+ "all_files": [
+  ".game-build\\check.py",
+  ".game-build\\chrome-error.txt",
+  ".game-build\\chrome\\CrashpadMetrics-active.pma",
+  ".game-build\\chrome\\Crashpad\\metadata",
+  ".game-build\\chrome\\Crashpad\\reports\\97cb650a-d7e1-4945-80d0-d72c4e527690.dmp",
+  ".game-build\\chrome\\Crashpad\\settings.dat",
+  ".game-build\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.db",
+  ".game-build\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.db-wal",
+  ".game-build\\chrome\\GPUPersistentCache\\DawnGraphiteCache\\23IMHJGI2WIIJ3PDLCHAHUJAGHTLTEBB\\cache.journal",
+  ".game-build\\chrome\\Local State907ec17a-c20d-4b5c-b0d6-c1b7a1afff9c.tmp",
+  ".game-build\\chrome\\Variations",
+  ".game-build\\chrome\\VariationsSafeSeedV2",
+  ".game-build\\chrome\\VariationsSeedV2",
+  ".game-build\\dom.txt",
+  ".game-build\\logic.cjs",
+  ".game-build\\spec.json",
+  "한입의 여행.html"
+ ],
+ "opens": true
+}

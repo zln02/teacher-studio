@@ -1,0 +1,4026 @@
+{
+ "tasks": {
+  "class-ppt": "중학교 3학년 역사 '조선 후기 실학의 등장' 수업용 PPT 만들어 줘 (10장 정도, 파워포인트 파일로)",
+  "public-ppt": "교육지원청 보고용 '2026학년도 늘봄학교 운영 결과' 발표자료 만들어 줘 (파워포인트 파일로)",
+  "hwpx-notice": "3학년 생존 수영 실기교육 안내 가정통신문을 한글 파일(hwpx)로 만들어 줘",
+  "game": "초등학교 6학년 과학 '우리 몸의 소화 기관' 복습 게임 만들어 줘",
+  "webapp": "중학교 2학년 수학 '경우의 수'를 직접 해 보며 익히는 수업 도우미 프로그램 만들어 줘",
+  "general": "동네 배드민턴 동호회 월례 대회에서 쓸 대진표와 점수판 만들어 줘"
+ },
+ "summary": {
+  "claude/opus": {
+   "maker": "claude",
+   "judge": "opus",
+   "bare": 3.6458333333333335,
+   "harness": 3.6979166666666665,
+   "bare_worst": 2.0,
+   "harness_worst": 2.25,
+   "h2h": [
+    7,
+    5,
+    0
+   ],
+   "n": 12
+  },
+  "claude/gpt": {
+   "maker": "claude",
+   "judge": "gpt",
+   "bare": 3.6875,
+   "harness": 3.6458333333333335,
+   "bare_worst": 2.75,
+   "harness_worst": 2.625,
+   "h2h": [
+    5,
+    6,
+    1
+   ],
+   "n": 12
+  },
+  "claude/both": {
+   "maker": "claude",
+   "judge": "both",
+   "bare": 3.6666666666666665,
+   "harness": 3.671875,
+   "bare_worst": 2.375,
+   "harness_worst": 2.4375,
+   "h2h": [
+    7,
+    4,
+    1
+   ],
+   "n": 12
+  },
+  "codex/opus": {
+   "maker": "codex",
+   "judge": "opus",
+   "bare": 3.4375,
+   "harness": 3.1041666666666665,
+   "bare_worst": 2.25,
+   "harness_worst": 2.375,
+   "h2h": [
+    3,
+    8,
+    1
+   ],
+   "n": 12
+  },
+  "codex/gpt": {
+   "maker": "codex",
+   "judge": "gpt",
+   "bare": 4.166666666666667,
+   "harness": 3.6979166666666665,
+   "bare_worst": 3.125,
+   "harness_worst": 2.75,
+   "h2h": [
+    3,
+    9,
+    0
+   ],
+   "n": 12
+  },
+  "codex/both": {
+   "maker": "codex",
+   "judge": "both",
+   "bare": 3.8020833333333335,
+   "harness": 3.4010416666666665,
+   "bare_worst": 2.6875,
+   "harness_worst": 2.5625,
+   "h2h": [
+    3,
+    9,
+    0
+   ],
+   "n": 12
+  }
+ },
+ "per_task": [
+  {
+   "task": "class-ppt",
+   "maker": "claude",
+   "opus": {
+    "bare": 4.0625,
+    "harness": 4.125,
+    "bare_runs": [
+     4.0,
+     4.125
+    ],
+    "harness_runs": [
+     4.625,
+     3.625
+    ]
+   },
+   "gpt": {
+    "bare": 3.875,
+    "harness": 3.625,
+    "bare_runs": [
+     3.75,
+     4.0
+    ],
+    "harness_runs": [
+     4.0,
+     3.25
+    ]
+   },
+   "both": {
+    "bare": 3.96875,
+    "harness": 3.875,
+    "bare_runs": [
+     3.875,
+     4.0625
+    ],
+    "harness_runs": [
+     4.3125,
+     3.4375
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "class-ppt",
+   "maker": "codex",
+   "opus": {
+    "bare": 4.4375,
+    "harness": 3.6875,
+    "bare_runs": [
+     4.5,
+     4.375
+    ],
+    "harness_runs": [
+     3.625,
+     3.75
+    ]
+   },
+   "gpt": {
+    "bare": 4.6875,
+    "harness": 4.25,
+    "bare_runs": [
+     4.75,
+     4.625
+    ],
+    "harness_runs": [
+     4.5,
+     4.0
+    ]
+   },
+   "both": {
+    "bare": 4.5625,
+    "harness": 3.96875,
+    "bare_runs": [
+     4.625,
+     4.5
+    ],
+    "harness_runs": [
+     4.0625,
+     3.875
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "public-ppt",
+   "maker": "claude",
+   "opus": {
+    "bare": 4.375,
+    "harness": 4.25,
+    "bare_runs": [
+     4.5,
+     4.25
+    ],
+    "harness_runs": [
+     4.0,
+     4.5
+    ]
+   },
+   "gpt": {
+    "bare": 4.0,
+    "harness": 3.875,
+    "bare_runs": [
+     4.0,
+     4.0
+    ],
+    "harness_runs": [
+     3.75,
+     4.0
+    ]
+   },
+   "both": {
+    "bare": 4.1875,
+    "harness": 4.0625,
+    "bare_runs": [
+     4.25,
+     4.125
+    ],
+    "harness_runs": [
+     3.875,
+     4.25
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "public-ppt",
+   "maker": "codex",
+   "opus": {
+    "bare": 2.4375,
+    "harness": 2.4375,
+    "bare_runs": [
+     2.625,
+     2.25
+    ],
+    "harness_runs": [
+     2.5,
+     2.375
+    ]
+   },
+   "gpt": {
+    "bare": 3.125,
+    "harness": 2.75,
+    "bare_runs": [
+     3.125,
+     3.125
+    ],
+    "harness_runs": [
+     2.75,
+     2.75
+    ]
+   },
+   "both": {
+    "bare": 2.78125,
+    "harness": 2.59375,
+    "bare_runs": [
+     2.875,
+     2.6875
+    ],
+    "harness_runs": [
+     2.625,
+     2.5625
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "claude",
+   "opus": {
+    "bare": 4.375,
+    "harness": 3.8125,
+    "bare_runs": [
+     4.25,
+     4.5
+    ],
+    "harness_runs": [
+     3.75,
+     3.875
+    ]
+   },
+   "gpt": {
+    "bare": 3.6875,
+    "harness": 3.875,
+    "bare_runs": [
+     3.25,
+     4.125
+    ],
+    "harness_runs": [
+     4.125,
+     3.625
+    ]
+   },
+   "both": {
+    "bare": 4.03125,
+    "harness": 3.84375,
+    "bare_runs": [
+     3.75,
+     4.3125
+    ],
+    "harness_runs": [
+     3.9375,
+     3.75
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "codex",
+   "opus": {
+    "bare": 3.0625,
+    "harness": 2.4375,
+    "bare_runs": [
+     3.375,
+     2.75
+    ],
+    "harness_runs": [
+     2.375,
+     2.5
+    ]
+   },
+   "gpt": {
+    "bare": 3.9375,
+    "harness": 2.75,
+    "bare_runs": [
+     4.125,
+     3.75
+    ],
+    "harness_runs": [
+     2.75,
+     2.75
+    ]
+   },
+   "both": {
+    "bare": 3.5,
+    "harness": 2.59375,
+    "bare_runs": [
+     3.75,
+     3.25
+    ],
+    "harness_runs": [
+     2.5625,
+     2.625
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "game",
+   "maker": "claude",
+   "opus": {
+    "bare": 2.25,
+    "harness": 3.3125,
+    "bare_runs": [
+     2.0,
+     2.5
+    ],
+    "harness_runs": [
+     3.625,
+     3.0
+    ]
+   },
+   "gpt": {
+    "bare": 3.0625,
+    "harness": 3.4375,
+    "bare_runs": [
+     2.75,
+     3.375
+    ],
+    "harness_runs": [
+     3.75,
+     3.125
+    ]
+   },
+   "both": {
+    "bare": 2.65625,
+    "harness": 3.375,
+    "bare_runs": [
+     2.375,
+     2.9375
+    ],
+    "harness_runs": [
+     3.6875,
+     3.0625
+    ]
+   },
+   "no_regret": true
+  },
+  {
+   "task": "game",
+   "maker": "codex",
+   "opus": {
+    "bare": 3.875,
+    "harness": 3.6875,
+    "bare_runs": [
+     4.375,
+     3.375
+    ],
+    "harness_runs": [
+     3.5,
+     3.875
+    ]
+   },
+   "gpt": {
+    "bare": 4.6875,
+    "harness": 3.8125,
+    "bare_runs": [
+     4.75,
+     4.625
+    ],
+    "harness_runs": [
+     3.75,
+     3.875
+    ]
+   },
+   "both": {
+    "bare": 4.28125,
+    "harness": 3.75,
+    "bare_runs": [
+     4.5625,
+     4.0
+    ],
+    "harness_runs": [
+     3.625,
+     3.875
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "webapp",
+   "maker": "claude",
+   "opus": {
+    "bare": 3.6875,
+    "harness": 3.125,
+    "bare_runs": [
+     3.625,
+     3.75
+    ],
+    "harness_runs": [
+     4.0,
+     2.25
+    ]
+   },
+   "gpt": {
+    "bare": 4.0625,
+    "harness": 3.375,
+    "bare_runs": [
+     3.875,
+     4.25
+    ],
+    "harness_runs": [
+     4.125,
+     2.625
+    ]
+   },
+   "both": {
+    "bare": 3.875,
+    "harness": 3.25,
+    "bare_runs": [
+     3.75,
+     4.0
+    ],
+    "harness_runs": [
+     4.0625,
+     2.4375
+    ]
+   },
+   "no_regret": false
+  },
+  {
+   "task": "webapp",
+   "maker": "codex",
+   "opus": {
+    "bare": 2.875,
+    "harness": 3.3125,
+    "bare_runs": [
+     2.5,
+     3.25
+    ],
+    "harness_runs": [
+     3.375,
+     3.25
+    ]
+   },
+   "gpt": {
+    "bare": 4.0625,
+    "harness": 4.375,
+    "bare_runs": [
+     4.125,
+     4.0
+    ],
+    "harness_runs": [
+     4.375,
+     4.375
+    ]
+   },
+   "both": {
+    "bare": 3.46875,
+    "harness": 3.84375,
+    "bare_runs": [
+     3.3125,
+     3.625
+    ],
+    "harness_runs": [
+     3.875,
+     3.8125
+    ]
+   },
+   "no_regret": true
+  },
+  {
+   "task": "general",
+   "maker": "claude",
+   "opus": {
+    "bare": 3.125,
+    "harness": 3.5625,
+    "bare_runs": [
+     3.125,
+     3.125
+    ],
+    "harness_runs": [
+     3.25,
+     3.875
+    ]
+   },
+   "gpt": {
+    "bare": 3.4375,
+    "harness": 3.6875,
+    "bare_runs": [
+     3.625,
+     3.25
+    ],
+    "harness_runs": [
+     3.5,
+     3.875
+    ]
+   },
+   "both": {
+    "bare": 3.28125,
+    "harness": 3.625,
+    "bare_runs": [
+     3.375,
+     3.1875
+    ],
+    "harness_runs": [
+     3.375,
+     3.875
+    ]
+   },
+   "no_regret": true
+  },
+  {
+   "task": "general",
+   "maker": "codex",
+   "opus": {
+    "bare": 3.9375,
+    "harness": 3.0625,
+    "bare_runs": [
+     4.25,
+     3.625
+    ],
+    "harness_runs": [
+     2.875,
+     3.25
+    ]
+   },
+   "gpt": {
+    "bare": 4.5,
+    "harness": 4.25,
+    "bare_runs": [
+     4.75,
+     4.25
+    ],
+    "harness_runs": [
+     3.625,
+     4.875
+    ]
+   },
+   "both": {
+    "bare": 4.21875,
+    "harness": 3.65625,
+    "bare_runs": [
+     4.5,
+     3.9375
+    ],
+    "harness_runs": [
+     3.25,
+     4.0625
+    ]
+   },
+   "no_regret": false
+  }
+ ],
+ "self_pref": {
+  "opus": {
+   "claude_made": 3.671875,
+   "codex_made": 3.2708333333333335,
+   "by": {
+    "codex-harness": 3.1041666666666665,
+    "codex-bare": 3.4375,
+    "claude-bare": 3.6458333333333335,
+    "claude-harness": 3.6979166666666665
+   }
+  },
+  "gpt": {
+   "claude_made": 3.6666666666666665,
+   "codex_made": 3.9322916666666665,
+   "by": {
+    "codex-harness": 3.6979166666666665,
+    "codex-bare": 4.166666666666667,
+    "claude-bare": 3.6875,
+    "claude-harness": 3.6458333333333335
+   }
+  }
+ },
+ "criteria": {
+  "claude-bare": {
+   "content": 4.1875,
+   "design": 3.5416666666666665,
+   "readability": 3.2083333333333335,
+   "fit": 3.7291666666666665
+  },
+  "claude-harness": {
+   "content": 3.6666666666666665,
+   "design": 3.5625,
+   "readability": 3.7708333333333335,
+   "fit": 3.6875
+  },
+  "codex-bare": {
+   "content": 3.625,
+   "design": 4.375,
+   "readability": 3.5416666666666665,
+   "fit": 3.6666666666666665
+  },
+  "codex-harness": {
+   "content": 2.8333333333333335,
+   "design": 3.6458333333333335,
+   "readability": 3.875,
+   "fit": 3.25
+  }
+ },
+ "ops": {
+  "claude-bare": {
+   "n": 12,
+   "median_s": 198.0,
+   "mean_s": 223.83333333333334,
+   "cost": 7.4903427,
+   "out_tok": 7866.916666666667,
+   "first_try": 12,
+   "no_file": 0,
+   "timed_out": 0,
+   "gate_pass": 0,
+   "gate_fail_lines": 29,
+   "blocked_mean": 6.166666666666667
+  },
+  "claude-harness": {
+   "n": 12,
+   "median_s": 123.0,
+   "mean_s": 127.41666666666667,
+   "cost": 4.0351647,
+   "out_tok": 6648.833333333333,
+   "first_try": 12,
+   "no_file": 0,
+   "timed_out": 0,
+   "gate_pass": 10,
+   "gate_fail_lines": 2,
+   "blocked_mean": 3.5
+  },
+  "codex-bare": {
+   "n": 12,
+   "median_s": 322.0,
+   "mean_s": 357.25,
+   "cost": null,
+   "out_tok": 15036.666666666666,
+   "first_try": 12,
+   "no_file": 0,
+   "timed_out": 0,
+   "gate_pass": 2,
+   "gate_fail_lines": 37,
+   "blocked_mean": 4.166666666666667
+  },
+  "codex-harness": {
+   "n": 12,
+   "median_s": 324.5,
+   "mean_s": 352.1666666666667,
+   "cost": null,
+   "out_tok": 10802.833333333334,
+   "first_try": 12,
+   "no_file": 0,
+   "timed_out": 0,
+   "gate_pass": 8,
+   "gate_fail_lines": 7,
+   "blocked_mean": 6.416666666666667
+  }
+ },
+ "runs": [
+  {
+   "task": "class-ppt",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 289,
+   "cost": 0.7374226,
+   "out_tok": 2154,
+   "file": "조선후기_실학의_등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL text fits its box (estimate): [(4, '17세기', 1.13), (4, '18세기', 1.13), (4, '19세기', 1.13), (7, '거중기와 수원 화성', 1.13), (7, '『목민심서』', 1.13), ("
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.0,
+    "gpt": 3.75,
+    "both": 3.875
+   },
+   "failed_cmds": null,
+   "denials": 11,
+   "turns": 2
+  },
+  {
+   "task": "class-ppt",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 397,
+   "cost": 1.1495920000000002,
+   "out_tok": 3347,
+   "file": "조선후기_실학의_등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '【교사용 설명】'), (2, '【교사용 설명】'), (3, '【교사용 설명】'), (4, '【교사용 설명】'), (5, '【교사용 설",
+    "FAIL text fits its box (estimate): [(4, '실사구시  實事求是', 1.65), (4, '이용후생  利用厚生', 1.65), (4, '경세치용  經世致用', 1.65)]"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.125,
+    "gpt": 4.0,
+    "both": 4.0625
+   },
+   "failed_cmds": null,
+   "denials": 15,
+   "turns": 5
+  },
+  {
+   "task": "class-ppt",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 109,
+   "cost": 0.36813009999999996,
+   "out_tok": 9078,
+   "file": "silhak.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.625,
+    "gpt": 4.0,
+    "both": 4.3125
+   },
+   "failed_cmds": null,
+   "denials": 6,
+   "turns": 21
+  },
+  {
+   "task": "class-ppt",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 164,
+   "cost": 0.6081903000000001,
+   "out_tok": 3931,
+   "file": "조선후기_실학의_등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.625,
+    "gpt": 3.25,
+    "both": 3.4375
+   },
+   "failed_cmds": null,
+   "denials": 5,
+   "turns": 4
+  },
+  {
+   "task": "class-ppt",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 269,
+   "cost": null,
+   "out_tok": 9944,
+   "file": "조선 후기 실학의 등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.5,
+    "gpt": 4.75,
+    "both": 4.625
+   },
+   "failed_cmds": 2,
+   "denials": 0,
+   "turns": 7
+  },
+  {
+   "task": "class-ppt",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 318,
+   "cost": null,
+   "out_tok": 13263,
+   "file": "조선 후기 실학의 등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.375,
+    "gpt": 4.625,
+    "both": 4.5
+   },
+   "failed_cmds": 2,
+   "denials": 0,
+   "turns": 8
+  },
+  {
+   "task": "class-ppt",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 571,
+   "cost": null,
+   "out_tok": 11720,
+   "file": "조선 후기 실학의 등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.625,
+    "gpt": 4.5,
+    "both": 4.0625
+   },
+   "failed_cmds": 6,
+   "denials": 0,
+   "turns": 24
+  },
+  {
+   "task": "class-ppt",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 426,
+   "cost": null,
+   "out_tok": 10630,
+   "file": "조선 후기 실학의 등장.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.75,
+    "gpt": 4.0,
+    "both": 3.875
+   },
+   "failed_cmds": 8,
+   "denials": 0,
+   "turns": 24
+  },
+  {
+   "task": "game",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 163,
+   "cost": 0.4380571,
+   "out_tok": 1624,
+   "file": "digestive-game.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 3,
+   "gate_lines": [
+    "FAIL [1600x900] low text contrast: 2.1:1 게임 시작!",
+    "FAIL [projector] low text contrast: 2.1:1 게임 시작!",
+    "FAIL [phone 390] low text contrast: 2.1:1 게임 시작!"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.0,
+    "gpt": 2.75,
+    "both": 2.375
+   },
+   "failed_cmds": null,
+   "denials": 3,
+   "turns": 5
+  },
+  {
+   "task": "game",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 95,
+   "cost": 0.2828891,
+   "out_tok": 14030,
+   "file": "digestive-game.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 5,
+   "gate_lines": [
+    "FAIL no .at() (old Chrome) (1 found)",
+    "FAIL network/storage API in script: localStorage",
+    "FAIL [1600x900] low text contrast: 2.3:1 10문제! 하트 3개가 모두  | 2.3:1 ❓ 퀴즈 도전 | 2.3:1 그림의 기관을 눌러 하는 일을 | 2.3:1 설명을 보고 알맞은 기관을 눌",
+    "FAIL [projector] low text contrast: 2.3:1 10문제! 하트 3개가 모두  | 2.3:1 ❓ 퀴즈 도전 | 2.3:1 그림의 기관을 눌러 하는 일을 | 2.3:1 설명을 보고 알맞은 기관을 눌",
+    "FAIL [phone 390] low text contrast: 2.3:1 10문제! 하트 3개가 모두  | 2.3:1 ❓ 퀴즈 도전 | 2.3:1 그림의 기관을 눌러 하는 일을 | 2.3:1 설명을 보고 알맞은 기관을 눌"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.5,
+    "gpt": 3.375,
+    "both": 2.9375
+   },
+   "failed_cmds": null,
+   "denials": 1,
+   "turns": 3
+  },
+  {
+   "task": "game",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 249,
+   "cost": 0.24149779999999998,
+   "out_tok": 6159,
+   "file": "소화기관_복습게임.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.625,
+    "gpt": 3.75,
+    "both": 3.6875
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 14
+  },
+  {
+   "task": "game",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 206,
+   "cost": 0.2816727,
+   "out_tok": 5751,
+   "file": "소화기관_복습게임.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.0,
+    "gpt": 3.125,
+    "both": 3.0625
+   },
+   "failed_cmds": null,
+   "denials": 4,
+   "turns": 16
+  },
+  {
+   "task": "game",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 368,
+   "cost": null,
+   "out_tok": 16048,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL starts with <!DOCTYPE html>"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.375,
+    "gpt": 4.75,
+    "both": 4.5625
+   },
+   "failed_cmds": 5,
+   "denials": 0,
+   "turns": 14
+  },
+  {
+   "task": "game",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 473,
+   "cost": null,
+   "out_tok": 21123,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 3,
+   "gate_lines": [
+    "FAIL no optional chaining ?. (old Chrome) (1 found)",
+    "FAIL no nullish ?? (old Chrome) (1 found)",
+    "FAIL ?. ?? in script: old school Chrome cannot run it"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.375,
+    "gpt": 4.625,
+    "both": 4.0
+   },
+   "failed_cmds": 4,
+   "denials": 0,
+   "turns": 12
+  },
+  {
+   "task": "game",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 277,
+   "cost": null,
+   "out_tok": 10990,
+   "file": "한입의 여행.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.5,
+    "gpt": 3.75,
+    "both": 3.625
+   },
+   "failed_cmds": 7,
+   "denials": 0,
+   "turns": 17
+  },
+  {
+   "task": "game",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 291,
+   "cost": null,
+   "out_tok": 9222,
+   "file": "소화 기관 탐험대.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.875,
+    "gpt": 3.875,
+    "both": 3.875
+   },
+   "failed_cmds": 10,
+   "denials": 0,
+   "turns": 36
+  },
+  {
+   "task": "general",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 94,
+   "cost": 0.29710990000000004,
+   "out_tok": 13303,
+   "file": "badminton_tournament.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 5,
+   "gate_lines": [
+    "FAIL no alert/prompt/confirm blocks the game (4 found)",
+    "FAIL network/storage API in script: localStorage",
+    "FAIL [1600x900] input without a label: <input type=\"number\" id=\"courts\" value=\"2\" min=\"1\" max=\"12\"  | <input type=\"text\" id=\"tname\" value=\"동",
+    "FAIL [projector] input without a label: <input type=\"number\" id=\"courts\" value=\"2\" min=\"1\" max=\"12\"  | <input type=\"text\" id=\"tname\" value=\"",
+    "FAIL [phone 390] input without a label: <input type=\"number\" id=\"courts\" value=\"2\" min=\"1\" max=\"12\"  | <input type=\"text\" id=\"tname\" value=\""
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.125,
+    "gpt": 3.625,
+    "both": 3.375
+   },
+   "failed_cmds": null,
+   "denials": 5,
+   "turns": 9
+  },
+  {
+   "task": "general",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 59,
+   "cost": 0.2027191,
+   "out_tok": 8353,
+   "file": "badminton_tournament.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 5,
+   "gate_lines": [
+    "FAIL no alert/prompt/confirm blocks the game (3 found)",
+    "FAIL network/storage API in script: localStorage",
+    "FAIL [1600x900] input without a label: <input type=\"text\" id=\"title\" style=\"width:240px\"> | <select id=\"best\"><option value=\"1\">1게임</option>",
+    "FAIL [projector] input without a label: <input type=\"text\" id=\"title\" style=\"width:240px\"> | <select id=\"best\"><option value=\"1\">1게임</option",
+    "FAIL [phone 390] input without a label: <input type=\"text\" id=\"title\" style=\"width:240px\"> | <select id=\"best\"><option value=\"1\">1게임</option"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.125,
+    "gpt": 3.25,
+    "both": 3.1875
+   },
+   "failed_cmds": null,
+   "denials": 1,
+   "turns": 3
+  },
+  {
+   "task": "general",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 146,
+   "cost": 0.23764169999999998,
+   "out_tok": 3954,
+   "file": "badminton_bracket.html + badminton_scoreboard.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.25,
+    "gpt": 3.5,
+    "both": 3.375
+   },
+   "failed_cmds": null,
+   "denials": 4,
+   "turns": 14
+  },
+  {
+   "task": "general",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 99,
+   "cost": 0.1929475,
+   "out_tok": 2593,
+   "file": "대진표.html + 점수판.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.875,
+    "gpt": 3.875,
+    "both": 3.875
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 10
+  },
+  {
+   "task": "general",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 550,
+   "cost": null,
+   "out_tok": 24324,
+   "file": "배드민턴-월례대회.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 7,
+   "gate_lines": [
+    "FAIL no optional chaining ?. (old Chrome) (6 found)",
+    "FAIL no nullish ?? (old Chrome) (8 found)",
+    "FAIL no replaceAll (old Chrome) (1 found)",
+    "FAIL no .at() (old Chrome) (5 found)",
+    "FAIL no dvh unit (old Chrome) (1 found)",
+    "FAIL ?. ?? in script: old school Chrome cannot run it"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.25,
+    "gpt": 4.75,
+    "both": 4.5
+   },
+   "failed_cmds": 6,
+   "denials": 0,
+   "turns": 15
+  },
+  {
+   "task": "general",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 375,
+   "cost": null,
+   "out_tok": 15698,
+   "file": "배드민턴-월례대회.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 6,
+   "gate_lines": [
+    "FAIL no optional chaining ?. (old Chrome) (2 found)",
+    "FAIL no nullish ?? (old Chrome) (6 found)",
+    "FAIL no .at() (old Chrome) (2 found)",
+    "FAIL no alert/prompt/confirm blocks the game (1 found)",
+    "FAIL ?. ?? in script: old school Chrome cannot run it",
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.625,
+    "gpt": 4.25,
+    "both": 3.9375
+   },
+   "failed_cmds": 4,
+   "denials": 0,
+   "turns": 8
+  },
+  {
+   "task": "general",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 349,
+   "cost": null,
+   "out_tok": 14812,
+   "file": "배드민턴 월례 대회.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.875,
+    "gpt": 3.625,
+    "both": 3.25
+   },
+   "failed_cmds": 2,
+   "denials": 0,
+   "turns": 17
+  },
+  {
+   "task": "general",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 368,
+   "cost": null,
+   "out_tok": 13825,
+   "file": "배드민턴 월례 대회.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL [phone 390] control outside the screen: 1경기 · 이전 경기 대기"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.25,
+    "gpt": 4.875,
+    "both": 4.0625
+   },
+   "failed_cmds": 1,
+   "denials": 0,
+   "turns": 13
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 139,
+   "cost": 0.4520086000000001,
+   "out_tok": 1152,
+   "file": "3학년_생존수영_실기교육_안내.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL 빈칸 없음 ([학교명], 20XX, OO, 000 ...): ['○○', '○○○', '○○○○'] -> 채우거나 fillins에 적어 「바꿔 넣을 곳」으로 알리기"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.25,
+    "gpt": 3.25,
+    "both": 3.75
+   },
+   "failed_cmds": null,
+   "denials": 1,
+   "turns": 4
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 194,
+   "cost": 0.5656241999999999,
+   "out_tok": 11463,
+   "file": "3학년_생존수영_실기교육_안내.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL 빈칸 없음 ([학교명], 20XX, OO, 000 ...): ['○○', '000', '0000'] -> 채우거나 fillins에 적어 「바꿔 넣을 곳」으로 알리기"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.5,
+    "gpt": 4.125,
+    "both": 4.3125
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 6
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 28,
+   "cost": 0.1729954,
+   "out_tok": 2812,
+   "file": "3학년_생존수영_실기교육_안내.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.75,
+    "gpt": 4.125,
+    "both": 3.9375
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 9
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 38,
+   "cost": 0.18810710000000003,
+   "out_tok": 3325,
+   "file": "3학년_생존수영_실기교육_안내.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 3.875,
+    "gpt": 3.625,
+    "both": 3.75
+   },
+   "failed_cmds": null,
+   "denials": 3,
+   "turns": 10
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 215,
+   "cost": null,
+   "out_tok": 7680,
+   "file": "3학년 생존수영 실기교육 안내 가정통신문.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL 빈칸 없음 ([학교명], 20XX, OO, 000 ...): ['[수영장명]', '[이동 방법 및 집결 시간·장소]', '[담당 부서 또는 교사]', '[전화번호]', '○○'] -> 채우거나 fillins에 적어 「바꿔 넣을 곳」으로 알리기"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.375,
+    "gpt": 4.125,
+    "both": 3.75
+   },
+   "failed_cmds": 5,
+   "denials": 0,
+   "turns": 12
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 268,
+   "cost": null,
+   "out_tok": 9382,
+   "file": "3학년_생존_수영_실기교육_안내_가정통신문.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL 빈칸 없음 ([학교명], 20XX, OO, 000 ...): ['[학교명]', '[담당자 연락처]', '학교명', '[교육일 및 시간]', '[학급별 일정]', '[수영장명 및 주소]', '[이동 방법]', '[제출 기한]'] -> 채우거나 "
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.75,
+    "gpt": 3.75,
+    "both": 3.25
+   },
+   "failed_cmds": 8,
+   "denials": 0,
+   "turns": 21
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 151,
+   "cost": null,
+   "out_tok": 4352,
+   "file": "3학년 생존 수영 실기교육 안내 가정통신문.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.375,
+    "gpt": 2.75,
+    "both": 2.5625
+   },
+   "failed_cmds": 10,
+   "denials": 0,
+   "turns": 22
+  },
+  {
+   "task": "hwpx-notice",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 260,
+   "cost": null,
+   "out_tok": 5782,
+   "file": "3학년 생존수영 실기교육 안내 가정통신문.hwpx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.5,
+    "gpt": 2.75,
+    "both": 2.625
+   },
+   "failed_cmds": 8,
+   "denials": 0,
+   "turns": 20
+  },
+  {
+   "task": "public-ppt",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 300,
+   "cost": 0.8467675000000001,
+   "out_tok": 2289,
+   "file": "2026학년도_늘봄학교_운영결과_보고.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, 'OO'), (1, 'OO초'), (2, 'OO'), (2, 'OO초'), (3, 'OO'), (3, 'OO초'), (4, 'OO'),"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.5,
+    "gpt": 4.0,
+    "both": 4.25
+   },
+   "failed_cmds": null,
+   "denials": 13,
+   "turns": 2
+  },
+  {
+   "task": "public-ppt",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 202,
+   "cost": 0.7117712,
+   "out_tok": 30596,
+   "file": "2026학년도_늘봄학교_운영결과.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 1,
+   "gate_lines": [
+    "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '○○')]"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 4.25,
+    "gpt": 4.0,
+    "both": 4.125
+   },
+   "failed_cmds": null,
+   "denials": 11,
+   "turns": 26
+  },
+  {
+   "task": "public-ppt",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 140,
+   "cost": 0.5813749,
+   "out_tok": 3820,
+   "file": "2026_늘봄학교_운영결과_보고.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.0,
+    "gpt": 3.75,
+    "both": 3.875
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 9
+  },
+  {
+   "task": "public-ppt",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 104,
+   "cost": 0.3678782,
+   "out_tok": 9418,
+   "file": "늘봄학교_운영결과_보고.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.5,
+    "gpt": 4.0,
+    "both": 4.25
+   },
+   "failed_cmds": null,
+   "denials": 4,
+   "turns": 16
+  },
+  {
+   "task": "public-ppt",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 202,
+   "cost": null,
+   "out_tok": 8413,
+   "file": "2026학년도 늘봄학교 운영 결과.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '[학교명]'), (1, '[교육지원청명]'), (1, '[집계 시작일]'), (1, '[기준일]'), (1, '[발표일]'), (1,",
+    "FAIL text large enough to project (>= 11pt): 10 runs under 11pt, e.g. [(2, '실적 입력본', 10.5), (3, '실적 입력본', 10.5), (4, '실적 입력본', 10.5)] -> 글자를"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.625,
+    "gpt": 3.125,
+    "both": 2.875
+   },
+   "failed_cmds": 2,
+   "denials": 0,
+   "turns": 7
+  },
+  {
+   "task": "public-ppt",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 193,
+   "cost": null,
+   "out_tok": 7937,
+   "file": "2026학년도 늘봄학교 운영 결과.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...): [(1, '[학교명]'), (1, '[관할 교육지원청]'), (1, '[연. 월. 일.]'), (1, '[직위·성명]'), (1, '학교명'),",
+    "FAIL text large enough to project (>= 11pt): 4 runs under 11pt, e.g. [(2, '유형 간 중복 참여 제거', 10.0), (2, '보고 기준일까지 운영한 프', 10.0), (2, '유효 응답 [ "
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.25,
+    "gpt": 3.125,
+    "both": 2.6875
+   },
+   "failed_cmds": 1,
+   "denials": 0,
+   "turns": 6
+  },
+  {
+   "task": "public-ppt",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 276,
+   "cost": null,
+   "out_tok": 6975,
+   "file": "2026학년도 늘봄학교 운영 결과.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.5,
+    "gpt": 2.75,
+    "both": 2.625
+   },
+   "failed_cmds": 6,
+   "denials": 0,
+   "turns": 21
+  },
+  {
+   "task": "public-ppt",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 300,
+   "cost": null,
+   "out_tok": 9115,
+   "file": "2026학년도 늘봄학교 운영 결과.pptx",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.375,
+    "gpt": 2.75,
+    "both": 2.5625
+   },
+   "failed_cmds": 10,
+   "denials": 0,
+   "turns": 27
+  },
+  {
+   "task": "webapp",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 1,
+   "secs": 361,
+   "cost": 0.8565790999999999,
+   "out_tok": 3078,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL no alert/prompt/confirm blocks the game (1 found)",
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.625,
+    "gpt": 3.875,
+    "both": 3.75
+   },
+   "failed_cmds": null,
+   "denials": 3,
+   "turns": 10
+  },
+  {
+   "task": "webapp",
+   "maker": "claude",
+   "cond": "bare",
+   "run": 2,
+   "secs": 393,
+   "cost": 0.9498022999999998,
+   "out_tok": 3014,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL no alert/prompt/confirm blocks the game (1 found)",
+    "FAIL network/storage API in script: localStorage"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.75,
+    "gpt": 4.25,
+    "both": 4.0
+   },
+   "failed_cmds": null,
+   "denials": 8,
+   "turns": 3
+  },
+  {
+   "task": "webapp",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 1,
+   "secs": 134,
+   "cost": 0.42396989999999996,
+   "out_tok": 15398,
+   "file": "gyeongu.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 4.0,
+    "gpt": 4.125,
+    "both": 4.0625
+   },
+   "failed_cmds": null,
+   "denials": 6,
+   "turns": 15
+  },
+  {
+   "task": "webapp",
+   "maker": "claude",
+   "cond": "harness",
+   "run": 2,
+   "secs": 112,
+   "cost": 0.3707591,
+   "out_tok": 13547,
+   "file": "경우의수_수업도우미.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 0,
+   "gate_lines": [],
+   "js_err": false,
+   "scores": {
+    "opus": 2.25,
+    "gpt": 2.625,
+    "both": 2.4375
+   },
+   "failed_cmds": null,
+   "denials": 2,
+   "turns": 11
+  },
+  {
+   "task": "webapp",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 1,
+   "secs": 730,
+   "cost": null,
+   "out_tok": 32067,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 7,
+   "gate_lines": [
+    "FAIL starts with <!DOCTYPE html>",
+    "FAIL no optional chaining ?. (old Chrome) (1 found)",
+    "FAIL ?. in script: old school Chrome cannot run it",
+    "FAIL network/storage API in script: localStorage",
+    "FAIL [1600x900] low text contrast: 3.1:1 · | 4.4:1 경우의 수 | 4.4:1 조합 기록하기 | 4.4:1 ＋",
+    "FAIL [projector] low text contrast: 3.1:1 · | 4.4:1 경우의 수 | 4.4:1 조합 기록하기 | 4.4:1 ＋"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 2.5,
+    "gpt": 4.125,
+    "both": 3.3125
+   },
+   "failed_cmds": 8,
+   "denials": 0,
+   "turns": 22
+  },
+  {
+   "task": "webapp",
+   "maker": "codex",
+   "cond": "bare",
+   "run": 2,
+   "secs": 326,
+   "cost": null,
+   "out_tok": 14561,
+   "file": "index.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 7,
+   "gate_lines": [
+    "FAIL starts with <!DOCTYPE html>",
+    "FAIL no optional chaining ?. (old Chrome) (1 found)",
+    "FAIL ?. in script: old school Chrome cannot run it",
+    "FAIL network/storage API in script: localStorage",
+    "FAIL [1600x900] low text contrast: 4.1:1 ›",
+    "FAIL [projector] low text contrast: 4.1:1 ›"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.25,
+    "gpt": 4.0,
+    "both": 3.625
+   },
+   "failed_cmds": 3,
+   "denials": 0,
+   "turns": 9
+  },
+  {
+   "task": "webapp",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 1,
+   "secs": 586,
+   "cost": null,
+   "out_tok": 17541,
+   "file": "경우의 수 탐구실.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 2,
+   "gate_lines": [
+    "FAIL [1600x900] low text contrast: 4.4:1 ·",
+    "FAIL [phone 390] low text contrast: 4.4:1 ·"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.375,
+    "gpt": 4.375,
+    "both": 3.875
+   },
+   "failed_cmds": 3,
+   "denials": 0,
+   "turns": 28
+  },
+  {
+   "task": "webapp",
+   "maker": "codex",
+   "cond": "harness",
+   "run": 2,
+   "secs": 371,
+   "cost": null,
+   "out_tok": 14670,
+   "file": "경우의 수 실험실.html",
+   "first_try": true,
+   "timed_out": false,
+   "gate_fails": 3,
+   "gate_lines": [
+    "FAIL [1600x900] low text contrast: 2.1:1 인터넷 없이 동작해요 · 입력",
+    "FAIL [projector] low text contrast: 2.7:1 0 / 4 완료 | 2.7:1 P | 2.7:1 교사용 수업 안내 | 2.7:1 교실 화면에서는",
+    "FAIL [phone 390] low text contrast: 2.1:1 인터넷 없이 동작해요 · 입력"
+   ],
+   "js_err": false,
+   "scores": {
+    "opus": 3.25,
+    "gpt": 4.375,
+    "both": 3.8125
+   },
+   "failed_cmds": 6,
+   "denials": 0,
+   "turns": 21
+  }
+ ],
+ "notes": [
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 3,
+   "note": "배경 5가지, 시기별 흐름, 학자별 저서와 주장, 정약용의 수원 화성 축조, 국학 표, 의의와 한계까지 내용이 가장 풍부하고 사실도 정확해요. 하지만 글이 빽빽하고 글자가 작아 읽기 부담스럽고, OX 퀴즈에 정답이 없어요."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 3,
+   "note": "배경 5가지, 중농·중상학파 학자별 저서와 주장, 정약용의 거중기, 국학 연구 표, 의의·한계까지 담겨 내용이 가장 촘촘하고 정확하다. 다만 글자가 작고 글이 빽빽하며, OX 퀴즈에 정답이 없다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 3,
+   "note": "정약용의 저술과 업적, 국학 연구, 실학의 의의와 한계까지 폭넓게 다루고 연표와 비교표로 정리했다. 국학 표에 작은 글씨가 빽빽하고 마지막 OX 퀴즈의 정답이 화면에 제시되지 않는다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 4,
+   "note": "실학의 등장 배경부터 두 학파의 대표 저서, 국학, 실학의 의의와 한계까지 폭넓게 다룬다. 국학과 학파 비교 표는 본문이 작고 정보가 촘촘하며, 마지막 OX 퀴즈의 정답과 해설은 화면에 제시되지 않는다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "전란 연도가 들어간 배경 흐름, 성리학과 실학 비교표, 두 학파의 학자·저서, 국학, 모둠 토의, 문제 2개와 정답 해설까지 완결성이 높아요. 시각적 위계와 색 구성도 좋아요. 12장으로 요청보다 조금 많고, 일부 표 안 글자가 작아요."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "성리학과 실학 비교, 학파별 학자·저서 표, 국학, 모둠 토의, 확인 문제와 정답까지 내용이 풍부하면서 읽기도 편하다. 분량이 12장으로 요청한 10장보다 조금 많고, 디자인 틀은 무난한 수준이다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 4,
+   "note": "모둠 토의 절차와 확인 문제 해설이 명확하고, 번호와 색으로 슬라이드 구조를 쉽게 파악할 수 있다. 세 토지 개혁안의 공통점을 ‘농민이 땅을 갖게 하자’로 요약해 공동 경작과 분배를 강조한 여전론의 취지를 흐린다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 3,
+   "note": "두 학파의 대표 인물과 저서, 국학 사례를 큰 글자와 정돈된 표로 제시하고 모둠 토의와 확인 문제 해설도 갖췄다. 등장 배경을 한 방향의 인과관계로 단순화했고, 12장으로 요청한 분량보다 조금 길다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": 2,
+   "note": "짙은 녹색과 미색의 차분한 디자인에 쪽 번호와 일관된 틀을 갖췄어요. 박제가의 우물 비유 사료 읽기, 형성평가와 정답, 참고 자료까지 있어 바로 수업에 쓰기 좋아요. 다만 배경 설명에 연도·전란 같은 구체적 사실이 부족하고, 카드 안 글자가 다소 작아요."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 2,
+   "note": "차분한 녹색·베이지 색에 일러스트와 흐름도를 써서 디자인이 가장 세련되었다. 박제가 사료 읽기, 형성평가와 정답, 참고 자료까지 있어 수업 흐름이 좋다. 다만 국학과 학자별 세부 내용은 A·D보다 얕다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "등장 배경에서 두 학파의 비교, 『북학의』 발췌문 읽기, 형성평가와 정답까지 이어지는 10장 수업 흐름이 탄탄하다. 색과 레이아웃으로 핵심 내용을 잘 구분했지만, 일부 본문과 출처 표기는 교실 뒤쪽에서 읽기에는 작다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": 1,
+   "note": "박제가의 『북학의』 속 우물 비유를 짝 활동에 활용하고, 형성평가와 예시 답안까지 갖춘 10장 수업 자료다. 색과 도식으로 개념의 흐름을 잘 보여 주지만, 일부 학자 설명과 출처 글씨는 작다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.5,
+   "rank": 4,
+   "note": "색 구성이 통일되어 깔끔하고, 마을 활동과 정답 슬라이드까지 갖춰 수업 흐름은 갖췄어요. 다만 배경 설명에 전쟁·신분제 같은 구체적 사실이 빠져 있고, 학자는 유형원·이익·정약용·박지원·박제가 정도만 다뤄요. 확인 문제도 한 문항뿐이라 내용이 얇고, 표지 그림이 주제와 잘 맞지 않아요."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 4,
+   "note": "색 구성이 깔끔하고 마을 상황을 주는 활동이 참신하다. 하지만 국학이 없고 학자·저서 정보가 적어 내용이 얇다. 확인 문제도 한 문항뿐이다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": 2,
+   "note": "두 마을의 문제에 개혁안을 적용하는 활동이 구체적이고, 큰 글자와 짧은 문장 덕분에 교실에서 읽기 쉽다. 중농·중상학파라는 용어가 빠져 있어 교과서 개념과 연결하기는 다소 어렵다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 2,
+   "note": "큰 글자와 간결한 도식이 읽기 쉽고, 두 마을의 문제에 맞는 개혁안을 학생이 직접 제안하는 활동이 학습 목표와 잘 맞는다. 중농학파·중상학파라는 명칭이 나오지 않고 상공업 중심 개혁론의 인물 사례는 박지원과 박제가에 집중되어 있다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "실사구시·이용후생·경세치용 한자 표기, 시기별 학자 흐름, 국학 연구, 의의와 한계까지 담아 가장 충실하고 정확합니다. 다만 중농·중상학파 비교 슬라이드는 아래쪽이 크게 비어 있고 글자가 작은 곳이 많으며, 퀴즈에 정답이 없습니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 1,
+   "note": "배경, 실학의 개념(실사구시·이용후생·경세치용), 시기별 실학자, 두 학파 비교, 국학 연구, 의의와 한계까지 구체적인 인물·저서로 빠짐없이 다뤘고, 남색과 주황색으로 맞춘 디자인도 정돈되어 있습니다. 다만 8번 비교표 슬라이드는 아래쪽 절반이 비어 있고, 퀴즈에 정답이 없으며, 글자가 작은 곳이 일부 있습니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 2,
+   "note": "실학의 핵심 개념과 학자들의 주장을 연대표, 카드, 비교표로 체계적으로 정리했다. 학파 비교표의 글씨가 작고 마지막 퀴즈의 정답은 슬라이드에 제시되지 않는다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 3,
+   "note": "실학의 등장 배경과 핵심 개념, 두 학파의 인물·저서·주장, 국학 연구까지 폭넓게 다룬다. 비교표와 인물 설명의 글씨가 작고, 마지막 퀴즈의 정답은 슬라이드에서 확인할 수 없다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.5,
+   "rank": 3,
+   "note": "표로 정리한 중농·중상학파 비교, 국학 연구, 의의와 한계, 모둠 활동, 퀴즈와 정답까지 갖춰 내용이 풍부합니다. 다만 표 안에 '(확인 필요)'라는 미완성 표기가 그대로 남아 있고, 국학 표의 글자가 작으며 어두운 배경이 화면 전체에 단조롭게 이어집니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 3,
+   "note": "유수원, 『의산문답』, 국학 연구 표, 의의와 한계, 모둠 활동, 정답 슬라이드까지 내용이 가장 풍부하고 어두운 바탕과 산호색의 대비도 뚜렷합니다. 그러나 '(확인 필요)'라는 작업용 메모가 그대로 남아 있어 손봐야 하고, 12장이라 요청한 10장보다 조금 많으며, 국학 표는 글자가 작습니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 4,
+   "note": "대표 학자와 저서를 폭넓게 다루고 두 학파를 표로 비교했다. 표와 카드에 작은 글씨가 많고, 정약용의 여전론 설명에 ‘확인 필요’가 남아 있다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 4,
+   "note": "두 학파의 대표 학자와 주장, 국학 연구, 실학의 의의와 한계를 고르게 다룬다. 표가 빽빽하고 여전론 설명에 ‘확인 필요’라는 편집 메모가 남아 있어 바로 수업에 쓰기 어렵다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 2,
+   "note": "일러스트와 차분한 색 조합이 돋보이고, 여전론 과정·상황 토론·형성 평가·정답·출처까지 수업 흐름이 매끄럽습니다. 다만 홍대용·경세치용 같은 핵심 용어가 빠져 다루는 범위가 좁고, 일부 본문 글자가 작습니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 2,
+   "note": "일러스트 표지와 녹색·베이지 색 조합이 가장 완성도 높고, 여전론 분배 질문, 짝 활동, 확인 문제와 정답, 출처까지 있어 수업에 바로 쓰기 좋습니다. 다만 홍대용·유수원과 실사구시 같은 핵심 개념이 빠져 내용의 폭이 조금 좁고, 본문 글자가 작은 편입니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "여전론을 공동 경작·노동 기록·수확 분배의 흐름으로 보여 주고, 농민과 상인의 상황을 활용한 짝 활동과 해설까지 갖췄다. 색으로 두 개혁 방향을 일관되게 구분했지만 일부 카드의 설명과 출처 표기는 작다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "여전론의 분배 과정을 도식으로 풀고, 농민과 상인의 사례에 개혁안을 적용하는 짝 활동과 정답 해설까지 갖췄다. 일부 본문과 마지막 장의 출처 표기는 작아 교실 화면에서 읽기 어렵다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.5,
+   "rank": 4,
+   "note": "깔끔하고 글자가 커서 읽기 쉽고 퀴즈 정답도 들어 있습니다. 하지만 내용이 얕아 홍대용이나 국학 연구가 없고, 퀴즈 보기 A가 '토지 제도 개혁 → 토지 제도 개혁'으로 어색하며, 활동 문구도 다듬어지지 않았습니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 4,
+   "note": "글자가 크고 여백이 넉넉해 읽기 쉽고, 학생에게 말을 거는 문체와 퀴즈·정답 구성도 깔끔합니다. 그러나 다루는 실학자와 저서가 적고 국학·의의·한계가 빠져 내용이 얕으며, 2번 퀴즈의 A 선택지('토지 제도 개혁 → 토지 제도 개혁')는 어색합니다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 3,
+   "note": "큰 글씨와 간결한 문장으로 읽기 쉽고, 『북학의』를 활용한 활동과 확인 문제 해설이 수업에 쓰기 좋다. 실학의 등장 배경을 세 가지로 압축했고 역사적 의의와 한계는 다루지 않았다."
+  },
+  {
+   "task": "class-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "큰 글씨와 짧은 문장 덕분에 교실 화면에서 읽기 쉽고, 활동과 확인 문제의 해설이 학습 목표에 맞물린다. 중농학파·중상학파라는 명칭이 빠져 있고, 실학의 역사적 의의와 한계까지는 다루지 않는다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.25,
+   "rank": 4,
+   "note": "음식 여행 순서, 기관 위치 맞히기, OX 퀴즈의 3단계 구성은 좋습니다. 하지만 보이는 것은 작은 시작 카드와 안내 창뿐이고 실제 문제 화면은 흐리게 가려져 있으며, 빈 공간이 많고 글자도 작습니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 1.75,
+   "rank": 4,
+   "note": "3단계 구성(음식 여행 순서, 기관 위치, OX·사지선다)은 좋습니다. 하지만 글자가 매우 작고, 어두운 배경 위 안내 창에서 버튼을 눌러도 넘어가지 않은 채 같은 화면이 반복됩니다. 실제 문제 내용이 거의 보이지 않습니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "음식물 이동 순서, 기관 위치와 역할, OX·4지선다 등 활동 구성이 다양하다. 제시된 화면은 작은 안내문과 여백이 대부분이며, 실제 카드나 답안 선택지는 보이지 않는다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": null,
+   "note": "음식물 이동 순서, 기관의 위치와 역할, OX·4지선다를 다루는 세 단계가 소개된다. 이어지는 화면에는 1단계 안내창이 계속 떠 있어 실제 카드 내용을 확인하기 어렵고, 넓은 여백에 비해 안내 글씨가 작다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "글자가 크고 또렷하며, 팀 대항과 점수판이 있어 교실 수업에 바로 쓰기 좋습니다. 하지만 장식 아이콘(벌레·잎 등)이 소화 기관과 관계없고, 카운트다운이나 빈 화면이 여러 장이라 보이는 내용은 문제 하나뿐입니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 3,
+   "note": "귀여운 캐릭터와 개인·팀 모드, 점수판이 있어 교실 게임으로 재미있어 보이고, '위 다음 기관' 문제도 정확합니다. 다만 화면 두 장은 거의 비어 있는 전환 화면이고, 캐릭터와 말풍선이 문제 카드와 겹치며, 보이는 문제가 하나뿐입니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 3,
+   "note": "개인·팀 선택과 점수판을 갖췄고, 위를 지난 음식물의 이동 경로를 묻는 문제와 보기가 큼직하다. 화면 가장자리의 장식 일부가 잘리고, 제시된 문제 화면에서는 기관의 역할 설명이 보이지 않는다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": null,
+   "note": "위 다음에 음식물이 지나가는 기관을 묻는 문항이 정확하고, 개인전과 2~4팀 선택을 지원한다. 질문과 보기는 크고 선명하지만 화면 가장자리의 장식이 일부 잘리고 전환 중에 중앙이 비어 있는 화면이 있다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "소화 기관 그림이 있고 '소화 길 찾기·기관의 역할·소화 탐정' 3단계 구성에 도감까지 있어 내용이 정확하고 알찹니다. 다만 글자가 작은 편이고, 버튼을 눌러 본 화면에서는 도감 창이 계속 떠 있어 진행이 보이지 않습니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": 1,
+   "note": "소화 기관 그림, 3단계 구성, 6단계 기관 도감(간·쓸개즙·이자 보충 설명 포함)이 정확하고 알차서 복습용으로 가장 완성도가 높습니다. 글자가 다소 작고, 버튼을 누른 뒤에도 도감 화면에 머문 점은 아쉽습니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "소화 기관 그림과 도감에서 음식물이 지나가는 순서와 각 기관의 역할을 구체적으로 짚어 주고, 퀴즈와 함께 복습할 수 있다. 도감 본문과 보조 안내 글씨는 작다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": null,
+   "note": "소화 기관 그림과 도감이 음식물의 이동 순서와 각 기관의 역할을 구체적으로 설명하며, 퀴즈 화면에서도 도감을 열 수 있다. 그림과 문제의 배치가 정돈돼 있지만 도감 본문은 다소 작다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "10문제, 모둠 대항, 제한 시간, 교사 메뉴를 갖춘 정돈된 퀴즈 형식입니다. 다만 그림이 없어 단조롭고, 글자가 작으며 화면 아래쪽이 비어 있습니다. 같은 첫 문제만 반복해서 보입니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 2,
+   "note": "차분하고 정돈된 디자인에 10문항, 모둠 대항, 30초 타이머, 교사 메뉴가 있어 수업에 바로 쓸 만합니다. 그러나 보이는 화면이 첫 문제 하나에서 반복되고, 그림 자료가 없으며, 아래쪽 여백이 큽니다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "두 모둠의 점수와 차례, 남은 시간, 10문제의 진행 순서를 한눈에 확인할 수 있어 교실에서 진행하기 좋다. 보조 글씨가 작고, 제시된 문제 화면에서 확인할 수 있는 학습 내용은 소화가 시작되는 위치에 한정된다."
+  },
+  {
+   "task": "game",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": null,
+   "note": "소화가 시작되는 곳을 묻는 문항이 정확하고, 두 모둠의 점수와 차례, 남은 시간, 문제 순서가 명확하게 배치돼 있다. 확인 가능한 문항이 하나라 복습 범위는 판단하기 어렵고, 화면 아래쪽 여백이 넓다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.25,
+   "rank": 4,
+   "note": "알아보기·기관 찾기·퀴즈·음식물 여행 등 4가지 모드와 기관 그림, 음식물이 지나가는 길/지나가지 않는 기관 설명이 있어 내용 구성은 괜찮습니다. 하지만 글자가 아주 작고 빈 공간이 많으며, 버튼을 눌러도 같은 알아보기 화면만 반복되어 게임 진행이 보이지 않습니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 3,
+   "note": "알아보기, 기관 찾기, 퀴즈, 음식물 여행 4가지 모드와 기관 그림, 음식물이 지나가는 길과 지나가지 않는 기관 설명이 있어 내용이 알찹니다. 하지만 글자가 매우 작고 화면 절반 이상이 비어 있으며, 그림은 단조롭습니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": null,
+   "note": "소화 기관 그림에 음식물이 지나가는 경로와 소화를 돕는 기관을 구분해 제시하고, 시작 메뉴에 네 가지 활동을 마련했다. 넓은 여백에 비해 기관 이름과 안내 글씨가 작고, 탐색 화면에서 기관을 누른 뒤의 설명은 확인하기 어렵다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 2,
+   "note": "기관 그림에 음식물이 지나는 순서와 소화를 돕는 기관을 함께 보여 주고, 기관 찾기·퀴즈·음식물 여행으로 복습 활동을 다양하게 구성했다. 화면에 여백이 넓은 데 비해 기관 이름과 메뉴 설명이 작다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.0,
+   "rank": 3,
+   "note": "팀 대항 퀴즈 구성과 '이'를 고르는 문제 자체는 적절합니다. 다만 제목 줄바꿈이 어색하고('복 습'이 흩어짐), 문제 상자가 장식 아이콘과 겹치는 등 배치가 정돈되지 않았습니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.0,
+   "rank": 4,
+   "note": "팀전 모드, 카운트다운, 4지선다 퀴즈가 보이고 문제도 사실에 맞습니다. 다만 제목의 '복습' 글자가 흐리고 어긋나 있고, 화면 대부분이 비어 있으며, 토끼 캐릭터와 장식이 보기 칸과 겹쳐 지저분해 보입니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": null,
+   "note": "이가 음식물을 잘게 부순다는 점을 묻는 첫 문제는 학년 수준에 맞고, 팀 차례와 남은 시간이 표시된다. 제목이 크게 두 줄로 나뉘고, 문제 화면에서는 장식과 말풍선이 답안 영역 가장자리에 걸쳐 시선이 분산된다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.0,
+   "rank": 4,
+   "note": "개인·팀 모드와 점수판을 갖췄고, 첫 문항은 이가 음식물을 잘게 부수는 역할을 정확히 묻는다. 제목이 여러 줄로 흩어지고 문항이 나오기 전에는 화면이 비어 보인다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.5,
+   "rank": 2,
+   "note": "몸속 소화 기관 그림, 기관 찾기·하는 일·이동 순서의 3단계 구성, 진행도 표시까지 갖춰 완성도가 높고 세련됐습니다. 하지만 화면 크기에 비해 글자가 매우 작고, 버튼을 눌러도 화면이 거의 바뀌지 않았습니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 2,
+   "note": "소화 경로를 그린 그림과 '기관 찾기·하는 일·이동 순서' 탭, 힌트까지 갖춰 짜임새와 완성도가 높습니다. 그러나 글자가 너무 작아 읽기 어렵고, 버튼을 누른 뒤에도 화면이 바뀌지 않은 것으로 보입니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": null,
+   "note": "소화 기관 그림과 퀴즈를 나란히 배치하고, 기관 찾기·하는 일·이동 순서를 단계로 제시해 복습의 흐름이 분명하다. 그림과 질문이 잘 구분되지만 기관 번호와 보조 안내 글씨는 작다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": 1,
+   "note": "소화 기관 지도와 퀴즈를 나란히 배치하고, 기관 찾기·하는 일·이동 순서로 복습 범위를 명확히 제시한다. 질문과 선택지는 구분이 잘 되지만 보조 설명과 키보드 안내는 글씨가 작다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "10문제 사지선다 퀴즈에 개인/팀 모드와 타이머가 있어 교실에서 바로 쓰기 좋고, 문제와 보기가 크고 또렷합니다. 다만 화면에 보이는 문제가 하나뿐이고, 주변 장식 아이콘(해, 나뭇잎, 벌레)이 소화 기관과 관계가 없습니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 1,
+   "note": "빨강·남색 대비가 뚜렷하고 제목, 카운트다운, 2×2 보기 배치가 시원해서 교실 화면에 띄우기 좋습니다. 다만 보이는 문제가 기초적인 수준이고, 좌우 장식 아이콘이 많아 산만합니다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": null,
+   "note": "첫 문제는 씹는 기능과 입을 정확히 연결하고, 개인·팀 선택과 차례·점수·타이머 표시가 교실 퀴즈에 잘 맞는다. 보이는 학습 내용은 첫 문제에 한정되며, 말풍선이 답안 영역 가장자리에 걸친다."
+  },
+  {
+   "task": "game",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 3,
+   "note": "큰 글씨와 대비가 뚜렷한 2열 선택지, 팀 점수판과 타이머가 교실 퀴즈에 잘 맞는다. 보이는 문항은 입의 역할을 정확히 짚지만, 기관 그림이나 해설이 없어 내용을 되짚을 단서가 적다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.0,
+   "rank": 2,
+   "note": "Setup takes 8 players and builds a full 7-round, 28-game round-robin with court assignments and score inputs, and it has a standings tab, so the content is solid. Weaknesses: the green-and-white tables repeat with little variety, and the text is very small."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 3,
+   "note": "8명 리그전을 7라운드로 나누고 코트를 배정한 일정과 점수 입력칸이 실제로 만들어져 바로 쓸 수 있습니다. 하지만 단조로운 표가 길게 반복되고 글자가 작아 시각적 위계가 약합니다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "참가자 8명의 풀리그 28경기를 라운드와 코트별로 배정하고, 경기마다 점수를 입력할 수 있게 구성했다. 표가 길고 글자와 입력칸이 작아 경기 중 원하는 줄을 빠르게 찾기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 2,
+   "note": "8명이 한 번씩 맞붙는 7라운드 28경기를 코트별로 배정하고, 경기마다 양쪽 점수를 입력할 수 있다. 글자와 입력칸이 작고 일정이 세로로 길어 현장 게시보다는 운영자의 기록용으로 적합하다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "Large text and a warm colour scheme make it readable, and it has both a bracket and a scoreboard. Weaknesses: the bracket is mostly '...' placeholders, the +1/+2/+5 scoreboard does not fit badminton rally scoring, and pop-up dialogs cover much of the screen."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 2,
+   "note": "따뜻한 색감에 큰 글자와 큰 점수 버튼이 있어 현장에서 보기 좋습니다. 다만 대진표가 '1조, 8조' 같은 자리표시와 '...' 빈칸뿐이고, 점수판은 경기별이 아니라 조별 누적 점수(+5 버튼 포함)라서 배드민턴 경기 방식과 잘 맞지 않습니다. 버튼을 누른 장면도 명단 수정 팝업만 보입니다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 4,
+   "note": "좌우 대칭 대진표와 숫자가 큰 점수판은 멀리서도 읽기 쉽다. 점수판이 조별 합계 중심이라 대진표의 개별 경기 점수나 세트 결과를 확인하기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 3,
+   "note": "8강부터 결승까지의 대진표와 8개 조의 점수판이 있고, 큰 점수 숫자와 전체화면 버튼은 현장 게시에 유용하다. 점수판은 조별 누적 점수 형태여서 어느 경기의 점수인지 화면에서 바로 파악하기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "The 8-team bracket with example results and the court scoreboard (14:11, set and rally-point rules shown) sit side by side, which makes it the most polished and closest to real use. Weaknesses: the bracket text is small, and the screen hardly changed after the button presses."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "예시 선수 이름과 세트 점수가 채워진 8강 토너먼트 대진표(진행률 4/7경기)가 있고, 옆에 14:11 코트 점수판과 21점·최대 30점 규칙 안내까지 갖춰져 완성도와 정돈감이 가장 높습니다. 다만 화면 안 글자가 매우 작고 빽빽해 멀리서는 읽기 어렵습니다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "8팀 토너먼트의 진행 상황과 현재 경기의 점수 조작 버튼을 한 화면에 배치해 대회 운영에 바로 쓰기 좋다. 현재 점수는 크게 보이지만 대진 카드 안의 팀 이름과 경기 상태는 작다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": 1,
+   "note": "8팀 예시에서 완료된 경기와 진행 중인 경기를 구분하고, 선택된 경기의 코트 점수판을 대진표 옆에 배치해 운영 흐름이 명확하다. 현재 점수는 크게 읽히지만 대진표 안의 팀 이름과 경기 상태 표시는 작다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 3,
+   "note": "The setup panel (format, target points) and the 8-team single-elimination bracket are neatly organised and look ready to print. Weaknesses: the text is small, the scoreboard screen never appears, and the screens after the button presses barely differ."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.0,
+   "rank": 4,
+   "note": "설정 패널과 8강·준결승·결승 대진표가 깔끔하게 정리되어 있습니다. 다만 팀 이름이 '1팀~8팀'뿐이고 점수판 탭 화면은 그림에서 확인할 수 없으며, 버튼을 눌러도 대진 순서만 바뀌고 글자가 작습니다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 3,
+   "note": "참가 팀, 경기 방식, 목표 점수를 설정할 수 있고 8강부터 결승까지의 대진이 정돈돼 있다. 점수판은 탭 이름과 경기별 열기 표시까지만 보여 실제 점수 입력 화면은 확인하기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 4,
+   "note": "팀 명단과 경기 방식을 설정하는 영역이 8강·준결승·결승 대진표 옆에 정돈되어 있다. 팀 이름과 경기 상태 글자가 작고, 제공된 화면에는 점수판 탭과 열기 버튼만 보여 실제 점수 입력 화면은 확인할 수 없다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "참가자 8팀의 이름이 미리 들어간 8강 대진표가 있고, 세트별 점수 입력칸과 승패 현황 표(득실 포함)까지 갖춰 기능은 가장 꼼꼼합니다. 다만 글자가 매우 작고 화면이 단조로우며 점수판다운 큰 숫자 표시가 없어, 현장에서 바로 보기에는 맞지 않습니다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 1,
+   "note": "실제 복식 조 이름 8팀, 게임별(1G·2G·3G) 점수 칸이 있는 대진표, 승패 현황표까지 갖춰 내용이 가장 실용적이고 완결성이 높다. 반면 디자인이 밋밋하고 글자와 입력칸이 매우 작아 현장에서 읽기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "복식 참가 명단 예시, 게임별 점수 입력칸, 승패와 득실을 보여 주는 순위표까지 갖췄다. 대진표가 화면 왼쪽에 몰려 있고 점수칸과 팀 이름이 작아 경기 중 멀리서 보기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 4,
+   "note": "복식 팀 예시와 게임별 점수 입력칸, 승패 순위표가 있어 경기 기록에 유용하다. 대진표 오른쪽에 여백이 넓은 데 비해 팀명과 점수 입력칸이 작아 진행 중 점수를 한눈에 확인하기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "따뜻한 색감에 큰 글씨의 점수판(+1/+2/−1)과 시상식·되돌리기 버튼, 좌우 대칭 8강 대진표를 갖춰 현장에서 보기 좋습니다. 다만 대진표 다음 라운드 칸이 '...'로 비어 있고, 버튼을 누른 화면이 명단 입력 창과 어두운 배경 위주입니다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "따뜻한 색감과 큰 글씨, 큰 점수 숫자 덕분에 현장에서 띄워 놓고 쓰기 좋다. 하지만 대진표 다음 라운드가 '...'로 비어 있고 참가자 이름도 '1조' 같은 번호뿐이라 내용 깊이가 얕다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 4,
+   "note": "큰 점수 숫자와 대비가 뚜렷해 현장에서 읽기 쉽고, 명단을 번호로 채우는 옵션도 있다. 대진표와 점수판이 별도 화면에 있고, 점수판에는 현재 대진이나 게임별 승수가 표시되지 않는다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 3,
+   "note": "큰 점수 숫자와 대칭형 대진표가 멀리서도 읽기 쉽고, 명단을 번호로 채울 수 있어 설정이 간단하다. 대진표는 조 번호, 점수판은 A팀과 B팀으로 표시되어 두 화면에서 같은 경기를 바로 식별하기 어렵다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 1,
+   "note": "대회 설정, 큰 숫자 점수판, 연결선이 있는 8강 대진표(M1~M7)가 한 화면에 깔끔하게 정리되어 바로 쓰기 좋습니다. 다만 참가자 입력칸이 비어 있어 버튼을 누르면 '이 입력란을 작성하세요' 경고가 뜨고, 대진표 글자가 작습니다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 3,
+   "note": "대회 설정, 21점제 점수판, 8강 대진표가 한 화면에 모두 있어 구성이 알차다. 하지만 글씨가 작고, 버튼을 누르면 참가자 입력칸이 비어 있다는 경고가 떠서 처음 쓸 때 매끄럽지 않다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 2,
+   "note": "8팀 예시 대진에 연결선이 있어 승자가 올라가는 경로가 분명하고, 점수판과 기록 파일 저장·불러오기 버튼도 보인다. 첫 화면의 참가팀 입력칸이 비어 있어 대진표 만들기를 누르면 입력 안내가 뜬다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 2,
+   "note": "8팀 예시 대진에 경기 선택, 점수 입력·취소, 기록 파일 저장·열기, 대진표 인쇄까지 갖췄다. 설정 영역이 화면 상단을 차지하고 대진표의 팀명과 경기 상태 글씨가 작다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "큰 숫자의 짙은 녹색 점수판과 +1점, 좌우 교대, 직전 점수 취소 버튼이 보기 좋게 구성되어 있습니다. 다만 대진표가 4팀 준결승·결승 수준이고 글자가 작으며, 버튼을 누른 화면 대부분이 설정 창에 가려져 보입니다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 4,
+   "note": "짙은 초록색 점수판의 큰 숫자와 모달 설정 창이 깔끔하다. 다만 예시가 4팀 대진표뿐이라 분량이 적고, 대진표와 설명 글씨가 작아 잘 안 읽힌다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "첫 화면에서 현재 경기, 양 팀 점수, 대진표를 함께 볼 수 있고 설정창에는 참가팀 예시와 경기 규칙이 표시된다. 점수와 득점 버튼은 눈에 잘 띄지만 대진표의 팀 이름과 경기 상태 글씨는 작다."
+  },
+  {
+   "task": "general",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 5.0,
+   "rank": 1,
+   "note": "큰 점수를 중심으로 현재 경기, 점수 입력, 대진표가 한 화면에 이어져 진행 중에 쓰기 좋다. 대진표에서 선택된 경기가 강조되지만, 21점제와 3게임 2선승 같은 경기 규칙 표시는 작다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 1,
+   "note": "교육 취지(초등 연 10시간 이상)부터 교육 내용 6가지, 수영복 권장 사항 등 자세한 준비물, 건강·위생 협조 사항, 건강 상태 확인을 포함한 회신서 표까지 가장 충실하고 구성도 탄탄합니다. 날짜·시간 같은 학교별 정보는 ○ 빈칸으로 남겼고, 두 쪽으로 넘어가 분량이 조금 깁니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 1,
+   "note": "교육 개요, 교육 내용, 준비물, 가정 협조 사항, 문의처를 자세히 담았고, 절취선 아래에 참가 동의서 겸 건강상태 확인서까지 갖춰 가장 완결성이 높습니다. 다만 날짜·시간·장소가 ○○ 자리표시로 남아 있고 분량이 길어 2쪽으로 넘어갑니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": null,
+   "note": "교육 활동과 가정 협조 사항이 구체적이고, 회신서에 학생 정보와 건강상 특이사항을 적을 수 있다. 실제 일정과 장소는 빈칸이고, 작은 글씨의 항목이 길게 이어져 필요한 정보를 빠르게 찾기 어렵다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": null,
+   "note": "교육 내용과 가정 협조 사항이 상세하고 참가 동의서에 학생 정보와 건강 상태를 적을 수 있다. 학교명·일정·장소·연락처가 빈칸이고, 작은 본문에 항목이 많아 한눈에 읽기 어렵다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "기간, 시간, 출발·도착 시각, 반별 일정표, 회신 기한 등 구체적인 값이 채워져 있어 바로 쓰기 좋은 실용적인 문서입니다. 다만 회신서에 학생 반·번호·이름을 적는 칸이 없고, '우리 학교장'이라는 표기와 단조로운 흑백 구성이 아쉽습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 2,
+   "note": "날짜, 시간, 반별 일정표, 준비물, 건강 유의 사항, 회신 기한까지 구체적인 값이 채워져 있어 바로 쓰기 좋습니다. 다만 회신서에 학생 반·번호·이름을 적는 칸이 없고, '우리 학교장'처럼 표기가 일반적이며 디자인이 단조롭습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": null,
+   "note": "반별 일정, 출발·도착 시간, 회신 기한이 구체적이고 일정표와 절취선으로 안내문과 회신서를 쉽게 구분할 수 있다. 수영장 이름과 회신서의 학생 식별란이 빠져 있고 보호자 서명란이 중복된다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": null,
+   "note": "반별 일정표와 출발·도착 시각, 회신 기한이 구체적이어서 학부모가 필요한 정보를 찾기 쉽다. 기재된 운영 정보가 실제와 일치하는지는 그림에서 확인할 수 없고, 절취형 회신서에는 반·번호·학생 이름란이 없다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "교육 개요 표, 준비물, 안전 수칙, 절취선 아래 회신서까지 가정통신문의 기본 구성은 갖췄고 정돈되어 있습니다. 다만 일시, 장소, 이동 방법, 날짜가 모두 [ ] 빈칸으로 남아 있고 내용도 얕은 편이며, 글자가 작아 아래쪽 여백이 큽니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 3,
+   "note": "남색 제목과 표, 절취선 회신서로 구성이 정돈되어 있고 한 쪽에 깔끔하게 들어갑니다. 하지만 일시·장소·이동·제출기한 등 핵심 정보가 [ ] 빈칸으로 남아 있고, 안내 내용도 비교적 짧습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": null,
+   "note": "교육 개요, 준비물, 안전수칙, 절취형 회신서가 한 장에 정돈되어 있고 제목과 소제목이 잘 구분된다. 교육 일시와 장소, 회신 기한, 연락처가 빈칸이며 본문 글씨가 다소 작다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": null,
+   "note": "남색 제목과 소제목, 개요 표, 절취선 덕분에 안내부터 회신까지 한 장에서 쉽게 읽을 수 있다. 회신서에 학생 식별란이 있지만 교육 일시·장소·이동 방법과 회신 기한은 채워야 한다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.25,
+   "rank": 4,
+   "note": "표 하나와 짧은 본문으로 간결하지만, 일시·장소·참가비가 '확인 필요'로만 적혀 있습니다. 회신서와 날짜가 없고 '교사 초안' 표시까지 남아 있어 바로 나눠 줄 수 없으며, 쪽의 절반이 비어 있습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.5,
+   "rank": 4,
+   "note": "제목, 표, 준비물, 안전수칙까지 기본 틀은 깔끔합니다. 하지만 일시·장소·참가비가 모두 '확인 필요'로 비어 있고, '교사 초안' 표시가 남아 있으며 회신서도 없어 아직 초안 수준입니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": null,
+   "note": "표와 소제목이 명확하고 본문 글씨도 비교적 읽기 쉽다. 배부 전 확인용 교사 초안으로 표시되어 있으며, 일시·장소·이동 방법·참가비가 미확정 상태로 남아 있다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": null,
+   "note": "준비물과 안전수칙이 간결하고 표에서 주요 항목을 찾기 쉽다. 일시·장소·이동·참가비가 확인 필요 상태로 남아 있고, 교사용 초안 문구도 있어 배포 전 수정이 필요하다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": 1,
+   "note": "It includes the school name, issue date, a schedule table for each class, supplies, detailed precautions, contact details and a reply consent form with a submission deadline, so it is very complete. The parts that need filling in are limited to the ○○ school name and the phone numbers, and the tables and section hierarchy are well organized."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "대상(96명)·기간·장소·강사·학급별 일정표·준비물·유의사항·문의처·회신서와 제출 기한까지 구체적으로 갖춰져 있어 바로 쓸 수 있습니다. 제목 상자와 표로 위계는 분명하지만 흑백 위주라 다소 단조롭고, 연락처는 000 자리표시로 남아 있습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 1,
+   "note": "학급별 일정, 이동 방법, 불참 시 대체 학습, 회신 마감일까지 안내해 보호자가 필요한 정보를 찾기 쉽다. 유의사항은 글이 다소 촘촘하고 학교명·수영장명·전화번호는 실제 정보로 바꿔야 한다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 1,
+   "note": "반별 일정과 교육 시간, 준비물, 불참 시 대체 학습, 회신 기한까지 구체적으로 안내한다. 본문과 회신서는 제목과 절취선으로 구분되며, 배포 전 학교명·수영장명·연락처를 실제 정보로 바꿔야 한다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "It has a document number, specific dates and a class schedule table with departure and return times, plus what parents should do at home and a reply form. However, the field labels in the reply form are laid out awkwardly, and the school is given only as the generic \"우리 학교장\"."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "날짜별·반별 출발·교육·도착 시간표, 준비물, 가정 지도 사항, 동의서가 구체적이고 완결성이 높습니다. 다만 장식 없이 번호 목록만 이어져 단조롭고, 표 안 반 번호의 정렬이 어색하며 동의서 칸 배치도 다소 어수선합니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "학급별 출발·교육·도착 시각을 표로 제시해 당일 일정을 한눈에 확인할 수 있고, 절취형 동의서도 갖췄다. 수영장명과 문의 전화번호가 구체적이지 않고 동의서 제출 기한이 빠져 있다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 2,
+   "note": "반별 출발·교육·도착 시각을 표에서 바로 확인할 수 있고 안전 안내와 참여 동의서도 갖췄다. 수영장명과 문의 전화번호가 구체적으로 적혀 있지 않고 동의서 제출 기한도 보이지 않는다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 3,
+   "note": "The layout is tidy, with an overview table, a supplies list, safety notes and a tear-off reply form. However, the date, venue, school name, issue date and deadline are all left as bracketed placeholders, and the empty boxes at the top make it feel unfinished."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 3,
+   "note": "색을 넣은 제목·소제목과 회신서 구성은 깔끔합니다. 하지만 일시·장소·학교명·발행일이 모두 [ ] 자리표시이고 맨 위 상자 칸도 비어 있어, 내용을 채워야만 쓸 수 있습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 3,
+   "note": "교육 개요, 준비물, 안전수칙과 회신서를 한 장에 정리했고, 색상과 굵기로 항목을 구분해 훑어보기 쉽다. 상단 칸이 비어 있고 교육 일시·장소·제출 기한을 채워야 배포할 수 있다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 3,
+   "note": "제목과 소제목의 위계가 뚜렷하고 안내문과 참여 회신서를 한 장에서 읽기 쉽게 구성했다. 상단 표가 비어 있고 교육 일시·장소·이동 방법·제출 기한은 자리표시자로 남아 있다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "The overview table and the swimming-pool rules are neat. But the date, venue and cost are only marked as needing confirmation, there is no reply form, and the working note \"교사 초안·배포 전 확인\" is still printed on the page, so it can't be sent as is."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.25,
+   "rank": 4,
+   "note": "한 장에 깔끔하게 정리돼 있지만 일시·장소·비용이 모두 '확인 필요'로 비어 있고 회신서가 없습니다. '교사 초안·배포 전 확인' 같은 작업용 문구가 남아 있어 그대로 배포할 수 없습니다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "준비물과 수영장 안전수칙을 간결하게 안내하고, 참여가 어려울 때 연락할 대상도 명시했다. 교사용 초안 표시와 배포 전 확인 목록이 남아 있으며 교육 일시·장소·이동 방법은 확인 필요 상태다."
+  },
+  {
+   "task": "hwpx-notice",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 4,
+   "note": "표와 짧은 안전 수칙 덕분에 내용을 빠르게 훑을 수 있다. 반별 일시·장소·이동 방법이 확인 필요 항목으로 남아 있고 참여 여부를 적어 낼 회신란도 없다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 1,
+   "note": "Varied bar and donut charts, KPI cards and an org chart, filled in with rich example data covering programs, budget, satisfaction comments and 2027 targets. It is the most finished deck. The figures are example data that need replacing, and some card text is small."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.75,
+   "rank": 1,
+   "note": "KPI 카드, 막대·도넛 차트, 예산표, 학부모 의견, 특색 프로그램 사례, 문제점과 2027 목표까지 구체적인 수치로 풍부하게 채웠고 서로 일관됩니다. 색과 구성도 다양하고 세련됐습니다. 일부 슬라이드는 정보가 많고 글자가 작으며, 수치는 예시 데이터라고 표기돼 있습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "실참여 인원의 중복 집계 기준, 시간대별 돌봄 이용, 만족도와 예산을 구체적으로 보여 주며, 핵심 수치와 차트를 빠르게 읽을 수 있다. 차트의 일부 글씨가 작고 수치는 예시이며, 전체 14장 중 첨부에 보이는 12장까지만 평가했다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 1,
+   "note": "참여 실인원 산출 내역, 시간대별 돌봄 이용, 만족도와 예산을 카드·표·차트로 나눠 보여 주고 차년도 목표를 수치로 제시했다. 일부 차트의 축과 범례 글씨가 작고, 제출 전 예시 수치를 학교 실적으로 교체해야 한다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 2,
+   "note": "Fills the full flow with consistent example figures (participation, budget execution, satisfaction, year-over-year comparison, improvement tasks, timeline), and the headline-style titles suit a report. The example figures are marked as hypothetical, and the line chart is somewhat flat."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "목차부터 추진배경, 실적, 예산, 만족도, 전년 비교, 개선과제, 2027 일정까지 빠짐없이 갖췄습니다. 학년별 참여율과 예산 집행률 수치가 서로 맞아떨어지고, 결론 띠로 핵심을 잘 정리했습니다. 다만 수치가 가상 예시 자료라고 밝혀져 있고, 남색·황토색 표 위주라 다소 단조롭습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 2,
+   "note": "참여율·예산 집행률·만족도의 예시 수치를 분석하고, 개선 과제별 원인과 담당까지 제시한다. 표와 그래프로 흐름을 따라가기 쉽지만 일부 주석이 작고, 제출 전 가상 수치를 실제 실적으로 바꿔야 한다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 2,
+   "note": "참여율·만족도·예산 집행률을 전년과 비교하고, 개선 과제별 담당과 2027학년도 일정을 제시했다. 표와 차트의 일부 글씨가 작고, 제출 전 예시 수치를 학교 실적으로 교체해야 한다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 3,
+   "note": "Clean navy-and-green design with a well-built structure: KPIs, satisfaction, budget, case examples and Ministry of Education references. But every figure and item is an empty placeholder like '[ ]명', so there is no real content, and some text is small."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.5,
+   "rank": 3,
+   "note": "운영 범위, 안전, 만족도, 예산, 사례, 지원 요청까지 항목 구성이 체계적이고 교육부 참고자료 링크와 산식도 넣었습니다. 하지만 모든 수치가 '[ ]' 빈칸인 입력용 틀이고, 글자가 작은 편입니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.0,
+   "rank": 3,
+   "note": "참여·배정부터 안전·예산·지원 요청까지 보고 항목이 충실하고, 산식과 증빙 자료를 안내한다. 표와 각주 글씨가 작고 핵심 수치와 운영 사례가 빈칸이어서 실적 입력이 필요하다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 3,
+   "note": "참여 실인원 중복 제거 기준과 지표 산식을 명시하고, 제출 전 대조할 증빙 자료를 정리했다. 표와 지표 카드가 정돈돼 있지만 핵심 수치와 운영 사례가 입력란으로 남아 있다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "Has a table of contents, step-by-step flows and a timeline, with large, readable text. But every table is filled with '집계 필요' (needs tallying), so it is only an empty template, and the design is plain."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.25,
+   "rank": 4,
+   "note": "구성과 서식은 깔끔하지만 참여·대기·만족도·예산 표의 모든 칸이 '집계 필요', '대조 필요'로 비어 있습니다. 결과 보고가 아니라 집계 체크리스트 초안에 가깝습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "목차와 제목이 명확하고 안전관리 절차와 차년도 준비 일정이 읽기 쉽다. 결과 요약이 확인 목록으로 구성되어 있고, 주요 표에도 ‘집계 필요’와 ‘대조 필요’가 반복되어 보고할 실적이 부족하다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 4,
+   "note": "돌봄 대기 인원, 안전관리, 만족도 응답률 등 교육지원청 보고에 필요한 확인 항목을 짚었다. 핵심 표가 ‘집계 필요’와 ‘대조 필요’로 남아 있어 운영 성과를 파악하기 어렵다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 2,
+   "note": "KPI 카드, 막대 차트, 타임라인, 교육지원청 건의 사항으로 시각적 완성도가 가장 높고 메시지도 분명합니다. 다만 예산 집행 내용이 없고, 수치가 예시라서 실제 자료로 교체해야 합니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 2,
+   "note": "10장 안에 핵심지표 카드, 막대그래프 3종, 운영 체계 표, 성과·과제, 2027 계획, 교육지원청 건의가 고르게 들어가 시각적 완성도가 가장 높습니다. 다만 예산 집행 현황이 빠졌고, 모든 수치가 예시여서 실제 자료로 바꿔야 합니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 2,
+   "note": "큰 핵심 지표와 비교 차트로 참여율과 만족도 변화를 쉽게 파악할 수 있다. 수치가 예시이며 예산 집행 현황이 빠져 있어 교육지원청 보고용으로 보완이 필요하다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "참여율·만족도·학년별 격차를 차트로 보여 주고 차년도 개선 일정과 교육지원청 건의까지 담았다. 핵심 수치는 교체가 필요한 예시이며, 예산 집행 현황이 빠져 있다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": 1,
+   "note": "참여율, 학년별 현황, 프로그램, 예산 집행표, 만족도 차트, 2027 일정까지 수치가 일관되게 들어가 보고서로서 완결성이 높습니다. 다만 수치가 가상 자료라고 표시되어 있고, 학교명이 '우리 학교'로 남아 있으며, 비슷한 레이아웃이 반복됩니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "목차·요약·추진 체계·학년별 참여·프로그램·예산 집행·만족도·2027 일정까지 보고서 구성을 모두 갖췄고, 수치가 서로 맞아떨어집니다(357/420명=85.0%, 집행률 95.7% 등). 꺾은선 차트의 변화 폭이 작아 잘 안 보이고, 수치가 예시라는 점이 아쉽습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 1,
+   "note": "참여율, 예산 집행, 만족도, 차년도 일정을 표와 차트로 구체적으로 제시한다. 주요 수치가 가상 예시여서 제출 전 학교 실적으로 교체해야 한다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 1,
+   "note": "참여 실적·예산 집행·만족도에서 개선 과제와 추진 일정까지 이어지며, 표와 차트가 각 장의 결론을 뒷받침한다. 실적 수치가 가상 예시이므로 제출 전에 학교 자료로 교체해야 하고, 월별 추이 차트의 글씨는 작다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.25,
+   "rank": 3,
+   "note": "산정 기준, 근거 자료, 교육부 길라잡이 참조까지 담은 입력용 양식으로 구조는 탄탄합니다. 하지만 모든 수치와 내용이 [ ] 빈칸이고 글자가 매우 작아, 그대로 발표하기 어렵습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.25,
+   "rank": 3,
+   "note": "예산·안전·만족도·근거 자료까지 항목 구성은 보고서답게 꼼꼼합니다. 하지만 수치와 내용 대부분이 [ ] 빈칸으로 남은 양식이고, 표 글자가 작으며 차트 없이 표만 이어져 단조롭습니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.0,
+   "rank": 3,
+   "note": "안전·인력 관리와 지표별 집계 기준까지 담아 보고 항목이 충실하다. 핵심 실적과 운영 사례가 입력란으로 남아 있고 표 안의 글씨가 작아 발표 화면에서 읽기 어렵다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 3,
+   "note": "참여·안전·예산·만족도를 폭넓게 다루고 집계 기준과 확인 자료까지 제시해 실적 입력에 유용하다. 핵심 수치와 운영 사례가 빈칸으로 남아 있고, 반복되는 표의 글씨가 작아 발표에서 빠르게 읽기 어렵다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.5,
+   "rank": 4,
+   "note": "글자 크기와 구성은 무난합니다. 하지만 거의 모든 칸이 '확인 필요'로 채워져 있어 실제 운영 결과 내용이 없는 껍데기 수준입니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.25,
+   "rank": 4,
+   "note": "구성은 단정하고 글자가 커서 잘 읽힙니다. 그러나 표의 거의 모든 칸이 '확인 필요'이고 도식 상자도 비어 있어, 실제 운영 결과는 담기지 않은 검토용 틀에 그칩니다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.75,
+   "rank": 4,
+   "note": "제출 전 확인할 근거 자료와 교육지원청 협의 안건이 구체적이다. 참여 인원과 예산 집행 등 핵심 실적이 대부분 ‘확인 필요’로 남아 있어 검토본 단계다."
+  },
+  {
+   "task": "public-ppt",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 4,
+   "note": "표의 글씨가 비교적 크고 확인 근거와 교육지원청 협의 안건이 명확해 제출 전 검토에 도움이 된다. 참여·예산·만족도 실적이 대부분 ‘확인 필요’로 남아 있어 운영 결과를 발표하기에는 미완성이다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.5,
+   "rank": 2,
+   "note": "개념 설명, 합의 법칙과 곱의 법칙 비교표, 구체적인 예시가 탄탄하고 7단계 탭으로 수업 흐름이 잘 잡혀 있어요. 다만 중2 범위를 넘는 nPr·nCr 공식이 나오고, 파란색 위주의 글 많은 화면이라 단조로우며, 기본 화면의 글씨가 작아요."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 2,
+   "note": "경우의 수의 개념, 합의 법칙과 곱의 법칙, 비교표, 동전·주사위 예시가 정확하고 구체적이며 탭이 7개이고 큰 글씨 모드도 작동합니다. 다만 보이는 화면이 대부분 글 설명이라 직접 해 보는 활동은 확인되지 않고, 중2 범위를 넘는 nPr과 nCr 공식이 들어 있습니다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 3,
+   "note": "동전과 주사위 예시, 합의 법칙에서 중복을 세는 실수, 두 법칙의 비교표까지 개념 설명이 충실하다. 큰 글씨 모드는 수업에 유용하지만, 제시된 화면은 설명 중심이라 학생이 직접 경우를 만들어 보는 과정은 확인하기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 4,
+   "note": "주사위와 동전 예시, 합의 법칙과 곱의 법칙 비교표, 중복 계산에 대한 설명이 충실하고 큰 글씨 모드도 보인다. 첨부 화면 대부분이 개념 설명에 머물러 학생이 직접 실험하고 결과를 확인하는 수업 흐름은 평가하기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 1,
+   "note": "나열해 보기, 줄 세우기·뽑기, 연습 문제가 한 화면에서 바로 조작되고, 4×3=12 풀이와 AB, AC 같은 실제 목록까지 보여 줘 직접 해 보며 익히기에 가장 알맞아요. 분홍색 단색 위주의 구성은 다소 평범하고, 첫 화면에서는 아래쪽 목록이 잘려 보여요."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 1,
+   "note": "나열해 보기, 줄 세우기·뽑기, 연습 문제의 세 패널로 구성되어 있습니다. 4명 중 2명을 뽑는 경우 12가지를 AB, AC처럼 하나씩 보여 주고 4×3=12 설명까지 있으며, '다음 문제'를 누르면 문제가 바뀌는 것이 보여 직접 해 보는 수업 도구로 가장 알맞습니다. 다만 화면 아래쪽 일부가 잘려 보입니다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.25,
+   "rank": 2,
+   "note": "동전·주사위 결과를 예측하고, 순서가 있는 12가지 경우를 실제 목록과 4×3 계산으로 비교하며, 여러 연습 문제에 답을 입력할 수 있다. 세 활동을 나란히 배치해 한눈에 훑기 좋지만, 일부 선택 상자가 다음 줄로 넘어가 어느 항목의 입력인지 바로 파악하기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 3,
+   "note": "동전과 주사위의 경우 수 예측, 순서를 따지는 뽑기, 답을 입력하는 연습 문제를 한 화면에 담았다. 12가지 결과와 계산식이 함께 보이지만, 일부 입력 라벨과 선택 상자의 줄이 어긋나고 첫 화면에서는 결과 목록 하단이 잘린다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.5,
+   "rank": 4,
+   "note": "옷 아이콘과 기록판 등 보라색 톤의 세련된 레이아웃은 보기 좋아요. 하지만 버튼을 세 번 눌러도 화면이 전혀 바뀌지 않고, 보이는 활동은 곱의 법칙 하나뿐이며, 글씨가 매우 작아요."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.5,
+   "rank": 4,
+   "note": "곱의 법칙 실험 화면은 깔끔하고 사이드바에 합의 법칙, 순서가 있는 경우, 실력 확인 메뉴가 있습니다. 하지만 버튼을 세 번 누른 화면이 모두 똑같아 반응이 보이지 않고, 글자가 매우 작아 읽기 어렵습니다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 4,
+   "note": "상의 3종과 하의 2종을 고르는 활동을 3×2 기록표와 연결해 곱의 법칙을 시각적으로 잘 보여 준다. 제시된 화면이 모두 같은 초기 상태여서 선택 결과나 다른 단원의 내용은 확인하기 어렵고, 표와 안내 글씨도 작다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "상의 3개와 하의 2개를 직접 고르고 3×2 표에 기록하는 구성이 곱의 법칙을 이해하기에 적합하다. 선택 영역과 기록판이 한눈에 들어오지만, 표의 항목명과 보조 문구가 작고 첨부 화면은 모두 같은 활동을 보여 준다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "옷차림, 간식, 두 자리 수, 카드 뽑기의 4가지 활동 탭이 있고 디자인이 깔끔하며, 탭을 누르면 실제로 화면이 바뀌어요. 다만 기록장이 계속 빈 상태로만 보여 내용의 깊이를 확인하기 어렵고, 작은 글씨가 많아요."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.5,
+   "rank": 3,
+   "note": "네 가지 활동(옷차림 만들기, 간식 고르기, 두 자리 수 만들기, 카드 뽑기)에 경우 기록장, 힌트, 빠진 경우 확인 기능까지 있어 직접 해 보며 익히는 구성은 좋습니다. 다만 화면에는 탭 전환만 보이고 기록이 계속 0가지라 실제 활동 결과를 확인할 수 없으며, 글자가 작은 편입니다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.5,
+   "rank": 1,
+   "note": "옷차림 만들기와 배수 카드 고르기에서 학생이 경우를 직접 추가하고 빠진 경우를 점검하도록 구성한 점이 수업 목적에 잘 맞는다. 활동과 기록장이 나란히 있어 흐름이 명확하지만, 기록이 채워진 화면이나 풀이 내용은 보이지 않는다."
+  },
+  {
+   "task": "webapp",
+   "run": 1,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.25,
+   "rank": 2,
+   "note": "옷차림 조합과 2 또는 3의 배수 카드처럼 조건이 다른 활동을 제시하고, 찾은 경우를 기록한 뒤 빠진 경우를 확인할 수 있게 구성했다. 그림에는 기록장이 비어 있는 상태만 보여, 경우가 쌓였을 때 어떻게 정리되는지는 확인하기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.75,
+   "rank": 1,
+   "note": "합의 법칙·곱의 법칙·동전과 주사위·한 줄로 세우기·대표 뽑기·연습문제까지 6개 탭으로 범위가 넓다. 슬라이더·사람 선택·선분 그림으로 직접 해 볼 수 있고, 12÷2!=6과 5×4÷2=10처럼 수치도 맞다. 디자인은 평범하고 글자가 작아 정보가 빽빽하다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.75,
+   "rank": 1,
+   "note": "합의 법칙, 곱의 법칙, 한 줄로 세우기, 대표 뽑기(12÷2!=6), 악수 선분 그림(5×4÷2=10)까지 범위가 넓고, 수치와 상호작용이 구체적이며 수학적으로도 맞습니다. 다만 디자인이 다소 투박하고 글자가 작으며 정보가 빽빽합니다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 2,
+   "note": "합의 법칙에서 사건을 직접 구성하고, 대표 뽑기에서 순서를 바꿔 같은 조합이 나오는지 확인할 수 있다. 선분 그림과 10가지 계산을 연결한 예시도 구체적이지만, 작은 글씨와 촘촘한 버튼 때문에 한눈에 읽기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.5,
+   "rank": 1,
+   "note": "합의 법칙에서 두 사건의 겹침을 살피고, 대표 뽑기에서 순서만 다른 선택을 걸러 보며 경우의 수를 익힐 수 있다. 5명의 악수 횟수를 연결선으로 보여 주는 예시도 구체적이지만, 일부 보조 설명은 글씨가 작고 첫 화면에 활동이 다 들어오지 않는다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 2.25,
+   "rank": 4,
+   "note": "합과 곱·줄 세우기·대표 뽑기 계산기와 질문 도우미가 있고, 4×3=12 설명이 맞다. 하지만 스크롤한 화면 대부분이 빈 공간이고, 같은 답변이 반복해서 쌓이며, 단조로운 흑백 폼이라 수업 도구로는 아쉽다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 2.25,
+   "rank": 4,
+   "note": "합의 법칙·곱의 법칙 확인 기능과 줄 세우기·대표 뽑기 설정, 질문 답변 기능이 있고 설명(4×3=12)도 맞습니다. 하지만 흑백 위주로 단조롭고, 가운데 넓은 빈 화면과 같은 답변이 반복되는 점이 거슬립니다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 2.5,
+   "rank": 4,
+   "note": "동전·주사위와 대표 뽑기에서 수를 바꾸고 답을 예상할 수 있으며, 문답에는 회장·부회장을 뽑는 12가지 예시가 나온다. 아래로 내려가면 왼쪽 활동 영역 대부분이 비고 오른쪽 좁은 열에 같은 답변이 반복되어 화면 공간을 비효율적으로 쓴다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "claude",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 2.75,
+   "rank": 4,
+   "note": "동전·주사위 개수와 대표 선출 조건을 바꿔 결과를 예상할 수 있고, 회장과 부회장을 뽑는 12가지 예시도 제시한다. 아래로 내려가면 가운데에 큰 빈 공간이 남고 좁은 질문 영역에 같은 답변이 반복돼 화면을 훑기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 3,
+   "note": "보라색 배너와 주사위 그림, 옷 아이콘이 깔끔하고 단계형 사이드바가 있어 완성도 있어 보인다. 하지만 버튼을 3번 눌러도 화면이 그대로라 실제로 해 보는 활동은 확인되지 않고, 보이는 내용도 옷차림 조합 하나뿐이며 글자가 작다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 3,
+   "note": "보라색 배너, 사이드바, 옷 아이콘으로 시각적 완성도가 높습니다. 그러나 버튼을 세 번 눌러도 변화가 보이지 않고, 보이는 것은 조합 만들기 한 단계뿐이며 작은 글씨가 많습니다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.0,
+   "rank": 3,
+   "note": "상의 3종과 하의 3종을 그림으로 제시하고, 고르는 곳과 만든 옷차림을 확인하는 곳을 나란히 배치했다. 보라색으로 학습 단계와 주요 버튼을 구분했지만, 첨부 화면에서는 조합이 쌓인 결과나 다음 단계의 활동 예시를 보기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "bare",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 3,
+   "note": "색과 그림으로 옷을 쉽게 구분할 수 있고, 선택 영역과 만든 조합 영역이 분명해 활동을 시작하기 쉽다. 화면에 나온 수학 활동은 3×3 옷차림 조합에 집중되어 있어 다른 유형까지 얼마나 연습할 수 있는지는 확인하기 어렵다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 1,
+   "score": 3.25,
+   "rank": 2,
+   "note": "진한 초록 테마가 정돈되어 있고 4단계 탭, 예상값 입력, 옷차림 기록표, 교사용 수업 안내를 갖춰 수업 흐름이 좋다. 하지만 버튼을 눌러도 화면 변화가 보이지 않고, 글자와 표 칸이 작아 흐리게 보인다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "opus",
+   "pass_": 2,
+   "score": 3.25,
+   "rank": 2,
+   "note": "정돈된 녹색 디자인에 '예상 기록 → 옷차림 고르기 → 기록표' 흐름과 4단계 탭 구성이 좋습니다. 다만 버튼을 세 번 눌러도 화면이 그대로이고, 보이는 내용은 옷차림 활동 하나뿐인 데다 글자가 작습니다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 1,
+   "score": 4.75,
+   "rank": 1,
+   "note": "옷차림 수를 예상하고 직접 골라 2×3 기록표를 채운 뒤 답을 확인하는 흐름이 분명하다. 선택 영역과 기록표가 명확하게 구분되고 글자 크기와 프로젝터 표시를 조절할 수 있지만, 뒤 단계의 활동은 탭 이름까지만 보인다."
+  },
+  {
+   "task": "webapp",
+   "run": 2,
+   "maker": "codex",
+   "cond": "harness",
+   "judge": "gpt",
+   "pass_": 2,
+   "score": 4.0,
+   "rank": 2,
+   "note": "상의 2가지와 하의 3가지로 옷차림 수를 먼저 예상하고, 조합을 표에 기록해 빠뜨린 경우를 찾을 수 있다. 제시된 화면은 첫 활동에 머물러 뒤 단계의 내용은 확인하기 어렵다."
+  }
+ ],
+ "rank": {
+  "opus": {
+   "codex-harness": 3.2916666666666665,
+   "codex-bare": 2.4166666666666665,
+   "claude-bare": 2.0416666666666665,
+   "claude-harness": 2.25
+  },
+  "gpt": {
+   "codex-harness": 2.65,
+   "codex-bare": 2.05,
+   "claude-bare": 2.35,
+   "claude-harness": 2.95
+  }
+ }
+}

@@ -1,0 +1,10 @@
+{
+ "check_game-1": {
+  "rc": 1,
+  "out": "PASS file size 23 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nFAIL no optional chaining ?. (old Chrome) (2 found)\nFAIL no nullish ?? (old Chrome) (6 found)\nPASS no replaceAll (old Chrome)\nFAIL no .at() (old Chrome) (2 found)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nFAIL no alert/prompt/confirm blocks the game (1 found)\nPASS no aspect-ratio (old Chrome)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nWARN possible student personal data field (이름/학번) — remove unless clearly fictional\nPASS GAME.items has 0 entries\nFAIL JavaScript syntax: HTML line 202: Unexpected token (39:57)\nSKIP browser opening check could not finish: Page.wait_for_function: Timeout 5000ms exceeded.\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\nWARN 밤티 검사: 여백 값의 65%가 4의 배수가 아니에요(52개 중). 여백은 4·8·12·16·24·32·48·64 가운데에서 골라 주세요.\nWARN 전문 디자이너 기준 4/5: 여백이 4·8 단위, 본문 줄 간격 넉넉\n\nRESULT: FAIL (11 fail, 1 unchecked, 3 warn)\n"
+ },
+ "check_webapp-1": {
+  "rc": 1,
+  "out": "PASS no outside address: works offline\nFAIL ?. ?? in script: old school Chrome cannot run it\nFAIL network/storage API in script: localStorage\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 22 KB\nPASS example-likeness: not a copy of a shipped example (2 compared)\nFAIL JavaScript syntax: HTML line 202: Unexpected token (39:57)\nWARN [1600x900] text under 14px: 11px M1 | 11px M2 | 11px M3 | 11px M4\nWARN [projector] text under 14px: 11px M1 | 11px M2 | 11px M3 | 11px M4\nFAIL no reset button (#wa-reset)\nPASS clicked 0 part(s)\nWARN [phone 390] text under 14px: 11px M1 | 11px M2 | 11px M3 | 11px M4\nPASS no JS errors\nPASS no outside requests while running\ncheck: FAIL (4 fail, 0 unchecked)\n"
+ }
+}

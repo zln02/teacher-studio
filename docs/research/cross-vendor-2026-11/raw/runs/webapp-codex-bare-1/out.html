@@ -1,0 +1,646 @@
+﻿<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>수학 실험실 | 경우의 수</title>
+<style>
+:root{font-family:"Pretendard","Noto Sans KR","Malgun Gothic",system-ui,sans-serif;color:#24213a;background:#f8f8fd;--purple:#6847df;--muted:#67647e;--line:#eae7f3;--green:#13765e}
+*{box-sizing:border-box}
+body{margin:0;line-height:1.55;min-width:300px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid #7358e5;outline-offset:3px}
+button:disabled{cursor:default}
+.icon{width:22px;height:22px;display:block;flex:none}
+header{height:72px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center}
+.brand{width:238px;flex:none;display:flex;align-items:center;gap:11px;padding-left:27px;font-weight:850;font-size:20px;letter-spacing:-.06em}
+.brand-mark{width:37px;height:37px;border-radius:11px;background:#7755eb;display:grid;place-items:center;box-shadow:0 3px 8px #6848d33b}
+.header-content{width:100%;display:flex;justify-content:space-between;align-items:center;padding:0 32px;gap:12px}
+.breadcrumb{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;font-weight:650}
+.breadcrumb strong{color:#35295b}
+.grade{display:flex;align-items:center;gap:7px;color:#5d48a6;background:#f4efff;border:1px solid #ece4ff;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:750;white-space:nowrap}
+.grade i{width:7px;height:7px;background:#9377ef;border-radius:50%}
+.shell{display:grid;grid-template-columns:238px minmax(0,1fr);min-height:calc(100vh - 72px)}
+aside{background:#fff;border-right:1px solid var(--line);padding:30px 17px 22px;display:flex;flex-direction:column;gap:28px}
+.nav-label{font-size:12px;color:#79758d;font-weight:800;padding:0 10px;margin:0 0 12px}
+nav{display:grid;gap:7px}
+.nav-button{display:flex;align-items:center;text-align:left;gap:10px;background:none;border:1px solid transparent;border-radius:10px;padding:9px;width:100%;font-size:14px;font-weight:750;min-height:48px;color:#504b69}
+.nav-button:hover,.notes:hover{background:#f8f5ff}
+.nav-button[aria-current="step"]{background:#eee8ff;border-color:#e9e0ff;color:#5534cb}
+.nav-icon{display:grid;place-items:center;width:28px;height:28px;background:#f5f3fa;border-radius:8px;flex:none}
+.nav-button[aria-current="step"] .nav-icon{background:#e3d8ff}
+.nav-icon canvas{width:16px;height:16px}
+.nav-tail{margin-left:auto;color:var(--green);font-size:13px}
+.side-bottom{margin-top:auto;display:grid;gap:15px}
+.course-progress{padding:13px 11px}
+.course-progress p{margin:0 0 9px;display:flex;justify-content:space-between;font-size:12px;font-weight:800}
+.course-progress p span{color:var(--purple)}
+.track{height:7px;background:#edeaf6;border-radius:20px;overflow:hidden}
+.fill{height:100%;background:#875ff0;border-radius:inherit;transition:width .25s ease}
+.notes{background:#fff;border:1px solid #ebe7f5;border-radius:10px;width:100%;display:flex;align-items:center;gap:9px;padding:10px 12px;font-size:13px;font-weight:750;color:#57526f;text-align:left}
+.notes canvas{width:17px;height:17px}
+.notes span:last-child{margin-left:auto}
+main{width:100%;max-width:1280px;margin:0 auto;padding:30px 32px 44px;min-width:0}
+.hero{position:relative;isolation:isolate;display:flex;align-items:center;min-height:224px;padding:24px 33px;border:1px solid #e7dbff;border-radius:19px;overflow:hidden;background:linear-gradient(106deg,#f3edff 10%,#eee4ff 65%,#e6d9ff)}
+.hero-copy{position:relative;z-index:1}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;border-radius:20px;background:#fff;color:#6643ce;padding:5px 11px;font-size:12px;font-weight:850;letter-spacing:.03em}
+.hero-tag canvas{width:13px;height:13px}
+h1,h2,h3,p{margin-top:0}
+h1{font-size:clamp(32px,4vw,47px);line-height:1.15;letter-spacing:-.075em;margin:11px 0 10px;font-weight:900;color:#251942}
+.hero p{color:#544573;font-size:15px;margin:0;line-height:1.72;word-break:keep-all}
+.hero-art{position:absolute;right:29px;top:0;width:420px;height:100%;pointer-events:none}
+.hero-art canvas{width:100%;height:100%;display:block}
+.section-heading{display:flex;gap:10px;align-items:center;margin:26px 0 12px}
+.section-heading h2{margin:0;font-size:21px;letter-spacing:-.06em;font-weight:850}
+.workspace{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,1fr);gap:17px;align-items:stretch}
+.panel{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 3px 9px #26204a06;min-width:0}
+.activity,.record{padding:21px 22px}
+.panel h3{margin:0 0 4px;font-size:18px;letter-spacing:-.045em;font-weight:850}
+.description{color:var(--muted);font-size:13px;margin:0;word-break:keep-all}
+.choice-area{display:grid;grid-template-columns:1.27fr 1fr;gap:16px;margin:18px 0 14px}
+.choice-area.single{grid-template-columns:1fr}
+.choice-area.single .choice-list{flex-wrap:wrap}
+.choice-area.single .choice{flex-basis:29%}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:13px;font-weight:850;color:#4b4264;margin-bottom:7px;padding:0}
+.choice-list{display:flex;gap:7px}
+.choice{flex:1;min-width:0;min-height:77px;padding:7px 3px 6px;border:1px solid #eae7f2;border-radius:10px;background:#fcfbff;display:grid;align-content:center;justify-items:center;gap:4px;position:relative;font-size:12px;font-weight:750;white-space:nowrap;color:#514763}
+.choice:hover{border-color:#b6a3f6;background:#f7f3ff}
+.choice[aria-pressed="true"]{border-color:#8d70ee;background:#f1eaff;color:#5231c0;box-shadow:0 0 0 1px #ae98ff inset}
+.item-icon{display:block;width:35px;height:35px}
+.choice-check{display:none;position:absolute;top:3px;right:5px;color:var(--purple);font-size:10px}
+.choice[aria-pressed="true"] .choice-check{display:block}
+.selection{display:flex;min-height:44px;align-items:center;justify-content:center;gap:7px;border:1px dashed #daccf6;border-radius:9px;background:#faf7ff;color:#6b5b87;font-size:12px;font-weight:650;text-align:center;padding:5px 7px}
+.selection strong{color:#5736c4}
+.selection .item-icon{width:26px;height:26px}
+.actions{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap}
+.primary,.secondary,.option{border-radius:9px;padding:8px 13px;font-size:13px;font-weight:850;min-height:38px}
+.primary{background:var(--purple);color:#fff;border:1px solid var(--purple);box-shadow:0 2px 4px #5a37d320}
+.primary:hover{background:#5635ce}
+.primary:disabled{background:#f0e9fb;color:#76648f;border-color:#eee5fa;box-shadow:none}
+.secondary{border:1px solid #e7e0f2;background:#fff;color:#605575}
+.secondary:hover{background:#f7f3ff}
+.record-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:7px}
+.count{background:#eee8ff;color:#5633cd;border-radius:20px;font-size:12px;font-weight:850;padding:4px 10px;white-space:nowrap}
+.record .track{margin:14px 0 10px}
+table{border-spacing:5px;table-layout:fixed;text-align:center;margin:0 -4px 7px;width:calc(100% + 8px);font-size:12px}
+th{color:#655b7a;font-weight:750;padding:1px 0;word-break:keep-all}
+th:first-child{width:27%}
+td,.record-list li{background:#f8f7fc;border:1px solid #eeebf6;color:#9287ac;border-radius:7px;height:32px}
+.filled{background:#edf9f3!important;border-color:#d4efe4!important;color:#13735e!important;font-weight:850}
+td.unavailable{background:#f2f0f5;color:#827a92}
+.record-list{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;list-style:none;padding:0;margin:12px 0;font-size:12px}
+.record-list li{color:#655b7a;padding:5px 7px}
+.hint{margin:9px 0 0;color:#685984;background:#f7f2ff;border-radius:8px;padding:9px;font-size:12px;display:flex;gap:7px;align-items:flex-start;word-break:keep-all}
+.hint canvas{width:15px;height:15px;margin-top:1px}
+.reflect{margin-top:16px;padding:16px 19px;display:flex;align-items:center;gap:12px}
+.reflect-icon{width:37px;height:37px;border-radius:9px;display:grid;place-items:center;background:#f0eaff;flex:none}
+.reflect-icon canvas{width:18px;height:18px}
+.reflect-copy{flex:1}
+.reflect h3{font-size:15px}
+.reflect-actions{display:flex;gap:6px;flex-wrap:wrap}
+.option{min-height:35px;min-width:43px;border:1px solid #e7def7;background:#fff;color:#6245b0;padding:5px 9px}
+.option:hover,.option[aria-pressed="true"]{background:#f1eaff;border-color:#bca8f2}
+.feedback{margin:8px 0 0;font-size:12px;color:#64547e}
+.good{color:#10735b}
+.error{color:#a13746}
+.quiz{padding:21px}
+.quiz .track{margin:12px 0 19px}
+.quiz-options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}
+.quiz-options .option{text-align:left;min-height:43px;padding:9px 13px}
+.result-list{padding-left:19px;font-size:13px;color:#574c6d}
+.result-list li{margin-bottom:7px}
+dialog{color:inherit;border:1px solid var(--line);border-radius:16px;padding:22px;width:min(480px,calc(100% - 26px));box-shadow:0 16px 60px #26175140}
+dialog::backdrop{background:#261b4b67}
+.dialog-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dialog-top h2{font-size:20px;margin:0}
+dl{font-size:14px;margin-bottom:0}
+dt{font-weight:850;color:#5635c6}
+dd{margin:0 0 13px;color:#5a516d}
+dd:last-child{margin:0}
+.mobile-notes{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+</style>
+<style>
+@media(min-width:1500px){main{padding-inline:40px}.hero-art{right:40px}}
+@media(max-width:1100px){.shell{grid-template-columns:195px minmax(0,1fr)}.brand{width:195px;padding-left:18px}aside{padding-inline:12px}main,.header-content{padding-inline:24px}.hero-art{right:4px;width:320px}.activity,.record{padding:16px}.choice-area{gap:9px}.choice-list{gap:4px}}
+@media(max-width:920px){.shell{grid-template-columns:165px minmax(0,1fr)}.brand{width:165px;font-size:17px}main,.header-content{padding-inline:17px}.workspace{grid-template-columns:minmax(0,1fr)}.hero-art{width:260px;right:2px}.hero{padding-inline:21px}.choice-list{gap:7px}}
+@media(max-width:680px){header{height:58px}.brand{width:auto;padding-left:14px;gap:7px;white-space:nowrap}.brand-mark{width:30px;height:30px}.brand-mark canvas{width:18px;height:18px}.header-content{justify-content:flex-end;padding-inline:12px}.breadcrumb{display:none}.grade{font-size:11px;padding:4px 7px}.shell{display:block;min-height:calc(100vh - 58px)}aside{padding:8px 11px;gap:0;border-right:0;border-bottom:1px solid var(--line)}.nav-label,.side-bottom{display:none}nav{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.nav-button{justify-content:center;gap:3px;flex-wrap:wrap;font-size:10px;padding:4px 2px;line-height:1.25;text-align:center}.nav-icon{width:21px;height:21px}.nav-icon canvas{width:13px;height:13px}.nav-tail{margin:0}.nav-tail:empty{display:none}main{padding:15px 12px 32px}.hero{min-height:158px;padding:13px}.hero-copy{max-width:64%}.hero h1{font-size:30px}.hero p{font-size:12px}.hero-art{width:43%;right:0}.section-heading{margin-top:16px}.reflect{flex-wrap:wrap;padding:12px}.reflect-copy{flex-basis:calc(100% - 50px)}.reflect-actions{margin-left:49px}.choice-list{gap:4px}.choice{font-size:10px}.mobile-notes{display:inline-block;margin-top:12px}}
+@media(max-width:370px){.hero-art{opacity:.6}.hero-copy{max-width:72%}.activity,.record{padding:12px}.choice-area{gap:6px}.item-icon{width:29px;height:29px}.reflect-actions{margin-left:0}.grade i{display:none}}
+@media(prefers-reduced-motion:reduce){.fill{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><span class="brand-mark"><canvas class="icon" data-icon="logo" aria-hidden="true"></canvas></span>수학 실험실</div>
+  <div class="header-content"><div class="breadcrumb"><span>수학</span><span aria-hidden="true">›</span><strong>경우의 수</strong></div><div class="grade"><i aria-hidden="true"></i>중학교 2학년</div></div>
+</header>
+<div class="shell">
+  <aside>
+    <div><p class="nav-label">경우의 수</p><nav id="lesson-nav" aria-label="경우의 수 학습 단계"></nav></div>
+    <div class="side-bottom">
+      <div class="course-progress"><p>학습 진행률 <span id="course-count"></span></p><div class="track" id="course-progress" role="progressbar" aria-label="학습 진행률" aria-valuemin="0" aria-valuemax="4"><div id="course-fill" class="fill"></div></div></div>
+      <button class="notes" type="button" data-action="notes"><canvas class="icon" data-icon="book" aria-hidden="true"></canvas><span>개념 노트</span><span aria-hidden="true">›</span></button>
+    </div>
+  </aside>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy"><span class="hero-tag"><canvas class="icon" data-icon="spark" aria-hidden="true"></canvas><span id="hero-tag"></span></span><h1 id="hero-title" tabindex="-1"></h1><p id="hero-copy"></p></div>
+      <div class="hero-art" aria-hidden="true"><canvas id="hero-art"></canvas></div>
+    </section>
+    <div id="lesson"></div>
+    <button class="secondary mobile-notes" type="button" data-action="notes">개념 노트</button>
+  </main>
+</div>
+<dialog id="notes" aria-labelledby="notes-title">
+  <div class="dialog-top"><h2 id="notes-title">개념 노트</h2><form method="dialog"><button class="secondary" autofocus>닫기</button></form></div>
+  <dl>
+    <dt>곱의 법칙</dt><dd>선택이 여러 단계로 이어지고 앞에서 무엇을 골라도 다음 단계의 선택 수가 같으면, 단계별 경우의 수를 곱해요. 상의 3가지와 하의 2가지라면 3 × 2 = 6가지예요.</dd>
+    <dt>합의 법칙</dt><dd>두 종류의 경우가 서로 겹치지 않고 그중 하나만 고를 때, 종류별 경우의 수를 더해요. 버스 3개 노선 또는 지하철 2개 노선 중 하나를 고르면 3 + 2 = 5가지예요.</dd>
+    <dt>순서가 있는 경우</dt><dd>역할이나 자리가 다르면 같은 사람을 뽑아도 순서에 따라 다른 경우예요. 3명 중 회장과 부회장을 한 명씩 겸임 없이 뽑으면 3 × 2 = 6가지예요.</dd>
+  </dl>
+</dialog>
+<div id="announcer" class="sr-only" role="status" aria-live="polite"></div>
+<script>
+"use strict";
+
+const shirts = [
+  { name:"노란 셔츠", type:"shirt", color:"#ffcf69", ink:"#9a6427" },
+  { name:"분홍 셔츠", type:"shirt", color:"#ffa9be", ink:"#ad4c75" },
+  { name:"초록 셔츠", type:"shirt", color:"#8cdbc0", ink:"#318675" }
+];
+const pants = [
+  { name:"청바지", type:"pants", color:"#a4c2ff", ink:"#4e6cbe" },
+  { name:"검정 바지", type:"pants", color:"#a7a0bd", ink:"#57506d" }
+];
+const routes = [
+  { name:"버스 101", type:"bus", color:"#ffcb77", ink:"#956229" },
+  { name:"버스 202", type:"bus", color:"#ffcb77", ink:"#956229" },
+  { name:"버스 303", type:"bus", color:"#ffcb77", ink:"#956229" },
+  { name:"지하철 1호선", type:"train", color:"#a6c3ff", ink:"#4e6cbe" },
+  { name:"지하철 2호선", type:"train", color:"#a6c3ff", ink:"#4e6cbe" }
+];
+const students = [
+  { name:"지우", type:"person", color:"#ffca80", ink:"#926232" },
+  { name:"서윤", type:"person", color:"#ffa9be", ink:"#ad4c75" },
+  { name:"도현", type:"person", color:"#8cdbc0", ink:"#318675" }
+];
+const lessons = [
+  {
+    title:"곱의 법칙", icon:"multiply",
+    description:"상의 하나와 하의 하나를 고르면 옷차림은 모두 몇 가지일까요?<br>직접 조합을 만들고, 경우의 수를 세어 봐요.",
+    activity:"나만의 옷차림 만들기", instruction:"상의와 하의를 하나씩 골라 옷차림을 기록해 보세요.",
+    groups:[{label:"상의", items:shirts}, {label:"하의", items:pants}],
+    empty:"상의와 하의를 고르면 조합이 여기에 표시돼요.",
+    hint:"상의 하나를 고정한 채 하의만 바꿔 보세요.",
+    total:6, question:"옷차림의 경우의 수를 구하는 식은 무엇일까요?",
+    options:["3 + 2", "3 × 2", "3 × 3"], answer:1, explanation:"상의마다 하의가 2가지씩 있으므로 3 × 2 = 6가지예요."
+  },
+  {
+    title:"합의 법칙", icon:"plus",
+    description:"버스나 지하철 중 하나만 타고 갈 수 있어요.<br>가능한 노선을 하나씩 찾아 봐요.",
+    activity:"도서관 가는 길 찾기", instruction:"도서관까지 갈 수 있는 노선을 하나 골라 기록해 보세요.",
+    groups:[{label:"노선", items:routes}],
+    empty:"노선을 고르면 여기에 표시돼요.", hint:"버스와 지하철 노선이 겹치지 않으니 각각 세어 보세요.",
+    total:5, question:"버스나 지하철 노선 하나를 고르는 경우의 수를 구하는 식은 무엇일까요?",
+    options:["3 + 2", "3 × 2", "3 − 2"], answer:0, explanation:"버스와 지하철 노선은 서로 겹치지 않고 한 노선만 고르므로 3 + 2 = 5가지예요."
+  },
+  {
+    title:"순서가 있는 경우", icon:"order",
+    description:"같은 두 사람이라도 맡는 역할이 바뀌면 다른 경우예요.<br>회장과 부회장을 직접 정해 봐요.",
+    activity:"학급 임원 뽑기", instruction:"회장과 부회장에 서로 다른 사람을 한 명씩 골라 기록해 보세요.",
+    groups:[{label:"회장", items:students}, {label:"부회장", items:students}],
+    distinct:true, empty:"회장과 부회장을 고르면 여기에 표시돼요.",
+    hint:"한 사람이 두 역할을 맡을 수 없어요. 두 사람의 역할을 서로 바꿔 보세요.",
+    total:6, question:"회장과 부회장을 뽑는 경우의 수를 구하는 식은 무엇일까요?",
+    options:["3 + 2", "3 × 3", "3 × 2"], answer:2, explanation:"회장 후보는 3명이고 회장이 정해지면 부회장 후보는 2명이 남으므로 3 × 2 = 6가지예요."
+  },
+  {
+    title:"실력 확인", icon:"quiz",
+    description:"새로운 상황에서도 어떤 방법으로 세면 좋을지 생각해 봐요.<br>세 문제를 풀고 풀이를 확인해 보세요."
+  }
+];
+const questions = [
+  { text:"샌드위치 4종류와 음료 3종류 중 하나씩 고르는 방법은 몇 가지일까요?", options:[7, 9, 12, 16], answer:12, explanation:"각 샌드위치에 음료 3가지를 고를 수 있으므로 4 × 3 = 12가지예요." },
+  { text:"번호가 서로 다른 빨간 연필 5자루와 파란 연필 3자루 중 한 자루를 고르는 방법은 몇 가지일까요?", options:[2, 8, 15, 16], answer:8, explanation:"빨간 연필을 고르는 경우와 파란 연필을 고르는 경우가 겹치지 않으므로 5 + 3 = 8가지예요." },
+  { text:"4명 중 발표자와 기록 담당을 한 명씩, 서로 다른 사람으로 정하는 방법은 몇 가지일까요?", options:[4, 6, 12, 16], answer:12, explanation:"발표자 4명 중 한 명을 고르면 기록 담당 후보가 3명 남으므로 4 × 3 = 12가지예요." }
+];
+
+const freshActivity = (lesson) => ({ selected:lesson.groups.map(() => null), found:[], guess:null, message:"", tone:"" });
+const freshQuiz = () => ({ index:0, choice:null, answers:[] });
+const activities = lessons.slice(0, 3).map(freshActivity);
+let quiz = freshQuiz();
+let current = 0;
+let completed = new Set();
+try {
+  const saved = JSON.parse(localStorage.getItem("math-lab-counting-v1") || "null");
+  if (Array.isArray(saved)) completed = new Set(saved.filter((value) => Number.isInteger(value) && value >= 0 && value < lessons.length));
+} catch { /* Progress is kept in memory if browser storage is unavailable. */ }
+
+const nav = document.querySelector("#lesson-nav");
+const content = document.querySelector("#lesson");
+const notes = document.querySelector("#notes");
+const heroTitle = document.querySelector("#hero-title");
+
+function markComplete(index) {
+  completed.add(index);
+  try { localStorage.setItem("math-lab-counting-v1", JSON.stringify([...completed])); } catch { /* Keep progress for this session. */ }
+  updateNavigation();
+}
+
+function icon(name) {
+  return '<canvas class="icon" data-icon="' + name + '" aria-hidden="true"></canvas>';
+}
+
+function itemIcon(item) {
+  return '<canvas class="item-icon" data-item="' + item.type + '" data-color="' + item.color + '" data-ink="' + item.ink + '" aria-hidden="true"></canvas>';
+}
+
+function actionButton(action, label, style, disabled = false) {
+  return '<button type="button" class="' + style + '" data-action="' + action + '"' + (disabled ? " disabled" : "") + '>' + label + '</button>';
+}
+
+function updateNavigation() {
+  for (const button of nav.querySelectorAll("button")) {
+    const index = Number(button.dataset.index);
+    if (index === current) button.setAttribute("aria-current", "step");
+    else button.removeAttribute("aria-current");
+    button.querySelector(".nav-tail").innerHTML = completed.has(index) ? '✓<span class="sr-only"> 완료</span>' : "";
+  }
+  document.querySelector("#course-count").textContent = completed.size + " / 4";
+  document.querySelector("#course-progress").setAttribute("aria-valuenow", completed.size);
+  document.querySelector("#course-fill").style.width = completed.size * 25 + "%";
+}
+
+function openLesson(index, moveFocus = true) {
+  current = index;
+  const lesson = lessons[index];
+  document.querySelector("#hero-tag").textContent = index < 3 ? "탐구 0" + (index + 1) : "마무리";
+  heroTitle.textContent = lesson.title;
+  document.querySelector("#hero-copy").innerHTML = lesson.description;
+  updateNavigation();
+  renderContent();
+  paintHero();
+  if (moveFocus) {
+    heroTitle.focus({preventScroll:true});
+    window.scrollTo(0, 0);
+  }
+}
+
+function sectionHeading(title, symbol) {
+  return '<div class="section-heading">' + icon(symbol) + '<h2>' + title + '</h2></div>';
+}
+
+function renderContent(focus = null) {
+  content.innerHTML = current < 3 ? activityMarkup() : quizMarkup();
+  paintIcons(content);
+  if (focus) content.querySelector(focus)?.focus({preventScroll:true});
+}
+
+function activityMarkup() {
+  const lesson = lessons[current];
+  const state = activities[current];
+  const groups = lesson.groups.map((group, groupIndex) =>
+    '<fieldset><legend>' + group.label + ' 고르기</legend><div class="choice-list">' +
+    group.items.map((item, index) =>
+      '<button type="button" class="choice" data-action="choose" data-group="' + groupIndex + '" data-index="' + index +
+      '" aria-pressed="' + (state.selected[groupIndex] === index) + '">' + itemIcon(item) + '<span>' + item.name +
+      '</span><span class="choice-check" aria-hidden="true">✓</span></button>'
+    ).join("") + '</div></fieldset>'
+  ).join("");
+  const selected = state.selected.map((item, index) => item === null ? null : lesson.groups[index].items[item]);
+  const canRecord = selected.every(Boolean);
+  const selection = canRecord
+    ? selected.map((item, index) => itemIcon(item) + "<strong>" + (lesson.distinct ? lesson.groups[index].label + " " : "") + item.name + "</strong>").join('<span aria-hidden="true">+</span>')
+    : lesson.empty;
+  const correct = state.guess === lesson.answer;
+  const answerFeedback = correct
+    ? '<p class="feedback good">정답이에요! ' + lesson.explanation + '</p>'
+    : state.guess !== null ? '<p class="feedback error">선택을 모두 해야 하는지, 하나만 하면 되는지 살펴보고 다시 골라 보세요.</p>' : "";
+  const next = correct && state.found.length === lesson.total
+    ? actionButton("next-lesson", '다음 단계 <span aria-hidden="true">→</span>', "primary") : "";
+
+  return sectionHeading("직접 해 보기", "lab") +
+    '<div class="workspace"><section class="panel activity" aria-labelledby="activity-title"><h3 id="activity-title">' + lesson.activity + '</h3><p class="description">' + lesson.instruction +
+    '</p><div class="choice-area' + (lesson.groups.length === 1 ? ' single' : '') + '">' + groups +
+    '</div><div class="selection">' + selection + '</div><div class="actions">' +
+    actionButton("record", '<span aria-hidden="true">＋</span> ' + (current === 0 ? "조합 기록하기" : "기록하기"), "primary", !canRecord) +
+    actionButton("reset", "초기화", "secondary") + '</div>' +
+    (state.message ? '<p class="feedback ' + state.tone + '">' + state.message + '</p>' : "") +
+    '</section>' + recordMarkup(lesson, state) + '</div>' +
+    '<section class="panel reflect" aria-labelledby="reflect-title"><span class="reflect-icon">' + icon("bulb") + '</span><div class="reflect-copy">' +
+    '<h3 id="reflect-title">생각해 보기</h3><p class="description">' + lesson.question + '</p>' + answerFeedback +
+    '</div><div class="reflect-actions" role="group" aria-label="식 고르기">' +
+    lesson.options.map((option, index) => optionButton("guess", index, option, state.guess === index)).join("") +
+    '</div>' + next + '</section>';
+}
+
+function progressMarkup(count, total, label) {
+  return '<div class="track" role="progressbar" aria-label="' + label + '" aria-valuemin="0" aria-valuemax="' + total + '" aria-valuenow="' + count +
+    '"><div class="fill" style="width:' + (count / total * 100) + '%"></div></div>';
+}
+
+function recordMarkup(lesson, state) {
+  let entries;
+  if (lesson.groups.length === 1) {
+    entries = '<ul class="record-list" aria-label="노선 기록">' + lesson.groups[0].items.map((item, index) => {
+      const found = state.found.includes(String(index));
+      return '<li class="' + (found ? "filled" : "") + '">' + item.name +
+        (found ? ' <span aria-hidden="true">✓</span><span class="sr-only"> 기록됨</span>' : '<span class="sr-only"> 미기록</span>') + '</li>';
+    }).join("") + '</ul>';
+  } else {
+    const [rowGroup, columnGroup] = lesson.groups;
+    entries = '<table><caption class="sr-only">' + rowGroup.label + '과 ' + columnGroup.label +
+      ' 조합</caption><thead><tr><th scope="col"><span class="sr-only">' + rowGroup.label + ' / ' + columnGroup.label + '</span></th>' +
+      columnGroup.items.map((item) => '<th scope="col">' + item.name + '</th>').join("") + '</tr></thead><tbody>' +
+      rowGroup.items.map((item, row) => '<tr><th scope="row">' + item.name + '</th>' + columnGroup.items.map((column, col) => {
+        const unavailable = lesson.distinct && row === col;
+        const found = state.found.includes(row + "," + col);
+        const label = unavailable ? "선택 불가" : found ? "기록됨" : "미기록";
+        return '<td class="' + (unavailable ? "unavailable" : found ? "filled" : "") + '"><span aria-hidden="true">' +
+          (unavailable ? "×" : found ? "✓" : "·") + '</span><span class="sr-only">' + label + '</span></td>';
+      }).join("") + '</tr>').join("") + '</tbody></table>';
+  }
+  const count = state.found.length;
+  return '<section class="panel record" aria-labelledby="record-title"><div class="record-heading"><div><h3 id="record-title">기록판</h3>' +
+    '<p class="description">찾은 경우를 한눈에 확인해요.</p></div><span class="count">' + count + ' / ' + lesson.total + '가지</span></div>' +
+    progressMarkup(count, lesson.total, "찾은 경우") + entries +
+    '<p class="hint">' + icon("bulb") + '<span><strong>힌트</strong> · ' + lesson.hint + '</span></p></section>';
+}
+
+function optionButton(action, index, label, selected, disabled = false) {
+  return '<button type="button" class="option" data-action="' + action + '" data-index="' + index +
+    '" aria-pressed="' + selected + '"' + (disabled ? ' disabled' : '') + '>' + label + '</button>';
+}
+
+function quizMarkup() {
+  if (quiz.index === questions.length) {
+    const correct = questions.filter((question, index) => question.answer === quiz.answers[index]).length;
+    return sectionHeading("결과 확인", "quiz") +
+      '<section class="panel quiz"><div class="record-heading"><h3 id="quiz-result" tabindex="-1">' + questions.length + '문제 중 ' + correct + '문제 정답</h3><span class="count">' + correct + ' / ' + questions.length + '</span></div>' +
+      '<ol class="result-list">' + questions.map((question, index) =>
+        "<li><strong>" + (quiz.answers[index] === question.answer ? "정답" : "다시 보기") + "</strong> · 고른 답 " + quiz.answers[index] + "가지 · " + question.explanation + "</li>"
+      ).join("") + '</ol>' + actionButton("retry", "다시 풀기", "primary") + '</section>';
+  }
+  const question = questions[quiz.index];
+  const answered = quiz.answers.length > quiz.index;
+  const correct = quiz.answers[quiz.index] === question.answer;
+  const controls = answered
+    ? actionButton("quiz-next", (quiz.index + 1 === questions.length ? "결과 보기" : "다음 문제") + ' <span aria-hidden="true">→</span>', "primary")
+    : actionButton("quiz-check", "정답 확인", "primary", quiz.choice === null);
+  return sectionHeading("문제 풀기", "quiz") +
+    '<section class="panel quiz"><div class="record-heading"><p class="description">문제 ' + (quiz.index + 1) +
+    '</p><span class="count">' + (quiz.index + 1) + ' / ' + questions.length + '</span></div>' +
+    progressMarkup(quiz.answers.length, questions.length, "푼 문제") +
+    '<h3 id="quiz-question" tabindex="-1">' + question.text + '</h3><div class="quiz-options" role="group" aria-label="답 고르기">' +
+    question.options.map((option) => optionButton("quiz-choose", option, option + "가지", quiz.choice === option, answered)).join("") +
+    '</div>' + (answered ? '<p class="feedback ' + (correct ? "good" : "error") + '">' + quizFeedback(question) + '</p>' : "") +
+    '<div class="actions">' + controls + '</div></section>';
+}
+
+function quizFeedback(question) {
+  return (quiz.choice === question.answer ? "정답이에요! " : "정답은 " + question.answer + "가지예요. ") + question.explanation;
+}
+
+function announce(message) {
+  const region = document.querySelector("#announcer");
+  region.textContent = "";
+  window.clearTimeout(announce.timer);
+  announce.timer = window.setTimeout(() => { region.textContent = message; }, 30);
+}
+
+function checkActivityComplete(lesson, state) {
+  if (state.found.length === lesson.total && state.guess === lesson.answer) markComplete(current);
+}
+
+function recordCurrent() {
+  const state = activities[current];
+  const lesson = lessons[current];
+  if (state.selected.some((item) => item === null)) return;
+  const key = state.selected.join(",");
+  if (lesson.distinct && state.selected[0] === state.selected[1]) {
+    state.message = "회장과 부회장에 서로 다른 사람을 골라 보세요.";
+    state.tone = "error";
+  } else if (state.found.includes(key)) {
+    state.message = "이미 기록한 경우예요. 다른 선택을 해 보세요.";
+    state.tone = "error";
+  } else {
+    state.found.push(key);
+    state.message = state.found.length === lesson.total ? "모든 경우를 찾았어요!" : "기록했어요. 지금까지 찾은 경우는 " + state.found.length + "가지예요.";
+    state.tone = "good";
+    checkActivityComplete(lesson, state);
+  }
+  renderContent('[data-action="record"]');
+  announce(state.message);
+}
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("button[data-action]");
+  if (!button) return;
+  const action = button.dataset.action;
+  const index = Number(button.dataset.index);
+  const lesson = lessons[current];
+  const state = activities[current];
+
+  switch (action) {
+    case "navigate": openLesson(index); break;
+    case "notes": notes.showModal(); break;
+    case "choose": {
+      const group = Number(button.dataset.group);
+      state.selected[group] = state.selected[group] === index ? null : index;
+      state.message = "";
+      renderContent('[data-action="choose"][data-group="' + group + '"][data-index="' + index + '"]');
+      break;
+    }
+    case "record": recordCurrent(); break;
+    case "reset":
+      activities[current] = freshActivity(lesson);
+      renderContent('[data-action="reset"]');
+      announce("선택과 기록을 초기화했어요.");
+      break;
+    case "guess":
+      state.guess = index;
+      checkActivityComplete(lesson, state);
+      renderContent('[data-action="guess"][data-index="' + index + '"]');
+      announce(index === lesson.answer ? "정답이에요! " + lesson.explanation : "기록판을 살펴보고 다시 골라 보세요.");
+      break;
+    case "next-lesson": openLesson(current + 1); break;
+    case "quiz-choose":
+      quiz.choice = index;
+      renderContent('[data-action="quiz-choose"][data-index="' + index + '"]');
+      break;
+    case "quiz-check": {
+      if (quiz.choice === null || quiz.answers.length > quiz.index) break;
+      quiz.answers.push(quiz.choice);
+      const question = questions[quiz.index];
+      renderContent('[data-action="quiz-next"]');
+      announce(quizFeedback(question));
+      break;
+    }
+    case "quiz-next":
+      quiz.index += 1;
+      quiz.choice = null;
+      if (quiz.index === questions.length) markComplete(3);
+      renderContent(quiz.index === questions.length ? "#quiz-result" : "#quiz-question");
+      break;
+    case "retry":
+      quiz = freshQuiz();
+      renderContent("#quiz-question");
+      break;
+  }
+});
+
+function rounded(ctx, x, y, width, height, radius, fill, stroke) {
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, height, radius);
+  if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.stroke(); }
+}
+
+function drawPath(ctx, geometry, fill, stroke, width = 1.6) {
+  const path = new Path2D(geometry);
+  ctx.lineWidth = width;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  if (fill) { ctx.fillStyle = fill; ctx.fill(path); }
+  if (stroke) { ctx.strokeStyle = stroke; ctx.stroke(path); }
+}
+
+const iconPaths = {
+  multiply:"M7 7l10 10M17 7L7 17",
+  plus:"M12 5v14M5 12h14",
+  order:"M4 7h15m-4-4 4 4-4 4M20 17H5m4-4-4 4 4 4",
+  quiz:"M8 4H6a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 13l3 3 5-5",
+  book:"M12 6C9 3 5 3 3 4v14c3-1 6-1 9 2 3-3 6-3 9-2V4c-2-1-6-1-9 2v14",
+  bulb:"M9 18h6m-5 3h4m-2-18a6 6 0 0 0-4 10.4c.7.7 1 1.5 1 2.6h6c0-1 .3-1.9 1-2.6A6 6 0 0 0 12 3Z",
+  spark:"M12 2c0 6 4 10 10 10-6 0-10 4-10 10 0-6-4-10-10-10 6 0 10-4 10-10Z",
+  lab:"M9 3h6M10 3v7l-5.8 8.2A1.7 1.7 0 0 0 5.6 21h12.8a1.7 1.7 0 0 0 1.4-2.8L14 10V3M7 15h10"
+};
+const itemPaths = {
+  shirt:["M11 7l6-3c1.3 2 3 3 5 3s3.7-1 5-3l6 3 7 7-5 7-4-3v16H13V18l-4 3-5-7Z", "M16.8 4.4c.5 5 9.7 5 10.4 0M13 30h18"],
+  pants:["M12 5h20l3 30H24l-2-18-2 18H9Z", "M12 9h20M22 9v8M16 9c0 4-1 5-5 6m17-6c0 4 1 5 5 6"],
+  bus:["M10 7h24a4 4 0 0 1 4 4v19H6V11a4 4 0 0 1 4-4Z", "M9 12h26v10H9Zm13 0v10M9 26h4m18 0h4M10 30v4m24-4v4"],
+  train:["M12 5h20a4 4 0 0 1 4 4v18a4 4 0 0 1-4 4H12a4 4 0 0 1-4-4V9a4 4 0 0 1 4-4Z", "M12 11h20v10H12Zm4 14h1m10 0h1M15 31l-4 5m18-5 4 5M18 8h8"],
+  person:["M8 34v-3c0-6 5-10 14-10s14 4 14 10v3Z M30 13a8 8 0 1 1-16 0 8 8 0 0 1 16 0Z", "M17 23l5 5 5-5"]
+};
+
+function drawIcon(ctx, name, color = "#704bd8") {
+  if (name === "logo") {
+    [[3,3],[13,3],[3,13],[13,13]].forEach(([x,y], index) => rounded(ctx, x, y, 7, 7, 1.6, index === 3 ? "#c9b8ff" : "#fff"));
+    return;
+  }
+  drawPath(ctx, iconPaths[name], name === "spark" ? color : null, color, 1.75);
+  if (name === "quiz") rounded(ctx, 8, 2, 8, 5, 1.5, "#f9f6ff", color);
+}
+
+function drawItem(ctx, type, color, ink) {
+  const [outline, detail] = itemPaths[type];
+  drawPath(ctx, outline, color, ink, 1.5);
+  drawPath(ctx, detail, null, ink, 1.25);
+}
+
+function paintIcons(parent) {
+  for (const canvas of parent.querySelectorAll("canvas[data-icon], canvas[data-item]")) {
+    const isItem = Boolean(canvas.dataset.item);
+    const dimension = isItem ? 44 : 24;
+    canvas.width = dimension * 3;
+    canvas.height = dimension * 3;
+    const ctx = canvas.getContext("2d");
+    ctx.scale(3, 3);
+    if (isItem) {
+      ctx.translate(0, 2);
+      drawItem(ctx, canvas.dataset.item, canvas.dataset.color, canvas.dataset.ink);
+    } else {
+      drawIcon(ctx, canvas.dataset.icon);
+    }
+  }
+}
+
+function heroCard(ctx, x, y, angle, item, count, label) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(angle);
+  ctx.shadowColor = "#7956bf3b";
+  ctx.shadowBlur = 20;
+  ctx.shadowOffsetY = 7;
+  ctx.lineWidth = 1;
+  rounded(ctx, -43, -52, 86, 104, 14, "#ffffff", "#eee5ff");
+  ctx.shadowColor = "transparent";
+  rounded(ctx, -34, -43, 68, 64, 10, "#f5f0ff");
+  ctx.save();
+  ctx.translate(-25, -36);
+  ctx.scale(1.14, 1.14);
+  if (item) drawItem(ctx, item.type, item.color, item.ink);
+  else {
+    ctx.translate(8, 7);
+    ctx.scale(1.2, 1.2);
+    drawIcon(ctx, "quiz");
+  }
+  ctx.restore();
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillStyle = "#584080";
+  ctx.font = 'bold 12px "Malgun Gothic", sans-serif';
+  ctx.fillText(label, 0, 36);
+  if (count) {
+    rounded(ctx, 25, -59, 24, 24, 12, "#805ae5", "#fff");
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 13px system-ui";
+    ctx.fillText(count, 37, -47);
+  }
+  ctx.restore();
+}
+
+function paintHero() {
+  const canvas = document.querySelector("#hero-art");
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  if (!width || !height) return;
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 3);
+  canvas.width = Math.round(width * pixelRatio);
+  canvas.height = Math.round(height * pixelRatio);
+  const ctx = canvas.getContext("2d");
+  ctx.scale(pixelRatio, pixelRatio);
+  const scale = Math.min(width / 380, height / 205);
+  ctx.translate((width - 380 * scale) / 2, (height - 205 * scale) / 2);
+  ctx.scale(scale, scale);
+  ctx.fillStyle = "#ffffff69";
+  ctx.beginPath();
+  ctx.ellipse(191, 104, 139, 70, -.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.setLineDash([4, 5]);
+  drawPath(ctx, "M26 134C70 9 285 24 351 62M53 160c94 31 226 13 287-62", null, "#aa8aec", 1.2);
+  ctx.setLineDash([]);
+  [[60,47,1],[308,41,.8],[336,131,.72],[47,155,.55],[289,168,.53]].forEach(([x,y,size]) => {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(size, size);
+    drawIcon(ctx, "spark", "#ad8bed");
+    ctx.restore();
+  });
+  const [left, right, leftCount, rightCount, leftLabel, rightLabel, operator] = [
+    [shirts[0], pants[0], "3", "2", "상의", "하의", "×"],
+    [routes[0], routes[3], "3", "2", "버스", "지하철", "+"],
+    [students[0], students[1], null, null, "회장", "부회장", "→"],
+    [null, null, null, null, "문제", "풀이", "→"]
+  ][current];
+  heroCard(ctx, 132, 107, -.14, left, leftCount, leftLabel);
+  heroCard(ctx, 259, 99, .14, right, rightCount, rightLabel);
+  rounded(ctx, 174, 85, 42, 42, 21, "#8a65ec", "#fff9ff");
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.font = "bold 26px system-ui";
+  ctx.fillStyle = "#fff";
+  ctx.fillText(operator, 195, 104);
+}
+
+nav.innerHTML = lessons.map((lesson, index) =>
+  '<button class="nav-button" type="button" data-action="navigate" data-index="' + index + '"><span class="nav-icon">' +
+  icon(lesson.icon) + '</span><span>' + lesson.title + '</span><span class="nav-tail"></span></button>'
+).join("");
+paintIcons(document);
+openLesson(0, false);
+window.addEventListener("resize", paintHero);
+</script>
+</body>
+</html>

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>우리 몸의 소화 기관 복습 게임</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo",sans-serif;background:linear-gradient(#fff4d6,#ffe0e0);min-height:100vh;color:#333}
+#app{max-width:960px;margin:0 auto;padding:14px}
+h1{text-align:center;margin:8px 0;color:#d6504a;font-size:28px}
+.sub{text-align:center;margin:0 0 14px;color:#777}
+.card{background:#fff;border-radius:18px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.12)}
+.menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+button{font-family:inherit;cursor:pointer;border:none}
+.big{background:#ff8a65;color:#fff;font-size:18px;padding:18px 12px;border-radius:14px;font-weight:bold;box-shadow:0 4px 0 #d9603b}
+.big:hover{filter:brightness(1.07)}.big:active{transform:translateY(3px);box-shadow:0 1px 0 #d9603b}
+.big small{display:block;font-weight:normal;font-size:13px;margin-top:6px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px}
+.pill{background:#fff3cf;border-radius:20px;padding:4px 12px;font-weight:bold}
+.back{background:#eee;padding:6px 14px;border-radius:10px}
+.layout{display:flex;gap:14px;flex-wrap:wrap}
+.diagram{flex:0 0 300px;max-width:100%;margin:0 auto}
+.panel{flex:1;min-width:260px}
+svg{width:100%;height:auto;display:block}
+.organ{cursor:pointer;transition:filter .15s}
+.organ:hover{filter:brightness(1.12) drop-shadow(0 0 4px #fff)}
+.organ.sel{filter:drop-shadow(0 0 5px #2979ff)}
+.organ.good{filter:drop-shadow(0 0 6px #00c853)}
+.organ.bad{filter:drop-shadow(0 0 6px #d50000)}
+.lbl{font-size:11px;font-weight:bold;fill:#444;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:3px}
+.q{font-size:20px;font-weight:bold;line-height:1.5;margin:6px 0 14px}
+.choices{display:grid;gap:10px}
+.choice{background:#e8f1ff;font-size:17px;padding:13px;border-radius:12px;text-align:left;border:2px solid transparent}
+.choice:hover:not(:disabled){border-color:#2979ff}
+.choice.right{background:#b9f6ca}.choice.wrong{background:#ffcdd2}
+.fb{min-height:60px;margin-top:12px;padding:10px 12px;border-radius:12px;background:#f6f6f6;line-height:1.5}
+.next{background:#4caf50;color:#fff;padding:10px 24px;border-radius:12px;font-size:17px;margin-top:10px;font-weight:bold}
+.info h2{margin:0 0 6px;color:#d6504a}
+.info p{margin:5px 0;line-height:1.55}
+.seq{display:flex;flex-wrap:wrap;gap:8px;min-height:52px;padding:10px;background:#f1f8e9;border-radius:12px;margin:10px 0;align-items:center}
+.chip{background:#fff;border:2px solid #8bc34a;border-radius:20px;padding:6px 14px;font-weight:bold}
+.pool{display:flex;flex-wrap:wrap;gap:10px}
+.pool button{background:#ffe082;padding:12px 18px;border-radius:12px;font-size:17px;font-weight:bold}
+.pool button:disabled{opacity:.3}
+.result{text-align:center}
+.stars{font-size:48px;margin:6px}
+.hearts{letter-spacing:2px}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pop{animation:pop .4s}
+@keyframes pop{50%{transform:scale(1.06)}}
+</style>
+</head>
+<body>
+<div id="app">
+  <h1>🍎 소화 기관 탐험대 🍎</h1>
+  <p class="sub">초등 6학년 과학 · 우리 몸의 소화 기관 복습 게임</p>
+  <div id="screen"></div>
+</div>
+
+<script>
+/* ---------- 데이터 ---------- */
+const ORGANS = {
+  mouth:{name:"입",color:"#ff8a80",hint:"음식물을 이로 잘게 부수고, 침과 섞는 곳이에요.",
+    info:["이로 음식물을 잘게 부수고 혀로 섞어요.","침 속의 아밀레이스가 녹말을 다른 물질로 분해해요."]},
+  esoph:{name:"식도",color:"#f4a261",hint:"입과 위를 이어 주는 긴 관이에요. 근육이 오므라들었다 펴졌다 하며 음식물을 아래로 밀어 내려요.",
+    info:["입에서 위까지 음식물이 이동하는 통로예요.","식도 근육이 움직여(연동 운동) 음식물을 밀어 내려요. 거꾸로 서서 먹어도 음식물이 내려가요!"]},
+  stomach:{name:"위",color:"#e57373",hint:"주머니 모양이에요. 위액으로 음식물을 죽처럼 만들고 단백질을 분해해요.",
+    info:["주머니처럼 생긴 기관이에요.","위액(펩신, 염산)이 나와 단백질을 분해하고, 음식물을 죽처럼 만들어요."]},
+  liver:{name:"간",color:"#8d4b3a",hint:"우리 몸에서 가장 큰 기관 중 하나예요. 쓸개즙을 만들어요.",
+    info:["쓸개즙을 만들어요. 쓸개즙은 지방이 잘 분해되도록 도와줘요.","쓸개즙에는 소화 효소가 없어요."]},
+  gall:{name:"쓸개",color:"#43a047",hint:"간이 만든 쓸개즙을 저장했다가 작은창자로 내보내요.",
+    info:["간에서 만든 쓸개즙을 저장해요.","필요할 때 작은창자(십이지장)로 쓸개즙을 보내요."]},
+  pancreas:{name:"이자",color:"#ffd54f",hint:"3대 영양소를 모두 분해하는 이자액을 만들어 작은창자로 보내요.",
+    info:["이자액을 만들어 작은창자로 보내요.","이자액에는 탄수화물, 단백질, 지방을 분해하는 소화 효소가 모두 들어 있어요."]},
+  small:{name:"작은창자",color:"#f48fb1",hint:"길이가 약 6~7 m나 되고, 영양소를 가장 많이 흡수하는 곳이에요.",
+    info:["길이가 약 6~7 m로 아주 길어요.","소화액으로 영양소를 최종 분해하고, 분해된 영양소를 흡수해요.","안쪽 벽의 융털이 표면적을 넓혀 영양소를 잘 흡수해요."]},
+  large:{name:"큰창자",color:"#ba68c8",hint:"작은창자를 둘러싼 굵고 짧은 창자예요. 물을 흡수해요.",
+    info:["작은창자보다 굵고 짧아요(약 1.5 m).","남은 찌꺼기에서 주로 물을 흡수해 똥을 만들어요."]},
+  anus:{name:"항문",color:"#795548",hint:"소화되지 않은 찌꺼기(똥)를 몸 밖으로 내보내는 곳이에요.",
+    info:["소화되고 남은 찌꺼기를 똥으로 몸 밖에 내보내는 곳이에요."]}
+};
+const ORDER = ["mouth","esoph","stomach","small","large","anus"];
+
+// [문제, 정답, 오답들..., 해설]
+const QUIZ = [
+ ["음식물이 소화되는 동안 거치는 기관의 순서로 알맞은 것은?","입 → 식도 → 위 → 작은창자 → 큰창자 → 항문","입 → 위 → 식도 → 작은창자 → 큰창자 → 항문","입 → 식도 → 작은창자 → 위 → 큰창자 → 항문","입 → 식도 → 위 → 큰창자 → 작은창자 → 항문","음식물은 입 → 식도 → 위 → 작은창자 → 큰창자 → 항문 순서로 이동해요."],
+ ["소화란 무엇일까요?","음식물을 몸에 흡수될 수 있는 작은 영양소로 잘게 분해하는 과정","음식물을 입으로 먹는 과정","영양소를 온몸으로 운반하는 과정","찌꺼기를 몸 밖으로 내보내는 과정","소화는 음식물을 흡수할 수 있을 만큼 작게 분해하는 과정이에요."],
+ ["입에서 침 속의 아밀레이스가 분해하는 영양소는?","녹말","단백질","지방","물","침 속 아밀레이스는 녹말을 분해해요. 밥을 오래 씹으면 단맛이 나요!"],
+ ["식도에서 일어나는 일로 알맞은 것은?","근육이 움직여 음식물을 위로 밀어 내려보낸다","소화액으로 단백질을 분해한다","영양소를 가장 많이 흡수한다","물을 흡수한다","식도는 소화액이 나오지 않고, 근육 운동으로 음식물을 밀어 내려요."],
+ ["위액에 들어 있어 단백질을 분해하는 물질은?","펩신","아밀레이스","쓸개즙","융털","위액 속의 펩신이 단백질을 분해해요."],
+ ["주머니 모양이고 음식물을 죽처럼 만드는 기관은?","위","식도","큰창자","쓸개","위는 주머니 모양이며 위액으로 음식물을 죽처럼 만들어요."],
+ ["영양소를 가장 많이 흡수하는 기관은?","작은창자","큰창자","위","식도","작은창자에서 대부분의 영양소가 흡수돼요."],
+ ["작은창자의 길이는 약 얼마일까요?","약 6~7 m","약 30 cm","약 1 m","약 20 m","작은창자는 약 6~7 m로 아주 길어요."],
+ ["작은창자 안쪽 벽에 있는 융털의 역할은?","표면적을 넓혀 영양소를 잘 흡수하게 한다","음식물을 잘게 부순다","쓸개즙을 만든다","똥을 만든다","융털 때문에 안쪽 표면적이 매우 넓어져 영양소를 잘 흡수해요."],
+ ["큰창자에서 주로 흡수하는 것은?","물","녹말","지방","단백질","큰창자는 남은 찌꺼기에서 주로 물을 흡수해요."],
+ ["소화되고 남은 찌꺼기가 몸 밖으로 나가는 곳은?","항문","식도","쓸개","이자","남은 찌꺼기는 항문을 통해 똥으로 나가요."],
+ ["쓸개즙을 만드는 기관은?","간","쓸개","이자","위","쓸개즙은 간에서 만들어요. 쓸개는 저장만 해요."],
+ ["간에서 만든 쓸개즙을 저장하는 기관은?","쓸개","이자","위","큰창자","쓸개는 쓸개즙을 저장했다가 작은창자로 보내요."],
+ ["쓸개즙이 도와주는 영양소의 소화는?","지방","녹말","단백질","비타민","쓸개즙은 지방이 잘 분해되도록 도와줘요. 쓸개즙에는 소화 효소는 없어요."],
+ ["탄수화물, 단백질, 지방을 모두 분해하는 소화액을 만드는 기관은?","이자","쓸개","식도","큰창자","이자액에는 3대 영양소를 분해하는 소화 효소가 모두 들어 있어요."],
+ ["다음 중 음식물이 직접 지나가지 않는 기관은?","간","위","작은창자","식도","간·쓸개·이자는 음식물이 지나가지 않고, 소화를 돕는 액을 만들거나 저장해요."],
+ ["다음 중 음식물이 직접 지나가는 기관이 아닌 것은?","이자","큰창자","입","위","이자는 이자액을 만들어 작은창자로 보내요. 음식물이 지나가지는 않아요."],
+ ["밥을 오래 씹으면 단맛이 나는 까닭은?","침 속의 아밀레이스가 녹말을 분해하기 때문","위액이 단백질을 분해하기 때문","쓸개즙이 지방을 분해하기 때문","밥에 설탕이 들어 있기 때문","녹말이 아밀레이스에 의해 분해되어 단맛이 나는 물질로 변해요."],
+ ["소화 효소의 설명으로 알맞은 것은?","음식물을 분해하는 일을 돕는 물질","음식물을 몸 밖으로 내보내는 물질","영양소를 운반하는 물질","음식물을 부수는 이","소화 효소는 영양소를 잘게 분해하는 일을 해요."],
+ ["영양소를 흡수한 뒤 이것을 온몸으로 운반하는 것은?","혈액(피)","침","위액","쓸개즙","흡수된 영양소는 혈액을 통해 온몸으로 운반돼요."],
+ ["큰창자의 특징으로 알맞은 것은?","작은창자보다 굵고 짧다","작은창자보다 가늘고 길다","주머니 모양이다","소화 효소가 가장 많이 나온다","큰창자는 작은창자보다 굵지만 길이는 짧아요(약 1.5 m)."],
+ ["위에서 일어나는 일로 알맞은 것은?","위액으로 단백질을 분해하고 음식물을 죽처럼 만든다","녹말을 분해한다","영양소를 가장 많이 흡수한다","쓸개즙을 만든다","위액(펩신, 염산)은 단백질을 분해해요."],
+ ["소화 기관 중 가장 길이가 긴 것은?","작은창자","큰창자","식도","위","작은창자가 약 6~7 m로 가장 길어요."],
+ ["음식물을 먹을 때 가장 먼저 소화가 시작되는 곳은?","입","위","작은창자","식도","입에서 이로 부수고 침으로 녹말 소화가 시작돼요."]
+];
+
+/* ---------- 유틸 ---------- */
+const $ = s => document.querySelector(s);
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];} return a; };
+let ac;
+function beep(ok){
+  try{
+    ac = ac || new (window.AudioContext||window.webkitAudioContext)();
+    const notes = ok ? [660,880] : [220,160];
+    notes.forEach((f,i)=>{
+      const o=ac.createOscillator(), g=ac.createGain();
+      o.type= ok?"sine":"square"; o.frequency.value=f;
+      g.gain.setValueAtTime(.12,ac.currentTime+i*.12);
+      g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+i*.12+.2);
+      o.connect(g); g.connect(ac.destination);
+      o.start(ac.currentTime+i*.12); o.stop(ac.currentTime+i*.12+.2);
+    });
+  }catch(e){}
+}
+const best = JSON.parse(localStorage.getItem("digBest")||"{}");
+function saveBest(mode,score){ if(score>(best[mode]||0)){best[mode]=score;try{localStorage.setItem("digBest",JSON.stringify(best));}catch(e){}} }
+
+/* ---------- 몸 그림(SVG) ---------- */
+function diagram(){
+  const O=(id,inner,lx,ly)=>`<g class="organ" data-id="${id}">${inner}<text class="lbl" x="${lx}" y="${ly}" text-anchor="middle" data-lbl="${id}"></text></g>`;
+  const c=id=>ORGANS[id].color;
+  return `<svg viewBox="0 0 300 430" role="img" aria-label="소화 기관 그림">
+  <path d="M110 8 Q150 -4 190 8 L196 70 Q250 80 262 130 L268 300 Q262 380 200 410 L100 410 Q38 380 32 300 L38 130 Q50 80 104 70 Z" fill="#ffe9d6" stroke="#e0b99a" stroke-width="3"/>
+  ${O("liver",`<path d="M70 150 Q70 118 115 122 Q150 126 150 150 Q140 180 105 178 Q70 176 70 150Z" fill="${c("liver")}"/>`,100,153)}
+  ${O("stomach",`<path d="M150 128 Q205 120 215 160 Q222 205 180 205 Q150 205 158 178 Q160 150 150 128Z" fill="${c("stomach")}"/>`,190,168)}
+  ${O("gall",`<ellipse cx="143" cy="190" rx="9" ry="13" fill="${c("gall")}"/>`,120,205)}
+  ${O("pancreas",`<path d="M100 224 Q150 208 215 222 Q150 238 100 224Z" fill="${c("pancreas")}"/>`,160,228)}
+  ${O("large",`<path d="M212 335 L212 252 L88 252 L88 335 L125 365 L150 385" fill="none" stroke="${c("large")}" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>`,60,300)}
+  ${O("small",`<path d="M112 272 H190 Q196 280 190 288 H112 Q106 296 112 304 H190 Q196 312 190 320 H112 Q106 328 112 336 H188" fill="none" stroke="${c("small")}" stroke-width="13" stroke-linecap="round"/>`,150,350)}
+  ${O("anus",`<circle cx="150" cy="397" r="11" fill="${c("anus")}"/>`,150,424)}
+  ${O("esoph",`<path d="M150 42 V132" stroke="${c("esoph")}" stroke-width="12" stroke-linecap="round" fill="none"/>`,178,95)}
+  ${O("mouth",`<ellipse cx="150" cy="28" rx="26" ry="14" fill="${c("mouth")}"/><path d="M135 28 Q150 38 165 28" stroke="#fff" stroke-width="3" fill="none"/>`,150,56)}
+  </svg>`;
+}
+function showLabels(on){ document.querySelectorAll("[data-lbl]").forEach(t=>t.textContent= on?ORGANS[t.dataset.lbl].name:""); }
+function bindOrgans(fn){ document.querySelectorAll(".organ").forEach(g=>g.addEventListener("click",()=>fn(g.dataset.id,g))); }
+
+/* ---------- 화면: 메뉴 ---------- */
+function home(){
+  $("#screen").innerHTML=`<div class="card">
+   <div class="menu">
+    <button class="big" id="m1">📖 알아보기<small>그림의 기관을 눌러 하는 일을 공부해요</small></button>
+    <button class="big" id="m2">🎯 기관 찾기<small>설명을 보고 알맞은 기관을 눌러요 (최고 ${best.find||0}점)</small></button>
+    <button class="big" id="m3">❓ 퀴즈 도전<small>10문제! 하트 3개가 모두 사라지면 끝 (최고 ${best.quiz||0}점)</small></button>
+    <button class="big" id="m4">🍙 음식물 여행<small>음식물이 지나가는 순서를 맞혀요 (최고 ${best.route||0}점)</small></button>
+   </div></div>`;
+  $("#m1").onclick=study; $("#m2").onclick=find; $("#m3").onclick=quiz; $("#m4").onclick=route;
+}
+const topbar=(extra="")=>`<div class="top"><button class="back" id="bk">← 처음으로</button>${extra}</div>`;
+const hook=()=>{$("#bk").onclick=home;};
+
+/* ---------- 1. 알아보기 ---------- */
+function study(){
+  $("#screen").innerHTML=`<div class="card">${topbar()}
+   <div class="layout"><div class="diagram">${diagram()}</div>
+   <div class="panel info" id="info"><h2>기관을 눌러 보세요!</h2><p>그림에서 궁금한 소화 기관을 누르면 하는 일을 알려 줘요.</p>
+   <p>💡 <b>음식물이 지나가는 길</b>: 입 → 식도 → 위 → 작은창자 → 큰창자 → 항문</p>
+   <p>💡 <b>음식물이 지나가지 않는 기관</b>: 간, 쓸개, 이자 (소화를 도와요)</p></div></div></div>`;
+  hook(); showLabels(true);
+  bindOrgans((id,g)=>{
+    document.querySelectorAll(".organ").forEach(x=>x.classList.remove("sel")); g.classList.add("sel");
+    const o=ORGANS[id];
+    $("#info").innerHTML=`<h2>${o.name}</h2>${o.info.map(t=>`<p>✔ ${t}</p>`).join("")}`;
+    $("#info").classList.remove("pop"); void $("#info").offsetWidth; $("#info").classList.add("pop");
+  });
+}
+
+/* ---------- 2. 기관 찾기 ---------- */
+function find(){
+  const qs=shuffle(Object.keys(ORGANS)); let i=0,score=0,lives=3,locked=false;
+  $("#screen").innerHTML=`<div class="card">${topbar(`<span class="pill hearts" id="hh"></span><span class="pill" id="sc"></span><span class="pill" id="pg"></span>`)}
+   <div class="layout"><div class="diagram">${diagram()}</div>
+   <div class="panel"><div class="q" id="q"></div><div class="fb" id="fb">그림에서 알맞은 기관을 눌러요.</div><div id="nx"></div></div></div></div>`;
+  hook(); showLabels(false);
+  const upd=()=>{ $("#hh").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives); $("#sc").textContent="점수 "+score; $("#pg").textContent=`${i+1}/${qs.length}`; };
+  const ask=()=>{ locked=false; upd(); $("#q").textContent="🔎 "+ORGANS[qs[i]].hint; $("#nx").innerHTML=""; $("#fb").textContent="그림에서 알맞은 기관을 눌러요.";
+    document.querySelectorAll(".organ").forEach(x=>x.classList.remove("good","bad")); showLabels(false); };
+  const next=()=>{ i++; if(i>=qs.length||lives<=0) return end(); ask(); };
+  const end=()=>{ saveBest("find",score); finish("기관 찾기",score,qs.length*10,find); };
+  bindOrgans((id,g)=>{
+    if(locked) return; locked=true;
+    const ans=qs[i];
+    if(id===ans){ score+=10; g.classList.add("good"); beep(true); $("#fb").innerHTML=`⭕ 정답! <b>${ORGANS[ans].name}</b> — ${ORGANS[ans].info[0]}`; }
+    else { lives--; g.classList.add("bad"); beep(false); document.querySelector(`[data-id="${ans}"]`).classList.add("good");
+      $("#fb").innerHTML=`❌ 아쉬워요. 정답은 <b>${ORGANS[ans].name}</b>이에요. ${ORGANS[ans].info[0]}`; }
+    showLabels(true); upd();
+    $("#nx").innerHTML=`<button class="next" id="nb">${(i+1>=qs.length||lives<=0)?"결과 보기":"다음 문제 ▶"}</button>`; $("#nb").onclick=next;
+  });
+  ask();
+}
+
+/* ---------- 3. 퀴즈 ---------- */
+function quiz(){
+  const qs=shuffle(QUIZ).slice(0,10); let i=0,score=0,lives=3,streak=0,locked=false;
+  $("#screen").innerHTML=`<div class="card">${topbar(`<span class="pill hearts" id="hh"></span><span class="pill" id="sc"></span><span class="pill" id="pg"></span><span class="pill" id="st"></span>`)}
+   <div id="qa"></div></div>`;
+  hook();
+  const show=()=>{
+    locked=false; const [q,ans,...rest]=qs[i]; const exp=rest.pop();
+    const ch=shuffle([ans,...rest]);
+    $("#hh").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives); $("#sc").textContent="점수 "+score; $("#pg").textContent=`${i+1}/${qs.length}`; $("#st").textContent=streak>1?`🔥 ${streak}연속`:"";
+    $("#qa").innerHTML=`<div class="q">Q${i+1}. ${q}</div><div class="choices">${ch.map((c,k)=>`<button class="choice" data-k="${k}">${["①","②","③","④"][k]} ${c}</button>`).join("")}</div><div class="fb" id="fb"></div><div id="nx"></div>`;
+    document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{
+      if(locked) return; locked=true;
+      const ok=ch[b.dataset.k]===ans;
+      document.querySelectorAll(".choice").forEach(x=>{x.disabled=true; if(ch[x.dataset.k]===ans) x.classList.add("right");});
+      if(ok){ streak++; score+=10+(streak>2?5:0); beep(true); $("#fb").innerHTML=`⭕ 정답! ${exp}`; }
+      else { streak=0; lives--; b.classList.add("wrong"); b.classList.add("shake"); beep(false); $("#fb").innerHTML=`❌ 아쉬워요. ${exp}`; }
+      $("#hh").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives); $("#sc").textContent="점수 "+score; $("#st").textContent=streak>1?`🔥 ${streak}연속`:"";
+      const last=i+1>=qs.length||lives<=0;
+      $("#nx").innerHTML=`<button class="next" id="nb">${last?"결과 보기":"다음 문제 ▶"}</button>`;
+      $("#nb").onclick=()=>{ i++; if(last){ saveBest("quiz",score); finish("퀴즈 도전",score,qs.length*10+Math.max(0,qs.length-2)*5,quiz); } else show(); };
+    });
+  };
+  show();
+}
+
+/* ---------- 4. 음식물 여행 ---------- */
+function route(){
+  let round=0,score=0,picked=[],locked=false; const ROUNDS=3;
+  const foods=["🍙 밥","🍪 과자","🥩 고기"];
+  const draw=()=>{
+    picked=[]; locked=false;
+    const pool=shuffle(ORDER);
+    $("#screen").innerHTML=`<div class="card">${topbar(`<span class="pill" id="sc">점수 ${score}</span><span class="pill">${round+1}/${ROUNDS} 번째 여행</span>`)}
+     <div class="q">${foods[round]}이(가) 몸속을 지나가는 순서대로 기관을 눌러 보세요!</div>
+     <div class="seq" id="seq"><span style="color:#999">여기에 순서대로 쌓여요</span></div>
+     <div class="pool" id="pool">${pool.map(id=>`<button data-id="${id}">${ORGANS[id].name}</button>`).join("")}</div>
+     <div class="fb" id="fb">첫 번째로 지나가는 곳은 어디일까요?</div><div id="nx"></div></div>`;
+    hook();
+    document.querySelectorAll("#pool button").forEach(b=>b.onclick=()=>{
+      if(locked) return;
+      const id=b.dataset.id, want=ORDER[picked.length];
+      if(id===want){
+        picked.push(id); b.disabled=true; beep(true); score+=5;
+        $("#seq").innerHTML=picked.map(p=>`<span class="chip">${ORGANS[p].name}</span>`).join(" → ");
+        $("#sc").textContent="점수 "+score;
+        if(picked.length===ORDER.length){
+          locked=true; score+=10; $("#sc").textContent="점수 "+score;
+          $("#fb").innerHTML=`🎉 완성! 입 → 식도 → 위 → 작은창자 → 큰창자 → 항문`;
+          const last=round+1>=ROUNDS;
+          $("#nx").innerHTML=`<button class="next" id="nb">${last?"결과 보기":"다음 여행 ▶"}</button>`;
+          $("#nb").onclick=()=>{ round++; if(last){ saveBest("route",score); finish("음식물 여행",score,ROUNDS*40,route);} else draw(); };
+        } else $("#fb").textContent=`맞아요! ${ORGANS[id].name} 다음에는 어디로 갈까요?`;
+      } else {
+        beep(false); score=Math.max(0,score-2); $("#sc").textContent="점수 "+score; b.classList.add("shake");
+        setTimeout(()=>b.classList.remove("shake"),400);
+        $("#fb").textContent=`앗, ${ORGANS[id].name}은(는) 아직이에요! 힌트: ${picked.length?ORGANS[picked.at(-1)].name+" 다음 기관을 생각해 봐요.":"음식물을 가장 먼저 먹는 곳이에요."}`;
+      }
+    });
+  };
+  draw();
+}
+
+/* ---------- 결과 ---------- */
+function finish(title,score,max,again){
+  const r=max?score/max:0, n=r>=.85?3:r>=.55?2:r>=.25?1:0;
+  const msg=["다시 도전해 볼까요? 알아보기에서 복습하고 오면 더 잘할 수 있어요!","좋아요! 조금만 더 연습해 봐요.","잘했어요! 소화 기관 박사에 가까워요!","완벽해요! 소화 기관 박사님! 🎓"][n];
+  $("#screen").innerHTML=`<div class="card result"><h2>${title} 결과</h2>
+   <div class="stars">${"⭐".repeat(n)}${"☆".repeat(3-n)}</div>
+   <p style="font-size:24px;font-weight:bold">${score}점 <span style="font-size:15px;color:#888">(최고 ${best[{ "기관 찾기":"find","퀴즈 도전":"quiz","음식물 여행":"route"}[title]]||0}점)</span></p>
+   <p>${msg}</p>
+   <div class="menu" style="max-width:520px;margin:14px auto 0">
+    <button class="big" id="ag">🔁 다시 하기</button><button class="big" id="hm" style="background:#7986cb;box-shadow:0 4px 0 #4f5aa0">🏠 처음으로</button></div></div>`;
+  $("#ag").onclick=again; $("#hm").onclick=home;
+  if(n>=2) beep(true);
+}
+
+home();
+</script>
+</body>
+</html>

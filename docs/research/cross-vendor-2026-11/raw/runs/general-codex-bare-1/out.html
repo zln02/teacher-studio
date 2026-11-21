@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>우리동네 배드민턴 · 월례 대회</title>
+<style>
+:root { --ink:#18372e; --muted:#54655d; --paper:#f5f5ee; --white:#fffefa; --line:#dce2d9; --green:#173b30; --dark:#112e26; --mint:#dceade; --orange:#f7bd72; --orange-dark:#75440f; --radius:18px; }
+*,*::before,*::after { box-sizing:border-box; }
+[hidden] { display:none !important; }
+body { margin:0; color:var(--ink); background:var(--paper); font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif; font-size:14px; line-height:1.5; }
+button,input,textarea,select { font:inherit; }
+button { cursor:pointer; }
+button:disabled { cursor:default; opacity:.46; }
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible, [tabindex]:focus-visible { outline:3px solid #b96a17; outline-offset:3px; }
+button, input, textarea, select { -webkit-tap-highlight-color:transparent; }
+h1,h2,h3,p { margin:0; }
+.wrap { width:min(1320px,100% - 64px); margin-inline:auto; }
+.masthead { background:var(--dark); color:#fffefa; }
+.mast-inner { height:72px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.brand { display:flex; gap:12px; align-items:center; font-size:17px; font-weight:800; letter-spacing:-.04em; }
+.brand-mark { width:38px; height:38px; border-radius:12px; display:grid; place-items:center; background:var(--orange); color:var(--dark); flex:none; }
+.shuttle { display:block; position:relative; width:24px; height:24px; transform:rotate(-42deg); }
+.shuttle::before { content:""; position:absolute; left:3px; top:3px; width:18px; height:13px; background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 5px); border-block:2px solid; clip-path:polygon(0 0,100% 0,75% 100%,25% 100%); }
+.shuttle::after { content:""; position:absolute; left:8px; top:16px; width:8px; height:6px; background:currentColor; border-radius:0 0 5px 5px; }
+.save-status { color:#d1e4d8; font-size:12px; display:flex; align-items:center; gap:8px; }
+.save-status::before,.live-dot { content:""; width:7px; height:7px; flex:none; border-radius:50%; background:#9bcd9f; }
+.save-status[data-error="true"]::before { background:var(--orange); }
+.hero { padding:32px 0 28px; display:flex; justify-content:space-between; align-items:end; gap:20px; }
+.eyebrow { display:flex; align-items:center; gap:9px; min-height:24px; margin-bottom:7px; color:var(--muted); font-size:12px; font-weight:700; }
+.pill { display:inline-flex; align-items:center; gap:6px; width:fit-content; background:var(--mint); color:var(--ink); padding:4px 9px; border-radius:99px; white-space:nowrap; font-size:11px; font-weight:800; }
+.pill.sample { background:#f7e6cc; color:var(--orange-dark); }
+.hero h1 { font-size:clamp(30px,4vw,46px); line-height:1.16; letter-spacing:-.065em; overflow-wrap:anywhere; }
+.hero-meta { display:flex; flex-wrap:wrap; align-items:center; gap:5px 10px; margin-top:12px; color:var(--muted); font-size:13px; }
+.hero-meta .separator { width:3px; height:3px; border-radius:50%; background:#819289; }
+.actions { display:flex; flex-wrap:wrap; gap:8px; }
+.action { display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1px solid #cfd8cf; color:var(--ink); background:var(--white); border-radius:9px; min-height:41px; padding:8px 13px; font-weight:800; white-space:nowrap; }
+.action:hover:not(:disabled) { background:#ecf2e9; }
+.action.primary { background:var(--orange); border-color:var(--orange); color:#302312; }
+.action.primary:hover:not(:disabled) { background:#ffd092; }
+.action.dark { background:var(--green); color:#fffefa; border-color:var(--green); }
+.action.dark:hover:not(:disabled) { background:#265244; }
+.icon { font-family:"Segoe UI Symbol",sans-serif; font-size:16px; line-height:1; }
+.dashboard { display:grid; grid-template-columns:minmax(0,1fr) minmax(325px,365px); gap:20px; align-items:start; }
+.panel { background:var(--white); border:1px solid var(--line); border-radius:var(--radius); min-width:0; box-shadow:0 2px 4px #19392d06; }
+.panel-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:14px; padding:21px 22px 17px; }
+.panel h2,.score-panel h2 { font-size:22px; letter-spacing:-.055em; line-height:1.25; }
+.progress-text { margin-top:6px; font-size:12px; color:var(--muted); }
+.progress-text strong { color:var(--ink); }
+.progress { height:4px; width:100%; background:#e9eee6; overflow:hidden; }
+.progress span { display:block; height:100%; background:#70a281; }
+.tabs { display:flex; gap:2px; border-radius:9px; padding:3px; background:#edf0e9; }
+.tabs button { border:0; border-radius:7px; padding:6px 11px; color:var(--muted); background:transparent; font-size:12px; font-weight:700; white-space:nowrap; }
+.tabs button[aria-pressed="true"] { background:var(--white); color:var(--ink); box-shadow:0 1px 3px #18372e22; }
+.bracket-scroll,.table-scroll { overflow-x:auto; scrollbar-color:#aabaaf #f0f2ec; }
+.bracket { padding:22px; display:grid; gap:26px; min-width:calc(40px + var(--rounds) * 156px + (var(--rounds) - 1) * 26px); grid-template-columns:repeat(var(--rounds),minmax(156px,1fr)); }
+.round h3 { font-size:13px; font-weight:800; margin-bottom:11px; display:flex; align-items:center; gap:7px; }
+.round h3 span { color:var(--muted); font-size:11px; font-weight:500; }
+.lane { position:relative; }
+.match { position:absolute; inset-inline:0; display:block; width:100%; min-width:0; height:88px; padding:8px 10px; border:1px solid #dce3d9; border-radius:10px; background:#fffefa; color:var(--ink); text-align:left; }
+.match:hover,.match[aria-pressed="true"] { border-color:#bd7c37; background:#fff6e8; }
+.match[aria-pressed="true"] { box-shadow:inset 3px 0 #e5a151; }
+.match.bye { background:#f3f5f0; }
+.match-meta { display:flex; align-items:center; justify-content:space-between; gap:4px; padding-bottom:3px; font-size:10px; font-weight:700; color:var(--muted); }
+.match-meta .running { color:#8b4e10; }
+.match-meta .done { color:#36714c; }
+.match-team { display:flex; justify-content:space-between; gap:6px; align-items:baseline; padding:2px 0; font-size:12px; min-width:0; }
+.match-team + .match-team { border-top:1px solid #e6ebe3; }
+.match-team .name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.match-team .sets { flex:none; font-variant-numeric:tabular-nums; }
+.match-team.winner { font-weight:900; }
+.match-team.placeholder { color:#66766d; font-size:11px; }
+.connector { position:absolute; right:-14px; width:14px; pointer-events:none; border:1px solid #b7c8ba; border-left:0; border-radius:0 6px 6px 0; }
+.connector::after { content:""; position:absolute; top:50%; left:100%; border-top:1px solid #b7c8ba; width:13px; }
+.bracket-note { border-top:1px solid #e7eae3; padding:12px 22px; color:var(--muted); font-size:12px; display:flex; gap:8px; align-items:center; overflow-wrap:anywhere; }
+.bracket-note.champion { background:#eaf2e7; border-radius:0 0 var(--radius) var(--radius); color:var(--ink); }
+.score-panel { background:var(--green); color:#fffefa; border-radius:var(--radius); overflow:hidden; box-shadow:0 3px 6px #19392d17; }
+.score-head { display:flex; justify-content:space-between; align-items:start; gap:12px; padding:21px 20px 15px; }
+.score-kicker { font-size:11px; font-weight:700; color:#b9d2c3; margin-top:6px; }
+.score-head .enlarge,.score-head .back-link { background:#214b3d; color:#fffefa; border:1px solid #517064; border-radius:8px; padding:5px 9px; font-size:12px; white-space:nowrap; }
+.score-head .actions { justify-content:end; }
+.score-head .back-link { display:none; text-decoration:none; }
+.score-head .enlarge:hover { background:#315f50; }
+.score-content { padding:0 20px 18px; }
+.score-state { display:flex; gap:7px; align-items:center; justify-content:center; width:fit-content; margin:0 auto 12px; font-size:11px; font-weight:800; background:#285244; border-radius:99px; padding:4px 10px; color:#ecf6ed; }
+.score-state .live-dot { width:6px; height:6px; }
+.score-columns { display:grid; grid-template-columns:minmax(0,1fr) 12px minmax(0,1fr); align-items:start; }
+.score-side { text-align:center; min-width:0; display:grid; grid-row:1 / span 3; grid-template-rows:subgrid; }
+.score-side:first-child { grid-column:1; }
+.score-side:last-child { grid-column:3; }
+.side-name { display:flex; align-items:center; justify-content:center; min-height:42px; overflow-wrap:anywhere; font-weight:800; font-size:14px; padding:0 3px 5px; }
+.score-value { width:100%; display:block; appearance:textfield; background:#102e25; color:#fff9ee; border:1px solid #3e5e52; border-radius:11px; height:86px; text-align:center; padding:0; font-size:clamp(45px,6vw,62px); font-weight:800; font-variant-numeric:tabular-nums; line-height:84px; }
+.score-value::-webkit-inner-spin-button,.score-value::-webkit-outer-spin-button { appearance:none; margin:0; }
+.score-value[readonly] { opacity:1; }
+.score-colon { grid-row:2; grid-column:2; text-align:center; align-self:center; color:#8eada0; }
+.score-controls { display:grid; grid-template-columns:1fr 1fr; gap:7px; margin-top:8px; }
+.score-controls button { border:1px solid #537267; background:#285143; color:#fffefa; border-radius:8px; min-height:37px; font-weight:800; font-size:17px; }
+.score-controls button:hover:not(:disabled) { background:#386658; }
+.score-controls .add { background:#dfecdf; border-color:#dfecdf; color:var(--dark); }
+.score-controls .add:hover:not(:disabled) { background:#f3fff3; }
+.score-actions { display:grid; gap:8px; margin-top:14px; }
+.score-actions .action { width:100%; }
+.score-actions .undo { background:transparent; border-color:#5a786c; color:#e6f1e9; }
+.score-actions .undo:hover:not(:disabled) { background:#285244; }
+.score-msg { margin-top:10px; font-size:12px; color:#e6f2e8; text-align:center; overflow-wrap:anywhere; }
+.score-msg.error { color:#ffce9a; }
+.rules { display:block; text-align:center; font-size:11px; color:#b8d1c2; margin-top:10px; }
+.set-log { margin-top:12px; padding:11px 0 0; border-top:1px solid #537267; display:flex; justify-content:center; flex-wrap:wrap; gap:5px 11px; color:#deede4; font-size:12px; }
+.set-log strong { color:#ffdcab; }
+.table-scroll { min-height:240px; }
+table { width:100%; border-collapse:collapse; text-align:left; }
+th,td { padding:10px 12px; border-bottom:1px solid #e4e9e0; vertical-align:middle; }
+th { font-size:11px; color:var(--muted); background:#f1f4ed; white-space:nowrap; }
+td { font-size:12px; overflow-wrap:anywhere; }
+td:first-child,th:first-child { padding-left:22px; }
+td:last-child,th:last-child { padding-right:22px; }
+tr.selected td { background:#fff4e3; }
+.row-button { border:1px solid #d1d9ce; border-radius:7px; color:var(--ink); background:#fffefa; padding:4px 8px; white-space:nowrap; font-size:11px; font-weight:800; }
+.row-button:hover { background:#eaf0e7; }
+.footer { padding:18px 0 25px; color:var(--muted); font-size:12px; }
+.footer p { display:flex; align-items:flex-start; gap:8px; }
+dialog { width:min(580px,100% - 28px); max-height:calc(100dvh - 28px); padding:0; border:1px solid var(--line); border-radius:18px; color:var(--ink); background:var(--white); box-shadow:0 20px 70px #0b211a45; }
+dialog::backdrop { background:#102b24b8; }
+.dialog-head,.dialog-body,.dialog-foot { padding:17px 22px; }
+.dialog-head { border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+.dialog-head h2 { font-size:22px; letter-spacing:-.05em; }
+.dialog-body { display:grid; gap:12px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.field { display:grid; gap:4px; min-width:0; font-size:13px; font-weight:800; }
+.field :is(input,select,textarea) { width:100%; padding:8px 9px; border:1px solid #bdcbbf; border-radius:7px; color:var(--ink); background:#fff; font-weight:500; }
+.field textarea { min-height:127px; resize:vertical; }
+.help { color:var(--muted); font-size:12px; font-weight:500; }
+.confirm { display:flex; align-items:start; gap:7px; font-size:12px; }
+.form-error { color:#a22f21; min-height:1em; font-size:12px; }
+.dialog-foot { display:flex; flex-wrap:wrap; gap:8px; justify-content:end; border-top:1px solid var(--line); }
+body.expanded { overflow:hidden; }
+body.expanded .score-panel { position:fixed; inset:0; z-index:5; border-radius:0; overflow:auto; overscroll-behavior:contain; }
+body.expanded .score-head,body.expanded .score-content { width:min(92%,800px); margin-inline:auto; }
+body.expanded .score-head { padding-top:clamp(18px,5vh,65px); }
+body.expanded .score-value { height:clamp(92px,28vh,240px); line-height:normal; font-size:clamp(60px,17vh,160px); }
+body.expanded .score-columns { grid-template-columns:minmax(0,1fr) 25px minmax(0,1fr); }
+body.expanded .side-name { font-size:clamp(16px,3vw,26px); }
+body.expanded .score-controls button { min-height:45px; }
+body.expanded .score-head .back-link { display:none; }
+#print-view { display:none; }
+@media (max-width:1000px) { .wrap { width:calc(100% - 36px); } .dashboard { grid-template-columns:minmax(0,1fr) minmax(290px,320px); gap:14px; } }
+@media (max-width:760px) { .dashboard { display:flex; flex-direction:column; } .dashboard > * { width:100%; } .hero { padding:23px 0 20px; align-items:start; flex-direction:column; gap:13px; } .mast-inner { height:60px; } .panel-head { padding:16px; } .bracket { padding:17px 16px; } .bracket-note { padding:11px 16px; } .score-head,.score-content { padding-inline:16px; } .score-head .back-link { display:inline-block; } }
+@media (max-width:400px) { .wrap { width:calc(100% - 24px); } .brand { font-size:14px; gap:7px; } .brand-mark { width:32px; height:32px; } .save-status { font-size:10px; } .form-row { grid-template-columns:1fr; } }
+@page { size:A4 landscape; margin:12mm; }
+@media print {
+  body { background:white; color:#111; font-size:10pt; }
+  body > :not(#print-view) { display:none !important; }
+  #print-view { display:block; }
+  #print-view h1 { font-size:22pt; }
+  #print-view h2 { margin:12px 0 6px; font-size:15pt; }
+  #print-view .bracket { min-width:0; padding:8px 0; gap:14px; grid-template-columns:repeat(var(--rounds),minmax(0,1fr)); }
+  #print-view .connector { width:7px; right:-7px; }
+  #print-view .connector::after { width:7px; }
+  #print-view .match { color:#111; background:#fff; border-color:#999; }
+  #print-view .bracket,#print-view .score-sheet { break-inside:avoid; }
+  #print-view .name { white-space:normal; }
+  #print-view table { margin-bottom:12px; }
+  #print-view tr { break-inside:avoid; }
+  #print-view td,#print-view th { padding:5px 7px; color:#111; }
+  #print-view .print-detail { margin:5px 0; }
+  #print-view .score-sheet th,#print-view .score-sheet td { border:1px solid #aaa; }
+}
+</style>
+</head>
+<body>
+<header class="masthead" id="masthead">
+  <div class="wrap mast-inner">
+    <div class="brand"><span class="brand-mark" aria-hidden="true"><span class="shuttle"></span></span>우리동네 배드민턴</div>
+    <div class="save-status" id="save-status" role="status">자동 저장</div>
+  </div>
+</header>
+<main class="wrap" id="main">
+  <section class="hero" aria-labelledby="event-title">
+    <div><div class="eyebrow" id="event-label"></div><h1 id="event-title"></h1><div class="hero-meta" id="event-meta"></div></div>
+    <div class="actions">
+      <button class="action" id="print-button" type="button"><span class="icon" aria-hidden="true">▤</span>인쇄</button>
+      <button class="action primary" id="setup-button" type="button"><span class="icon" aria-hidden="true">＋</span>새 대회</button>
+    </div>
+  </section>
+  <div class="dashboard">
+    <section class="panel" id="schedule-panel" aria-labelledby="schedule-title">
+      <div class="panel-head">
+        <div><h2 id="schedule-title"></h2><p class="progress-text" id="progress-text"></p></div>
+        <div class="tabs" id="schedule-tabs" role="group" aria-label="대진표 보기"></div>
+      </div>
+      <div class="progress" id="progress" role="progressbar" aria-label="경기 진행률" aria-valuemin="0" aria-valuemax="100"><span></span></div>
+      <div id="schedule-body"></div>
+      <div class="bracket-note" id="schedule-note"></div>
+    </section>
+    <section class="score-panel" id="score-panel" aria-labelledby="score-title">
+      <div class="score-head">
+        <div><h2 id="score-title">코트 점수판</h2><p class="score-kicker" id="score-kicker"></p></div>
+        <div class="actions"><a class="back-link" href="#schedule-panel">대진표 ↑</a><button class="enlarge" id="expand-button" type="button" aria-expanded="false"><span class="icon" aria-hidden="true">⛶</span> 크게 보기</button></div>
+      </div>
+      <div class="score-content" id="score-content"></div>
+    </section>
+  </div>
+  <footer class="footer"><p id="footer-note"></p></footer>
+</main>
+<dialog id="setup-dialog" aria-labelledby="setup-title">
+  <form id="setup-form">
+    <div class="dialog-head"><h2 id="setup-title">새 대회 만들기</h2><button class="action" type="button" data-close aria-label="닫기">✕</button></div>
+    <div class="dialog-body">
+      <div class="form-row">
+        <label class="field">대회 이름<input name="title" maxlength="60" required></label>
+        <label class="field">대회 날짜<input name="date" type="date" required></label>
+      </div>
+      <div class="form-row">
+        <label class="field">종목<select name="event"><option value="doubles">복식</option><option value="singles">단식</option></select></label>
+        <label class="field">대회 방식<select name="format"><option value="elimination">토너먼트</option><option value="roundRobin">풀리그</option></select></label>
+      </div>
+      <div class="form-row">
+        <label class="field">경기 방식<select name="bestOf"><option value="3">3게임 2선승</option><option value="1">1게임 단판</option></select></label>
+        <label class="field">게임 목표 점수<select name="target"><option value="21">21점</option><option value="15">15점</option><option value="11">11점</option></select></label>
+      </div>
+      <label class="field"><span id="roster-label">참가 팀</span><textarea name="roster" required aria-describedby="roster-help"></textarea><span class="help" id="roster-help"></span></label>
+      <label class="confirm"><input type="checkbox" name="shuffle"> 추첨으로 대진 배정</label>
+      <label class="confirm" id="replace-label"><input type="checkbox" name="replace"> 현재 대회와 점수 기록을 지우고 새 대회를 만듭니다.</label>
+      <p class="form-error" id="form-error" role="alert"></p>
+    </div>
+    <div class="dialog-foot"><button class="action" type="button" data-close>취소</button><button class="action dark" type="submit">대진표 만들기</button></div>
+  </form>
+</dialog>
+<div id="print-view"></div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const STORAGE = "neighborhood-badminton-monthly-v1";
+const escapeHTML = value => String(value).replace(/[&<>"']/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]);
+const two = number => String(number).padStart(2, "0");
+const activeMatch = match => match.games.length > 0 || match.draft.some(Boolean);
+const matches = tournament => tournament.rounds.flat();
+const matchNumber = match => `경기 ${two(match.id)}`;
+const capFor = tournament => tournament.target + 9;
+
+function makeTournament(settings, teams) {
+  const tournament = {...settings, teams, rounds:[], selected:1};
+  let nextId = 1;
+  const match = (round, sides, feeds = null) => ({id:nextId++, round, sides, feeds, games:[], draft:[0,0]});
+  if (settings.format === "elimination") {
+    const size = 2 ** Math.ceil(Math.log2(teams.length));
+    let order = [1,2];
+    for (let count = 4; count <= size; count *= 2) order = order.flatMap(seed => [seed, count + 1 - seed]);
+    const firstRound = [];
+    for (let i = 0; i < order.length; i += 2) {
+      firstRound.push(match(0, order.slice(i,i + 2).map(seed => teams[seed - 1] ?? null)));
+    }
+    tournament.rounds.push(firstRound);
+    while (tournament.rounds.at(-1).length > 1) {
+      const previous = tournament.rounds.at(-1);
+      const round = [];
+      for (let i = 0; i < previous.length; i += 2) {
+        round.push(match(tournament.rounds.length, [null,null], [previous[i].id,previous[i + 1].id]));
+      }
+      tournament.rounds.push(round);
+    }
+  } else {
+    const ring = [...teams];
+    if (ring.length % 2) ring.push(null);
+    for (let round = 0; round < ring.length - 1; round++) {
+      const pairings = [];
+      for (let i = 0; i < ring.length / 2; i++) {
+        const sides = [ring[i],ring[ring.length - 1 - i]];
+        if (sides.every(Boolean)) pairings.push(match(round, i % 2 === round % 2 ? sides : sides.reverse()));
+      }
+      tournament.rounds.push(pairings);
+      ring.splice(1,0,ring.pop());
+    }
+  }
+  reconcile(tournament);
+  tournament.selected = matches(tournament).find(isPlayable).id;
+  return tournament;
+}
+
+function gameWins(match) {
+  const wins = [0,0];
+  for (const [a,b] of match.games) wins[a > b ? 0 : 1]++;
+  return wins;
+}
+
+function result(match, tournament = state) {
+  if (isBye(match, tournament)) return match.sides.find(Boolean) ?? null;
+  const wins = gameWins(match);
+  const needed = (tournament.bestOf + 1) / 2;
+  return match.sides[wins.findIndex(count => count >= needed)] ?? null;
+}
+
+function isBye(match, tournament = state) {
+  return tournament.format === "elimination" && !match.feeds && match.sides.includes(null);
+}
+
+function isPlayable(match) {
+  return match.sides.every(Boolean);
+}
+
+function reconcile(tournament) {
+  const prior = new Map();
+  for (const match of matches(tournament)) {
+    if (match.feeds) match.sides = match.feeds.map(id => result(prior.get(id), tournament));
+    prior.set(match.id, match);
+  }
+}
+
+function example() {
+  const tournament = makeTournament({title:"11월 월례 대회",date:"2026-11-21",event:"doubles",format:"elimination",bestOf:3,target:21,sample:true},
+    ["민준 · 서연","유진 · 준호","가은 · 현우","지후 · 나영","다은 · 승민","소연 · 태훈","지민 · 건우","예린 · 재현"]);
+  const scores = [[[21,15],[21,18]],[[18,21],[21,16],[19,21]],[[21,15],[17,21],[21,16]],[[21,19],[21,14]]];
+  tournament.rounds[0].forEach((match,index) => { match.games = scores[index]; });
+  reconcile(tournament);
+  tournament.rounds[1][0].draft = [14,11];
+  tournament.selected = tournament.rounds[1][0].id;
+  return tournament;
+}
+
+function readState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE));
+    if (saved?.rounds?.length && saved.teams?.length && matches(saved).some(match => match.id === saved.selected)) {
+      reconcile(saved);
+      return saved;
+    }
+  } catch { /* A fresh example also works with private storage disabled. */ }
+  return example();
+}
+
+let state = readState();
+let view = state.format === "elimination" ? "bracket" : "matches";
+let operationError = "";
+const selectedMatch = () => matches(state).find(match => match.id === state.selected);
+
+function save() {
+  const status = $("save-status");
+  let saved = true;
+  try { localStorage.setItem(STORAGE, JSON.stringify(state)); }
+  catch { saved = false; }
+  const label = saved ? "이 브라우저에 자동 저장" : "자동 저장을 사용할 수 없음";
+  if (status.textContent !== label) status.textContent = label;
+  status.dataset.error = String(!saved);
+}
+
+function roundName(round) {
+  if (state.format === "roundRobin") return `${round + 1}라운드`;
+  const remaining = state.rounds.length - round;
+  if (remaining === 1) return "결승";
+  if (remaining === 2) return "준결승";
+  return `${2 ** remaining}강`;
+}
+
+function sideName(match, side) {
+  return match.sides[side] ?? (isBye(match) ? "부전승" : `${two(match.feeds[side])}번 경기 승자`);
+}
+
+function statusOf(match) {
+  if (isBye(match)) return ["부전승","done"];
+  if (result(match)) return ["종료","done"];
+  if (activeMatch(match)) return ["진행 중","running"];
+  return [isPlayable(match) ? "경기 전" : "대진 대기", ""];
+}
+
+function eventDetails() {
+  return [state.date.replaceAll("-","."),state.event === "doubles" ? "복식" : "단식",state.format === "elimination" ? "토너먼트" : "풀리그",`${state.teams.length}${state.event === "doubles" ? "팀" : "명"}`];
+}
+
+function renderHero() {
+  $("event-title").textContent = state.title;
+  $("event-label").innerHTML = `<span class="pill ${state.sample ? "sample" : ""}">${state.sample ? "예시 대회" : "월례 대회"}</span>`;
+  $("event-meta").innerHTML = eventDetails().map(field => `<span>${escapeHTML(field)}</span>`).join('<span class="separator" aria-hidden="true"></span>');
+  $("footer-note").textContent = state.sample
+    ? "ⓘ  예시 대회입니다. ‘새 대회’에서 실제 참가 명단을 등록하세요."
+    : "ⓘ  점수와 대진은 이 파일을 연 브라우저에 저장됩니다. 인쇄 메뉴에서 PDF로도 보관할 수 있습니다.";
+}
+
+function bracket(printed = false) {
+  const step = 104;
+  const height = (state.rounds[0].length - 1) * step + 88;
+  const columns = state.rounds.map((round,roundIndex) => {
+    const interval = step * 2 ** roundIndex;
+    const first = (interval - step) / 2;
+    const cards = round.map((match,i) => {
+      const top = first + i * interval;
+      const [status,tone] = statusOf(match);
+      const winner = result(match);
+      const wins = gameWins(match);
+      const rows = match.sides.map((name,side) => {
+        const label = escapeHTML(sideName(match,side));
+        return `<span class="match-team ${name ? "" : "placeholder"} ${name && name === winner ? "winner" : ""}"><span class="name" title="${label}">${label}</span><span class="sets">${match.games.length ? wins[side] : "–"}</span></span>`;
+      }).join("");
+      const contents = `<span class="match-meta"><span>${matchNumber(match)}</span><span class="${tone}">${status}</span></span>${rows}`;
+      const connector = roundIndex < state.rounds.length - 1 && i % 2 === 0
+        ? `<span class="connector" style="top:${top + 44}px;height:${interval + 1}px" aria-hidden="true"></span>` : "";
+      const classes = `class="match ${isBye(match) ? "bye" : ""}" style="top:${top}px"`;
+      return connector + (printed ? `<div ${classes}>${contents}</div>` : `<button ${classes} type="button" data-match="${match.id}" aria-pressed="${match.id === state.selected}">${contents}</button>`);
+    }).join("");
+    return `<section class="round"><h3>${roundName(roundIndex)} <span>${round.filter(match => !isBye(match)).length}경기</span></h3><div class="lane" style="height:${height}px">${cards}</div></section>`;
+  }).join("");
+  return `<div class="bracket" style="--rounds:${state.rounds.length}">${columns}</div>`;
+}
+
+function matchTable(printed = false) {
+  const rows = matches(state).map(match => {
+    const completeGames = match.games.map(pair => pair.join("–"));
+    if (!result(match) && match.draft.some(Boolean)) completeGames.push(`${match.draft.join("–")} (진행 중)`);
+    const edit = printed ? "" : `<td><button class="row-button" type="button" data-match="${match.id}" aria-pressed="${match.id === state.selected}" aria-label="${matchNumber(match)} 점수판 열기">선택</button></td>`;
+    return `<tr${!printed && match.id === state.selected ? ' class="selected"' : ""}><td>${two(match.id)}</td><td>${roundName(match.round)}</td><td>${escapeHTML(sideName(match,0))}</td><td>${escapeHTML(sideName(match,1))}</td><td>${statusOf(match)[0]}</td><td>${completeGames.join(" / ") || "—"}</td>${edit}</tr>`;
+  }).join("");
+  return `<table aria-label="경기 목록"><thead><tr><th scope="col">경기</th><th scope="col">라운드</th><th scope="col">A</th><th scope="col">B</th><th scope="col">상태</th><th scope="col">게임 점수</th>${printed ? "" : '<th scope="col">점수판</th>'}</tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function rankingTable() {
+  const rows = new Map(state.teams.map(name => [name, {name,wins:0,losses:0,for:0,against:0}]));
+  for (const match of matches(state)) {
+    const winner = result(match);
+    if (!winner) continue;
+    const [a,b] = match.sides.map(name => rows.get(name));
+    rows.get(winner).wins++;
+    rows.get(match.sides.find(name => name !== winner)).losses++;
+    for (const [left,right] of match.games) {
+      a.for += left;
+      a.against += right;
+      b.for += right;
+      b.against += left;
+    }
+  }
+  const diff = row => row.for - row.against;
+  const compare = (a,b) => b.wins - a.wins || diff(b) - diff(a) || b.for - a.for;
+  const sorted = [...rows.values()].sort((a,b) => compare(a,b) || a.name.localeCompare(b.name,"ko"));
+  let rank = 0;
+  const content = sorted.map((row,index) => {
+    if (index === 0 || compare(row,sorted[index - 1])) rank = index + 1;
+    return `<tr><td>${rank}</td><td>${escapeHTML(row.name)}</td><td>${row.wins}</td><td>${row.losses}</td><td>${row.for}</td><td>${row.against}</td><td>${diff(row) > 0 ? "+" : ""}${diff(row)}</td></tr>`;
+  }).join("");
+  return `<table aria-label="풀리그 순위"><thead><tr><th scope="col">순위</th><th scope="col">참가자</th><th scope="col">승</th><th scope="col">패</th><th scope="col">득점</th><th scope="col">실점</th><th scope="col">득실차</th></tr></thead><tbody>${content}</tbody></table>`;
+}
+
+function renderSchedule() {
+  const current = $("schedule-body").firstElementChild;
+  const previousScroll = current?.scrollLeft ?? 0;
+  const competition = matches(state).filter(match => !isBye(match));
+  const done = competition.filter(match => result(match)).length;
+  const percent = Math.round(100 * done / competition.length);
+  $("schedule-title").textContent = state.format === "elimination" ? "토너먼트 대진표" : "풀리그 대진표";
+  $("progress-text").innerHTML = `<strong>${done} / ${competition.length}경기</strong> 완료`;
+  $("progress").setAttribute("aria-valuenow",percent);
+  $("progress").firstElementChild.style.width = `${percent}%`;
+  const tabs = state.format === "elimination" ? [["bracket","대진표"],["matches","경기 목록"]] : [["matches","경기 목록"],["ranks","순위표"]];
+  $("schedule-tabs").innerHTML = tabs.map(([id,label]) => `<button type="button" data-view="${id}" aria-pressed="${view === id}">${label}</button>`).join("");
+  const content = view === "bracket" ? bracket() : view === "matches" ? matchTable() : rankingTable();
+  $("schedule-body").innerHTML = `<div class="${view === "bracket" ? "bracket-scroll" : "table-scroll"}" tabindex="0" role="region" aria-label="${tabs.find(([id]) => id === view)[1]}">${content}</div>`;
+  $("schedule-body").firstElementChild.scrollLeft = previousScroll;
+  const champion = state.format === "elimination" ? result(state.rounds.at(-1)[0]) : null;
+  const note = $("schedule-note");
+  note.classList.toggle("champion", Boolean(champion));
+  if (champion) note.innerHTML = `<span class="pill">우승</span><strong>${escapeHTML(champion)}</strong>`;
+  else note.textContent = view === "ranks" ? "완료 경기 기준 · 승수, 득실차, 총득점 순 · 모두 같으면 공동 순위"
+    : view === "bracket" ? "경기를 선택해 점수를 기록하세요. 승자는 다음 라운드에 자동으로 올라갑니다."
+      : "‘선택’을 눌러 해당 경기의 점수판을 여세요.";
+}
+
+function validGame([a,b], tournament = state) {
+  const high = Math.max(a,b);
+  const low = Math.min(a,b);
+  if (high < tournament.target || high > capFor(tournament) || high === low) return false;
+  if (high === tournament.target) return high - low >= 2;
+  return high === capFor(tournament) ? high - low <= 2 : high - low === 2;
+}
+
+function ruleText() {
+  return `${state.bestOf === 3 ? "3게임 2선승" : "1게임 단판"} · ${state.target}점 · 2점 차 · 상한 ${capFor(state)}점`;
+}
+
+function renderScore() {
+  const match = selectedMatch();
+  const finished = Boolean(result(match));
+  const editable = isPlayable(match) && !finished;
+  const totals = gameWins(match);
+  const scores = finished ? match.games.at(-1) ?? [0,0] : match.draft;
+  const game = finished ? match.games.length : match.games.length + 1;
+  $("score-kicker").textContent = `${roundName(match.round)} · ${matchNumber(match)}`;
+  const sides = match.sides.map((_,side) => {
+    const designation = side === 0 ? "A" : "B";
+    return `<div class="score-side"><div class="side-name">${escapeHTML(sideName(match,side))}</div><input type="number" inputmode="numeric" class="score-value" data-input="${side}" min="0" max="${capFor(state)}" step="1" value="${scores[side]}" aria-label="${designation} 점수" ${editable ? "" : "readonly"}>
+      ${editable ? `<div class="score-controls"><button type="button" data-score="${side},-1" aria-label="${designation} 점수 1점 빼기">−</button><button class="add" type="button" data-score="${side},1" aria-label="${designation} 점수 1점 더하기">+</button></div>` : ""}</div>`;
+  });
+  const status = isBye(match) ? "부전승" : finished ? "경기 종료" : editable ? `${game}게임 · 승리 게임 ${totals.join("–")}` : "이전 경기 결과 대기";
+  $("score-content").innerHTML = `<div class="score-state"><span class="live-dot" aria-hidden="true"></span>${status}</div>
+    <div class="score-columns">${sides.join('<div class="score-colon" aria-hidden="true">:</div>')}</div>
+    <div class="score-actions">${editable ? '<button class="action primary" type="button" id="record-game">게임 결과 확정</button>' : ""}${match.games.length ? '<button class="action undo" type="button" id="undo-game">마지막 게임 확정 취소</button>' : ""}</div>
+    <p class="score-msg" id="score-msg" role="status"></p><span class="rules">${ruleText()}</span>
+    ${match.games.length ? `<div class="set-log">${match.games.map((pair,index) => `<span>${index + 1}게임 <strong>${pair.join("–")}</strong></span>`).join("")}</div>` : ""}`;
+  syncScore();
+}
+
+function syncScore() {
+  const match = selectedMatch();
+  const winner = result(match);
+  const valid = validGame(match.draft);
+  const buttons = $("score-content").querySelectorAll("[data-score]");
+  for (const button of buttons) {
+    const [side,change] = button.dataset.score.split(",").map(Number);
+    button.disabled = change < 0 ? match.draft[side] === 0 : match.draft[side] >= capFor(state);
+  }
+  if ($("record-game")) $("record-game").disabled = !valid;
+  const msg = $("score-msg");
+  msg.classList.toggle("error",Boolean(operationError));
+  const message = operationError || (winner ? `${winner} ${isBye(match) ? "자동 진출" : "승리"}`
+    : !isPlayable(match) ? "이전 경기의 승자가 정해지면 열립니다."
+      : valid ? "점수를 확인하고 게임 결과를 확정하세요."
+        : Math.max(...match.draft) >= state.target && Math.abs(match.draft[0] - match.draft[1]) >= 2
+          ? "종료 조건을 처음 충족한 시점의 점수를 입력하세요."
+          : "+ / − 버튼을 누르거나 점수를 직접 입력하세요.");
+  if (msg.textContent !== message) msg.textContent = message;
+}
+
+function render() {
+  renderHero();
+  renderSchedule();
+  renderScore();
+  save();
+}
+
+function chooseMatch(id) {
+  state.selected = id;
+  operationError = "";
+  renderSchedule();
+  renderScore();
+  save();
+  if (window.matchMedia("(max-width:760px)").matches) {
+    $("score-panel").scrollIntoView({block:"start"});
+  } else {
+    $("schedule-body").querySelector(`[data-match="${id}"]`)?.focus({preventScroll:true});
+  }
+}
+
+function updateDraft(side,value) {
+  const match = selectedMatch();
+  const wasActive = activeMatch(match);
+  match.draft[side] = value;
+  operationError = "";
+  if (wasActive !== activeMatch(match) || view === "matches") renderSchedule();
+  syncScore();
+  save();
+}
+
+function recordGame() {
+  const match = selectedMatch();
+  if (!isPlayable(match) || result(match) || !validGame(match.draft)) return;
+  match.games.push([...match.draft]);
+  match.draft = [0,0];
+  reconcile(state);
+  operationError = "";
+  render();
+  ($("score-content").querySelector('[data-input="0"]') ?? $("expand-button")).focus({preventScroll:true});
+}
+
+function undoGame() {
+  const match = selectedMatch();
+  if (!match.games.length) return;
+  if (match.draft.some(Boolean)) {
+    operationError = "진행 중인 게임의 점수를 0–0으로 되돌린 뒤 확정을 취소하세요.";
+    syncScore();
+    return;
+  }
+  if (result(match) && matches(state).some(candidate => candidate.feeds?.includes(match.id) && activeMatch(candidate))) {
+    operationError = "다음 경기의 점수와 확정 기록을 먼저 되돌리세요.";
+    syncScore();
+    return;
+  }
+  match.draft = match.games.pop();
+  reconcile(state);
+  operationError = "";
+  render();
+  $("score-content").querySelector('[data-input="0"]').focus({preventScroll:true});
+}
+
+function toggleExpanded(expanded) {
+  document.body.classList.toggle("expanded",expanded);
+  const button = $("expand-button");
+  button.setAttribute("aria-expanded",String(expanded));
+  button.innerHTML = expanded ? '<span aria-hidden="true">✕</span> 작게 보기' : '<span class="icon" aria-hidden="true">⛶</span> 크게 보기';
+  for (const element of [$('masthead'), document.querySelector('.hero'), $('schedule-panel'), document.querySelector('.footer')]) element.inert = expanded;
+  button.focus({preventScroll:true});
+}
+
+function preparePrint() {
+  const match = selectedMatch();
+  const win = result(match);
+  const played = match.games.length + (match.draft.some(Boolean) ? 1 : 0);
+  const rows = Array.from({length:state.bestOf},(_,index) => {
+    const draft = index === match.games.length && match.draft.some(Boolean);
+    const pair = match.games[index] ?? (draft ? match.draft : ["",""]);
+    return `<tr><td>${index + 1}게임</td><td>${pair[0]}</td><td>${pair[1]}</td><td>${draft ? "진행 중" : ""}</td></tr>`;
+  }).join("");
+  const graphic = state.format === "elimination" && state.rounds[0].length <= 4;
+  const champion = state.format === "elimination" ? result(state.rounds.at(-1)[0]) : null;
+  $("print-view").innerHTML = `<h1>${escapeHTML(state.title)}</h1><p class="print-detail">${escapeHTML(eventDetails().join(" · "))}${state.sample ? " · 예시 대회" : ""}</p>
+    <h2>${graphic ? "토너먼트 대진표" : "경기 목록"}</h2>${graphic ? bracket(true) : matchTable(true)}
+    ${champion ? `<p class="print-detail"><strong>우승</strong> ${escapeHTML(champion)}</p>` : ""}
+    ${state.format === "roundRobin" ? `<h2>풀리그 순위표</h2>${rankingTable()}<p>승수, 득실차, 총득점 순 · 모두 같으면 공동 순위</p>` : ""}
+    <section class="score-sheet"><h2>기록용 점수판 · ${matchNumber(match)}</h2><p class="print-detail">${roundName(match.round)} · ${ruleText()}${win ? ` · ${escapeHTML(win)} ${isBye(match) ? "자동 진출" : "승리"}` : ""}</p>
+    <table><thead><tr><th>게임</th><th>${escapeHTML(sideName(match,0))}</th><th>${escapeHTML(sideName(match,1))}</th><th>비고</th></tr></thead><tbody>${rows}</tbody></table>${played ? "" : "<p>기록자 ____________________</p>"}</section>`;
+}
+
+const dialog = $("setup-dialog");
+const fields = $("setup-form").elements;
+
+function updateRosterHelp() {
+  const doubles = fields.event.value === "doubles";
+  const max = fields.format.value === "elimination" ? 32 : 16;
+  $("roster-label").textContent = doubles ? "참가 팀" : "참가자 이름";
+  $("roster-help").textContent = doubles ? `한 줄에 한 팀을 입력하세요. 팀 이름이나 두 사람의 이름을 쓸 수 있습니다. (2~${max}팀)`
+    : `한 줄에 한 명을 입력하세요. (2~${max}명)`;
+  fields.roster.placeholder = doubles ? "예: 민준 / 서연\n유진 / 준호" : "예: 민준\n서연";
+}
+
+$("setup-button").addEventListener("click",() => {
+  const today = new Date();
+  $("setup-form").reset();
+  fields.title.value = `${today.getMonth() + 1}월 월례 대회`;
+  fields.date.value = `${today.getFullYear()}-${two(today.getMonth() + 1)}-${two(today.getDate())}`;
+  $("replace-label").hidden = state.sample;
+  fields.replace.required = !state.sample;
+  $("form-error").textContent = "";
+  updateRosterHelp();
+  dialog.showModal();
+});
+
+for (const button of dialog.querySelectorAll("[data-close]")) button.addEventListener("click",() => dialog.close());
+fields.event.addEventListener("change",updateRosterHelp);
+fields.format.addEventListener("change",updateRosterHelp);
+$("setup-form").addEventListener("submit",event => {
+  event.preventDefault();
+  const title = fields.title.value.trim();
+  const teams = fields.roster.value.split(/\r?\n/).map(name => name.trim()).filter(Boolean);
+  const format = fields.format.value;
+  const max = format === "elimination" ? 32 : 16;
+  const unique = new Set(teams.map(name => name.normalize().toLocaleLowerCase("ko").replace(/\s+/g," ")));
+  const error = !title ? "대회 이름을 입력하세요." : teams.length < 2 || teams.length > max ? `참가 명단을 2~${max}줄로 입력하세요.`
+    : unique.size !== teams.length ? "같은 이름이 여러 줄에 있습니다. 각 참가자를 구분할 수 있게 입력하세요."
+      : teams.some(name => name.length > 40) ? "각 참가 이름은 40자 이내로 입력하세요." : "";
+  $("form-error").textContent = error;
+  if (error) return;
+  if (fields.shuffle.checked) {
+    for (let i = teams.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [teams[i],teams[j]] = [teams[j],teams[i]];
+    }
+  }
+  state = makeTournament({title,date:fields.date.value,event:fields.event.value,format,bestOf:Number(fields.bestOf.value),target:Number(fields.target.value),sample:false},teams);
+  view = format === "elimination" ? "bracket" : "matches";
+  operationError = "";
+  dialog.close();
+  render();
+});
+
+$("schedule-tabs").addEventListener("click",event => {
+  const tab = event.target.closest("[data-view]");
+  if (!tab) return;
+  view = tab.dataset.view;
+  renderSchedule();
+  $("schedule-tabs").querySelector(`[data-view="${view}"]`).focus();
+});
+$("schedule-body").addEventListener("click",event => {
+  const button = event.target.closest("[data-match]");
+  if (button) chooseMatch(Number(button.dataset.match));
+});
+$("score-content").addEventListener("click",event => {
+  const control = event.target.closest("[data-score]");
+  if (control) {
+    const [side,change] = control.dataset.score.split(",").map(Number);
+    const value = selectedMatch().draft[side] + change;
+    $("score-content").querySelector(`[data-input="${side}"]`).value = value;
+    updateDraft(side,value);
+  } else if (event.target.id === "record-game") recordGame();
+  else if (event.target.id === "undo-game") undoGame();
+});
+$("score-content").addEventListener("input",event => {
+  const field = event.target;
+  if (field.dataset.input === undefined || field.readOnly) return;
+  const raw = field.valueAsNumber;
+  const value = Number.isFinite(raw) ? Math.max(0,Math.min(capFor(state),Math.trunc(raw))) : 0;
+  if (Number.isFinite(raw) && value !== raw) field.value = value;
+  updateDraft(Number(field.dataset.input),value);
+});
+$("score-content").addEventListener("focusout",event => {
+  const field = event.target;
+  if (field.dataset.input !== undefined && !field.readOnly && field.value === "") field.value = selectedMatch().draft[Number(field.dataset.input)];
+});
+$("expand-button").addEventListener("click",() => toggleExpanded(!document.body.classList.contains("expanded")));
+document.addEventListener("keydown",event => {
+  if (event.key === "Escape" && document.body.classList.contains("expanded")) toggleExpanded(false);
+});
+$("print-button").addEventListener("click",() => { preparePrint(); window.print(); });
+window.addEventListener("beforeprint",preparePrint);
+render();
+</script>
+</body>
+</html>

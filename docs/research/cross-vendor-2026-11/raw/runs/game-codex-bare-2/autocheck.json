@@ -1,0 +1,10 @@
+{
+ "check_game": {
+  "rc": 1,
+  "out": "PASS file size 37 KB\nPASS starts with <!DOCTYPE html>\nFAIL GAME data block\nFAIL GAME_LOGIC block\nFAIL NG.boot() call\nFAIL engine block intact\nFAIL mute button kept\nFAIL teacher menu kept\nFAIL no optional chaining ?. (old Chrome) (1 found)\nFAIL no nullish ?? (old Chrome) (1 found)\nPASS no replaceAll (old Chrome)\nPASS no .at() (old Chrome)\nPASS no structuredClone (old Chrome)\nPASS no #private field (old Chrome)\nPASS no alert/prompt/confirm blocks the game\nFAIL no aspect-ratio (old Chrome) (1 found)\nPASS no :has() (old Chrome)\nPASS no dvh unit (old Chrome)\nPASS offline: no outside request or address (link, script, img, css url/@import, fetch)\nPASS GAME.items has 0 entries\nFAIL JavaScript syntax: HTML line 483: Unexpected token (214:20)\nSKIP browser opening check could not finish: Page.wait_for_function: Timeout 5000ms exceeded.\nPASS not an AI-company house look (cream+clay+serif / blue-purple+emoji)\nWARN 밤티 검사: 여백 값의 71%가 4의 배수가 아니에요(80개 중). 여백은 4·8·12·16·24·32·48·64 가운데에서 골라 주세요.\nWARN 전문 디자이너 기준 4/5: 여백이 4·8 단위, 본문 줄 간격 넉넉\n\nRESULT: FAIL (10 fail, 1 unchecked, 2 warn)\n"
+ },
+ "check_webapp": {
+  "rc": 1,
+  "out": "PASS no outside address: works offline\nFAIL ?. ?? in script: old school Chrome cannot run it\nPASS no network or storage API\nPASS no API key or secret in the file\nPASS no student identity fields\nPASS title, lang and viewport present\nPASS file size 36 KB\nPASS example-likeness: not a copy of a shipped example (2 compared)\nFAIL JavaScript syntax: HTML line 483: Unexpected token (214:20)\nWARN [1600x900] text under 14px: 10px 1 | 10px 2 | 10px 3 | 11px 1\nWARN [projector] text under 14px: 10px 1 | 10px 2 | 10px 3 | 11px 1\nFAIL no reset button (#wa-reset)\nPASS clicked 0 part(s)\nWARN [phone 390] text under 14px: 10px 1 | 10px 2 | 10px 3 | 11px 객관식\nPASS no JS errors\nPASS no outside requests while running\ncheck: FAIL (3 fail, 0 unchecked)\n"
+ }
+}

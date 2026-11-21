@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경우의 수 탐험대 - 중2 수학</title>
+<style>
+:root{--bg:#f4f7ff;--card:#fff;--ink:#1f2a44;--sub:#4a5675;--pri:#2f5bea;--pri-d:#1f43b8;--acc:#ff8a1f;--ok:#12805c;--bad:#c62828;--line:#cfd8f3;--soft:#e8eeff;--g:#e6f6ee;--o:#fff1de}
+*{box-sizing:border-box}
+html{font-size:17px}
+body{margin:0;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+body.big{font-size:1.35rem}
+header{background:linear-gradient(120deg,#2f5bea,#6a4cff);color:#fff;padding:12px 16px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+header h1{margin:0;font-size:1.35rem}
+header small{opacity:.9}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:2px solid var(--line);background:#fff;color:var(--ink);padding:8px 12px;border-radius:999px;cursor:pointer;font:inherit;font-weight:700;font-size:.9rem}
+nav button[aria-selected=true]{background:var(--pri);border-color:var(--pri);color:#fff}
+button,input,select{font:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,.chip:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+main{max-width:1050px;margin:0 auto;padding:14px}
+.panel h2{margin:.2em 0 .5em;color:var(--pri-d)}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin:12px 0}
+.card h3{margin:.1em 0 .4em}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:12px;padding:9px 16px;font-weight:700;cursor:pointer;margin:3px}
+.btn:hover{background:var(--pri-d)}
+.btn.sec{background:#fff;color:var(--pri-d);border:2px solid var(--pri)}
+.btn.orange{background:var(--acc);color:#1b1b1b}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.note{background:var(--o);border-left:6px solid var(--acc);padding:8px 12px;border-radius:8px;margin:8px 0}
+.good{background:var(--g);border-left:6px solid var(--ok);padding:8px 12px;border-radius:8px;margin:8px 0}
+.formula{font-size:1.15em;font-weight:800;color:var(--pri-d);background:var(--soft);padding:6px 12px;border-radius:10px;display:inline-block;margin:4px 0}
+.chip{display:inline-block;border:2px solid var(--pri);background:#fff;color:var(--pri-d);border-radius:999px;padding:5px 14px;margin:3px;cursor:pointer;font-weight:700;user-select:none}
+.chip[aria-pressed=true],.chip.on{background:var(--pri);color:#fff}
+.chip.static{cursor:default;border-color:var(--line);color:var(--ink);font-weight:500;padding:2px 10px;font-size:.88rem}
+.chip.hl{background:#fff3b0;border-color:var(--acc)}
+.slot{display:inline-block;min-width:76px;min-height:42px;border:2px dashed var(--sub);border-radius:10px;text-align:center;padding:6px;margin:3px;font-weight:800}
+.slot.f{border-style:solid;background:var(--soft);border-color:var(--pri)}
+.slot small{display:block;color:var(--sub);font-weight:500;font-size:.75rem}
+table{border-collapse:collapse;width:100%}
+th,td{border:1px solid var(--line);padding:4px 8px;text-align:center}
+th{background:var(--soft)}
+canvas{width:100%;max-width:100%;background:#fff;border:1px solid var(--line);border-radius:10px}
+.svgbox{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff;max-height:620px}
+input[type=range]{width:200px;accent-color:var(--pri)}
+input[type=number],input[type=text]{border:2px solid var(--line);border-radius:10px;padding:7px 10px;width:130px}
+label{font-weight:600}
+.coin,.die{display:inline-flex;align-items:center;justify-content:center;font-weight:900;margin:4px;width:62px;height:62px}
+.coin{border-radius:50%;background:radial-gradient(#ffe27a,#e0a915);border:3px solid #b8860b;color:#5a3d00}
+.coin.t{background:radial-gradient(#eee,#aab);border-color:#778;color:#334}
+.die{border-radius:14px;background:#fff;border:3px solid var(--ink);font-size:1.7rem}
+.spin{animation:flip .5s ease-in-out}
+.shake{animation:shake .5s ease-in-out}
+@keyframes flip{0%{transform:rotateY(0) translateY(0)}50%{transform:rotateY(540deg) translateY(-26px)}100%{transform:rotateY(1080deg) translateY(0)}}
+@keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-25deg) translateY(-8px)}40%{transform:rotate(22deg)}60%{transform:rotate(-18deg) translateY(-6px)}80%{transform:rotate(12deg)}}
+@media (prefers-reduced-motion:reduce){.spin,.shake{animation:none}}
+.list{max-height:260px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px;background:#fcfdff}
+.ok{color:var(--ok);font-weight:800}.bad{color:var(--bad);font-weight:800}
+.sr{position:absolute;left:-9999px}
+.qbox{font-size:1.1em}
+.choice{display:block;margin:6px 0;padding:8px 12px;border:2px solid var(--line);border-radius:10px;cursor:pointer}
+.tbadge{background:var(--soft);color:var(--pri-d);border-radius:8px;padding:2px 8px;font-size:.8rem;font-weight:700}
+.ex{background:#f8faff;border:1px dashed var(--pri);border-radius:12px;padding:8px 12px;margin:6px 0}
+.hidden-ans{display:none}
+body.teacher .hidden-ans{display:block}
+@media (max-width:600px){html{font-size:15px}input[type=range]{width:150px}}
+@media print{header,nav,.noprint,.btn{display:none!important}body{background:#fff}.card{border:1px solid #888;break-inside:avoid}.panel[hidden]{display:none!important}.hidden-ans{display:block}}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>🎲 경우의 수 탐험대</h1><small>중학교 2학년 수학 · 직접 해 보며 익히기</small></div>
+  <div class="row noprint">
+    <button class="btn orange" id="bigBtn" aria-pressed="false">큰 글씨 모드</button>
+  </div>
+</header>
+<nav role="tablist" aria-label="학습 단계" id="tabs"></nav>
+<main id="main">
+  <section class="panel" id="p0" role="tabpanel" hidden></section>
+  <section class="panel" id="p1" role="tabpanel" hidden></section>
+  <section class="panel" id="p2" role="tabpanel" hidden></section>
+  <section class="panel" id="p3" role="tabpanel" hidden></section>
+  <section class="panel" id="p4" role="tabpanel" hidden></section>
+  <section class="panel" id="p5" role="tabpanel" hidden></section>
+  <section class="panel" id="p6" role="tabpanel" hidden></section>
+</main>
+
+<!-- ===== 순수 계산 로직 (노드에서도 검증) ===== -->
+<script id="logic">
+var L=(function(){
+  function fact(n){var r=1;for(var i=2;i<=n;i++)r*=i;return r;}
+  function nPr(n,r){if(r<0||r>n)return 0;var x=1;for(var i=0;i<r;i++)x*=n-i;return x;}
+  function nCr(n,r){if(r<0||r>n)return 0;var x=1;for(var i=1;i<=r;i++)x=x*(n-r+i)/i;return Math.round(x);}
+  // 순열 나열 (limit개까지 담고, 총 개수는 공식으로)
+  function perms(items,r,limit){
+    var out=[],used=[],cur=[];
+    (function rec(){
+      if(out.length>=limit)return;
+      if(cur.length===r){out.push(cur.slice());return;}
+      for(var i=0;i<items.length;i++){if(used[i])continue;used[i]=true;cur.push(items[i]);rec();cur.pop();used[i]=false;if(out.length>=limit)return;}
+    })();
+    return {list:out,total:nPr(items.length,r)};
+  }
+  function combos(items,r,limit){
+    var out=[],cur=[];
+    (function rec(s){
+      if(out.length>=limit)return;
+      if(cur.length===r){out.push(cur.slice());return;}
+      for(var i=s;i<items.length;i++){cur.push(items[i]);rec(i+1);cur.pop();if(out.length>=limit)return;}
+    })(0);
+    return {list:out,total:nCr(items.length,r)};
+  }
+  // 서로 다른 숫자 카드로 r자리 정수 (맨 앞 0 불가)
+  function makeIntegers(digits,r,evenOnly){
+    var res=[],used=[],cur=[];
+    (function rec(){
+      if(cur.length===r){
+        if(r>1&&cur[0]===0)return;
+        if(evenOnly&&cur[r-1]%2!==0)return;
+        res.push(Number(cur.join('')));return;
+      }
+      for(var i=0;i<digits.length;i++){if(used[i])continue;used[i]=true;cur.push(digits[i]);rec();cur.pop();used[i]=false;}
+    })();
+    return res;
+  }
+  // n명을 한 줄로 세울 때 group(이름 배열)이 이웃하는 경우
+  function adjacentArrangements(items,group,limit){
+    var n=items.length,k=group.length,list=[],count=0;
+    var all=perms(items,n,Infinity).list;
+    for(var a=0;a<all.length;a++){
+      var p=all[a],pos=[];
+      for(var i=0;i<n;i++)if(group.indexOf(p[i])>=0)pos.push(i);
+      if(pos[pos.length-1]-pos[0]===k-1){count++;if(list.length<limit)list.push(p);}
+    }
+    return {count:count,list:list,formula:fact(n-k+1)*fact(k)};
+  }
+  function gridPaths(a,b){return nCr(a+b,a);}
+  // DP로 (0,0)->(a,b) 오른쪽/위쪽 최단경로 수, via 지점 필수
+  function gridPathsDP(a,b,via){
+    var f=[];for(var x=0;x<=a;x++){f.push([]);for(var y=0;y<=b;y++){
+      var v=(x===0&&y===0)?1:((x>0?f[x-1][y]:0)+(y>0?f[x][y-1]:0));
+      f[x].push(v);}}
+    if(!via)return f[a][b];
+    var g=[];for(var x2=0;x2<=a;x2++){g.push([]);for(var y2=0;y2<=b;y2++){
+      var w;
+      if(x2<via[0]||y2<via[1])w=0;
+      else if(x2===via[0]&&y2===via[1])w=f[x2][y2];
+      else w=(x2>0?g[x2-1][y2]:0)+(y2>0?g[x2][y2-1]:0);
+      g[x2].push(w);}}
+    return g[a][b];
+  }
+  function pathsVia(a,b,x,y){return nCr(x+y,x)*nCr(a-x+b-y,a-x);}
+  function stairs(n){var f=[1,1];for(var i=2;i<=n;i++)f.push(f[i-1]+f[i-2]);return f[n];}
+  function diceSumWays(n){
+    var w={0:1};
+    for(var d=0;d<n;d++){var nw={};for(var s in w){for(var f=1;f<=6;f++){var t=Number(s)+f;nw[t]=(nw[t]||0)+w[s];}}w=nw;}
+    return w;
+  }
+  function product(a){return a.reduce(function(x,y){return x*y;},1);}
+  // 수형도: levels = [[라벨...],[라벨...]] -> 모든 경로
+  function treePaths(levels){
+    var res=[[]];
+    levels.forEach(function(lv){var nx=[];res.forEach(function(p){lv.forEach(function(o){nx.push(p.concat(o));});});res=nx;});
+    return res;
+  }
+  function countDice(n,pred){ // n개 주사위 모든 경우 중 pred(눈 배열)을 만족하는 수
+    var c=0;(function rec(cur){if(cur.length===n){if(pred(cur))c++;return;}for(var f=1;f<=6;f++){cur.push(f);rec(cur);cur.pop();}})([]);return c;
+  }
+
+  /* ---------- 문제 은행 ---------- */
+  var rnd=function(a,b){return a+Math.floor(Math.random()*(b-a+1));};
+  var pick=function(arr){return arr[rnd(0,arr.length-1)];};
+  var G=[];
+  function add(cat,make){G.push({cat:cat,make:make});}
+
+  add('합의 법칙',function(){var a=rnd(2,7),b=rnd(2,7);
+    return {type:'num',text:'집에서 학교까지 가는 버스 노선이 '+a+'가지, 지하철 노선이 '+b+'가지 있다. 버스 또는 지하철 중 한 가지만 이용하여 갈 때, 가는 방법은 모두 몇 가지인가?',ans:a+b,
+    hints:['버스와 지하철을 동시에 이용하지는 않아요. 두 사건이 동시에 일어나나요?','동시에 일어나지 않으므로 합의 법칙을 써요.'],
+    exp:'버스와 지하철은 동시에 이용할 수 없으므로 합의 법칙을 사용합니다. '+a+' + '+b+' = '+(a+b)+'(가지)'};});
+  add('곱의 법칙',function(){var a=rnd(2,6),b=rnd(2,6);
+    return {type:'num',text:'티셔츠 '+a+'벌과 바지 '+b+'벌이 있다. 티셔츠 한 벌과 바지 한 벌을 짝지어 입는 방법은 모두 몇 가지인가?',ans:a*b,
+    hints:['티셔츠를 고르는 일과 바지를 고르는 일은 이어서(그리고) 일어나요.','곱의 법칙: (티셔츠 수) × (바지 수)'],
+    exp:'티셔츠를 고르는 방법이 '+a+'가지이고 각각에 대해 바지를 고르는 방법이 '+b+'가지이므로 '+a+' × '+b+' = '+(a*b)+'(가지)'};});
+  add('곱의 법칙',function(){var a=rnd(2,5),b=rnd(2,5);
+    return {type:'num',text:'A 마을에서 B 마을로 가는 길이 '+a+'가지, B 마을에서 C 마을로 가는 길이 '+b+'가지 있다. A 마을에서 B 마을을 거쳐 C 마을로 가는 방법은 모두 몇 가지인가? (같은 길을 되돌아오지 않는다)',ans:a*b,
+    hints:['A→B를 정한 다음 B→C를 정해요. 두 일이 연달아 일어나요.','곱의 법칙을 사용해요.'],
+    exp:'A→B가 '+a+'가지, 각각에 대해 B→C가 '+b+'가지이므로 '+a+' × '+b+' = '+(a*b)+'(가지)'};});
+  add('동전·주사위',function(){
+    var s1=rnd(2,6),s2=pick([8,9,10,11,12]);
+    var c=countDice(2,function(d){var s=d[0]+d[1];return s===s1||s===s2;});
+    var w=diceSumWays(2);
+    return {type:'num',text:'서로 다른 주사위 2개를 동시에 던질 때, 나오는 눈의 합이 '+s1+' 또는 '+s2+'인 경우의 수는?',ans:c,
+    hints:['합이 '+s1+'인 경우와 합이 '+s2+'인 경우를 따로 나열해 보세요.','두 경우는 동시에 일어나지 않으므로 더해요.'],
+    exp:'합이 '+s1+'인 경우 '+w[s1]+'가지, 합이 '+s2+'인 경우 '+w[s2]+'가지. 동시에 일어나지 않으므로 '+w[s1]+' + '+w[s2]+' = '+c+'(가지)'};});
+  add('동전·주사위',function(){var n=rnd(2,4);
+    return {type:'num',text:'서로 다른 동전 '+n+'개를 동시에 던질 때, 일어나는 모든 경우의 수는?',ans:Math.pow(2,n),
+    hints:['동전 한 개는 앞면 또는 뒷면, 2가지예요.','동전마다 2가지씩 이어서 일어나니 곱의 법칙!'],
+    exp:'각 동전마다 2가지씩이므로 '+Array(n).fill(2).join(' × ')+' = '+Math.pow(2,n)+'(가지)'};});
+  add('동전·주사위',function(){var a=rnd(1,2),b=rnd(1,2);
+    return {type:'num',text:'동전 '+a+'개와 주사위 '+b+'개를 동시에 던질 때, 일어나는 모든 경우의 수는?',ans:Math.pow(2,a)*Math.pow(6,b),
+    hints:['동전 '+a+'개의 경우의 수와 주사위 '+b+'개의 경우의 수를 각각 구해 보세요.','두 결과를 곱해요.'],
+    exp:'동전 '+a+'개: '+Math.pow(2,a)+'가지, 주사위 '+b+'개: '+Math.pow(6,b)+'가지 → '+Math.pow(2,a)+' × '+Math.pow(6,b)+' = '+(Math.pow(2,a)*Math.pow(6,b))+'(가지)'};});
+  add('동전·주사위',function(){
+    var t=rnd(0,2),k=pick([3,4,5]),text,pred,name;
+    if(t===0){name='눈의 곱이 짝수';pred=function(d){return d[0]*d[1]%2===0;};}
+    else if(t===1){name='눈의 곱이 홀수';pred=function(d){return d[0]*d[1]%2===1;};}
+    else{name='눈의 합이 '+k+'의 배수';pred=function(d){return (d[0]+d[1])%k===0;};}
+    var c=countDice(2,pred);
+    return {type:'num',text:'서로 다른 주사위 2개를 던질 때, '+name+'가 되는 경우의 수는?',ans:c,
+    hints:['표(6×6)를 그려 조건에 맞는 칸을 세어 보세요.',t<2?'곱이 홀수이려면 두 눈이 모두 홀수여야 해요. 전체에서 빼는 방법도 있어요.':'합이 가능한 값('+k+', '+(2*k)+', ...)별로 나누어 세어 보세요.'],
+    exp:'36가지 중 조건에 맞는 경우를 빠짐없이 중복 없이 세면 '+c+'가지입니다.'};});
+  add('동전·주사위',function(){var d=rnd(1,4);
+    var c=countDice(2,function(x){return Math.abs(x[0]-x[1])===d;});
+    return {type:'num',text:'서로 다른 주사위 2개를 던질 때, 나온 두 눈의 차가 '+d+'인 경우의 수는?',ans:c,
+    hints:['(큰 눈, 작은 눈)이 아니라 (첫째 주사위, 둘째 주사위)로 순서쌍을 생각해 보세요.','(a,b)와 (b,a)는 서로 다른 경우예요.'],
+    exp:'(첫째, 둘째)의 순서쌍을 나열하면 '+c+'가지입니다. 차가 '+d+'인 두 눈의 쌍이 '+(6-d)+'쌍이고 각각 순서가 2가지이므로 '+(6-d)+' × 2 = '+c+'(가지)'};});
+  add('동전·주사위',function(){var type=rnd(0,2);
+    var name=['짝수','소수(2, 3, 5)','3의 배수'][type];
+    var pred=[function(f){return f%2===0;},function(f){return [2,3,5].indexOf(f)>=0;},function(f){return f%3===0;}][type];
+    var c=0;for(var f=1;f<=6;f++)if(pred(f))c++;
+    return {type:'num',text:'동전 1개와 주사위 1개를 동시에 던질 때, 동전은 앞면이 나오고 주사위는 '+name+'의 눈이 나오는 경우의 수는?',ans:c,
+    hints:['동전이 앞면인 경우는 몇 가지인가요?','주사위가 '+name+'인 눈을 나열해 보세요. 그리고(동시에)이므로 곱해요.'],
+    exp:'동전 앞면 1가지 × 주사위 '+name+' '+c+'가지 = '+c+'(가지)'};});
+  add('순열',function(){var n=rnd(4,8),r=rnd(2,3);
+    return {type:'num',text:'서로 다른 '+n+'명의 학생 중에서 '+r+'명을 뽑아 한 줄로 세우는 경우의 수는?',ans:nPr(n,r),
+    hints:['첫 번째 자리에 세울 수 있는 사람은 몇 명인가요?','뽑힌 사람은 다시 뽑을 수 없으니 한 명씩 줄어요: '+n+'P'+r],
+    exp:Array.from({length:r},function(_,i){return n-i;}).join(' × ')+' = '+nPr(n,r)+'(가지)  (= '+n+'P'+r+')'};});
+  add('순열',function(){var n=rnd(3,6);
+    return {type:'num',text:n+'명의 학생을 한 줄로 세우는 경우의 수는?',ans:fact(n),
+    hints:['첫째 자리는 '+n+'명 중 하나, 둘째 자리는 남은 사람 중 하나...','n! = n × (n−1) × … × 1'],
+    exp:Array.from({length:n},function(_,i){return n-i;}).join(' × ')+' = '+fact(n)+'(가지)'};});
+  add('순열',function(){var n=rnd(4,9),r=rnd(2,3);
+    var roles=['회장','부회장','총무'].slice(0,r);
+    return {type:'num',text:'학생 '+n+'명 중에서 '+roles.join(', ')+' 각 1명씩을 뽑는 경우의 수는? (한 사람이 두 역할을 맡을 수 없다)',ans:nPr(n,r),
+    hints:['역할(자격)이 서로 다르므로 같은 사람들이라도 역할이 바뀌면 다른 경우예요.','순서가 있는 선택이므로 순열 '+n+'P'+r],
+    exp:'자격이 구분되므로 '+Array.from({length:r},function(_,i){return n-i;}).join(' × ')+' = '+nPr(n,r)+'(가지)'};});
+  add('조합',function(){var n=rnd(5,9),r=rnd(2,3);
+    return {type:'num',text:'학생 '+n+'명 중에서 대표 '+r+'명을 뽑는 경우의 수는? (대표끼리는 자격의 차이가 없다)',ans:nCr(n,r),
+    hints:['먼저 '+r+'명을 순서 있게 뽑는 경우 '+n+'P'+r+'을 구해요.','같은 사람들이 뽑힌 경우를 '+r+'! 가지씩 중복해서 센 것이니 '+fact(r)+'로 나눠요.'],
+    exp:n+'P'+r+' ÷ '+r+'! = '+nPr(n,r)+' ÷ '+fact(r)+' = '+nCr(n,r)+'(가지)'};});
+  add('조합',function(){var n=rnd(4,10);
+    return {type:'num',text:n+'명이 모두 서로 한 번씩 악수를 할 때, 악수의 총 횟수는?',ans:nCr(n,2),
+    hints:['A와 B의 악수와 B와 A의 악수는 같은 악수예요.','2명을 뽑는 조합: '+n+'C2'],
+    exp:'두 사람을 짝짓는 경우: '+n+' × '+(n-1)+' ÷ 2 = '+nCr(n,2)+'(번)'};});
+  add('조합',function(){var n=rnd(5,9);
+    var tri=rnd(0,1)===0;
+    var ans=tri?nCr(n,3):nCr(n,2)-n;
+    return tri?{type:'num',text:'한 직선 위에 있지 않은 서로 다른 '+n+'개의 점 중 세 점을 꼭짓점으로 하는 삼각형의 개수는?',ans:ans,
+      hints:['세 점을 고르면 삼각형이 하나 정해져요. 순서는 상관없어요.',n+'C3'],exp:n+'C3 = '+n+' × '+(n-1)+' × '+(n-2)+' ÷ 6 = '+ans+'(개)'}
+      :{type:'num',text:'볼록한 '+n+'각형의 대각선의 개수는?',ans:ans,
+      hints:['꼭짓점 2개를 이어 선분을 만들면 몇 개일까요?','그중 변이 되는 '+n+'개는 대각선이 아니에요.'],exp:'선분 '+n+'C2 = '+nCr(n,2)+'개에서 변 '+n+'개를 빼면 '+ans+'(개)'};});
+  add('정수 만들기',function(){var m=rnd(3,6);
+    var digs=[];for(var i=0;i<=m;i++)digs.push(i);
+    var c=makeIntegers(digs,2).length;
+    return {type:'num',text:'0, 1, 2, …, '+m+'이 하나씩 적힌 카드 '+(m+1)+'장 중 서로 다른 2장을 뽑아 만들 수 있는 두 자리 정수의 개수는?',ans:c,
+    hints:['십의 자리에는 0이 올 수 없어요.','십의 자리: 0 제외 '+m+'가지, 일의 자리: 십의 자리에 쓴 카드를 뺀 '+m+'가지'],
+    exp:'십의 자리 '+m+'가지 × 일의 자리 '+m+'가지 = '+c+'(개)'};});
+  add('정수 만들기',function(){var m=rnd(4,6);
+    var digs=[];for(var i=1;i<=m;i++)digs.push(i);
+    var c=makeIntegers(digs,3).length;
+    return {type:'num',text:'1, 2, …, '+m+'이 하나씩 적힌 카드 '+m+'장 중 서로 다른 3장을 뽑아 만들 수 있는 세 자리 정수의 개수는?',ans:c,
+    hints:['0이 없으므로 맨 앞자리 제한이 없어요.','백의 자리 '+m+'가지, 십의 자리 '+(m-1)+'가지, 일의 자리 '+(m-2)+'가지'],
+    exp:m+' × '+(m-1)+' × '+(m-2)+' = '+c+'(개)  (= '+m+'P3)'};});
+  add('정수 만들기',function(){var m=rnd(3,5);
+    var digs=[];for(var i=0;i<=m;i++)digs.push(i);
+    var all=makeIntegers(digs,3,true);
+    var end0=all.filter(function(x){return x%10===0;}).length;
+    return {type:'num',text:'0, 1, 2, …, '+m+'이 하나씩 적힌 카드 '+(m+1)+'장 중 서로 다른 3장을 뽑아 만들 수 있는 세 자리 짝수의 개수는?',ans:all.length,
+    hints:['일의 자리가 0인 경우와 0이 아닌 짝수인 경우로 나누어요.','일의 자리가 0이 아닌 짝수이면 백의 자리에 0이 올 수 없는 점에 주의!'],
+    exp:'일의 자리가 0인 경우 '+end0+'개 + 일의 자리가 0이 아닌 짝수인 경우 '+(all.length-end0)+'개 = '+all.length+'(개)'};});
+  add('이웃하게 세우기',function(){var n=rnd(4,7);
+    var names=['A','B','C','D','E','F','G'].slice(0,n);
+    var c=adjacentArrangements(names,['A','B'],0).count;
+    return {type:'num',text:n+'명이 한 줄로 설 때, 특정한 2명이 이웃하여 서는 경우의 수는?',ans:c,
+    hints:['이웃하는 2명을 한 묶음으로 생각해요.','묶음을 포함해 '+(n-1)+'개를 세우는 경우 × 묶음 안에서 자리를 바꾸는 경우'],
+    exp:'('+(n-1)+'!) × 2! = '+fact(n-1)+' × 2 = '+c+'(가지)'};});
+  add('최단경로',function(){var a=rnd(2,5),b=rnd(2,4);
+    return {type:'num',text:'가로 길이 '+a+'칸, 세로 길이 '+b+'칸인 바둑판 모양의 길이 있다. 왼쪽 아래 A에서 오른쪽 위 B까지 오른쪽 또는 위쪽으로만 가는 최단 경로는 모두 몇 가지인가?',ans:gridPathsDP(a,b),
+    hints:['각 교차점에 도착하는 방법의 수를 왼쪽과 아래쪽 점의 수를 더해 채워 보세요.','오른쪽 '+a+'번, 위쪽 '+b+'번을 일렬로 나열하는 경우와 같아요.'],
+    exp:'교차점마다 (왼쪽 점의 경로 수) + (아래쪽 점의 경로 수)를 적어 가면 도착점에서 '+gridPathsDP(a,b)+'가지. 공식으로는 '+(a+b)+'C'+a+' = '+nCr(a+b,a)+'(가지)'};});
+  add('최단경로',function(){var a=rnd(4,5),b=rnd(3,4),x=rnd(1,a-1),y=rnd(1,b-1);
+    var c=gridPathsDP(a,b,[x,y]);
+    return {type:'num',text:'가로 '+a+'칸, 세로 '+b+'칸의 바둑판 모양 길에서 왼쪽 아래 A에서 오른쪽 위 B까지 최단 거리로 가려 한다. A에서 오른쪽으로 '+x+'칸, 위로 '+y+'칸 떨어진 지점 P를 반드시 지나는 경우는 모두 몇 가지인가?',ans:c,
+    hints:['A→P와 P→B 두 구간으로 나누어요.','두 구간의 경로 수를 각각 구해 곱해요.'],
+    exp:'A→P: '+nCr(x+y,x)+'가지, P→B: '+nCr(a-x+b-y,a-x)+'가지 → '+nCr(x+y,x)+' × '+nCr(a-x+b-y,a-x)+' = '+c+'(가지)'};});
+  add('합의 법칙',function(){var a=rnd(2,4),b=rnd(2,4),c=rnd(1,4);
+    return {type:'num',text:'A 지점에서 C 지점까지 가는 방법은 두 가지이다. B 지점을 거쳐 가는 방법(A→B 길 '+a+'가지, B→C 길 '+b+'가지)과 B를 거치지 않고 가는 직통 길 '+c+'가지가 있다. A에서 C까지 가는 방법은 모두 몇 가지인가?',ans:a*b+c,
+    hints:['B를 거치는 경우의 수를 먼저 구해요.','B를 거치는 경우와 직통은 동시에 일어나지 않아요 → 합의 법칙'],
+    exp:'B를 거치는 경우: '+a+' × '+b+' = '+(a*b)+'가지, 직통: '+c+'가지 → '+(a*b)+' + '+c+' = '+(a*b+c)+'(가지)'};});
+  add('곱의 법칙',function(){var n=rnd(2,4);
+    return {type:'num',text:'가위바위보를 '+n+'명이 동시에 한 번 할 때, 나올 수 있는 모든 경우의 수는?',ans:Math.pow(3,n),
+    hints:['한 사람이 낼 수 있는 것은 가위, 바위, 보 3가지예요.','사람마다 3가지씩 → 곱의 법칙'],
+    exp:Array(n).fill(3).join(' × ')+' = '+Math.pow(3,n)+'(가지)'};});
+  add('합의 법칙',function(){var n=rnd(4,8);
+    return {type:'num',text:'계단 '+n+'칸을 오르려고 한다. 한 번에 1칸 또는 2칸씩 오를 수 있을 때, 정확히 '+n+'칸을 오르는 방법은 모두 몇 가지인가?',ans:stairs(n),
+    hints:['마지막 걸음이 1칸이었는지 2칸이었는지로 나누어 보세요.','n칸 방법 수 = (n−1칸 방법 수) + (n−2칸 방법 수). 1칸: 1가지, 2칸: 2가지'],
+    exp:'1칸부터 차례로 구하면 '+Array.from({length:n},function(_,i){return stairs(i+1);}).join(', ')+' 이므로 '+n+'칸은 '+stairs(n)+'가지'};});
+  add('비교하기',function(){
+    var pool=[{t:'동전 4개를 던질 때의 경우의 수',v:16},{t:'주사위 2개를 던질 때의 경우의 수',v:36},{t:'6명 중 2명을 뽑아 한 줄로 세우는 경우의 수',v:nPr(6,2)},{t:'6명 중 대표 3명을 뽑는 경우의 수',v:nCr(6,3)},{t:'동전 1개와 주사위 2개를 던질 때의 경우의 수',v:72},{t:'4명을 한 줄로 세우는 경우의 수',v:fact(4)},{t:'7명 중 대표 2명을 뽑는 경우의 수',v:nCr(7,2)},{t:'5명 중 회장, 부회장을 뽑는 경우의 수',v:nPr(5,2)},{t:'가위바위보를 3명이 할 때의 경우의 수',v:27},{t:'동전 3개를 던질 때의 경우의 수',v:8}];
+    var ch,tries=0;
+    while(true){
+      var s=pool.slice().sort(function(){return Math.random()-0.5;}).slice(0,4);
+      var mx=Math.max.apply(null,s.map(function(o){return o.v;}));
+      if(s.filter(function(o){return o.v===mx;}).length===1){ch=s;break;}
+      if(++tries>50){ch=[pool[0],pool[2],pool[3],pool[9]];break;}
+    }
+    var mx2=Math.max.apply(null,ch.map(function(o){return o.v;}));
+    return {type:'choice',text:'다음 중 경우의 수가 가장 큰 것은?',choices:ch.map(function(o){return o.t;}),ans:ch.findIndex(function(o){return o.v===mx2;}),
+    hints:['각 항목의 경우의 수를 하나씩 계산해 보세요.','순서가 있는지(순열), 없는지(조합)를 구분해 계산해요.'],
+    exp:ch.map(function(o,i){return (i+1)+'번: '+o.v+'가지';}).join(', ')+' → 가장 큰 것은 '+(ch.findIndex(function(o){return o.v===mx2;})+1)+'번'};});
+  add('순열',function(){var n=rnd(4,6);
+    var names=['A','B','C','D','E','F'].slice(0,n);
+    var c=perms(names,2,0).total;
+    return {type:'choice',text:n+'명 중 2명을 뽑을 때, 「회장·부회장」을 뽑는 경우의 수와 「청소 당번 2명」을 뽑는 경우의 수에 대한 설명으로 옳은 것은?',
+    choices:['두 경우의 수는 같다.','회장·부회장이 당번 뽑기의 2배이다.','당번 뽑기가 회장·부회장 뽑기의 2배이다.','두 경우 모두 '+n+'P2이다.'],ans:1,
+    hints:['회장·부회장은 자격이 구분되고, 청소 당번은 구분되지 않아요.','순열은 조합의 r! = 2배예요.'],
+    exp:'회장·부회장: '+n+'P2 = '+c+'가지, 당번: '+n+'C2 = '+nCr(n,2)+'가지. 순열이 조합의 2!배입니다.'};});
+  return {fact:fact,nPr:nPr,nCr:nCr,perms:perms,combos:combos,makeIntegers:makeIntegers,adjacentArrangements:adjacentArrangements,
+    gridPaths:gridPaths,gridPathsDP:gridPathsDP,pathsVia:pathsVia,stairs:stairs,diceSumWays:diceSumWays,product:product,treePaths:treePaths,
+    countDice:countDice,bank:G,rnd:rnd,pick:pick};
+})();
+if(typeof module!=='undefined')module.exports=L;
+</script>
+
+<!-- ===== 화면 / 상호작용 ===== -->
+<script id="ui">
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var TABS=['개념 배우기','동전·주사위 실험','수형도 그리기','합·곱의 법칙 연습','순열·조합','문제 풀기','교사용 도우미'];
+var store={get:function(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+var settings=store.get('gs-settings',{big:false,teacher:false});
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+/* ----- 탭 ----- */
+var cur=0,renders=[];
+var nav=$('tabs');
+TABS.forEach(function(t,i){
+  var b=document.createElement('button');b.type='button';b.id='tab'+i;b.setAttribute('role','tab');
+  b.setAttribute('aria-controls','p'+i);b.textContent=(i+1)+'. '+t;
+  b.addEventListener('click',function(){show(i);});
+  b.addEventListener('keydown',function(e){
+    var n=null;
+    if(e.key==='ArrowRight')n=(cur+1)%TABS.length;else if(e.key==='ArrowLeft')n=(cur+TABS.length-1)%TABS.length;
+    else if(e.key==='Home')n=0;else if(e.key==='End')n=TABS.length-1;
+    if(n!==null){e.preventDefault();show(n);$('tab'+n).focus();}
+  });
+  nav.appendChild(b);
+});
+function show(i){
+  cur=i;
+  TABS.forEach(function(_,k){
+    var sel=k===i;$('tab'+k).setAttribute('aria-selected',sel);$('tab'+k).tabIndex=sel?0:-1;$('p'+k).hidden=!sel;
+  });
+  renders[i]();
+  try{history.replaceState(null,'','#t'+i);}catch(e){}
+}
+function applySettings(){
+  document.body.classList.toggle('big',settings.big);
+  document.body.classList.toggle('teacher',settings.teacher);
+  $('bigBtn').setAttribute('aria-pressed',settings.big);
+  $('bigBtn').textContent=settings.big?'큰 글씨 끄기':'큰 글씨 모드';
+  store.set('gs-settings',settings);
+}
+$('bigBtn').addEventListener('click',function(){settings.big=!settings.big;applySettings();if(cur===1)drawChart();if(cur===6)renders[6]();});
+
+/* ===== 1. 개념 ===== */
+renders[0]=function(){
+  $('p0').innerHTML='<h2>1. 개념 배우기</h2>'+
+  '<div class="card"><h3>경우의 수란?</h3><p>어떤 사건이 일어날 수 있는 <b>모든 가짓수</b>를 <b>경우의 수</b>라고 해요. 셀 때는 <b>빠짐없이, 중복 없이</b> 세는 것이 가장 중요해요.</p>'+
+  '<div class="ex">예) 주사위 1개를 던질 때 나오는 눈은 1, 2, 3, 4, 5, 6 → 경우의 수 <b>6</b><br>예) 동전 1개를 던질 때 → 앞, 뒤 → 경우의 수 <b>2</b></div>'+
+  '<div class="note">동전 2개를 던질 때 (앞, 뒤)와 (뒤, 앞)은 <b>서로 다른</b> 경우예요. 동전(또는 주사위)을 서로 구별해서 생각해요.</div></div>'+
+  '<div class="grid2"><div class="card"><h3>합의 법칙 (~ 또는 ~)</h3><p>두 사건 A, B가 <b>동시에 일어나지 않을 때</b>, A가 일어나는 경우가 m가지, B가 일어나는 경우가 n가지이면</p>'+
+  '<div class="formula">A 또는 B → m + n (가지)</div>'+
+  '<div class="ex">예) 주사위를 던져 <b>2 이하 또는 5 이상</b>의 눈이 나오는 경우<br>2 이하: 1, 2 → 2가지, 5 이상: 5, 6 → 2가지<br>동시에 일어나지 않으므로 2 + 2 = <b>4가지</b></div>'+
+  '<div class="note">주의! 동시에 일어날 수 있는 경우(예: 짝수 또는 3의 배수)는 겹치는 경우(6)가 있어서 그냥 더하면 중복 계산이 돼요.</div></div>'+
+  '<div class="card"><h3>곱의 법칙 (~ 그리고 ~)</h3><p>사건 A가 일어나는 경우가 m가지이고, 그 각각에 대해 사건 B가 일어나는 경우가 n가지이면 (A와 B가 <b>잇달아</b> 일어날 때)</p>'+
+  '<div class="formula">A 그리고 B → m × n (가지)</div>'+
+  '<div class="ex">예) 티셔츠 3벌, 바지 2벌 → 짝지어 입는 방법 3 × 2 = <b>6가지</b><br>예) 동전 1개와 주사위 1개 → 2 × 6 = <b>12가지</b></div></div></div>'+
+  '<div class="card"><h3>한눈에 비교</h3><table><tr><th>구분</th><th>키워드</th><th>계산</th><th>예</th></tr><tr><td>합의 법칙</td><td>또는, 중 하나</td><td>더하기 (+)</td><td>버스 3 + 지하철 2 = 5</td></tr><tr><td>곱의 법칙</td><td>그리고, 동시에, 잇달아</td><td>곱하기 (×)</td><td>길 3 × 길 2 = 6</td></tr></table></div>'+
+  '<div class="card"><h3>줄 세우기와 뽑기 미리보기</h3><p><b>순열</b>: 순서를 생각하는 나열 &nbsp;<span class="formula">nPr = n × (n−1) × … × (n−r+1)</span></p>'+
+  '<p><b>조합</b>: 순서를 생각하지 않는 뽑기 &nbsp;<span class="formula">nCr = nPr ÷ r!</span></p>'+
+  '<p>다음 단계에서 직접 실험하고, 수형도를 그리고, 문제를 풀어 보세요!</p>'+
+  '<button class="btn" id="go1">동전·주사위 실험하러 가기 →</button></div>';
+  $('go1').onclick=function(){show(1);};
+};
+
+/* ===== 2. 실험 ===== */
+var exp={kind:'coin',n:1,counts:{},total:0,last:null};
+function expCats(){
+  var n=exp.n;
+  if(exp.kind==='coin'){var out=[];(function rec(p){if(p.length===n){out.push({key:p.join(''),ways:1,label:p.join('')});return;}['앞','뒤'].forEach(function(s){rec(p.concat(s));});})([]);return out;}
+  var w=L.diceSumWays(n);
+  return Object.keys(w).map(Number).sort(function(a,b){return a-b;}).map(function(s){return {key:String(s),ways:w[s],label:String(s)};});
+}
+function expAll(){return exp.kind==='coin'?Math.pow(2,exp.n):Math.pow(6,exp.n);}
+function expRoll(){
+  var r=[],i;
+  if(exp.kind==='coin'){for(i=0;i<exp.n;i++)r.push(Math.random()<0.5?'앞':'뒤');return {items:r,key:r.join('')};}
+  var s=0;for(i=0;i<exp.n;i++){var f=1+Math.floor(Math.random()*6);r.push(f);s+=f;}
+  return {items:r,key:String(s)};
+}
+function expShow(res,animate){
+  var box=$('xres');
+  box.innerHTML=res.items.map(function(v){return exp.kind==='coin'?'<span class="coin'+(v==='뒤'?' t':'')+(animate?' spin':'')+'">'+v+'</span>':'<span class="die'+(animate?' shake':'')+'">'+v+'</span>';}).join('')+
+   '<div>결과: <b>'+res.items.join(exp.kind==='coin'?' · ':' + ')+(exp.kind==='dice'&&exp.n>1?' = '+res.key:'')+'</b></div>';
+}
+function expThrow(times){
+  var res;
+  for(var i=0;i<times;i++){res=expRoll();exp.counts[res.key]=(exp.counts[res.key]||0)+1;exp.total++;}
+  exp.last=res;
+  expShow(res,times===1);
+  if(times===1){$('xthrow1').disabled=true;setTimeout(function(){$('xthrow1').disabled=false;},520);}
+  expTable();drawChart();
+}
+function expTable(){
+  var cats=expCats(),all=expAll(),h='<table><caption class="sr">이론과 실험 비교표</caption><tr><th>결과</th><th>이론 경우의 수</th><th>이론 확률</th><th>나온 횟수</th><th>나온 비율</th></tr>';
+  cats.forEach(function(c){var o=exp.counts[c.key]||0;
+    h+='<tr><td>'+esc(c.label)+'</td><td>'+c.ways+' / '+all+'</td><td>'+(c.ways/all*100).toFixed(1)+'%</td><td>'+o+'</td><td>'+(exp.total?(o/exp.total*100).toFixed(1)+'%':'-')+'</td></tr>';});
+  h+='<tr><th>합계</th><th>'+all+'</th><th>100%</th><th>'+exp.total+'</th><th>'+(exp.total?'100%':'-')+'</th></tr></table>';
+  $('xtable').innerHTML=h;
+  $('xsum').innerHTML='누적 던진 횟수: <b>'+exp.total+'</b>회 · 이론적 모든 경우의 수: <b>'+all+'</b>가지'+(exp.kind==='dice'&&exp.n>1?' (눈의 합으로 묶어 보여 줘요)':'');
+}
+function drawChart(){
+  var cv=$('xcanvas');if(!cv)return;
+  var cats=expCats(),W=Math.max(300,cv.clientWidth||700),H=260,dpr=window.devicePixelRatio||1;
+  cv.width=W*dpr;cv.height=H*dpr;
+  var g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  var all=expAll(),maxv=1,exps=cats.map(function(c){return exp.total*c.ways/all;});
+  cats.forEach(function(c,i){maxv=Math.max(maxv,exp.counts[c.key]||0,exps[i]);});
+  maxv=Math.ceil(maxv*1.15)||1;
+  var L0=44,R0=10,T0=18,B0=34,pw=W-L0-R0,ph=H-T0-B0,bw=pw/cats.length;
+  g.font='12px sans-serif';g.fillStyle='#4a5675';g.strokeStyle='#e3e8f7';g.textAlign='right';
+  for(var k=0;k<=4;k++){var y=T0+ph-ph*k/4;g.beginPath();g.moveTo(L0,y);g.lineTo(W-R0,y);g.stroke();g.fillText(String(Math.round(maxv*k/4)),L0-5,y+4);}
+  g.textAlign='center';
+  cats.forEach(function(c,i){
+    var o=exp.counts[c.key]||0,x=L0+i*bw,h=ph*o/maxv;
+    g.fillStyle='#2f5bea';g.fillRect(x+bw*0.15,T0+ph-h,bw*0.7,h);
+    g.fillStyle='#1f2a44';if(o)g.fillText(String(o),x+bw/2,T0+ph-h-3);
+    var ey=T0+ph-ph*exps[i]/maxv;g.strokeStyle='#ff8a1f';g.lineWidth=3;g.beginPath();g.moveTo(x+bw*0.05,ey);g.lineTo(x+bw*0.95,ey);g.stroke();g.lineWidth=1;
+    g.fillStyle='#4a5675';g.fillText(c.label,x+bw/2,H-14);
+  });
+  g.textAlign='left';g.fillStyle='#2f5bea';g.fillRect(L0,2,10,10);g.fillStyle='#1f2a44';g.fillText('실제로 나온 횟수',L0+14,11);
+  g.fillStyle='#ff8a1f';g.fillRect(L0+120,5,16,4);g.fillStyle='#1f2a44';g.fillText('이론상 기대 횟수',L0+140,11);
+}
+renders[1]=function(){
+  $('p1').innerHTML='<h2>2. 동전·주사위 실험</h2><div class="card"><div class="row">'+
+  '<label>종류 <select id="xkind"><option value="coin">동전</option><option value="dice">주사위</option></select></label>'+
+  '<label>개수 <select id="xn"><option>1</option><option>2</option><option>3</option></select></label>'+
+  '<button class="btn" id="xthrow1">한 번 던지기!</button><button class="btn sec" data-t="10">10번</button><button class="btn sec" data-t="100">100번</button><button class="btn sec" data-t="1000">1000번</button>'+
+  '<button class="btn sec" id="xreset">기록 지우기</button></div>'+
+  '<div id="xres" aria-live="polite" style="min-height:90px;margin-top:8px">버튼을 눌러 던져 보세요.</div></div>'+
+  '<div class="card"><h3>누적 결과</h3><p id="xsum"></p><canvas id="xcanvas" height="260" role="img" aria-label="결과별 나온 횟수 막대그래프. 주황색 선은 이론상 기대 횟수"></canvas><div id="xtable" style="margin-top:8px;overflow:auto"></div></div>'+
+  '<div class="note">던진 횟수가 많아질수록 실제 결과가 이론(주황 선)에 가까워지는 경향이 있어요. 주사위 2개의 합이 7이 되는 경우는 6가지로 가장 많아요 (합 2는 1가지뿐!).</div>';
+  $('xkind').value=exp.kind;$('xn').value=String(exp.n);
+  function reset(){exp.counts={};exp.total=0;exp.last=null;$('xres').textContent='버튼을 눌러 던져 보세요.';expTable();drawChart();}
+  $('xkind').onchange=function(){exp.kind=this.value;reset();};
+  $('xn').onchange=function(){exp.n=Number(this.value);reset();};
+  $('xthrow1').onclick=function(){expThrow(1);};
+  $('xreset').onclick=reset;
+  Array.prototype.forEach.call($('p1').querySelectorAll('[data-t]'),function(b){b.onclick=function(){expThrow(Number(b.getAttribute('data-t')));};});
+  expTable();drawChart();
+  if(exp.last)expShow(exp.last,false);
+};
+window.addEventListener('resize',function(){if(cur===1)drawChart();});
+
+/* ===== 3. 수형도 ===== */
+var ITEMS={coin:{name:'동전',opts:['앞','뒤']},dice:{name:'주사위',opts:['1','2','3','4','5','6']},rps:{name:'가위바위보',opts:['가위','바위','보']},menu:{name:'메뉴(밥/면)',opts:['밥','면']},drink:{name:'음료',opts:['물','주스','우유']}};
+var tree={steps:['coin','coin'],depth:0};
+function treeSvg(){
+  var steps=tree.steps,D=tree.depth,sizes=steps.map(function(k){return ITEMS[k].opts.length;});
+  var total=L.product(sizes),leaves=L.product(sizes.slice(0,D)),rowH=leaves>24?20:(leaves>10?28:40),colW=96,nw=62,nh=Math.min(22,rowH-2);
+  var Hh=Math.max(1,leaves)*rowH+20,Wd=(D+1)*colW+(D===steps.length?150:30);
+  var s='<svg xmlns="http://www.w3.org/2000/svg" width="'+Wd+'" height="'+Hh+'" role="img" aria-label="수형도">';
+  function yOf(k,i){var block=L.product(sizes.slice(k,D));return 10+(i*block+block/2)*rowH;}
+  function xOf(k){return 40+k*colW;}
+  var cnt=1,k,i,j;
+  for(k=0;k<=D;k++){
+    var num=L.product(sizes.slice(0,k));
+    for(i=0;i<num;i++){
+      var x=xOf(k),y=yOf(k,i),label=k===0?'시작':ITEMS[steps[k-1]].opts[i%sizes[k-1]];
+      if(k>0){var pi=Math.floor(i/sizes[k-1]);s+='<line x1="'+(xOf(k-1)+nw/2)+'" y1="'+yOf(k-1,pi)+'" x2="'+(x-nw/2)+'" y2="'+y+'" stroke="#8a97c4" stroke-width="1.6"/>';}
+    }
+  }
+  for(k=0;k<=D;k++){
+    var num2=L.product(sizes.slice(0,k));
+    for(i=0;i<num2;i++){
+      var lab=k===0?'시작':ITEMS[steps[k-1]].opts[i%sizes[k-1]];
+      var x2=xOf(k),y2=yOf(k,i),last=(k===D);
+      s+='<rect x="'+(x2-nw/2)+'" y="'+(y2-nh/2)+'" width="'+nw+'" height="'+nh+'" rx="'+(nh/2)+'" fill="'+(k===0?'#ff8a1f':(last?'#e6f6ee':'#e8eeff'))+'" stroke="'+(last&&k>0?'#12805c':'#2f5bea')+'" stroke-width="1.5"/>';
+      s+='<text x="'+x2+'" y="'+(y2+4)+'" text-anchor="middle" font-size="'+(nh<18?11:13)+'" font-weight="700" fill="#1f2a44">'+esc(lab)+'</text>';
+      if(k===D&&D===steps.length&&D>0){
+        var path=[],idx=i;for(j=D;j>=1;j--){path.unshift(ITEMS[steps[j-1]].opts[idx%sizes[j-1]]);idx=Math.floor(idx/sizes[j-1]);}
+        s+='<text x="'+(x2+nw/2+8)+'" y="'+(y2+4)+'" font-size="12" fill="#12805c">'+esc('('+path.join(', ')+')')+'</text>';
+      }
+    }
+  }
+  s+='</svg>';return {svg:s,leaves:leaves,total:total,sizes:sizes};
+}
+function treeRender(){
+  var t=treeSvg(),D=tree.depth,n=tree.steps.length;
+  $('tsvg').innerHTML=t.svg;
+  var f=t.sizes.slice(0,D).join(' × ');
+  $('tinfo').innerHTML=D===0?'아직 가지가 없어요. 「다음 단계 펼치기」를 눌러 보세요.':
+   (D<n?'지금까지 '+D+'단계: 가지 끝이 <b>'+t.leaves+'</b>개 ('+f+')':'모든 단계 완성! 총 경우의 수 = '+t.sizes.join(' × ')+' = <b>'+t.total+'</b>가지');
+  $('tnext').disabled=D>=n;$('tprev').disabled=D<=0;
+  var q=$('tcount');q.textContent='총 경우의 수(곱의 법칙): '+t.sizes.join(' × ')+' = '+t.total+'가지';
+  q.style.visibility=D>=n?'visible':'hidden';
+}
+renders[2]=function(){
+  var opt=function(sel,none){return (none?'<option value="">(없음)</option>':'')+Object.keys(ITEMS).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+ITEMS[k].name+'</option>';}).join('');};
+  $('p2').innerHTML='<h2>3. 수형도 그리기</h2><div class="card"><h3>무엇을 그릴까요?</h3><div class="row" id="tpre">'+
+   '<button class="btn sec" data-p="coin">동전 1개</button><button class="btn sec" data-p="coin,coin">동전 2개</button><button class="btn sec" data-p="coin,coin,coin">동전 3개</button>'+
+   '<button class="btn sec" data-p="dice">주사위 1개</button><button class="btn sec" data-p="dice,dice">주사위 2개</button></div>'+
+   '<div class="row" style="margin-top:6px"><b>직접 고르기:</b><label>① <select id="ts0">'+opt(tree.steps[0])+'</select></label><label>② <select id="ts1">'+opt(tree.steps[1],true)+'</select></label><label>③ <select id="ts2">'+opt(tree.steps[2],true)+'</select></label></div>'+
+   '<p id="tmsg" class="bad" role="alert"></p></div>'+
+   '<div class="card"><div class="row"><label>먼저 예상해 보기: 총 경우의 수는? <input type="number" id="tguess" min="0"></label><button class="btn sec" id="tcheck">확인</button><span id="tgres" aria-live="polite"></span></div></div>'+
+   '<div class="card"><div class="row"><button class="btn" id="tnext">다음 단계 펼치기 ▶</button><button class="btn sec" id="tprev">◀ 한 단계 접기</button><button class="btn orange" id="tall">모두 펼치기</button><button class="btn sec" id="treset">처음으로</button></div>'+
+   '<p id="tinfo" aria-live="polite"></p><div class="svgbox" id="tsvg" tabindex="0" aria-label="수형도 그림 (스크롤 가능)"></div><p class="formula" id="tcount"></p></div>'+
+   '<div class="note">수형도는 일어날 수 있는 경우를 가지로 뻗어 가며 <b>빠짐없이, 중복 없이</b> 나타내는 방법이에요. 마지막 가지 끝의 개수가 곧 경우의 수예요.</div>';
+  function setSteps(arr){
+    var sz=arr.map(function(k){return ITEMS[k].opts.length;});
+    if(L.product(sz)>80){$('tmsg').textContent='가지가 너무 많아요(80개 초과). 항목을 줄여 보세요.';return false;}
+    $('tmsg').textContent='';tree.steps=arr;tree.depth=0;
+    ['ts0','ts1','ts2'].forEach(function(id,i){$(id).value=arr[i]||'';});
+    treeRender();return true;
+  }
+  Array.prototype.forEach.call($('tpre').querySelectorAll('[data-p]'),function(b){b.onclick=function(){setSteps(b.getAttribute('data-p').split(','));};});
+  ['ts0','ts1','ts2'].forEach(function(id){$(id).onchange=function(){
+    var arr=['ts0','ts1','ts2'].map(function(i){return $(i).value;}).filter(Boolean);
+    if(!arr.length)arr=['coin'];
+    if(!setSteps(arr)){['ts0','ts1','ts2'].forEach(function(i2,k){$(i2).value=tree.steps[k]||'';});}
+  };});
+  $('tnext').onclick=function(){tree.depth=Math.min(tree.steps.length,tree.depth+1);treeRender();};
+  $('tprev').onclick=function(){tree.depth=Math.max(0,tree.depth-1);treeRender();};
+  $('tall').onclick=function(){tree.depth=tree.steps.length;treeRender();};
+  $('treset').onclick=function(){tree.depth=0;treeRender();};
+  $('tcheck').onclick=function(){
+    var v=$('tguess').value,tot=L.product(tree.steps.map(function(k){return ITEMS[k].opts.length;}));
+    $('tgres').innerHTML=v===''?'숫자를 입력해 보세요.':(Number(v)===tot?'<span class="ok">정답! '+tot+'가지예요 🎉</span>':'<span class="bad">다시 생각해 보세요. 각 단계의 가짓수를 곱해 볼까요?</span>');
+  };
+  treeRender();
+};
+
+/* ===== 4. 합·곱 연습 ===== */
+var pr={sc:'prod',a:3,b:2,c:1};
+var SC={prod:'길 찾기 (곱의 법칙)',sum:'교통수단 고르기 (합의 법칙)',mix:'합 + 곱 함께 쓰기',menu:'메뉴 짝짓기 (곱의 법칙)',snack:'간식 하나 고르기 (합의 법칙)'};
+function curves(x1,x2,y,n,color,dir){
+  var s='';for(var i=0;i<n;i++){var off=(i-(n-1)/2)*26*(dir||1),cy=y+2*off;
+    s+='<path d="M'+x1+' '+y+' Q'+((x1+x2)/2)+' '+cy+' '+x2+' '+y+'" fill="none" stroke="'+color+'" stroke-width="3" stroke-linecap="round"/>';}
+  return s;
+}
+function town(x,y,t){return '<circle cx="'+x+'" cy="'+y+'" r="22" fill="#fff" stroke="#1f2a44" stroke-width="3"/><text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-weight="800" font-size="18">'+t+'</text>';}
+function prRender(){
+  var a=pr.a,b=pr.b,c=pr.c,sc=pr.sc,svg='',calc='',chips='';
+  var cl=function(t){return '<span class="chip static">'+esc(t)+'</span>';};
+  if(sc==='prod'){
+    svg='<svg viewBox="0 0 600 260" role="img" aria-label="A에서 B로 '+a+'가지, B에서 C로 '+b+'가지 길">'+curves(60,300,130,a,'#2f5bea')+curves(300,540,130,b,'#12805c')+town(60,130,'A')+town(300,130,'B')+town(540,130,'C')+
+     '<text x="180" y="24" text-anchor="middle" fill="#2f5bea" font-weight="700">A→B '+a+'가지</text><text x="420" y="24" text-anchor="middle" fill="#12805c" font-weight="700">B→C '+b+'가지</text></svg>';
+    calc='A→B를 고르고 <b>그리고</b> B→C를 고르므로 곱의 법칙!<br><span class="formula">'+a+' × '+b+' = '+(a*b)+' (가지)</span>';
+    for(var i=1;i<=a;i++)for(var j=1;j<=b;j++)chips+=cl('①'.replace('①',i)+'번 길 → '+j+'번 길');
+  }else if(sc==='sum'){
+    svg='<svg viewBox="0 0 600 260" role="img" aria-label="A에서 B로 버스 '+a+'가지, 기차 '+b+'가지">'+curves(60,540,130,a,'#2f5bea',-1)+curves(60,540,130,b,'#12805c',1)+town(60,130,'A')+town(540,130,'B')+
+     '<text x="300" y="20" text-anchor="middle" fill="#2f5bea" font-weight="700">버스 '+a+'가지</text><text x="300" y="250" text-anchor="middle" fill="#12805c" font-weight="700">기차 '+b+'가지</text></svg>';
+    calc='버스 <b>또는</b> 기차 중 하나만 타요. 두 사건은 동시에 일어나지 않으므로 합의 법칙!<br><span class="formula">'+a+' + '+b+' = '+(a+b)+' (가지)</span>';
+    for(var i2=1;i2<=a;i2++)chips+=cl('버스 '+i2);for(var j2=1;j2<=b;j2++)chips+=cl('기차 '+j2);
+  }else if(sc==='mix'){
+    svg='<svg viewBox="0 0 600 300" role="img" aria-label="A에서 C로 B를 거치는 길과 직통 길">'+curves(60,300,190,a,'#2f5bea')+curves(300,540,190,b,'#12805c')+curves(60,540,190,c,'#ff8a1f',-1).replace(/Q(\d+) (-?\d+)/g,function(m,x,y){return 'Q'+x+' '+(Number(y)-100);})+town(60,190,'A')+town(300,190,'B')+town(540,190,'C')+
+     '<text x="300" y="26" text-anchor="middle" fill="#c05f00" font-weight="700">직통 '+c+'가지</text></svg>';
+    calc='① B를 거치는 경우: '+a+' × '+b+' = '+(a*b)+' (곱의 법칙)<br>② 직통: '+c+' 가지<br>①과 ②는 동시에 일어나지 않으므로 더해요 (합의 법칙)<br><span class="formula">'+a+' × '+b+' + '+c+' = '+(a*b+c)+' (가지)</span>';
+    for(var i3=1;i3<=a;i3++)for(var j3=1;j3<=b;j3++)chips+=cl('B경유 '+i3+'-'+j3);for(var k3=1;k3<=c;k3++)chips+=cl('직통 '+k3);
+  }else if(sc==='menu'){
+    var M=['김밥','라면','돈가스','비빔밥','우동'],Dk=['물','주스','우유','콜라','차'];
+    svg='<table aria-label="메뉴와 음료 짝짓기 표"><tr><th>메뉴＼음료</th>'+Dk.slice(0,b).map(function(d){return '<th>'+d+'</th>';}).join('')+'</tr>'+
+      M.slice(0,a).map(function(m){return '<tr><th>'+m+'</th>'+Dk.slice(0,b).map(function(d){return '<td>'+m+'+'+d+'</td>';}).join('')+'</tr>';}).join('')+'</table>';
+    calc='메뉴 하나를 고르고 <b>그리고</b> 음료 하나를 고르므로 곱의 법칙! (표의 칸 수)<br><span class="formula">'+a+' × '+b+' = '+(a*b)+' (가지)</span>';
+  }else{
+    var S=['빵','쿠키','샌드위치','과일','떡'],K=['과자','젤리','초콜릿','사탕','견과'];
+    svg='<div><b>빵류</b> '+S.slice(0,a).map(function(x){return '<span class="chip static">'+x+'</span>';}).join('')+'</div><div><b>과자류</b> '+K.slice(0,b).map(function(x){return '<span class="chip static">'+x+'</span>';}).join('')+'</div>';
+    calc='빵류 <b>또는</b> 과자류에서 간식 하나만 골라요 → 합의 법칙<br><span class="formula">'+a+' + '+b+' = '+(a+b)+' (가지)</span>';
+  }
+  $('prviz').innerHTML=svg;$('prcalc').innerHTML=calc;
+  $('prchips').innerHTML=chips?'<p><b>모든 경우 나열 ('+(sc==='prod'||sc==='mix'||sc==='sum'?'총 '+(sc==='prod'?a*b:sc==='sum'?a+b:a*b+c)+'가지':'')+')</b></p>'+chips:'';
+  $('pra').textContent=a;$('prb').textContent=b;$('prc').textContent=c;
+}
+renders[3]=function(){
+  $('p3').innerHTML='<h2>4. 합의 법칙 · 곱의 법칙 연습</h2><div class="card"><div class="row"><label>상황 고르기 <select id="prsc">'+Object.keys(SC).map(function(k){return '<option value="'+k+'">'+SC[k]+'</option>';}).join('')+'</select></label></div>'+
+  '<div class="row"><label>첫째 개수 <input type="range" id="sra" min="1" max="5" aria-label="첫째 개수"> <b id="pra"></b></label>'+
+  '<label>둘째 개수 <input type="range" id="srb" min="1" max="5" aria-label="둘째 개수"> <b id="prb"></b></label>'+
+  '<label id="lbc">직통 길 <input type="range" id="src" min="1" max="4" aria-label="직통 길 개수"> <b id="prc"></b></label></div></div>'+
+  '<div class="card"><div id="prviz" class="svgbox" style="max-height:none;padding:6px"></div><p id="prcalc" aria-live="polite"></p></div><div class="card" id="prchips" style="max-height:240px;overflow:auto"></div>'+
+  '<div class="note">❓ 스스로 생각해 보기: 슬라이더를 바꾸기 전에 답을 먼저 예상한 뒤 확인해 보세요. 「또는」이면 더하고, 「그리고」이면 곱해요.</div>';
+  $('prsc').value=pr.sc;$('sra').value=pr.a;$('srb').value=pr.b;$('src').value=pr.c;
+  function sync(){
+    pr.sc=$('prsc').value;pr.a=Number($('sra').value);pr.b=Number($('srb').value);pr.c=Number($('src').value);
+    $('lbc').style.display=pr.sc==='mix'?'':'none';
+    prRender();
+  }
+  ['prsc','sra','srb','src'].forEach(function(id){$(id).oninput=sync;$(id).onchange=sync;});
+  sync();
+};
+
+/* ===== 5. 순열·조합 ===== */
+var NAMES=['민수','지아','하준','서연','도윤','예은','시우'];
+var pc={mode:'line',n:5,r:3,picked:[],digits:[0,1,2,3],ir:2,even:false,adj:['민수','지아'],showAll:false,pn:5};
+var ROLES=['회장','부회장','총무','서기','회계','홍보','도우미'];
+function pcInfo(){
+  var n=pc.n,r=pc.r,m=pc.mode,items=NAMES.slice(0,n),h='';
+  var isP=m!=='comb',total=isP?L.nPr(n,r):L.nCr(n,r);
+  if(isP){
+    var terms=[];for(var i=0;i<r;i++)terms.push(n-i);
+    h+='<span class="formula">'+n+'P'+r+' = '+terms.join(' × ')+' = '+total+'</span>';
+    h+='<p>'+(m==='role'?'회장·부회장처럼 <b>자격(역할)이 구분</b>되므로 같은 사람들이 뽑혀도 역할이 다르면 다른 경우 → 순열':'<b>순서를 생각</b>하여 한 줄로 세우므로 순열')+'</p>';
+  }else{
+    h+='<span class="formula">'+n+'C'+r+' = '+n+'P'+r+' ÷ '+r+'! = '+L.nPr(n,r)+' ÷ '+L.fact(r)+' = '+total+'</span>';
+    h+='<p><b>자격 구분이 없는 뽑기</b>예요. 같은 '+r+'명을 줄 세우는 방법이 '+r+'! = '+L.fact(r)+'가지씩 있어서, 순열의 수를 '+L.fact(r)+'로 나눠요.</p>';
+  }
+  return {html:h,total:total};
+}
+function pcRender(){
+  var n=pc.n,r=pc.r,m=pc.mode,items=NAMES.slice(0,n);
+  var chips=items.map(function(nm){var on=pc.picked.indexOf(nm)>=0;return '<button type="button" class="chip" aria-pressed="'+on+'" data-nm="'+nm+'">'+nm+'</button>';}).join('');
+  $('pchips').innerHTML=chips;
+  var slots='';
+  for(var i=0;i<r;i++){var nm=pc.picked[i];
+    var lab=m==='line'?(i+1)+'번째':m==='role'?ROLES[i]:'대표';
+    slots+='<span class="slot'+(nm?' f':'')+'"><small>'+lab+'</small>'+(nm||'&nbsp;')+'</span>';}
+  $('pslots').innerHTML=slots;
+  var inf=pcInfo();$('pinfo').innerHTML=inf.html;
+  var done=pc.picked.length===r;
+  $('pstat').innerHTML=done?'<span class="ok">'+(m==='comb'?'뽑은 대표: '+pc.picked.join(', ')+' (순서가 달라도 같은 경우!)':'완성: '+pc.picked.join(' → '))+'</span>':'이름 칩을 눌러 '+r+'명을 뽑아 보세요. ('+pc.picked.length+'/'+r+')';
+  var lim=pc.showAll?400:60;
+  var res=m==='comb'?L.combos(items,r,lim):L.perms(items,r,lim);
+  var key=function(arr){return m==='comb'?arr.slice().sort().join(',')+'':arr.join(',');};
+  var cur=done?(m==='comb'?pc.picked.slice().sort().join(','):pc.picked.join(',')):null;
+  var order=function(a){return m==='comb'?a.slice().sort(function(x,y){return NAMES.indexOf(x)-NAMES.indexOf(y);}):a;};
+  $('plist').innerHTML=res.list.map(function(c,i){var k=order(c).join(',');var hl=cur!==null&&(m==='comb'?order(pc.picked).join(',')===k:cur===k);
+    return '<span class="chip static'+(hl?' hl':'')+'">'+(i+1)+'. '+c.join(m==='comb'?', ':'→')+'</span>';}).join('');
+  $('pcount').innerHTML='총 <b>'+res.total+'</b>가지'+(res.total>res.list.length?' 중 '+res.list.length+'가지만 보여 줘요.':' 모두 나열했어요 (빠짐없이, 중복 없이).');
+  $('pmore').style.display=res.total>res.list.length&&!pc.showAll?'':'none';
+  $('pr').max=m==='role'?Math.min(3,n):n;
+  if(m==='role'&&pc.r>3){pc.r=3;}
+  $('prv').textContent=pc.r;$('pnv').textContent=pc.n;
+}
+function digitsRender(){
+  var dg=pc.digits.slice().sort(function(a,b){return a-b;}),n=dg.length,r=pc.ir;
+  $('dchips').innerHTML=[0,1,2,3,4,5,6,7,8,9].map(function(d){return '<button type="button" class="chip" aria-pressed="'+(pc.digits.indexOf(d)>=0)+'" data-d="'+d+'">'+d+'</button>';}).join('');
+  var out='';
+  if(n<r){$('dres').innerHTML='<span class="bad">카드가 '+r+'장 이상 필요해요.</span>';$('dlist').innerHTML='';return;}
+  var nums=L.makeIntegers(dg,r,pc.even),has0=dg.indexOf(0)>=0;
+  var expl='';
+  if(!pc.even){
+    var first=has0?n-1:n,terms=[first];for(var i=1;i<r;i++)terms.push(n-i);
+    expl=(has0?'0이 포함되어 있어서 <b>맨 앞자리에는 0을 쓸 수 없어요</b>. ':'0이 없으므로 맨 앞자리 제한이 없어요. ')+'맨 앞자리 '+first+'가지'+(r>1?' × 나머지 '+terms.slice(1).join(' × ')+'가지':'')+'<br><span class="formula">'+terms.join(' × ')+' = '+terms.reduce(function(x,y){return x*y;},1)+'</span>';
+  }else{
+    var e0=nums.filter(function(x){return x%10===0;}).length;
+    expl='일의 자리부터 정해요. 일의 자리가 0인 수 '+e0+'개 + 0이 아닌 짝수로 끝나는 수 '+(nums.length-e0)+'개 = <b>'+nums.length+'</b>개'+(has0?' (맨 앞 0 불가에 주의!)':'');
+  }
+  $('dres').innerHTML='카드 '+n+'장 ('+dg.join(', ')+')으로 서로 다른 '+r+'장을 뽑아 만든 '+r+'자리 '+(pc.even?'짝수':'정수')+'는 <b>'+nums.length+'</b>개<br>'+expl;
+  var show=nums.slice().sort(function(a,b){return a-b;}).slice(0,120);
+  $('dlist').innerHTML=show.map(function(x){return '<span class="chip static">'+x+'</span>';}).join('')+(nums.length>120?' … 외 '+(nums.length-120)+'개':'');
+}
+function adjRender(){
+  var n=pc.pn,items=NAMES.slice(0,n);
+  pc.adj=pc.adj.filter(function(x){return items.indexOf(x)>=0;});
+  $('achips').innerHTML=items.map(function(nm){return '<button type="button" class="chip" aria-pressed="'+(pc.adj.indexOf(nm)>=0)+'" data-a="'+nm+'">'+nm+'</button>';}).join('');
+  var k=pc.adj.length;
+  if(k<2||k>=n){$('ares').innerHTML='<span class="bad">이웃하게 설 사람을 2명 이상, 전체보다 적게 골라 주세요.</span>';$('alist').innerHTML='';return;}
+  var r=L.adjacentArrangements(items,pc.adj,60);
+  $('ares').innerHTML='<b>'+pc.adj.join(', ')+'</b>을(를) 한 묶음으로 생각해요. 묶음 포함 '+(n-k+1)+'개를 세우는 경우 <b>'+(n-k+1)+'! = '+L.fact(n-k+1)+'</b> × 묶음 안에서 자리 바꾸기 <b>'+k+'! = '+L.fact(k)+'</b><br><span class="formula">'+L.fact(n-k+1)+' × '+L.fact(k)+' = '+r.formula+'</span> (직접 세어 본 개수: '+r.count+')';
+  $('alist').innerHTML=r.list.map(function(p,i){return '<span class="chip static">'+(i+1)+'. '+p.map(function(x){return pc.adj.indexOf(x)>=0?'<b>'+x+'</b>':x;}).join('→')+'</span>';}).join('');
+}
+renders[4]=function(){
+  $('p4').innerHTML='<h2>5. 한 줄로 세우기 · 대표 뽑기 · 조합</h2>'+
+  '<div class="card"><div class="row"><label>유형 <select id="pmode"><option value="line">한 줄로 세우기 (순열 nPr)</option><option value="role">대표 뽑기 - 자격 구분 있음 (순열 nPr)</option><option value="comb">대표 뽑기 - 자격 구분 없음 (조합 nCr)</option></select></label>'+
+  '<label>전체 인원 n <input type="range" id="pn" min="3" max="7" aria-label="전체 인원"> <b id="pnv"></b>명</label><label>뽑을 인원 r <input type="range" id="pr" min="1" max="7" aria-label="뽑을 인원"> <b id="prv"></b>명</label></div>'+
+  '<p><b>이름 칩을 눌러 직접 뽑아 보세요</b> (다시 누르면 취소)</p><div id="pchips"></div><div id="pslots" aria-live="polite"></div><p id="pstat" aria-live="polite"></p>'+
+  '<div class="row"><button class="btn orange" id="prand">무작위로 뽑기</button><button class="btn sec" id="pclr">다시 뽑기</button></div></div>'+
+  '<div class="card"><h3>계산</h3><div id="pinfo"></div></div>'+
+  '<div class="card"><h3>가능한 모든 경우</h3><p id="pcount"></p><div class="list" id="plist" tabindex="0" aria-label="모든 경우 목록"></div><button class="btn sec" id="pmore">더 보기 (최대 400개)</button></div>'+
+  '<div class="card"><h3>🔢 정수 만들기</h3><p>사용할 숫자 카드를 고르세요. (0이 있으면 맨 앞자리에 올 수 없어요)</p><div id="dchips"></div>'+
+  '<div class="row"><label>자릿수 <select id="dr"><option value="2">두 자리</option><option value="3">세 자리</option></select></label><label><input type="checkbox" id="deven"> 짝수만</label></div>'+
+  '<p id="dres" aria-live="polite"></p><div class="list" id="dlist" tabindex="0" aria-label="만든 정수 목록"></div></div>'+
+  '<div class="card"><h3>🧍 이웃하게 세우기</h3><div class="row"><label>인원 <input type="range" id="apn" min="3" max="7" aria-label="줄 설 인원"> <b id="apv"></b>명</label></div><p>이웃하게 설 사람들을 칩으로 고르세요.</p><div id="achips"></div><p id="ares" aria-live="polite"></p><div class="list" id="alist" tabindex="0" aria-label="이웃하게 선 경우 목록"></div></div>';
+  $('pmode').value=pc.mode;$('pn').value=pc.n;$('pr').value=pc.r;$('dr').value=pc.ir;$('deven').checked=pc.even;$('apn').value=pc.pn;$('apv').textContent=pc.pn;
+  function sync(){
+    pc.mode=$('pmode').value;pc.n=Number($('pn').value);
+    var mx=pc.mode==='role'?Math.min(3,pc.n):pc.n;$('pr').max=mx;
+    pc.r=Math.min(Number($('pr').value),mx);$('pr').value=pc.r;
+    pc.picked=[];pc.showAll=false;pcRender();
+  }
+  $('pmode').onchange=sync;$('pn').oninput=sync;$('pr').oninput=sync;
+  $('pchips').onclick=function(e){
+    var nm=e.target.getAttribute&&e.target.getAttribute('data-nm');if(!nm)return;
+    var i=pc.picked.indexOf(nm);
+    if(i>=0)pc.picked.splice(i,1);else if(pc.picked.length<pc.r)pc.picked.push(nm);
+    pcRender();var b=$('pchips').querySelector('[data-nm="'+nm+'"]');if(b)b.focus();
+  };
+  $('prand').onclick=function(){
+    var pool=NAMES.slice(0,pc.n),out=[];
+    while(out.length<pc.r){var k=Math.floor(Math.random()*pool.length);out.push(pool.splice(k,1)[0]);}
+    if(pc.mode==='comb')out.sort(function(a,b){return NAMES.indexOf(a)-NAMES.indexOf(b);});
+    pc.picked=out;pcRender();
+  };
+  $('pclr').onclick=function(){pc.picked=[];pcRender();};
+  $('pmore').onclick=function(){pc.showAll=true;pcRender();};
+  $('dchips').onclick=function(e){
+    var d=e.target.getAttribute&&e.target.getAttribute('data-d');if(d===null||d===undefined)return;d=Number(d);
+    var i=pc.digits.indexOf(d);if(i>=0)pc.digits.splice(i,1);else pc.digits.push(d);
+    digitsRender();var b=$('dchips').querySelector('[data-d="'+d+'"]');if(b)b.focus();
+  };
+  $('dr').onchange=function(){pc.ir=Number($('dr').value);digitsRender();};
+  $('deven').onchange=function(){pc.even=$('deven').checked;digitsRender();};
+  $('apn').oninput=function(){pc.pn=Number($('apn').value);$('apv').textContent=pc.pn;adjRender();};
+  $('achips').onclick=function(e){
+    var nm=e.target.getAttribute&&e.target.getAttribute('data-a');if(!nm)return;
+    var i=pc.adj.indexOf(nm);if(i>=0)pc.adj.splice(i,1);else pc.adj.push(nm);
+    adjRender();var b=$('achips').querySelector('[data-a="'+nm+'"]');if(b)b.focus();
+  };
+  pcRender();digitsRender();adjRender();
+};
+
+/* ===== 6. 문제 풀기 ===== */
+var stats=store.get('gs-stats',{tries:0,correct:0,byCat:{},wrong:[]});
+var qs={q:null,mode:'normal',cat:'전체',hint:0,done:false};
+function saveStats(){store.set('gs-stats',stats);}
+function newQ(){
+  if(qs.mode==='retry'){
+    qs.q=stats.wrong.length?stats.wrong[Math.floor(Math.random()*stats.wrong.length)]:null;
+  }else{
+    var pool=L.bank.filter(function(g){return qs.cat==='전체'||g.cat===qs.cat;});
+    var g=L.pick(pool),q=g.make();q.cat=g.cat;qs.q=q;
+  }
+  qs.hint=0;qs.done=false;
+}
+function qRender(){
+  var q=qs.q,rate=stats.tries?Math.round(stats.correct/stats.tries*100):0;
+  var cats=['전체'].concat(L.bank.map(function(g){return g.cat;}).filter(function(c,i,a){return a.indexOf(c)===i;}));
+  var h='<div class="card"><div class="row"><label>단원 <select id="qcat">'+cats.map(function(c){return '<option'+(c===qs.cat?' selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
+   '<button class="btn '+(qs.mode==='retry'?'':'sec')+'" id="qretry">틀린 문제 다시 풀기 ('+stats.wrong.length+')</button>'+
+   (qs.mode==='retry'?'<button class="btn sec" id="qnormal">일반 문제로</button>':'')+'</div>'+
+   '<div>푼 문제 <b>'+stats.tries+'</b> · 맞힌 문제 <b>'+stats.correct+'</b> · 정답률 <b>'+rate+'%</b> <button class="btn sec" id="qreset">기록 지우기</button></div></div>';
+  if(!q){h+='<div class="good">🎉 다시 풀 틀린 문제가 없어요!</div>';$('p5').innerHTML='<h2>6. 문제 풀기</h2>'+h;bindQ();return;}
+  h+='<div class="card"><div class="row"><span class="tbadge">'+esc(q.cat)+'</span><span class="tbadge">'+(q.type==='num'?'주관식':'객관식')+'</span>'+(qs.mode==='retry'?'<span class="tbadge">다시 풀기</span>':'')+'</div>'+
+   '<p class="qbox">'+esc(q.text)+'</p><form id="qform">';
+  if(q.type==='num')h+='<label>정답 <input type="number" id="qin" step="1" inputmode="numeric" '+(qs.done?'disabled':'')+'></label> ';
+  else h+=q.choices.map(function(c,i){return '<label class="choice"><input type="radio" name="qc" value="'+i+'" '+(qs.done?'disabled':'')+'> '+(i+1)+'. '+esc(c)+'</label>';}).join('');
+  h+='<button class="btn" type="submit" '+(qs.done?'disabled':'')+'>채점하기</button></form>'+
+   '<div class="row"><button class="btn sec" id="qhint" '+(qs.done||qs.hint>=q.hints.length?'disabled':'')+'>💡 힌트 보기 ('+qs.hint+'/'+q.hints.length+')</button><button class="btn orange" id="qnext">다음 문제 ▶</button></div>'+
+   '<div id="qhints">'+q.hints.slice(0,qs.hint).map(function(t,i){return '<div class="note"><b>힌트 '+(i+1)+'.</b> '+esc(t)+'</div>';}).join('')+'</div>'+
+   '<div id="qfb" aria-live="polite"></div>'+
+   '<div class="hidden-ans"><div class="note"><b>[교사용] 정답:</b> '+esc(q.type==='num'?q.ans:(q.ans+1)+'번')+' / '+esc(q.exp)+'</div></div></div>';
+  $('p5').innerHTML='<h2>6. 문제 풀기</h2>'+h;bindQ();
+}
+function bindQ(){
+  $('qcat').onchange=function(){qs.cat=this.value;qs.mode='normal';newQ();qRender();};
+  $('qretry').onclick=function(){qs.mode='retry';newQ();qRender();};
+  if($('qnormal'))$('qnormal').onclick=function(){qs.mode='normal';newQ();qRender();};
+  $('qreset').onclick=function(){if(confirm('모든 기록을 지울까요?')){stats={tries:0,correct:0,byCat:{},wrong:[]};saveStats();if(qs.mode==='retry')qs.mode='normal';newQ();qRender();}};
+  if(!qs.q)return;
+  $('qnext').onclick=function(){newQ();qRender();};
+  $('qhint').onclick=function(){qs.hint++;qRender();var b=$('qhint');if(b&&!b.disabled)b.focus();};
+  $('qform').onsubmit=function(e){e.preventDefault();grade();};
+  if($('qin')&&!qs.done)$('qin').focus();
+}
+function grade(){
+  var q=qs.q,val,ok;
+  if(q.type==='num'){var s=$('qin').value.trim();if(s===''){$('qfb').innerHTML='<div class="note">답을 입력해 주세요.</div>';return;}val=Number(s);ok=val===q.ans;}
+  else{var r=document.querySelector('input[name=qc]:checked');if(!r){$('qfb').innerHTML='<div class="note">보기를 골라 주세요.</div>';return;}val=Number(r.value);ok=val===q.ans;}
+  qs.done=true;stats.tries++;
+  var c=stats.byCat[q.cat]||(stats.byCat[q.cat]={t:0,c:0});c.t++;
+  var idx=stats.wrong.findIndex(function(w){return w.text===q.text;});
+  if(ok){stats.correct++;c.c++;if(qs.mode==='retry'&&idx>=0)stats.wrong.splice(idx,1);}
+  else if(idx<0){stats.wrong.push(q);if(stats.wrong.length>50)stats.wrong.shift();}
+  saveStats();
+  var rate=Math.round(stats.correct/stats.tries*100);
+  var fb='<div class="'+(ok?'good':'note')+'"><p class="'+(ok?'ok':'bad')+'">'+(ok?'⭕ 정답입니다!':'❌ 아쉬워요. 정답은 '+(q.type==='num'?q.ans:(q.ans+1)+'번')+'입니다.')+'</p><p><b>풀이.</b> '+esc(q.exp)+'</p></div>';
+  qRender();$('qfb').innerHTML=fb;$('qnext').focus();
+}
+renders[5]=function(){if(!qs.q&&!(qs.mode==='retry'))newQ();qRender();};
+
+/* ===== 7. 교사용 ===== */
+var tsamples=null;
+renders[6]=function(){
+  if(!tsamples)tsamples=L.bank.map(function(g){var q=g.make();q.cat=g.cat;return q;});
+  $('p6').innerHTML='<h2>7. 교사용 수업 도우미</h2><div class="card noprint"><div class="row">'+
+   '<button class="btn" id="tans" aria-pressed="'+settings.teacher+'">'+(settings.teacher?'정답·해설 숨기기':'모든 정답·해설 보기')+'</button>'+
+   '<button class="btn orange" id="tbig" aria-pressed="'+settings.big+'">'+(settings.big?'큰 글씨 끄기':'큰 글씨(프로젝터) 모드')+'</button>'+
+   '<button class="btn sec" id="tnew">문제 숫자 새로 만들기</button><button class="btn sec" id="tprint">🖨 인쇄하기</button></div>'+
+   '<p>정답 보기를 켜면 「문제 풀기」 탭에서도 정답과 해설이 표시돼요. 문제 숫자는 매번 무작위로 만들어지고 정답은 코드로 계산돼요. 인쇄할 때는 메뉴가 빠지고 이 페이지만 깔끔하게 출력돼요.</p></div>'+
+   '<div class="card"><h3>수업 진행 팁</h3><ul><li>실험 탭에서 100~1000번을 던져 이론과 비교하며 「동전·주사위를 구별한다」는 약속을 강조하세요.</li><li>수형도는 단계별 펼치기로 「빠짐없이, 중복 없이」를 시각적으로 확인시키세요.</li><li>합의 법칙은 「동시에 일어나지 않음」 조건, 곱의 법칙은 「잇달아」 조건을 꼭 확인하세요.</li><li>순열과 조합은 「순서·자격 구분이 있는가?」로 먼저 판단하게 하세요.</li></ul></div>'+
+   '<h3>문제 은행 샘플 ('+tsamples.length+'문항)</h3>'+
+   tsamples.map(function(q,i){return '<div class="card"><span class="tbadge">'+esc(q.cat)+'</span> <b>'+(i+1)+'.</b> '+esc(q.text)+
+     (q.type==='choice'?'<ol>'+q.choices.map(function(c){return '<li>'+esc(c)+'</li>';}).join('')+'</ol>':'')+
+     '<div class="hidden-ans"><div class="good"><b>정답:</b> '+esc(q.type==='num'?q.ans:(q.ans+1)+'번')+'<br><b>해설:</b> '+esc(q.exp)+'<br><b>힌트:</b> '+q.hints.map(esc).join(' / ')+'</div></div></div>';}).join('');
+  $('tans').onclick=function(){settings.teacher=!settings.teacher;applySettings();renders[6]();};
+  $('tbig').onclick=function(){settings.big=!settings.big;applySettings();renders[6]();};
+  $('tnew').onclick=function(){tsamples=null;renders[6]();};
+  $('tprint').onclick=function(){window.print();};
+};
+
+applySettings();
+var start=parseInt((location.hash||'').replace('#t',''),10);
+show(isNaN(start)||start<0||start>6?0:start);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>한입의 여행 · 소화 기관 퀴즈</title>
+<style>
+:root{color-scheme:light;--paper:#f7f3e8;--white:#fffdf7;--ink:#203934;--muted:#50655f;--green:#104e44;--mint:#ddf1e6;--lime:#ecf6af;--line:#cbd5c6;--orange:#9c452f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;font-size:17px;line-height:1.55;word-break:keep-all}
+button{font:inherit;font-weight:750;color:inherit;cursor:pointer;background:var(--white);border:1px solid var(--line);border-radius:12px;padding:.65em 1em;min-height:45px}
+button:hover:not(:disabled){border-color:var(--green);background:var(--mint)}
+button:disabled{cursor:default}
+button:focus-visible,summary:focus-visible{outline:3px solid #a6561f;outline-offset:3px}
+button.primary{background:var(--green);color:white;border-color:var(--green);padding:.8em 1.35em}
+button.primary:hover{background:#20685a}
+[hidden]{display:none!important}
+.shell{max-width:1240px;margin:auto;padding:0 clamp(16px,4vw,54px)}
+header{border-bottom:1px solid var(--line)}
+.top{min-height:76px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding-block:10px}
+.brand,.eyebrow{font-size:.85rem;font-weight:800;letter-spacing:.07em;color:var(--green)}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.actions button{font-size:.86rem}
+main{padding-block:clamp(22px,5vw,58px)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(245px,.43fr);gap:18px;align-items:stretch}
+.card,.map{border-radius:24px;padding:clamp(20px,4vw,48px)}
+.card{background:var(--white);border:1px solid var(--line);min-width:0}
+.map{background:var(--green);color:#f7fff7;position:relative;overflow:hidden;min-height:360px}
+.map h2{margin:0 0 12px;font-size:1.15rem}
+.map p{font-size:.9rem;color:#e3f4ec}
+.track{padding:0;margin:20px 0 0;list-style:none;position:relative}
+.track:before{content:"";position:absolute;left:15px;top:15px;bottom:15px;border-left:2px dashed #9fd0ba}
+.track li{display:flex;align-items:center;gap:11px;position:relative;min-height:41px;font-weight:750}
+.track .stop{display:grid;place-items:center;font-size:.82rem;border:1px solid #9fd0ba;background:var(--green);height:32px;width:32px;border-radius:50%;flex:none;color:white}
+.track.revealed .stop{background:var(--lime);color:var(--green);border-color:var(--lime)}
+.track.steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.track.steps:before{display:none}
+.track.steps li{min-height:40px;justify-content:center;border:1px solid #81b9a5;border-radius:8px;font-variant-numeric:tabular-nums}
+.track.steps li[data-state="done"]{color:var(--green);background:var(--mint)}
+.track.steps li[data-state="now"]{color:var(--green);background:var(--lime);outline:2px solid var(--lime);outline-offset:2px}
+.hero h1{font-size:clamp(2.75rem,7vw,5.7rem);letter-spacing:-.09em;line-height:1.05;margin:12px 0 18px}
+.hero .intro{font-size:clamp(1rem,2vw,1.25rem);margin:0 0 18px}
+.rules{margin:0 0 24px;padding-left:1.2em;color:var(--muted)}
+.scores{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 18px}
+.team{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border-radius:12px;background:var(--white);border:1px solid var(--line)}
+.team.active{border-color:var(--green);background:var(--mint)}
+.team strong{font-size:1.28em;font-variant-numeric:tabular-nums}
+.meta{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.turn{color:var(--green);background:var(--mint);border-radius:7px;padding:3px 9px;font-size:.9rem;font-weight:750}
+.timer{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:750}
+.timer.soon{color:var(--orange)}
+#question,#resultTitle{font-size:clamp(1.45rem,3vw,2.45rem);line-height:1.3;letter-spacing:-.05em;margin:16px 0 20px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.choice{min-height:64px;display:flex;align-items:center;gap:10px;text-align:left;font-size:clamp(1rem,1.65vw,1.24rem)}
+.choice span{font-size:.8rem;display:grid;place-items:center;min-width:26px;height:26px;border-radius:50%;background:#edf1e5}
+.choice.correct{background:var(--mint);border-color:var(--green)}
+.choice.wrong{background:#f9e7db;border-color:var(--orange)}
+.choice small{font-size:.7rem;margin-left:auto;white-space:nowrap}
+.feedback{margin:16px 0 12px;padding:13px 15px;border-radius:12px;background:#f0f3e8}
+.feedback p{margin:3px 0 0}
+details{margin-top:12px}
+summary{cursor:pointer;font-weight:750;padding:10px 0}
+.review-list{padding-left:1.5em;margin-top:4px}
+.review-list li{margin-bottom:13px}
+.review-list p{margin:2px 0;color:var(--muted)}
+.result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+dialog{width:min(520px,calc(100% - 28px));border:1px solid var(--line);border-radius:18px;padding:24px;background:var(--white);color:var(--ink)}
+dialog:before{content:none}
+dialog::backdrop{background:rgba(19,45,38,.58)}
+dialog h2{margin:0 0 12px}
+dialog label{display:block;padding:8px 0}
+dialog input{accent-color:var(--green);width:18px;height:18px;vertical-align:middle;margin-right:8px}
+.dialog-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+footer{border-top:1px solid var(--line);padding-block:13px;color:var(--muted);font-size:.8rem}
+@media (max-width:760px){.layout{grid-template-columns:1fr}.map{min-height:0}.track.steps{grid-template-columns:repeat(5,1fr)}.card,.map{border-radius:17px}.top{min-height:0}}
+@media (max-width:480px){.answers{grid-template-columns:1fr}.choice{min-height:51px}.hero h1{letter-spacing:-.07em}.team{padding:7px 10px}}
+</style>
+</head>
+<body>
+<header><div class="shell top">
+  <span class="brand">초등 6학년 과학 · 우리 몸의 소화 기관</span>
+  <div class="actions"><button id="fullscreen" type="button">전체 화면</button><button id="settings" type="button">교사 메뉴</button></div>
+</div></header>
+<main class="shell">
+  <div id="scores" class="scores" aria-label="모둠 점수" hidden>
+    <div id="team0" class="team"><span>수달 모둠</span><strong id="score0">0점</strong></div>
+    <div id="team1" class="team"><span>여우 모둠</span><strong id="score1">0점</strong></div>
+  </div>
+  <div class="layout">
+    <section id="home" class="card hero">
+      <div class="eyebrow">소화 기관 복습 퀴즈</div>
+      <h1>한입의 여행</h1>
+      <p class="intro">한입 삼킨 음식은 어디로 가고, 기관마다 어떤 일이 일어날까요?</p>
+      <ul class="rules">
+        <li>수달 모둠과 여우 모둠이 10문제를 번갈아 풀어요.</li>
+        <li>문제마다 30초. 정답을 맞히면 10점을 얻어요.</li>
+        <li>정답과 까닭을 읽고 다음 문제로 넘어가요.</li>
+      </ul>
+      <button class="primary" id="start" type="button">게임 시작</button>
+    </section>
+    <section id="play" class="card" hidden>
+      <div class="meta"><span id="turn" class="turn"></span><span id="timer" class="timer"></span></div>
+      <h1 id="question" tabindex="-1"></h1>
+      <div id="answers" class="answers"></div>
+      <div id="feedback" class="feedback" role="status" aria-atomic="true" hidden>
+        <strong id="verdict"></strong>
+        <p id="explanation"></p>
+      </div>
+      <button class="primary" id="next" type="button" hidden>다음 문제</button>
+    </section>
+    <section id="result" class="card" hidden>
+      <div class="eyebrow">10문제 완료</div>
+      <h1 id="resultTitle" tabindex="-1"></h1>
+      <p id="resultSummary"></p>
+      <details id="reviewDetails"><summary>문제별 정답과 해설 보기</summary><ol id="review" class="review-list"></ol></details>
+      <div class="result-actions"><button class="primary" id="again" type="button">다시 시작</button><button id="homeButton" type="button">첫 화면</button></div>
+    </section>
+    <aside class="map" aria-labelledby="mapTitle">
+      <h2 id="mapTitle">퀴즈 순서</h2>
+      <p id="mapCopy">열 문제를 풀면 음식물이 지나가는 길을 확인할 수 있어요.</p>
+      <ol id="steps" class="track steps" aria-label="문제 진행 상태"></ol>
+      <ol id="route" class="track revealed" aria-label="음식물이 지나가는 순서" hidden>
+        <li><span class="stop">1</span>입</li><li><span class="stop">2</span>식도</li>
+        <li><span class="stop">3</span>위</li><li><span class="stop">4</span>작은창자</li>
+        <li><span class="stop">5</span>큰창자</li><li><span class="stop">6</span>항문</li>
+      </ol>
+    </aside>
+  </div>
+</main>
+<footer><div class="shell">숫자 1–4로 답을 고르고, F로 전체 화면을 켜거나 끌 수 있어요.</div></footer>
+<dialog id="menu" aria-labelledby="menuTitle">
+  <h2 id="menuTitle">교사 메뉴</h2>
+  <p id="pauseNote" hidden>메뉴를 열어 둔 동안 시간이 멈춰요.</p>
+  <label><input id="useTimer" type="checkbox" checked>문제마다 30초 제한</label>
+  <label><input id="useSound" type="checkbox">정답 효과음</label>
+  <div class="dialog-actions"><button id="showAnswer" type="button" hidden>현재 정답 공개</button><button class="primary" id="closeMenu" type="button">닫기</button></div>
+</dialog>
+<script>
+'use strict';
+const items = [
+  {
+    "q": "음식물의 소화가 가장 먼저 시작되는 곳은 어디인가요?",
+    "choices": [
+      "식도",
+      "입",
+      "위",
+      "작은창자"
+    ],
+    "answer": 1,
+    "exp": "이로 음식을 잘게 부수고, 침이 음식 속 녹말을 분해하기 시작해요."
+  },
+  {
+    "q": "삼킨 음식물을 위까지 밀어 보내는 기관은 어디인가요?",
+    "choices": [
+      "큰창자",
+      "작은창자",
+      "식도",
+      "입"
+    ],
+    "answer": 2,
+    "exp": "식도 벽의 근육이 차례로 움직이며 음식물을 위에 보내요."
+  },
+  {
+    "q": "음식물이 위에 도착하면 그곳에서 어떤 일이 일어나나요?",
+    "choices": [
+      "대변이 몸 밖으로 나가요",
+      "남은 물을 흡수해요",
+      "음식물이 침과 섞여요",
+      "음식물이 위액과 섞여요"
+    ],
+    "answer": 3,
+    "exp": "위 근육이 음식물을 저어 위액과 섞고 소화를 이어 가요."
+  },
+  {
+    "q": "소화된 영양소가 몸으로 가장 많이 흡수되는 곳은 어디인가요?",
+    "choices": [
+      "작은창자",
+      "큰창자",
+      "위",
+      "식도"
+    ],
+    "answer": 0,
+    "exp": "소화로 작아진 영양소는 창자 벽을 지나 몸속으로 들어가요."
+  },
+  {
+    "q": "위에서 나온 음식물이 가장 먼저 도착하는 기관은 어디인가요?",
+    "choices": [
+      "큰창자",
+      "작은창자",
+      "식도",
+      "항문"
+    ],
+    "answer": 1,
+    "exp": "위에서 섞인 음식물은 위와 이어진 작은창자로 조금씩 내려가요."
+  },
+  {
+    "q": "몸속에서 만들어진 대변이 몸 밖으로 나가는 곳은 어디인가요?",
+    "choices": [
+      "입",
+      "식도",
+      "위",
+      "항문"
+    ],
+    "answer": 3,
+    "exp": "대변은 큰창자 끝부분에 머물다 소화관의 마지막 구멍으로 나가요."
+  },
+  {
+    "q": "음식물이 큰창자에 가기 전에 거치는 기관을 순서대로 고르세요.",
+    "choices": [
+      "입·위·식도·작은창자",
+      "입·작은창자·식도·위",
+      "입·식도·위·작은창자",
+      "입·식도·작은창자·위"
+    ],
+    "answer": 2,
+    "exp": "삼킨 음식물은 식도를 따라 위로 이동하고, 그다음 작은창자로 가요."
+  },
+  {
+    "q": "찌꺼기에서 물이 흡수되어 대변이 만들어지는 곳은 어디인가요?",
+    "choices": [
+      "큰창자",
+      "작은창자",
+      "위",
+      "식도"
+    ],
+    "answer": 0,
+    "exp": "남은 찌꺼기에서 물이 몸속으로 들어가면서 대변이 만들어져요."
+  },
+  {
+    "q": "밥을 씹었더니 처음엔 없던 단맛이 느껴진 까닭은 무엇인가요?",
+    "choices": [
+      "위액이 밥을 바꿔서",
+      "이가 단맛을 만들어서",
+      "밥알이 물을 흡수해서",
+      "침이 녹말을 분해해서"
+    ],
+    "answer": 3,
+    "exp": "침 속에는 밥의 녹말을 단맛이 나는 더 작은 물질로 바꾸는 성분이 있어요."
+  },
+  {
+    "q": "고무관을 눌러 음식 조각을 미는 모형은 어느 기관을 나타내나요?",
+    "choices": [
+      "음식을 씹는 입",
+      "위로 보내는 식도",
+      "위액을 섞는 위",
+      "물을 흡수하는 큰창자"
+    ],
+    "answer": 1,
+    "exp": "고무관을 뒤쪽부터 누르면 음식 조각이 앞으로 밀려요. 식도 근육도 이렇게 음식물을 옮겨요."
+  }
+];
+const el = id => document.getElementById(id);
+const names = ['수달 모둠', '여우 모둠'];
+const menu = el('menu');
+const total = items.length;
+let screen = 'home';
+let index = 0;
+let scores = [0, 0];
+let responses = [];
+let answered = false;
+let remaining = 30000;
+let deadline = 0;
+let clock = 0;
+let audioContext;
+
+for (let n = 1; n <= total; n += 1) {
+  const step = document.createElement('li');
+  step.textContent = n;
+  el('steps').appendChild(step);
+}
+function updateBoard() {
+  names.forEach((name, team) => {
+    el('score' + team).textContent = scores[team] + '점';
+    el('team' + team).classList.toggle('active', screen === 'play' && index % 2 === team);
+  });
+  Array.from(el('steps').children).forEach((step, n) => {
+    const current = screen === 'play' && n === index;
+    step.dataset.state = n < responses.length ? 'done' : current ? 'now' : 'waiting';
+    if (current) step.setAttribute('aria-current', 'step');
+    else step.removeAttribute('aria-current');
+  });
+}
+function show(target) {
+  screen = target;
+  ['home', 'play', 'result'].forEach(id => { el(id).hidden = id !== target; });
+  el('scores').hidden = target === 'home';
+  el('route').hidden = target !== 'result';
+  el('steps').hidden = target === 'result';
+  el('mapTitle').textContent = target === 'result' ? '음식물이 지나가는 길' : '퀴즈 순서';
+  el('mapCopy').hidden = target === 'result';
+  updateBoard();
+}
+function stopClock() {
+  if (clock) {
+    remaining = Math.max(0, deadline - performance.now());
+    window.clearInterval(clock);
+    clock = 0;
+  }
+}
+function showTime() {
+  const counting = el('useTimer').checked;
+  const seconds = Math.ceil(remaining / 1000);
+  el('timer').textContent = counting ? seconds + '초' : '시간 제한 없음';
+  el('timer').classList.toggle('soon', counting && seconds <= 5);
+}
+function resumeClock() {
+  showTime();
+  if (answered || !el('useTimer').checked || menu.open) return;
+  deadline = performance.now() + remaining;
+  clock = window.setInterval(() => {
+    remaining = Math.max(0, deadline - performance.now());
+    showTime();
+    if (remaining === 0) reveal(null, '시간이 다 됐어요.');
+  }, 100);
+}
+function loadQuestion() {
+  stopClock();
+  remaining = 30000;
+  answered = false;
+  const item = items[index];
+  el('turn').textContent = (index + 1) + ' / ' + total + ' · ' + names[index % 2] + ' 차례';
+  el('question').textContent = item.q;
+  el('answers').textContent = '';
+  el('feedback').hidden = true;
+  el('next').hidden = true;
+  item.choices.forEach((choice, i) => {
+    const button = document.createElement('button');
+    const number = document.createElement('span');
+    button.type = 'button';
+    button.className = 'choice';
+    number.textContent = i + 1;
+    button.append(number, document.createTextNode(choice));
+    button.addEventListener('click', () => reveal(i));
+    el('answers').appendChild(button);
+  });
+  show('play');
+  el('question').focus();
+  resumeClock();
+}
+function start() {
+  index = 0;
+  scores = [0, 0];
+  responses = [];
+  el('reviewDetails').open = false;
+  loadQuestion();
+}
+function playSound() {
+  if (!el('useSound').checked) return;
+  const Audio = window.AudioContext || window.webkitAudioContext;
+  if (!Audio) return;
+  audioContext = audioContext || new Audio();
+  audioContext.resume().then(() => {
+    const at = audioContext.currentTime;
+    [523, 659].forEach((frequency, i) => {
+      const tone = audioContext.createOscillator();
+      const volume = audioContext.createGain();
+      const begin = at + i * .105;
+      tone.frequency.value = frequency;
+      volume.gain.setValueAtTime(.0001, begin);
+      volume.gain.exponentialRampToValueAtTime(.045, begin + .02);
+      volume.gain.exponentialRampToValueAtTime(.0001, begin + .15);
+      tone.connect(volume).connect(audioContext.destination);
+      tone.start(begin);
+      tone.stop(begin + .16);
+    });
+  }).catch(() => {});
+}
+function reveal(selected, message) {
+  if (screen !== 'play' || answered) return;
+  stopClock();
+  if (el('useTimer').checked && remaining === 0) {
+    selected = null;
+    message = '시간이 다 됐어요.';
+  }
+  showTime();
+  answered = true;
+  const item = items[index];
+  const correct = selected === item.answer;
+  responses.push(correct);
+  if (correct) {
+    scores[index % 2] += 10;
+    playSound();
+  }
+  Array.from(el('answers').children).forEach((button, i) => {
+    button.disabled = true;
+    if (i !== item.answer && i !== selected) return;
+    const mark = document.createElement('small');
+    mark.textContent = i === item.answer ? '정답' : '고른 답';
+    button.classList.add(i === item.answer ? 'correct' : 'wrong');
+    button.appendChild(mark);
+  });
+  el('verdict').textContent = correct ? '정답이에요! +10점' : (message || '이번 답은 달랐어요.') + ' 정답은 ' + item.choices[item.answer] + '입니다.';
+  el('explanation').textContent = item.exp;
+  el('feedback').hidden = false;
+  el('next').textContent = index === total - 1 ? '결과 보기' : '다음 문제';
+  el('next').hidden = false;
+  el('next').focus();
+  updateBoard();
+}
+function finish() {
+  show('result');
+  el('resultTitle').textContent = scores[0] === scores[1] ? '두 모둠이 비겼어요!' : names[scores[0] > scores[1] ? 0 : 1] + '이 이겼어요!';
+  el('resultSummary').textContent = '두 모둠이 함께 ' + total + '문제 중 ' + responses.filter(Boolean).length + '문제를 맞혔어요.';
+  el('review').textContent = '';
+  items.forEach((item, n) => {
+    const row = document.createElement('li');
+    const q = document.createElement('strong');
+    const explain = document.createElement('p');
+    q.textContent = (responses[n] ? '맞힘 · ' : '복습 · ') + item.q;
+    explain.textContent = '정답 ' + item.choices[item.answer] + ' · ' + item.exp;
+    row.append(q, explain);
+    el('review').appendChild(row);
+  });
+  el('resultTitle').focus();
+}
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+  else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+}
+el('start').addEventListener('click', start);
+el('again').addEventListener('click', start);
+el('homeButton').addEventListener('click', () => { show('home'); el('start').focus(); });
+el('next').addEventListener('click', () => {
+  if (!answered) return;
+  index += 1;
+  if (index < total) loadQuestion();
+  else finish();
+});
+el('settings').addEventListener('click', () => {
+  const canPause = screen === 'play' && !answered;
+  stopClock();
+  el('pauseNote').hidden = !canPause || !el('useTimer').checked;
+  el('showAnswer').hidden = !canPause;
+  menu.showModal();
+});
+el('closeMenu').addEventListener('click', () => menu.close());
+el('showAnswer').addEventListener('click', () => {
+  reveal(null, '교사가 정답을 공개했어요.');
+  menu.close();
+  el('next').focus();
+});
+menu.addEventListener('close', () => {
+  if (screen === 'play' && !answered) resumeClock();
+});
+el('fullscreen').addEventListener('click', toggleFullscreen);
+document.addEventListener('fullscreenchange', () => {
+  el('fullscreen').textContent = document.fullscreenElement ? '전체 화면 끄기' : '전체 화면';
+});
+document.addEventListener('keydown', event => {
+  if (menu.open || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+  if (event.key.toLowerCase() === 'f') toggleFullscreen();
+  if (screen === 'play' && !answered && /^[1-4]$/.test(event.key)) reveal(Number(event.key) - 1);
+});
+el('useTimer').addEventListener('change', () => {
+  if (el('useTimer').checked && remaining === 0) remaining = 30000;
+  el('pauseNote').hidden = !el('useTimer').checked || screen !== 'play' || answered;
+  document.querySelector('.rules li:nth-child(2)').textContent = (el('useTimer').checked ? '문제마다 30초. ' : '시간 제한 없이 풀어요. ') + '정답을 맞히면 10점을 얻어요.';
+});
+show('home');
+</script>
+</body>
+</html>

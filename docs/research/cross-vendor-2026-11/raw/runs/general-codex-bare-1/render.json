@@ -1,0 +1,10 @@
+{
+ "pngs": [
+  "html-1-01-start.png",
+  "html-1-90-bottom.png"
+ ],
+ "notes": [
+  "[배드민턴-월례대회.html] click: Locator.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for locator(\"button:visible, [role=but",
+  "[배드민턴-월례대회.html] js_errors=[]"
+ ]
+}

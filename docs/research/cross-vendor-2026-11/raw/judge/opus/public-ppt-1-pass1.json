@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "public-ppt",
+ "run": 1,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-bare",
+  "B": "codex-harness",
+  "C": "claude-harness",
+  "D": "claude-bare"
+ },
+ "result": {
+  "A": {
+   "content": 2,
+   "design": 4,
+   "readability": 3,
+   "fit": 2,
+   "note": "Clean navy-and-green design with a well-built structure: KPIs, satisfaction, budget, case examples and Ministry of Education references. But every figure and item is an empty placeholder like '[ ]명', so there is no real content, and some text is small."
+  },
+  "B": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "Has a table of contents, step-by-step flows and a timeline, with large, readable text. But every table is filled with '집계 필요' (needs tallying), so it is only an empty template, and the design is plain."
+  },
+  "C": {
+   "content": 4,
+   "design": 4,
+   "readability": 4,
+   "fit": 4,
+   "note": "Fills the full flow with consistent example figures (participation, budget execution, satisfaction, year-over-year comparison, improvement tasks, timeline), and the headline-style titles suit a report. The example figures are marked as hypothetical, and the line chart is somewhat flat."
+  },
+  "D": {
+   "content": 4,
+   "design": 5,
+   "readability": 4,
+   "fit": 4,
+   "note": "Varied bar and donut charts, KPI cards and an org chart, filled in with rich example data covering programs, budget, satisfaction comments and 2027 targets. It is the most finished deck. The figures are example data that need replacing, and some card text is small."
+  },
+  "ranking": [
+   "D",
+   "C",
+   "A",
+   "B"
+  ]
+ },
+ "cost": 0.34634,
+ "secs": 20,
+ "raw": "{\"A\":{\"content\":2,\"design\":4,\"readability\":3,\"fit\":2,\"note\":\"Clean navy-and-green design with a well-built structure: KPIs, satisfaction, budget, case examples and Ministry of Education references. But every figure and item is an empty placeholder like '[ ]명', so there is no real content, and some text is small.\"},\"B\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"Has a table of contents, step-by-step flows and a timeline, with large, readable text. But every table is filled with '집계 필요' (needs tallying), so it is only an empty template, and the design is plain.\"},\"C\":{\"content\":4,\"design\":4,\"readability\":4,\"fit\":4,\"note\":\"Fills the full flow with consistent example figures (participation, budget execution, satisfaction, year-over-year comparison, improvement tasks, timeline), and the headline-style titles suit a report. The example figures are marked as hypothetical, and the line chart is somewhat flat.\"},\"D\":{\"content\":4,\"design\":5,\"readability\":4,\"fit\":4,\"note\":\"Varied bar and donut charts, KPI cards and an org chart, filled in with rich example data covering programs, budget, satisfaction comments and 2027 targets. It is the most finished deck. The figures are example data that need replacing, and some card text is small.\"},\"ranking\":[\"D\",\"C\",\"A\",\"B\"]}"
+}

@@ -1,0 +1,27 @@
+{
+ "secs": 368,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 16048,
+ "tok": {
+  "input": 412144,
+  "cached": 368640,
+  "output": 16048,
+  "reasoning": 1264
+ },
+ "turns": 14,
+ "failed_cmds": 5,
+ "is_error": false,
+ "errors": [],
+ "last": "초등학교 6학년 과학 복습 게임 **「한 입의 여행」**을 지금 폴더에 저장했습니다. [index.html](C:/Users/User/Downloads/xv-eval-work/game-codex-bare-1/work/index.html)을 더블클릭하면 인터넷 연결 없이 바로 플레이할 수 있어요.\n\n음식물이 지나가는 순서와 소화 기관의 역할을 3단계 9문제로 복습합니다. 답을 확인하면 해설과 몸속 지도가 나오고, 게임이 끝나면 틀린 문제만 다시 풀 수 있어요.\n\n채점, 순서 맞추기, 오답 복습은 코드로 검증했습니다. 실제 브라우저에서의 화면 표시는 확인하지 못했습니다.",
+ "name": "game-codex-bare-1",
+ "task": "game",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 1,
+ "file": "index.html",
+ "all_files": [
+  "index.html"
+ ],
+ "opens": true
+}

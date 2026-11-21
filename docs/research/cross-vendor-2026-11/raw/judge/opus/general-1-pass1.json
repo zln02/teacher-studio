@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "general",
+ "run": 1,
+ "pass_": 1,
+ "mapping": {
+  "A": "claude-bare",
+  "B": "codex-bare",
+  "C": "claude-harness",
+  "D": "codex-harness"
+ },
+ "result": {
+  "A": {
+   "content": 4,
+   "design": 2,
+   "readability": 2,
+   "fit": 4,
+   "note": "Setup takes 8 players and builds a full 7-round, 28-game round-robin with court assignments and score inputs, and it has a standings tab, so the content is solid. Weaknesses: the green-and-white tables repeat with little variety, and the text is very small."
+  },
+  "B": {
+   "content": 4,
+   "design": 5,
+   "readability": 3,
+   "fit": 4,
+   "note": "The 8-team bracket with example results and the court scoreboard (14:11, set and rally-point rules shown) sit side by side, which makes it the most polished and closest to real use. Weaknesses: the bracket text is small, and the screen hardly changed after the button presses."
+  },
+  "C": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "Large text and a warm colour scheme make it readable, and it has both a bracket and a scoreboard. Weaknesses: the bracket is mostly '...' placeholders, the +1/+2/+5 scoreboard does not fit badminton rally scoring, and pop-up dialogs cover much of the screen."
+  },
+  "D": {
+   "content": 3,
+   "design": 3,
+   "readability": 2,
+   "fit": 3,
+   "note": "The setup panel (format, target points) and the 8-team single-elimination bracket are neatly organised and look ready to print. Weaknesses: the text is small, the scoreboard screen never appears, and the screens after the button presses barely differ."
+  },
+  "ranking": [
+   "B",
+   "A",
+   "D",
+   "C"
+  ]
+ },
+ "cost": 0.2628306,
+ "secs": 19,
+ "raw": "{\"A\":{\"content\":4,\"design\":2,\"readability\":2,\"fit\":4,\"note\":\"Setup takes 8 players and builds a full 7-round, 28-game round-robin with court assignments and score inputs, and it has a standings tab, so the content is solid. Weaknesses: the green-and-white tables repeat with little variety, and the text is very small.\"},\"B\":{\"content\":4,\"design\":5,\"readability\":3,\"fit\":4,\"note\":\"The 8-team bracket with example results and the court scoreboard (14:11, set and rally-point rules shown) sit side by side, which makes it the most polished and closest to real use. Weaknesses: the bracket text is small, and the screen hardly changed after the button presses.\"},\"C\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"Large text and a warm colour scheme make it readable, and it has both a bracket and a scoreboard. Weaknesses: the bracket is mostly '...' placeholders, the +1/+2/+5 scoreboard does not fit badminton rally scoring, and pop-up dialogs cover much of the screen.\"},\"D\":{\"content\":3,\"design\":3,\"readability\":2,\"fit\":3,\"note\":\"The setup panel (format, target points) and the 8-team single-elimination bracket are neatly organised and look ready to print. Weaknesses: the text is small, the scoreboard screen never appears, and the screens after the button presses barely differ.\"},\"ranking\":[\"B\",\"A\",\"D\",\"C\"]}"
+}

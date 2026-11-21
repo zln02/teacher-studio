@@ -1,0 +1,28 @@
+{
+ "secs": 375,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 15698,
+ "tok": {
+  "input": 567342,
+  "cached": 515712,
+  "output": 15698,
+  "reasoning": 1303
+ },
+ "turns": 8,
+ "failed_cmds": 4,
+ "is_error": false,
+ "errors": [],
+ "last": "[배드민턴-월례대회.html](/C:/Users/User/Downloads/xv-eval-work/general-codex-bare-2/work/배드민턴-월례대회.html)을 현재 폴더에 저장했습니다. 파일을 브라우저에서 열면 인터넷 연결 없이 사용할 수 있습니다.\n\n1. **대회 설정**에서 참가자나 팀 이름을 한 줄에 하나씩 입력하고 **대진표 만들기**를 누르세요. 2~32팀을 지원하며, 무작위 추첨을 선택할 수 있습니다. 부전승은 자동으로 배정됩니다.\n2. **대진표**에서 경기를 선택하고 **+1점**으로 기록하세요. 마지막 득점을 취소하거나 점수판을 전체 화면으로 띄울 수 있습니다. 승자는 다음 라운드에 자동 진출합니다.\n3. 기록은 같은 브라우저에 자동 저장됩니다. **기록 저장 파일 받기**로 백업하거나 **대진표 인쇄 / PDF**로 출력할 수 있습니다.\n\n참가 명단이 없어 예시 8팀을 넣었습니다. 기본 경기 방식은 21점 3게임 2선승이며, 설정에서 15점제와 1게임 방식도 선택할 수 있습니다. [세계배드민턴연맹 경기 규칙](https://system.bwfbadminton.com/documents/folder_1_81/Statutes/CHAPTER-4---RULES-OF-THE-GAME/SECTION%204.1-%20Laws%20of%20Badminton.pdf)\n\n2~32팀 대진 생성, 듀스, 득점 취소, 승자 진출 및 기록 복원은 코드로 검증했습니다. 브라우저 실행이 차단되어 실제 화면과 인쇄 미리보기는 확인하지 못했습니다.",
+ "name": "general-codex-bare-2",
+ "task": "general",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "배드민턴-월례대회.html",
+ "all_files": [
+  "배드민턴-월례대회.html"
+ ],
+ "opens": true,
+ "general_fixed": true
+}
