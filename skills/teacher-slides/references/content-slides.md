@@ -1,5 +1,7 @@
 # Slide content — what goes on each slide, by context
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 `context-recipes.md` sets layout, type and lints. This file decides the **content**. Read the matching cross-skill recipe first, then apply the slide rules here:
 - `class` → `../teacher-studio/references/content-lesson.md`
 - `public` → `../teacher-docs/references/content-docs.md`
@@ -36,7 +38,7 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 - Every number: 단위 · 기준일 · 출처, and the same value everywhere it appears. Comparisons name the base (전년 대비, 계획 대비).
 - 실적 is stated against the plan or target, not alone. 문제점 comes with 원인 and 개선 과제 (who · by when).
 - 개조식 endings, one line per item, no 「~습니다」. Section order follows what the reviewer asks: 왜 → 무엇을 했나 → 결과 → 남은 문제 → 다음 일정 · 건의.
-- Figures the user gave are used as given. Their own counts and amounts they did not give are plausible example values that agree with each other, listed in `"fillins"`, with a believable `source` (「우리 학교 자체 집계(2026. 11.)」) and noted ONCE for the deck: the first slide's speaker notes (the build adds it), or one small `footnote` under the first data table (「※ 수치는 예시입니다. 실제 집계로 바꿔 주세요.」). Not on every slide, and never a 「확인 필요」「집계 필요」 cell. Statistics about the world (전국 평균, 연구 결과) are never invented (CONTENT-RULES, Unknowns).
+- Figures the user gave are used as given. Their own counts and amounts they did not give are plausible example values that agree with each other, listed in `"fillins"`, with a believable `source` (「우리 학교 자체 집계(2026. 11.)」) and noted ONCE for the deck: the first slide's speaker notes (the build adds it), or one small `footnote` under the first data table (「※ 수치는 예시입니다. 실제 집계로 바꿔 주세요.」). Not on every slide: a `source` or `footnote` line never says 「가상」「예시」 (it names the record only; the build stops when two slides repeat it). Never a 「확인 필요」「집계 필요」 cell. Statistics about the world (전국 평균, 연구 결과) are never invented (CONTENT-RULES, Unknowns).
 
 **promo**
 - One message; headline says the benefit to the audience, not the organiser's title. ≤ 3 levels of emphasis on a slide (headline → key facts → details).

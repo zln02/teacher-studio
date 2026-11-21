@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # 교사 스튜디오 · 법률 안내 (Teacher Studio · Law)
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 The user asks 「이거 써도 돼요?」「올려도 돼요?」. You read the CURRENT official text, then answer with a short fixed card in plain Korean.
 This skill stores no article text and no conclusions (law changes). It is: where to look + how to look fast + the card.
 

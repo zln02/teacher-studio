@@ -349,6 +349,9 @@ def missing_parts(spec: dict) -> list:
 _POLITE = re.compile(r"(?:습니다|니다|어요|아요|해요|예요|이에요|세요|죠)[.!?]?\s*$")
 
 
+_EX_SRC = re.compile(r"가상|예시|임의|샘플|허구|지어낸")  # an example marker inside a source / footnote line
+
+
 def lint(spec: dict) -> tuple[list[str], list[str]]:
     """(errors, warnings) for the context's conventions. Errors stop the build like other spec errors (fix list)."""
     ctx = context_of(spec)
@@ -365,15 +368,20 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
                      f"정말 해당 없으면 spec \"omit\": [\"{part}\"] 로 알리고 마지막 답에 한 줄로 말하기")
     types = [x.get("type") for x in slides]
     pk = {b.get("kind") for x in slides if x.get("type") == "panel" for b in x.get("blocks") or [] if isinstance(b, dict)}  # block kinds inside panels
-    try:  # the user named a length (「10장 정도」): the deck may run a quarter over, not more
-        want = int(spec.get("target_slides") or 0)
-    except (TypeError, ValueError):
-        want = 0
-    if want:
-        n_out = len(slides) - (types.count("section") if ctx == "public" else 0) + (1 if "quiz" in types else 0)
-        cap_n = want + max(1, round(want * 0.15))  # 「10장 정도」 = up to 12, 「6장」 = up to 7: a deck that runs longer is not what was asked
-        if n_out > cap_n:
-            errs.append(f"{n_out}장이에요 (요청 {want}장 정도, 「확인 문제 정답」 장 포함) -> {cap_n}장 이하로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 (내용을 버리지 말고 한 장에 두 가지를 담기)")
+    # the user named a length (「10장」「10장 정도」): the deck lands on it. One page over is allowed only for the answers slide; any other
+    # miss is a WARN the author fixes, and a deck far over (more than about a seventh) stops the build.
+    L = deck_shape.length(spec, ctx == "public")
+    if L["hard"]:
+        errs.append(f"{L['got']}장이에요 (요청 {L['want']}장, 「확인 문제 정답」 장 포함) -> {L['want']}장으로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 (내용을 버리지 말고 한 장에 두 가지를 담기)")
+    else:
+        warns += ["장수: " + n for n in deck_shape.length_notes(spec, ctx == "public")]
+    # the unknowns rule: ONE example note per file. A source or footnote line that says 「가상」「예시」 on slide after slide is that note
+    # repeated; the source line names the record, the note is written once (first slide's speaker notes, added by the build from "fillins").
+    ex_src = [i for i, it in enumerate(slides, 1) if isinstance(it, dict) and _EX_SRC.search(" ".join(str(it.get(k) or "") for k in ("source", "footnote", "caption")))]
+    if len(ex_src) >= 2:
+        errs.append(f"slide {', '.join(map(str, ex_src[:8]))}: 출처·주석 줄 {len(ex_src)}곳에 「가상」「예시」를 되풀이했어요 -> 예시 안내는 파일 전체에서 한 번만. "
+                    "출처 줄에는 자료 이름만 쓰고(예: \"source\": \"우리 학교 급식 운영 기록(2026)\"), 예시로 채운 값은 spec \"fillins\"에 적으세요 "
+                    "(첫 장 발표자 메모에 안내 한 줄이 자동으로 들어가요)")
     if ctx == "public":
         for i, it in enumerate(slides, 1):
             t = it.get("type")

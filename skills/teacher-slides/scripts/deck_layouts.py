@@ -13,6 +13,8 @@ import json
 import re
 
 import deck_art as art
+import deck_style as _dstyle
+import meaning  # shared/design (deck_style put it on the path): a word that names a colour is drawn in that colour
 from deck_kit import Ctx, T, box, esc, fit, kicker, plain, rect, rich, text_w
 
 MX = 120
@@ -200,13 +202,32 @@ def _side_items(side: dict, rows: list, key: str) -> list:
     return [r.get(key, "") for r in rows]
 
 
+def _named_sides(ctx, a: dict, b_: dict):
+    """((fill, ink, tint), (fill, ink, tint)) when a side's label names a colour (초록불 / 빨간불, 청팀 / 백팀), else None: the label
+    becomes a pill in that colour and the side's field a light tint of it. The other side never keeps a look-alike colour."""
+    labs = [str(a.get("label", "")), str(b_.get("label", ""))]
+    if not meaning.any_named(labs):
+        return None
+    c = ctx.dz["colors"]
+    out = []
+    for f in meaning.assign(labs, [c["pr"], c["ac"]]):
+        out.append((f, meaning.on(f), _dstyle.mix(c["bg1"], f, 0.2)))
+    return out
+
+
+def _pill(named, si: int) -> str:
+    f, ink, _t = named[si]
+    return f"background:{f};color:{ink};border-radius:20px;"
+
+
 def compare_panels(ctx, it):
     a, b_, rows = it["a"], it["b"], it.get("rows") or []
+    named = _named_sides(ctx, a, b_)
     h = [head(ctx, it, MX, 96, CW, 150, 76, 52)]
     for si, (side, x, key) in enumerate(((a, MX, "a"), (b_, MX + 860, "b"))):
         items = _side_items(side, rows, key)[:5]
         inner = cardrect(x, 300, 820, 684, "", "alt" if si else "")
-        inner += T(ctx, side.get("label", ""), x + 48, 336, 724, 80, 48, 32, cls="h cl", va="m")
+        inner += T(ctx, side.get("label", ""), x + 48, 336, 724, 80, 48, 32, cls="h cl", va="m", extra=_pill(named, si) if named else "", align="center" if named else "")
         inner += rect(x + 48, 432, 724, 2, "rule")
         ih = 520 // max(1, len(items))
         for i, t in enumerate(items):
@@ -224,8 +245,13 @@ def compare_table(ctx, it):
     rows = rows[:5]
     h = [head(ctx, it, MX, 96, CW, 150, 76, 52)]
     kx, ax, bx_, cw = MX, MX + 360, MX + 360 + 660, 640
-    h.append(T(ctx, a.get("label", ""), ax, 290, cw, 70, 44, 30, cls="h cl", va="m"))
-    h.append(T(ctx, b_.get("label", ""), bx_, 290, cw, 70, 44, 30, cls="h cl acc", va="m"))
+    named = _named_sides(ctx, a, b_)
+    if named:
+        h.append(T(ctx, a.get("label", ""), ax, 290, cw - 40, 70, 44, 30, cls="h cl", va="m", extra=_pill(named, 0), align="center"))
+        h.append(T(ctx, b_.get("label", ""), bx_, 290, cw - 40, 70, 44, 30, cls="h cl", va="m", extra=_pill(named, 1), align="center"))
+    else:
+        h.append(T(ctx, a.get("label", ""), ax, 290, cw, 70, 44, 30, cls="h cl", va="m"))
+        h.append(T(ctx, b_.get("label", ""), bx_, 290, cw, 70, 44, 30, cls="h cl acc", va="m"))
     h.append(rect(MX, 370, CW, 4, "rule strong"))
     rh = min(150, 600 // len(rows))
     for i, r_ in enumerate(rows):
@@ -240,11 +266,13 @@ def compare_table(ctx, it):
 
 def compare_versus(ctx, it):
     a, b_, rows = it["a"], it["b"], it.get("rows") or []
-    h = [rect(0, 260, 960, 820, "half-a"), rect(960, 260, 960, 820, "half-b"), T(ctx, it.get("title", ""), MX, 80, CW, 150, 64, 40, cls="h", va="m", lh=1.14)]
+    named = _named_sides(ctx, a, b_)
+    h = [rect(0, 260, 960, 820, "half-a", f"background:{named[0][2]};" if named else ""), rect(960, 260, 960, 820, "half-b", f"background:{named[1][2]};" if named else ""),
+         T(ctx, it.get("title", ""), MX, 80, CW, 150, 64, 40, cls="h", va="m", lh=1.14)]
     for si, (side, x, key) in enumerate(((a, MX, "a"), (b_, 1020, "b"))):
         items = _side_items(side, rows, key)[:4]
-        cls = "on-b" if si else ""
-        inner = T(ctx, side.get("label", ""), x, 300, 740, 110, 64, 36, cls=f"h {cls}", va="m")
+        cls = "on-b" if (si and not named) else ""  # a tinted field keeps the page's own text colour
+        inner = T(ctx, side.get("label", ""), x, 300, 740, 110, 64, 36, cls=f"h {cls}", va="m", extra=_pill(named, si) if named else "", align="center" if named else "")
         ih = 520 // max(1, len(items))
         for i, t in enumerate(items):
             inner += rect(x, 440 + i * ih, 740, 2, f"rule {cls}") + T(ctx, t, x, 450 + i * ih, 740, min(ih - 10, 120), 38, 30, cls=f"p {cls}", va="m", lh=1.25)

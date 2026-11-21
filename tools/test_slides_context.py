@@ -192,7 +192,8 @@ class NewTypes(unittest.TestCase):
         prs = Presentation(str(out / "public-ai-edu-report.pptx"))
         texts = " ".join(sh.text_frame.text for sl in prs.slides for sh in sl.shapes if sh.has_text_frame)
         self.assertIn("2026. 11. 19.", texts)
-        self.assertIn("자료: 예시 자료", texts)
+        self.assertIn("자료: 교육지원청 내부 집계(2026)", texts)  # the source names the record ...
+        self.assertEqual(texts.count("예시입니다"), 1)               # ... and the example note is said once (unknowns rule)
         self.assertTrue(any(sh.has_table for sl in prs.slides for sh in sl.shapes))
 
 

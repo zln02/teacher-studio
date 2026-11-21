@@ -193,6 +193,42 @@ def variety(slides: list) -> list[str]:
     return out
 
 
+def length(spec: dict, public: bool = False) -> dict:
+    """How long the finished deck is against the length the user named ("target_slides": N from 「N장」「N장 정도」).
+
+    The count is what the audience pages through: every slide written, minus a report's divider pages (drawn as header bands), plus the
+    ONE 「확인 문제 정답」 slide the .pptx adds when the deck has a check question. The request means N: N pages is right, N + 1 is allowed
+    only when that extra page is the answers slide, anything else is over (or under).
+        {"want", "got", "answers", "over", "under", "hard"}   hard = far over (more than about a seventh): the build stops
+    """
+    try:
+        want = int(spec.get("target_slides") or 0)
+    except (TypeError, ValueError):
+        want = 0
+    slides = [it for it in (spec.get("slides") or []) if isinstance(it, dict)]
+    types = [it.get("type") for it in slides]
+    answers = 1 if "quiz" in types else 0
+    got = len(slides) - (types.count("section") if public else 0) + answers
+    if want <= 0:
+        return {"want": 0, "got": got, "answers": answers, "over": 0, "under": 0, "hard": False}
+    over = max(0, got - (want + answers))
+    return {"want": want, "got": got, "answers": answers, "over": over, "under": max(0, want - got), "hard": got > want + max(1, round(want * 0.15))}
+
+
+def length_notes(spec: dict, public: bool = False) -> list[str]:
+    """The WARN line when the deck misses the length the user named (empty when it lands on it)."""
+    L = length(spec, public)
+    if not L["want"]:
+        return []
+    tail = " (「확인 문제 정답」 장 포함)" if L["answers"] else ""
+    if L["over"]:
+        return [f"요청은 {L['want']}장인데 {L['got']}장이에요{tail} -> {L['want']}장으로: 비슷한 개념 장을 합치고, 정리는 마무리 장과 합치기 "
+                f"(내용을 버리지 말고 한 장에 두 가지를 담기. 정답 장 한 장만 {L['want'] + 1}장째로 허용)"]
+    if L["under"]:
+        return [f"요청은 {L['want']}장인데 {L['got']}장이에요{tail} -> {L['want']}장으로: 빠진 내용(예시·활동·확인 문제)을 한 장 더"]
+    return []
+
+
 def main() -> int:
     if len(sys.argv) < 2:
         print(__doc__)
@@ -205,6 +241,14 @@ def main() -> int:
             print(f"slide {i}: auto -> {b['type']}")
     for n in notes(done):
         print("NOTE", n)
+    try:  # count what the build will make: the context recipe adds the 학습 목표 · 정리 · 차례 slides the spec names by key
+        import deck_context as _dc
+        full = _dc.pre({**spec, "slides": done})
+        pub = _dc.context_of(full) == "public"
+    except Exception:
+        full, pub = {**spec, "slides": done}, False
+    for n in length_notes(full, pub):
+        print("WARN", n)
     return 0
 
 

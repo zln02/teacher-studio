@@ -60,11 +60,13 @@
 | `shared/design/` | 디자인 생성기 `design.py` + 팔레트 15 + 글자 크기표 (게임·발표·포스터·초대장·인쇄·웹) | `design.py --use present --mood 고급스럽게` → 색·글꼴·글자 크기 한 세트 |
 | `shared/design/system.py` · `DESIGN-RULES.md` · `ai_look.py` | 글자 크기 단계 · 자간 · 8pt 여백 · 이름 있는 배치 틀 · 색 밝기 사다리(OKLCH) · 장식 7가지 · 움직임 값 / 규칙 27개 / 「밤티 검사」(빛 번짐·형광·속 빈 글자·그라데이션·강조색 수·여백·장식 겹) | `ai_look.py --html 결과.html` → 전문 디자이너 기준 5/5 |
 | `shared/design/color_from.py` · `color_check.py` · `oklch.py` | 내 로고·사진·PPT/POTX·워드·한글(HWPX)·사이트 CSS에서 색 뽑기 → 디자인 값(글자 대비 4.5, 밝기만 조정) / 색약(적·녹·청황) 점검 WARN / OKLCH 변환·조화색·같은 간격 명암 | `color_from.py logo.png --out pal.json` → spec `design.palette_from`. 점검기가 자동으로 WARN. 가이드 `skills/teacher-studio/references/user-colors.md` |
+| `shared/design/meaning.py` | 뜻이 있는 색: 「초록불」「빨간불」「청팀·백팀」「금·은·동」처럼 낱말이 색 이름이면 그 색으로 칠함(순서대로 돌려 쓰는 색보다 먼저). 옆 칸은 비슷한 색을 피함 | 슬라이드(PPT·웹) 비교 칸·목록·카드, 게임 분류 통, 점수판·모둠 카드가 자동으로 물어봄 (`color_of` · `assign` · 화면용 `js()`) |
 | `shared/vendor/` | Motion · canvas-confetti · Chart.js · KaTeX · Lucide · Phaser · anime.js · axe-core(점검기 전용) | `inline.py`로 쓴 것만 파일에 넣기 (`manifest.json`에 버전·라이선스) |
 | `shared/fonts/` | TS Sans(Pretendard) · Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
 | `shared/tools/ensure.py` | 처음 필요할 때 동의 받고 설치 | `ensure("python-pptx")`, `ensure_ffmpeg()`, `ensure_playwright()` |
 | `shared/tools/workdir.py` | 작업 폴더(시스템 임시 폴더 없이 동작: 결과 파일 옆 `.teacher-studio-work/`, `TEACHER_STUDIO_TMP`로 지정)와 「화면을 띄울 수 있나」 확인. 못 띄우면 `NO-BROWSER` 한 줄 뒤 브라우저 없는 점검으로 | 모든 스크립트가 `tempfile` 전용 폴더 대신 사용 (`temp_dir` · `make` · `named` · `guard_browser`) |
 | `shared/tools/stamp.py` | 결과 파일에 보이지 않는 만든이 표시(meta generator + 주석) | 게임·슬라이드·영상 조립 때 자동 |
+| `shared/tools/placeholders.py` | 빈자리·빈말 점검 하나: 문서·PPT(`policy_checks`)와 HTML 화면(`html_checks`: 「확인 필요」 빈말, 「교사 초안」 도장, `[학교명]`·`○○초` 빈자리, 되풀이한 예시 안내) | 문서·PPT·게임·웹 앱·수업 도구 점검기가 자동으로 부름 |
 | `shared/tools/example_likeness.py` | 결과가 넣어 둔 예시 파일(시험용 fixture)을 그대로 따라갔는지 검사: 문장 60% 이상 같음 · 차례와 제목이 같음 · 뼈대가 장마다 같음 → WARN 「예시를 그대로 따라간 것 같아요」 | 게임·발표·프로그램 점검기와 발표·문서 조립기가 자동으로 부름 |
 | `shared/content/CONTENT-RULES.md` | 내용 규칙과 전문가 관문(G1~G10). 무기별 레시피는 각 스킬 `references/content-*.md` | 각 SKILL.md의 「Content quality first」 줄이 가리킴. 스킬 안 `shared/content/`로 복사됨 |
 | `shared/assets/` | 디자인 소재(CC0 캐릭터 DiceBear·Tabler/Iconoir 아이콘·Open Color·ZzFX 효과음) + `manifest.json` | 게임 `theme:auto`가 `theme_auto.py`로 골라 씀 (쓴 것만 파일에 들어감) |

@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # Teacher Studio - Class Tools
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", "발표자 뽑기", "모둠 나눠줘", "대진표", "점수판"). The AI writes a short spec; `build_tool.py` makes one offline HTML file and `check_tool.py` gates it.

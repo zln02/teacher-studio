@@ -26,7 +26,7 @@ and the checks stay silent (`palette_from`, `--template`, `data-user-design`).
 ## 3. Colour
 13. A palette = a tinted neutral ramp + **one primary + one support** (`system.palette`, built in OKLCH). Accent hues on a screen ≤ 3; right/wrong colours are counted separately.
 14. Text contrast ≥ 4.5:1 (large display ≥ 3:1). `design.py --validate` must print "all palettes valid".
-15. Right = light teal-blue, wrong = deeper orange-red: apart in hue AND lightness (colour-blind safe), and always also said in words or a mark (O / X).
+15. Right = light teal-blue, wrong = deeper orange-red: apart in hue AND lightness (colour-blind safe), and always also said in words or a mark (O / X). **A word that names a colour is drawn in that colour** (초록불 green, 빨간불 red, 청팀 blue, 금 · 은 · 동): `meaning.py` (`color_of`, `assign`, `js()`) is asked before any rotation of tones, and a neighbour never keeps a look-alike hue.
 16. **No fluorescent colour** (`system.is_neon`: OKLCH C > 0.165 with L > 0.7). An accent covers ≤ 5% of the screen: one word, one rule, one icon.
     Slides (.pptx): the primary may carry structure (a cover field, a header band, a card head). The support colour and one third tone
     (`deck_style.third_tone`, far in hue from both) are markers only: badges, icon tiles, a second head, chart series. Never a fourth hue.

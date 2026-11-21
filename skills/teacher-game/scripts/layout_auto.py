@@ -40,9 +40,15 @@ for _s in (sys.stdout, sys.stderr):
 LAYOUTS = ["stack", "split", "bento", "news", "poster", "column", "left", "right", "rail", "stair"]
 # the five newer footprints take their taste from the two older layouts they are closest to (styles only name the older five)
 KIN = {"column": ("stack", "poster"), "left": ("split", "stack"), "right": ("split", "news"), "rail": ("news", "split"), "stair": ("bento", "poster")}
-# when the content fits layouts with open space, the ones that cover most of the stage (and so overlap every other layout) are held back
-# and the ones that leave a clear side or band free are preferred: measured footprint overlap with the other layouts, low -> high
-SPREAD = {"news": 1.4, "left": 1.25, "right": 1.25, "rail": 1.2, "stair": 1.0, "column": 0.8, "poster": 0.8, "bento": 0.5, "stack": 0.25, "split": 0.25}
+# How much each layout's footprint overlaps the footprints other requests get, MEASURED (2026-11-21, tools/game_sameness.py fingerprints of
+# every layout the six example games allow; mean overlap with the other games' layouts): left · right · stair · stack 0.41-0.49 (the stack's
+# height follows the content, so two stacks rarely cover the same cells), rail · news 0.46-0.51, column 0.44-0.58, poster 0.46-0.57,
+# bento 0.52-0.63, split 0.54-0.65 (two full-height halves: it overlaps everything). The weights follow the measurement, low overlap first.
+SPREAD = {"left": 1.4, "right": 1.4, "stair": 1.4, "stack": 1.3, "rail": 1.3, "news": 1.2, "column": 0.6, "poster": 0.4, "bento": 0.2, "split": 0.1}
+# content that only the wide layouts can carry (long answers in an escape game: stack · split · bento): the same order of overlap
+NARROW = {"stack": 2.6, "bento": 0.5, "split": 0.35}
+# long answers turn the side blocks into a 70 % block of slim bars, which covers more: the stack is preferred a little more, the centre column less
+LIST_MODE = {"stack": 1.8, "column": 0.6}
 ROW_LAYOUTS = ("bento", "news", "poster", "rail", "stair")   # answers sit side by side or in a narrow rail: short answers only
 SIDE_LAYOUTS = ("left", "right", "column")                   # one block of 58 % (2 x 2) or 70 % (slim bars): fine up to 22 characters
 ESCAPE_OUT = ("news", "column", "left", "right")              # the lock strip takes 150px of height: news never, the side blocks only for short answers
@@ -126,8 +132,8 @@ def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
       wider block and stay possible up to 22 characters
     - the question must fit its box: three lines (about 40 characters) in the side layouts and the stair, two (36) above four slim bars
     - mostly-OX sets want the big two-button layouts (poster / split / stair); long questions want a wide question card (stack / split)
-    - the two full-stage layouts (stack, split) are held back whenever the content fits a layout with open space,
-      so different requests do not all fill the same rectangle
+    - layouts whose footprint overlaps the others most (split, bento, poster: measured, see SPREAD) are held back, the ones that overlap
+      least (one side, the stair, the content-high stack) are preferred, so different requests do not all fill the same rectangle
     - escape games have 150px less height: fewer layouts, shorter limits
     - every layout the content allows stays possible, so the same request with another seed gets another skeleton."""
     w = {k: 0.7 for k in LAYOUTS}
@@ -172,6 +178,12 @@ def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     if sum(1 for k, v in w.items() if v > 0 and k not in ("stack", "split")) >= 2:
         for k, f in SPREAD.items():
             w[k] *= f
+        if side_answers(feat) == "list":
+            for k, f in LIST_MODE.items():
+                w[k] *= f
+    else:
+        for k, f in NARROW.items():
+            w[k] *= f
     if feat["ox"] >= 0.5:
         w["poster"] *= 1.8
         w["split"] *= 1.5
@@ -188,7 +200,7 @@ def layout_weights(style_w: dict, feat: dict, mech: str = "quiz") -> dict:
     if feat["media"]:
         w["split"] *= 1.6
         w["news"] *= 1.3
-    out = {k: int(round(v * 10)) for k, v in w.items() if v > 0}
+    out = {k: max(1, int(round(v * 10))) for k, v in w.items() if v > 0}  # held back, never removed: what the content allows stays possible
     return out or {"split": 1}
 
 

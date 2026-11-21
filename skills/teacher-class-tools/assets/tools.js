@@ -280,6 +280,7 @@
       area.style.display = 'grid'; area.style.gridTemplateColumns = 'repeat(' + cols + ',1fr)'; area.style.gridTemplateRows = 'repeat(' + rows + ',1fr)';
       groups.forEach(function (g, i) {
         var c = h('div', 'tcard card' + (anim && !RM && !J ? ' pop' : '')); c.style.setProperty('--i', i);
+        var mc = window.TSMeaning ? window.TSMeaning.color(tn[i] || '') : null; if (mc) c.style.boxShadow = 'inset 0 16px 0 ' + mc;
         c.appendChild(h('h3', '', (tn[i] || ((i + 1) + '모둠')) + ' · ' + g.length + '명'));
         var ch = h('div', 'chips'); g.forEach(function (n) { ch.appendChild(h('span', 'chip', n)); }); c.appendChild(ch);
         area.appendChild(c);
@@ -416,6 +417,7 @@
       names.forEach(function (nm, i) {
         var c = h('div', 'scard card'), v = h('div', 'sval', String(shown[i])), b = h('div', 'badge', '1위');
         v.style.fontSize = z.sv + 'px'; b.style.display = 'none';
+        var mc = window.TSMeaning ? window.TSMeaning.color(nm) : null; if (mc) c.style.boxShadow = 'inset 0 16px 0 ' + mc;  /* a team named after a colour wears it */
         c.appendChild(h('h3', '', nm)); c.appendChild(b); c.appendChild(v);
         var sb = h('div', 'sbtns');
         steps.forEach(function (s) { sb.appendChild(btn('+' + s, 'main sm', function () { add(i, s); })); });
@@ -453,7 +455,8 @@
       else card.appendChild(host);
       var row = h('div', 'row'); row.appendChild(btn('닫기', 'main', close)); card.appendChild(row); ov.appendChild(card); main.appendChild(ov); API.podiumEl = host;
       if (max > D.start) {
-        var teamsArr = names.map(function (n, i) { return { name: n, icon: ICONS[n] || '⭐', color: TEAMC[i % TEAMC.length], score: score[i] }; });
+        var MC = window.TSMeaning ? window.TSMeaning.assign(names, TEAMC) : names.map(function (_, i) { return TEAMC[i % TEAMC.length]; });  /* 청팀 = blue, 백팀 = white: the name's colour before the rotation */
+        var teamsArr = names.map(function (n, i) { return { name: n, icon: ICONS[n] || '⭐', color: MC[i], score: score[i] }; });
         var go = function () { ctl = J.podium(host, teamsArr, { onDone: function () { if (!RM && !API.instant) { J.fx.impactFrame(); } } }); };
         if (RM || API.instant) go(); else { host.appendChild(h('div', 'hint', '🥁 결과를 발표해요!')); snd('drumroll', { ms: 1500 }); tm = setTimeout(go, 1500); }
         card.addEventListener('pointerdown', function (e) { if (!/BUTTON/.test(e.target.tagName)) { if (ctl) ctl.skip(); else { clearTimeout(tm); host.textContent = ''; go(); if (ctl) ctl.skip(); } } });

@@ -20,6 +20,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "shared" / "tools"))
 from syntax_check import checks as syntax_checks  # noqa: E402
+try:
+    import placeholders  # noqa: E402  (shared/tools: the unknowns policy on a page - filler, draft stamp, [○○] slots)
+except ImportError:
+    placeholders = None
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -123,6 +127,8 @@ def static_checks(html: str, path: Path) -> list[tuple[str, str]]:
     if tk:
         errs = design.validate_tokens(tk)
         add("FAIL" if errs else "PASS", f"design tokens: text contrast >= 4.5:1 and {tk['use']} type floor" + (": " + " | ".join(errs[:3]) if errs else ""))
+    if placeholders and hasattr(placeholders, "html_checks"):  # the unknowns policy on a page (same rule as documents and decks)
+        out += placeholders.html_checks(html)
     return out
 
 

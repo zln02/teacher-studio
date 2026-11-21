@@ -300,6 +300,8 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
             y += 0.48
             h -= 0.48
         g = 0.2
+        if hasattr(K, "mean"):
+            K.mean(None)
         if k == "kpis":
             its = b["items"]
             n = len(its)
@@ -334,6 +336,8 @@ def draw_pptx(K, s, it: dict, X: float, Y: float, W: float, H: float) -> None:
             fb = (_fit([_body(m) for m in its], 24 * z, cw - 0.44, ch - 0.4 - th, 1.22) if ch >= THIN else
                   _fit([plain(m["title"]) + "\n" + _body(m).replace("\n", "  ") for m in its], 18 * z, tw_, ch - 0.08, 1.15))
             ft = _fit([m["title"] for m in its], min(21 * z, fb + 3), cw - (1.13 if numbered else 0.4), th, 1.1)
+            if hasattr(K, "mean"):
+                K.mean(its)  # cards whose headings name colours (초록불 · 빨간불) take those colours
             for i, m in enumerate(its):
                 cx, cy = x + (i % cols) * (cw + g), y + (i // cols) * (ch + g)
                 K.card(s, cx, cy, cw, ch)

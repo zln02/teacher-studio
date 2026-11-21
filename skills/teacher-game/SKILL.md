@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # 교사 스튜디오 · 게임 (Teacher Studio · Game)
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 You write ONE short spec (content + mechanic + design direction). The scripts do the engine, the look, the sounds and the checks, so every model gets the same quality.
 **That is the floor, not the ceiling** (`references/advanced.md` F): a plain 4-choice quiz with no picture is the least this skill makes. Something to see in the topic -> draw it (`custom_svg`, `custom_css`); content with a shape -> the mechanic that fits, mixed item kinds; no mechanic carries it (stages that play differently, a picture to tap) -> make the game yourself as one offline HTML file and gate it with `../teacher-studio/scripts/check_webapp.py`. Never a thinner game than you would make without this skill.
 Reply in the user's language (Korean by default), plain words, no dev terms (file, HTML, spec, script -> 「게임 파일」「설계」). The user's own template, colours or question sheet come first.
@@ -19,11 +21,11 @@ Never hand the build to a helper agent or a background task. Never read `assets/
 2. **Show the question table first, unless told 「알아서」「바로」**: 번호 | 문제 | 정답 | 오답 보기 | 해설, then 「정답이 맞는지 확인해 주세요. '좋아'라고 하시면 만들게요.」 With 「알아서」「바로」 skip the wait and build in the same reply.
 3. **Write `spec.json`** from the content, with the fields below (other mechanics: the item shape in the table, `references/spec-schema.md`). `assets/spec-examples/` are test fixtures, not patterns: never copy one.
 4. **Say first** 「게임을 만들고 점검하는 데 2분쯤 걸려요」, then run ONE command (design + assemble + check + picture sheet):
-   `python3 scripts/build.py --spec spec.json --out <이름>.html --review` (Windows: `py`)
+   `python3 scripts/build.py --spec spec.json --out <이름>.html --review`
 5. **Act on the output, in this order** (2 rebuilds at most, then say plainly what is left):
    - `SPEC FIX NEEDED` / `FAIL` -> change the spec as the line says, rerun.
    - `CONTENT FIX` (the build stopped before assembling, 1 second) -> fix those questions in the spec, rerun. Add `--ok-content` only when the user gave these exact questions.
-   - `WARN` -> leave it unless it names text the user would see cut or covered.
+   - `WARN` -> leave it unless it names text the user would see cut or covered, or the unknowns gate (「확인 필요」 filler, a draft stamp, `[학교명]` · `○○초` slots: write the real or an example value).
    - `sheet: <png>` -> open that picture ONCE and run the look check below. A problem -> change `design.words` / `seed` / `style` only, rebuild once.
    - `READY <path>` -> go to step 6. `PARTIAL` -> state the missing checks and offer the generated file when useful. `NO-BROWSER` printed -> no screen opens here: `PARTIAL` is the normal finish; no browser, no home-made play test; say the screen was not opened. For `FAIL`, fix the listed issues before using the file; use the fallback if two fixes fail.
 6. **Last message, always a real answer** (never 「만드는 중」): full path of the file · 「더블클릭하면 브라우저에서 열려요, F = 전체 화면, ⚙️ = 선생님 메뉴(일시정지·정답 보기·점수 조정)」 · what is inside (문항 수, 팀, 시간) · check result in one line · 2-3 tweaks in plain words (「글자 더 크게」「문제 더 어렵게」「다른 분위기로」).

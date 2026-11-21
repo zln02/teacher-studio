@@ -41,9 +41,46 @@ e.FMT["pdf"] = "PDF 문서 (각 쪽을 그대로 그림으로 바꾼 것. 모든
 _claude = e.claude
 
 
+def interpreter_rules() -> list[str]:
+    """Allow rules for the SAME four programs when a maker calls them by full path instead of by name.
+
+    Round 1 of this eval allowed only commands that start with py / python / python3 / node. One Claude run called Python as
+    "C:/Users/.../Python313/python.exe" script.py and was refused, so no file came out (hwpx-notice-claude-harness-2). The path is the same
+    program the name resolves to, so it is allowed too: every path `py`, `python`, `python3`, `node` and this interpreter resolve to on
+    this PC, written with back or forward slashes or the Git Bash /c/ form, bare or quoted.
+    Checked 2026-11-21 with a one-command probe: Bash `"C:/.../python.exe" -c ...` now runs. PowerShell's call-operator form
+    (`& "C:/.../python.exe" ...`) is still refused by the permission layer itself ("contains multiple operations") whatever allow rule
+    is given (path, quoted path, *python.exe*, python.exe:*), so it stays refused; the same run then falls back to Bash or `py`.
+    Nothing else is opened: the install deny list still wins over every allow rule."""
+    paths = {str(Path(sys.executable))}
+    for name in ("py", "python", "python3", "node"):
+        w = shutil.which(name)
+        if w and "WindowsApps" not in w:  # the Store stub is not an interpreter
+            paths.add(str(Path(w)))
+            try:
+                paths.add(str(Path(w).resolve()))
+            except OSError:
+                pass
+    rules: list[str] = []
+    for p in sorted(paths):
+        fwd = p.replace("\\", "/")
+        forms = {p, fwd}
+        if len(fwd) > 2 and fwd[1] == ":":
+            forms.add("/" + fwd[0].lower() + fwd[2:])
+        for f in sorted(forms):
+            for tool, heads in (("Bash", (f, f'"{f}"', f"'{f}'")), ("PowerShell", (f, f'"{f}"', f"'{f}'"))):
+                rules += [f"{tool}({h}:*)" for h in heads]
+    return rules
+
+
+ALLOW_MAKER = list(e.ALLOW_MAKER) + interpreter_rules()
+
+
 def claude(prompt, model, cfg, cwd, **kw):  # the harness condition reads the freshly installed skills
     if Path(cfg).name == "cfg-harness":
         cfg = CFG_HARNESS
+    if kw.get("mode", "acceptEdits") == "acceptEdits":  # makers only (bare and harness alike); the judge keeps its Read-only list
+        kw.setdefault("allow", ALLOW_MAKER)
     return _claude(prompt, model, cfg, cwd, **kw)
 
 

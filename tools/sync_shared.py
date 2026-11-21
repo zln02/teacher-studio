@@ -30,11 +30,11 @@ STAGE_SKILLS = ("teacher-motion", "teacher-slides")
 
 # what each skill gets under skills/<skill>/shared/  (vendor = ids from shared/vendor/manifest.json)
 PLAN = {
-    "teacher-game": {"design": True, "fonts": True, "tools": True, "voice": True, "assets": True, "juice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
+    "teacher-game": {"design": True, "fonts": True, "tools": True, "placeholders": True, "voice": True, "assets": True, "juice": True, "vendor": ["confetti", "motion", "lucide", "katex", "phaser"]},
     "teacher-slides": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "chartjs", "katex", "lucide", "confetti", "qrcodegen"]},
-    "teacher-motion": {"design": True, "fonts": True, "tools": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
-    "teacher-studio": {"design": True, "fonts": True, "tools": True, "video_eyes": True, "vendor": []},
-    "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "juice": True, "vendor": []},
+    "teacher-motion": {"design": True, "fonts": True, "tools": True, "placeholders": True, "vendor": ["anime", "motion", "lucide", "confetti"]},
+    "teacher-studio": {"design": True, "fonts": True, "tools": True, "placeholders": True, "video_eyes": True, "vendor": []},
+    "teacher-class-tools": {"design": True, "fonts": True, "tools": True, "placeholders": True, "juice": True, "vendor": []},
     "teacher-data": {"design": True, "fonts": True, "tools": True, "vendor": ["chartjs"]},
     "teacher-docs": {"design": True, "fonts": True, "tools": True, "placeholders": True, "vendor": ["qrcodegen"]},
 }
@@ -73,7 +73,7 @@ def expected() -> dict[Path, bytes]:
                 add(SHARED / "tools" / tool, base / "tools" / tool)
         if plan_skill in ("teacher-game", "teacher-motion", "teacher-studio", "teacher-class-tools", "teacher-slides"):
             add(SHARED / "tools" / "syntax_check.py", base / "tools" / "syntax_check.py")
-        if cfg.get("placeholders"):  # blank detector shared with teacher-slides (scripts/placeholders.py must equal shared/tools/placeholders.py)
+        if cfg.get("placeholders"):  # blank detector + unknowns policy (teacher-slides keeps its copy in scripts/placeholders.py, equal to shared/tools/placeholders.py)
             add(SHARED / "tools" / "placeholders.py", base / "tools" / "placeholders.py")
         if cfg.get("video_eyes"):  # local-only video frames helper (diagnose.py / ref_analyze.py)
             add(SHARED / "tools" / "video_eyes.py", base / "tools" / "video_eyes.py")

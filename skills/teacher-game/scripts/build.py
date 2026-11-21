@@ -243,9 +243,10 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     if theme != "default":
         parts.append((THEMES / f"{theme}.js").read_text(encoding="utf-8"))
     juice_on = USE_JUICE and spec.get("juice") is not False and (JUICE / "juice.js").exists()
-    pre = ""
+    import meaning  # shared/design: sort bins and labels named after a colour (빨강 통, 초록불) take that colour, not the next in the rotation
+    pre = meaning.js() + "\n"
     if juice_on:  # kit first (globals), tuned by spec.juice (optional JSON); the adapter goes last so it wraps the final engine hooks
-        pre = (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
+        pre += (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
         if isinstance(spec.get("juice"), dict):
             pre += "Juice.configure(" + json.dumps(spec["juice"], ensure_ascii=False) + ");\n"
         parts.append((COMP / "juice-game.js").read_text(encoding="utf-8"))

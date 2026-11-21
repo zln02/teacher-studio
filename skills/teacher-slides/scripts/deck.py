@@ -378,7 +378,7 @@ def _run(a, spec, only) -> int:
     if rep.get("seed") is not None:
         keep_seed(a.spec, rep["seed"], title_, rep.get("avoid"))
     for w in rep["warnings"]:
-        print("NOTE", w)
+        print("WARN" if w.startswith("장수:") else "NOTE", w)  # a missed page count is a WARN the author fixes before reporting
     if not rep["ok"]:
         for e in rep["errors"]:
             print("FIX ", e)
@@ -388,6 +388,8 @@ def _run(a, spec, only) -> int:
     code = 0
     if example_likeness and example_likeness.is_fixture(spec, [SKILL / "assets" / "spec-examples"]):  # a shipped fixture built as itself: the page says so
         out.write_text(out.read_text(encoding="utf-8").replace("<head>", '<head><meta name="ts-fixture" content="1">', 1), encoding="utf-8")
+    if spec.get("template_blanks") is True:  # the user asked for blanks to fill in: the page checker reports them, it does not fail them
+        out.write_text(out.read_text(encoding="utf-8").replace("<head>", '<head><meta name="ts-template-blanks" content="1">', 1), encoding="utf-8")
     if example_likeness:  # same slide sequence + the example's headings (copied sentences are caught by the page checker)
         for lv, msg in example_likeness.check_spec(spec, [SKILL / "assets" / "spec-examples"], skeleton_only=True):
             if lv == "WARN":

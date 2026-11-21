@@ -40,6 +40,7 @@ sys.path.insert(0, str(HERE))
 import deck_context as dctx  # noqa: E402
 import deck_spec as dspec  # noqa: E402
 import deck_style as dstyle  # noqa: E402
+import meaning  # noqa: E402  (shared/design: a word that names a colour is drawn in that colour)
 import pptx_fit as pfit  # noqa: E402
 from deck_kit import plain  # noqa: E402
 
@@ -145,7 +146,17 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     T1 = 40 if aud else (38 if ctx_name in ("class", "promo", "personal") else 36)  # body-slide title
     SM = 14                                           # sources, footnotes, captions
     TONES = list(dz.get("tones") or [C["pr"]])        # the colours a badge, a card head or a band may take (primary first; at most three)
-    tone = lambda i: TONES[i % len(TONES)]  # noqa: E731
+    TONE_OV = [None]  # this slide's colours when its labels name colours (초록불 · 빨간불 · 금 · 은 · 동): meaning before rotation
+
+    def tone(i):
+        ov = TONE_OV[0]
+        return ov[i] if (ov and 0 <= i < len(ov)) else TONES[i % len(TONES)]
+
+    def mean(labels=None):
+        """Set (or clear) the slide's meaning colours from its labels; returns them. No label names a colour -> the rotation as before."""
+        labs = [str((x.get("title") or x.get("label") or x.get("caption") or x.get("when") or x.get("text") or "") if isinstance(x, dict) else x) for x in (labels or [])]
+        TONE_OV[0] = meaning.assign(labs, TONES) if (labs and not tpl and meaning.any_named(labs)) else None
+        return TONE_OV[0]
     tint = lambda c, a=0.14: dstyle.mix(C["bg1"], c, a)  # noqa: E731
     import deck_diagram as _dg
     import deck_icons as dicons
@@ -226,7 +237,12 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 continue
             r = p.add_run()
             r.text = part
-            set_font(r, size, color if j % 2 == 0 else emc, bold or j % 2 == 1, name)
+            ec = emc
+            if j % 2 == 1 and emc and emc != color and not tpl:  # an emphasised word that names a colour (**빨간불**) is written in that colour
+                mc = meaning.color_of(part)
+                if mc:
+                    ec = dstyle.legible(mc, "#1a1a1a" if dstyle.design_core._lum(color) > 0.5 else C["card"], 3.0 if size >= 18 else 4.5)  # large bold type: 3:1 (rule 14), so yellow stays yellow
+            set_font(r, size, color if j % 2 == 0 else ec, bold or j % 2 == 1, name)
 
     def tbox(s, x, y, w, h, text, size, color, bold=False, align="l", anchor="t", name="body", emc=None, spacing=1.12, shape=None):
         tb = shape or s.shapes.add_textbox(I(x), I(y), I(w), I(h))
@@ -448,6 +464,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
 
     def answers_slide():
         """「확인 문제 정답」: every check question with its answer and one-line reason, on one slide (two when there are more than four)."""
+        mean(None)
         pend = quizzes[:]
         del quizzes[:]
         for k0 in range(0, len(pend), 4):
@@ -745,7 +762,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     import types as _types
     import deck_panel as dpanel
     KIT = _types.SimpleNamespace(tbox=tbox, rect=rect, card=card, line=line, chart=draw_chart, table=draw_table, diagram=draw_diagram, C=C, OVAL=MSO_SHAPE.OVAL,
-                                 ink=ink, tone=tone, tones=TONES, badge=badge, icon=icon, edge=edge, picks=picks, pick=dicons.pick,
+                                 ink=ink, tone=tone, mean=mean, tones=TONES, badge=badge, icon=icon, edge=edge, picks=picks, pick=dicons.pick,
                                  z=(1.25 if ctx_name == "promo" else (1.18 if ctx_name == "class" else 1.0)) * (1.08 if aud else 1.0),
                                  lo=16.0 if (aud or ctx_name in ("class", "promo")) else 14.0, soft=soft)
     TAKE = ("bullets", "compare", "steps", "timeline", "bignumbers", "table", "panel")  # types whose "takeaway" becomes a band under the body
@@ -782,8 +799,10 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             n_sec += 1
             extra_slides[0] -= 1
             continue
+        mean(None)
         if t == "closing" and quizzes:
             answers_slide()
+        mean(it.get({"bullets": "items", "steps": "steps", "quiz": "choices", "timeline": "events", "diagram": "points", "bignumbers": "items"}.get(t, "")) if isinstance(it, dict) else None)
         s = prs.slides.add_slide(layout_for("cover" if t in ("title", "closing") else "other"))
         n_back[0] = 0
         bg(s, t)
@@ -1159,6 +1178,9 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         elif t == "compare":
             head(s, it, plain(it["title"]))
             ca, cb_ = C["pr"], (TONES[1] if len(TONES) > 1 else C["ac"])
+            labs_ = [str(it["a"].get("label", "")), str(it["b"].get("label", ""))]
+            if not tpl and meaning.any_named(labs_):  # 「초록불 / 빨간불」: each side in the colour its name says
+                ca, cb_ = meaning.assign(labs_, [ca, cb_])
             if it.get("rows"):
                 rows = it["rows"]
                 gt = s.shapes.add_table(len(rows) + 1, 3, I(0.8), I(BT), I(11.7), I(min(BH - cut, (1.0 if len(rows) <= 3 else 0.9) * (len(rows) + 1))))

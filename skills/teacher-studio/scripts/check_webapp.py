@@ -26,6 +26,10 @@ try:
     import example_likeness  # noqa: E402
 except ImportError:
     example_likeness = None
+try:
+    import placeholders  # noqa: E402  (shared/tools: the unknowns policy on a page - filler, draft stamp, [○○] slots)
+except ImportError:
+    placeholders = None
 EXAMPLES = Path(__file__).resolve().parent.parent / "assets" / "webapp" / "examples"
 
 for _s in (sys.stdout, sys.stderr):
@@ -82,6 +86,8 @@ def static_checks(html: str) -> list[tuple[str, str]]:
     out.append(("WARN", f"file is {kb} KB (big for a school PC)") if kb > 3000 else ("PASS", f"file size {kb} KB"))
     if example_likeness:
         out += example_likeness.check_text(html, [EXAMPLES])
+    if placeholders and hasattr(placeholders, "html_checks"):  # the unknowns policy on a page: filler, draft stamp, [○○] slots, a repeated example note
+        out += placeholders.html_checks(html)
     return out
 
 

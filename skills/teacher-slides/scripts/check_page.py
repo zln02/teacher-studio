@@ -29,6 +29,10 @@ try:
     import example_likeness  # noqa: E402  (shared/tools: 「예시를 그대로 따라간 것 같아요」)
 except ImportError:  # an older install without the module: the check is skipped
     example_likeness = None
+try:
+    import placeholders  # noqa: E402  (shared/tools: the unknowns policy on a page - filler, draft stamp, [○○] slots)
+except ImportError:
+    placeholders = None
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
 for _s in (sys.stdout, sys.stderr):
@@ -464,8 +468,10 @@ def main(path: Path, play: bool = True, consent: bool = False) -> int:
     # only pages built from a spec (game build.py, deck.py); an old skin fired with its own sample content is a demo, not a copy
     spec_built = "TS:BUILD" in html or 'name="ts-deck"' in html
     likeness = example_likeness.check_text(html, [HERE.parent / "assets" / "spec-examples"]) if example_likeness and spec_built else []
+    # the unknowns policy (shared/content/CONTENT-RULES.md) on what the page says: same levels as documents and decks
+    policy = placeholders.html_checks(html, template_blanks='name="ts-template-blanks"' in html) if placeholders and hasattr(placeholders, "html_checks") else []
     html = re.sub(r"<!--.*?-->", "", html, flags=re.S)  # ignore HTML comments
-    results: list[tuple[str, str]] = list(likeness)
+    results: list[tuple[str, str]] = list(likeness) + policy
 
     def add(level: str, msg: str) -> None:
         results.append((level, msg))

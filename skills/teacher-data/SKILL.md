@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # Teacher Studio - Data Analysis Weapon
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 Use for 「반별 평균 비교해 줘」「설문 결과 그래프로」「가계부 정리」「매출 추이」. Not for one-off arithmetic on a few typed numbers (do it inline), nor slides/games (-> teacher-slides / teacher-game; they can embed the chart numbers).

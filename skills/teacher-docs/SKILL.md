@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # 교사 스튜디오 · 문서 (한글 · 워드 · PDF)
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 Teacher (no coding) asks for 공문, 가정통신문, 안내문, 계획서·결과 보고서, or to fill / fix a 한글·워드·PDF file. You write a **short JSON spec** (or a list of edits); the tools apply the official format, the house typesetting and the checks.
 Respond in the user's language, in plain words (`../teacher-slides/references/teacher-language.md`: never show code or file names). Ask-first rule: `../teacher-studio/references/ask-first.md`. Student info, 생기부, someone else's work or public sharing -> also `teacher-law`.
 

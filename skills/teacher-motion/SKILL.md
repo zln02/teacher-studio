@@ -6,6 +6,8 @@ license: Apache-2.0
 
 # 교사 스튜디오 · 영상·화면
 
+Run the scripts as written with `python3`; on Windows type `py` instead (no `py`: `python`). Always the short command name, never an interpreter's full path (`C:\...\python.exe`).
+
 Respond in the user's language. If the user brings a template or reference, use it first (ask-first rule: `../teacher-studio/references/ask-first.md`).
 
 선생님(코딩 모름)이 말로 원하는 **수업용 영상·움직이는 화면**을 1920×1080 무대 위 단일 HTML로 만들고, 영상 파일(webm/MP4)로도 뽑아 준다.

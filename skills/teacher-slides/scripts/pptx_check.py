@@ -32,6 +32,14 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import placeholders as ph  # noqa: E402
 import pptx_fit as pfit  # noqa: E402
+for _d in (HERE.parent / "shared" / "design", HERE.parents[2] / "shared" / "design"):
+    if (_d / "meaning.py").exists():
+        sys.path.insert(0, str(_d))
+        break
+try:
+    import meaning  # noqa: E402  (shared/design: a word that names a colour is drawn in that colour)
+except ImportError:
+    meaning = None
 
 EMU = 914400
 
@@ -50,6 +58,50 @@ def _frames(slide):
                     for c in r.cells:
                         yield sh, c.text_frame, sh.name + " (표)"
     yield from walk(slide.shapes)
+
+
+def colour_word_misses(prs) -> list:
+    """Short labels that name a colour (초록불 · 빨간불 · 청팀 · 금) but are written, or sit on a fill, in a clearly different colour.
+    Dark ink and white are not a colour of their own; a hue within 35 degrees of the named one counts as that colour."""
+    if meaning is None:
+        return []
+
+    def vivid(c):
+        r, g, b = meaning._rgb(c)
+        return meaning._hue(c) is not None and max(r, g, b) - min(r, g, b) >= 76
+
+    def far(c, want):
+        hw = meaning._hue(want)
+        if hw is None or not vivid(c):
+            return False
+        d = abs(meaning._hue(c) - hw) % 360
+        return min(d, 360 - d) > 35
+    out = []
+    for i, s in enumerate(prs.slides, 1):
+        for sh, tf, _label in _frames(s):
+            for p_ in tf.paragraphs:
+                runs = [r for r in p_.runs if r.text.strip()]
+                for r_ in runs:
+                    t = r_.text.strip()
+                    if len(t) > 12:
+                        continue
+                    want = meaning.color_of(t)
+                    if not want:
+                        continue
+                    cols = []
+                    try:
+                        if r_.font.color is not None and r_.font.color.type is not None and r_.font.color.rgb is not None:
+                            cols.append("#" + str(r_.font.color.rgb))
+                    except Exception:
+                        pass
+                    try:
+                        if len(runs) == 1 and len(tf.paragraphs) == 1 and sh.fill.type == 1:
+                            cols.append("#" + str(sh.fill.fore_color.rgb))
+                    except Exception:
+                        pass
+                    if cols and any(far(c, want) for c in cols) and not any(vivid(c) and not far(c, want) for c in cols):
+                        out.append((i, t))
+    return out
 
 
 def frame_overflow(sh, tf):
@@ -134,6 +186,10 @@ def check_pptx(path: Path, fillins=(), tol: float = 1.12, lesson: bool = False) 
         if ul:
             pol.append(("WARN", f"슬라이드에 밑줄 빈칸 {len(ul)}곳 (예: {ul[0][0]}번) -> 그럴듯한 예시 값으로 채우고 fillins에 적으세요. 빈칸을 원하신 경우만 \"template_blanks\": true"))
     results += pol
+    cw = colour_word_misses(prs)
+    if cw:  # colour with meaning (DESIGN-RULES 15): WARN, the author repaints the label
+        results.append(("WARN", f"색 이름인 낱말 {len(cw)}곳이 다른 색으로 칠해졌어요 (예: {cw[0][0]}번 「{cw[0][1]}」" + (f", {cw[1][0]}번 「{cw[1][1]}」" if len(cw) > 1 else "")
+                        + ") -> 「초록불」은 초록, 「빨간불」은 빨강처럼 낱말이 말하는 색으로 (어린 학생은 색을 먼저 읽어요)"))
     results.append(("FAIL" if over else "PASS", "text fits its box (estimate)" + (f": {over[:6]}" if over else "")))
     results.append(("FAIL" if off else "PASS", "every shape inside the slide" + (f": {off[:4]}" if off else "")))
     results.append(("FAIL" if empty else "PASS", "no empty placeholder" + (f": {empty[:4]}" if empty else "")))

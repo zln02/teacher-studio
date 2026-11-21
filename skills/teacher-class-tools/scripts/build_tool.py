@@ -139,9 +139,10 @@ def build(spec: dict, fonts: bool = True, yes: bool = False) -> tuple[str, dict]
     js = (SKILL / "assets" / "tools.js").read_text(encoding="utf-8")
     css = (SKILL / "assets" / "tools.css").read_text(encoding="utf-8")
     blob = _js_json(payload)
-    kit_js = kit_css = ""
+    import meaning  # shared/design: a team named 청팀 · 백팀 · 빨강 wears that colour
+    kit_js, kit_css = meaning.js() + "\n", ""
     if USE_JUICE and (JUICE / "juice.js").exists():
-        kit_js = (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
+        kit_js += (JUICE / "juice.js").read_text(encoding="utf-8") + "\n" + (JUICE / "juice-motion.js").read_text(encoding="utf-8") + "\n"
         kit_css = (JUICE / "juice.css").read_text(encoding="utf-8") + "\n"
     html = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
             f'<title>{_html.escape(title)}</title>\n<style>/* TS:CSS BEGIN */{css_vars(tk)}\n{css}{kit_css}/* TS:CSS END */</style></head>\n'
