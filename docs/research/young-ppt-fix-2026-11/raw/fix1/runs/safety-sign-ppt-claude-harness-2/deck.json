@@ -1,0 +1,51 @@
+{"purpose":"수업","context":"class","audience":"초등학교 1학년","subject":"안전한 생활","mood":"따뜻하게","target_slides":10,
+ "title":"학교에서 만나는 안전 표지와 색깔",
+ "slides":[
+ {"type":"title","title":"학교에서 만나는 안전 표지와 색깔","subtitle":"표지의 색깔을 보고 무슨 뜻인지 알아봐요","meta":"초등학교 1학년 · 안전한 생활","pic":"🚸",
+  "shapes":[{"kind":"poly","points":[[50,6],[92,54],[8,54]],"fill":"#F5C400","color":"#222222"},{"kind":"icon","name":"person-standing","x":50,"y":36,"size":22,"color":"#222222"}]},
+ {"type":"diagram","title":"학교에서 이 표지를 보았나요?","shapes":[
+  {"kind":"circle","cx":25,"cy":28,"r":18,"fill":"#E53935"},{"kind":"circle","cx":25,"cy":28,"r":13,"fill":"#FFFFFF"},{"kind":"icon","name":"footprints","x":25,"y":28,"size":14,"color":"#222222"},{"kind":"line","x1":13,"y1":40,"x2":37,"y2":16,"color":"#E53935","w":3},
+  {"kind":"rect","x":55,"y":10,"w":38,"h":36,"fill":"#1E9E55","text":""},{"kind":"icon","name":"door-open","x":74,"y":28,"size":22,"color":"#FFFFFF"},
+  {"kind":"label","x":25,"y":54,"text":"복도에서 달리면?","size":"m"},{"kind":"label","x":74,"y":54,"text":"이 초록 표지는?","size":"m"}],
+  "points":["🚸 표지는 말 없이 알려 주는 그림이에요","🎨 색깔을 보면 무슨 뜻인지 알 수 있어요","🙋 표지를 지키면 모두 안전해요"],
+  "caption":"표지와 색깔이 있으면 글자를 몰라도 위험을 피할 수 있어요","note":"도입: 달리기 금지와 비상구 표지를 보여 주고 무슨 뜻일지 물어봅니다."},
+ {"type":"panel","title":"색깔마다 뜻이 달라요","blocks":[
+  {"kind":"cards","numbered":false,"items":[
+   {"title":"빨강","items":["🛑 멈춰요","🚫 하면 안 돼요"]},
+   {"title":"노랑","items":["⚠️ 조심해요","👀 잘 살펴요"]},
+   {"title":"초록","items":["✅ 안전해요","🚪 비상구 안내"]},
+   {"title":"파랑","items":["👉 꼭 해야 해요","📘 지시해요"]}]}],
+  "takeaway":"색깔만 봐도 멈출지, 조심할지, 따라갈지 알 수 있어요"},
+ {"type":"panel","title":"학교에서 만나는 표지 (1)","blocks":[
+  {"kind":"diagram","shapes":[
+   {"kind":"rect","x":2,"y":8,"w":30,"h":34,"fill":"#1E9E55"},{"kind":"icon","name":"door-open","x":17,"y":25,"size":20,"color":"#FFFFFF"},
+   {"kind":"circle","cx":50,"cy":25,"r":15,"fill":"#E53935"},{"kind":"circle","cx":50,"cy":25,"r":11,"fill":"#FFFFFF"},{"kind":"icon","name":"footprints","x":50,"y":25,"size":12,"color":"#222222"},{"kind":"line","x1":40,"y1":35,"x2":60,"y2":15,"color":"#E53935","w":2.5},
+   {"kind":"poly","points":[[84,6],[99,42],[69,42]],"fill":"#F5C400","color":"#222222"},{"kind":"icon","name":"droplets","x":84,"y":29,"size":12,"color":"#222222"},
+   {"kind":"label","x":17,"y":52,"text":"비상구","size":"s"},{"kind":"label","x":50,"y":52,"text":"달리기 금지","size":"s"},{"kind":"label","x":84,"y":52,"text":"미끄러움 조심","size":"s"}]},
+  {"kind":"cards","numbered":false,"items":[
+   {"title":"초록 비상구","items":["불이 나면 이 문으로 나가요"]},
+   {"title":"빨강 달리기 금지","items":["복도에서는 걸어요"]},
+   {"title":"노랑 미끄러움 조심","items":["젖은 바닥은 천천히 걸어요"]}]}],
+  "takeaway":"복도에서는 걷고, 젖은 바닥은 조심해요"},
+ {"type":"panel","title":"학교에서 만나는 표지 (2)","blocks":[
+  {"kind":"diagram","shapes":[
+   {"kind":"rect","x":2,"y":8,"w":30,"h":34,"fill":"#E53935"},{"kind":"icon","name":"flame-kindling","x":17,"y":25,"size":20,"color":"#FFFFFF"},
+   {"kind":"poly","points":[[50,6],[65,42],[35,42]],"fill":"#F5C400","color":"#222222"},{"kind":"icon","name":"footprints","x":50,"y":29,"size":12,"color":"#222222"},
+   {"kind":"circle","cx":84,"cy":25,"r":15,"fill":"#E53935"},{"kind":"circle","cx":84,"cy":25,"r":11,"fill":"#FFFFFF"},{"kind":"icon","name":"ban","x":84,"y":25,"size":16,"color":"#E53935"},
+   {"kind":"label","x":17,"y":52,"text":"소화기","size":"s"},{"kind":"label","x":50,"y":52,"text":"계단 조심","size":"s"},{"kind":"label","x":84,"y":52,"text":"출입 금지","size":"s"}]},
+  {"kind":"cards","numbered":false,"items":[
+   {"title":"빨강 소화기","items":["불이 났을 때 쓰는 곳이에요"]},
+   {"title":"노랑 계단 조심","items":["손잡이를 잡고 천천히 내려가요"]},
+   {"title":"빨강 출입 금지","items":["위험해서 들어가면 안 돼요"]}]}],
+  "takeaway":"소화기는 어른과 함께, 위험한 곳엔 들어가지 않아요"},
+ {"type":"compare","title":"학교 앞 신호등과 횡단보도","a":{"label":"초록불","items":["🟢 건너요","👀 좌우를 살펴요","🚶 손 들고 걸어요"]},"b":{"label":"빨간불","items":["🔴 멈춰요","🧍 인도에서 기다려요","🚗 차가 먼저 가요"]},"takeaway":"초록불이어도 먼저 좌우를 살펴요"},
+ {"type":"steps","title":"표지를 보면 이렇게 해요","steps":[
+  {"title":"👀 보고","text":"표지와 색깔을 잘 봐요","icon":"eye"},
+  {"title":"✋ 멈추고","text":"가던 걸음을 멈추고 생각해요","icon":"hand"},
+  {"title":"✅ 지키기","text":"표지가 알려 주는 대로 해요","icon":"check"}],"takeaway":"보고, 멈추고, 지키기"},
+ {"type":"quiz","title":"확인 문제","questions":[
+  {"q":"빨강 표지는 무슨 뜻일까요?","choices":["멈춰요, 하면 안 돼요","마음대로 해요","노래해요"],"answer":0,"explain":"빨강은 멈추고 하면 안 된다는 뜻이에요."},
+  {"q":"젖은 바닥 노랑 표지를 보면?","choices":["뛰어가요","천천히 걸어요"],"answer":1,"explain":"노랑은 조심하라는 뜻이라서 미끄러지지 않게 천천히 걸어요."},
+  {"q":"불이 났을 때 따라갈 초록 표지는?","choices":["비상구","출입 금지"],"answer":0,"explain":"초록은 안전을 알려 주고, 비상구로 나가면 안전해요."}]},
+ {"type":"closing","title":"표지와 색깔을 보고 안전하게 지내요","sub":"빨강은 멈춰요, 노랑은 조심해요, 초록은 안전해요, 파랑은 해야 할 일이에요","next":["🚸 복도에서는 걸어요","👀 표지를 보면 멈춰요"]}
+ ]}

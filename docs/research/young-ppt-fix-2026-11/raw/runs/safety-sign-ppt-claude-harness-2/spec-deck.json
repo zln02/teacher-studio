@@ -1,0 +1,589 @@
+{
+ "context": "class",
+ "purpose": "수업",
+ "audience": "초등학교 1학년",
+ "mood": "따뜻하고 밝게",
+ "subject": "안전한 생활",
+ "title": "학교에서 만나는 안전 표지와 색깔",
+ "target_slides": 10,
+ "fillins": [
+  "우리 학교 표지 찾기 활동 시간 10분",
+  "활동 장소: 복도와 계단 (우리 학교)"
+ ],
+ "slides": [
+  {
+   "type": "title",
+   "title": "학교에서 만나는 안전 표지와 색깔",
+   "subtitle": "표지의 색깔과 모양을 보고 뜻을 알아요",
+   "meta": "1학년 안전한 생활",
+   "pic": "🚸",
+   "shapes": [
+    {
+     "kind": "circle",
+     "cx": 50,
+     "cy": 30,
+     "r": 26,
+     "fill": "#D32F2F"
+    },
+    {
+     "kind": "circle",
+     "cx": 50,
+     "cy": 30,
+     "r": 19,
+     "fill": "#FFFFFF"
+    },
+    {
+     "kind": "icon",
+     "name": "footprints",
+     "x": 50,
+     "y": 30,
+     "size": 22,
+     "color": "#222222"
+    },
+    {
+     "kind": "line",
+     "x1": 36,
+     "y1": 16,
+     "x2": 64,
+     "y2": 44,
+     "color": "#D32F2F",
+     "w": 5
+    }
+   ],
+   "note": "오늘 배울 것: 표지의 색깔과 모양을 보고 뜻을 말할 수 있어요."
+  },
+  {
+   "type": "panel",
+   "title": "🏫 학교 곳곳에 표지가 있어요",
+   "blocks": [
+    {
+     "kind": "diagram",
+     "shapes": [
+      {
+       "kind": "circle",
+       "cx": 13,
+       "cy": 22,
+       "r": 11,
+       "fill": "#D32F2F"
+      },
+      {
+       "kind": "circle",
+       "cx": 13,
+       "cy": 22,
+       "r": 8,
+       "fill": "#FFFFFF"
+      },
+      {
+       "kind": "icon",
+       "name": "footprints",
+       "x": 13,
+       "y": 22,
+       "size": 9,
+       "color": "#222222"
+      },
+      {
+       "kind": "line",
+       "x1": 7.5,
+       "y1": 16.5,
+       "x2": 18.5,
+       "y2": 27.5,
+       "color": "#D32F2F",
+       "w": 2.2
+      },
+      {
+       "kind": "label",
+       "x": 13,
+       "y": 41,
+       "text": "뛰지 마세요",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "poly",
+       "points": [
+        [
+         38,
+         10
+        ],
+        [
+         50,
+         33
+        ],
+        [
+         26,
+         33
+        ]
+       ],
+       "fill": "#FFC400",
+       "color": "#222222"
+      },
+      {
+       "kind": "label",
+       "x": 38,
+       "y": 29,
+       "text": "!",
+       "size": "l",
+       "align": "center",
+       "color": "#222222"
+      },
+      {
+       "kind": "label",
+       "x": 38,
+       "y": 41,
+       "text": "미끄러워요",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "rect",
+       "x": 51,
+       "y": 11,
+       "w": 22,
+       "h": 22,
+       "fill": "#2E9E5B"
+      },
+      {
+       "kind": "icon",
+       "name": "person-standing",
+       "x": 62,
+       "y": 22,
+       "size": 14,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 62,
+       "y": 41,
+       "text": "비상구",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "rect",
+       "x": 76,
+       "y": 11,
+       "w": 22,
+       "h": 22,
+       "fill": "#D32F2F"
+      },
+      {
+       "kind": "icon",
+       "name": "fire-extinguisher",
+       "x": 87,
+       "y": 22,
+       "size": 14,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 87,
+       "y": 41,
+       "text": "소화기",
+       "size": "m",
+       "align": "center"
+      }
+     ],
+     "caption": "복도에서 볼 수 있는 표지"
+    },
+    {
+     "kind": "cards",
+     "numbered": false,
+     "items": [
+      {
+       "title": "🪜 계단",
+       "items": [
+        "손잡이를 잡아요"
+       ]
+      },
+      {
+       "title": "🚻 화장실",
+       "items": [
+        "바닥이 미끄러워요"
+       ]
+      },
+      {
+       "title": "🏫 복도",
+       "items": [
+        "오른쪽으로 걸어요"
+       ]
+      }
+     ]
+    }
+   ],
+   "takeaway": "표지는 우리를 지켜 주는 약속이에요"
+  },
+  {
+   "type": "panel",
+   "title": "🎨 색깔마다 뜻이 달라요",
+   "blocks": [
+    {
+     "kind": "diagram",
+     "shapes": [
+      {
+       "kind": "circle",
+       "cx": 13,
+       "cy": 20,
+       "r": 10,
+       "fill": "#D32F2F"
+      },
+      {
+       "kind": "icon",
+       "name": "hand",
+       "x": 13,
+       "y": 20,
+       "size": 10,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 13,
+       "y": 38,
+       "text": "빨강",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "circle",
+       "cx": 38,
+       "cy": 20,
+       "r": 10,
+       "fill": "#FFC400"
+      },
+      {
+       "kind": "label",
+       "x": 38,
+       "y": 26,
+       "text": "!",
+       "size": "l",
+       "align": "center",
+       "color": "#222222"
+      },
+      {
+       "kind": "label",
+       "x": 38,
+       "y": 38,
+       "text": "노랑",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "circle",
+       "cx": 62,
+       "cy": 20,
+       "r": 10,
+       "fill": "#1E6FD9"
+      },
+      {
+       "kind": "icon",
+       "name": "check",
+       "x": 62,
+       "y": 20,
+       "size": 10,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 62,
+       "y": 38,
+       "text": "파랑",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "circle",
+       "cx": 87,
+       "cy": 20,
+       "r": 10,
+       "fill": "#2E9E5B"
+      },
+      {
+       "kind": "icon",
+       "name": "shield-check",
+       "x": 87,
+       "y": 20,
+       "size": 10,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 87,
+       "y": 38,
+       "text": "초록",
+       "size": "m",
+       "align": "center"
+      }
+     ]
+    },
+    {
+     "kind": "cards",
+     "numbered": false,
+     "items": [
+      {
+       "title": "🔴 빨강",
+       "items": [
+        "멈춰요"
+       ]
+      },
+      {
+       "title": "🟡 노랑",
+       "items": [
+        "조심해요"
+       ]
+      },
+      {
+       "title": "🔵 파랑",
+       "items": [
+        "꼭 해요"
+       ]
+      },
+      {
+       "title": "🟢 초록",
+       "items": [
+        "안전해요"
+       ]
+      }
+     ]
+    }
+   ],
+   "takeaway": "색깔만 봐도 뜻을 알 수 있어요"
+  },
+  {
+   "type": "panel",
+   "title": "🔺 모양도 뜻을 알려 줘요",
+   "blocks": [
+    {
+     "kind": "diagram",
+     "shapes": [
+      {
+       "kind": "circle",
+       "cx": 16,
+       "cy": 22,
+       "r": 11,
+       "fill": "#D32F2F"
+      },
+      {
+       "kind": "circle",
+       "cx": 16,
+       "cy": 22,
+       "r": 8,
+       "fill": "#FFFFFF"
+      },
+      {
+       "kind": "icon",
+       "name": "footprints",
+       "x": 16,
+       "y": 22,
+       "size": 9,
+       "color": "#222222"
+      },
+      {
+       "kind": "line",
+       "x1": 10.5,
+       "y1": 16.5,
+       "x2": 21.5,
+       "y2": 27.5,
+       "color": "#D32F2F",
+       "w": 2.2
+      },
+      {
+       "kind": "label",
+       "x": 16,
+       "y": 41,
+       "text": "동그라미",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "poly",
+       "points": [
+        [
+         50,
+         9
+        ],
+        [
+         63,
+         33
+        ],
+        [
+         37,
+         33
+        ]
+       ],
+       "fill": "#FFC400",
+       "color": "#222222"
+      },
+      {
+       "kind": "label",
+       "x": 50,
+       "y": 30,
+       "text": "!",
+       "size": "l",
+       "align": "center",
+       "color": "#222222"
+      },
+      {
+       "kind": "label",
+       "x": 50,
+       "y": 41,
+       "text": "세모",
+       "size": "m",
+       "align": "center"
+      },
+      {
+       "kind": "rect",
+       "x": 73,
+       "y": 11,
+       "w": 22,
+       "h": 22,
+       "fill": "#2E9E5B"
+      },
+      {
+       "kind": "icon",
+       "name": "person-standing",
+       "x": 84,
+       "y": 22,
+       "size": 13,
+       "color": "#FFFFFF"
+      },
+      {
+       "kind": "label",
+       "x": 84,
+       "y": 41,
+       "text": "네모",
+       "size": "m",
+       "align": "center"
+      }
+     ],
+     "caption": "모양마다 하는 일이 달라요"
+    },
+    {
+     "kind": "cards",
+     "numbered": false,
+     "items": [
+      {
+       "title": "⭕ 동그라미",
+       "items": [
+        "하지 말아요, 꼭 해요"
+       ]
+      },
+      {
+       "title": "🔺 세모",
+       "items": [
+        "조심해요"
+       ]
+      },
+      {
+       "title": "🟩 네모",
+       "items": [
+        "안내해요"
+       ]
+      }
+     ]
+    }
+   ],
+   "takeaway": "빨간 동그라미는 하지 마세요, 파란 동그라미는 꼭 하세요"
+  },
+  {
+   "type": "compare",
+   "title": "⚖️ 빨간 동그라미와 파란 동그라미는 뜻이 달라요",
+   "a": {
+    "label": "🔴 빨간 동그라미",
+    "items": [
+     "🚫 하면 안 돼요",
+     "🏃 뛰지 마세요",
+     "빗금이 있어요"
+    ]
+   },
+   "b": {
+    "label": "🔵 파란 동그라미",
+    "items": [
+     "✅ 꼭 해야 해요",
+     "🖐️ 손잡이를 잡아요",
+     "빗금이 없어요"
+    ]
+   },
+   "takeaway": "빨강은 멈추고, 파랑은 해요"
+  },
+  {
+   "type": "steps",
+   "title": "🤝 안전 약속을 지켜요",
+   "steps": [
+    {
+     "title": "🚶 오른쪽 걷기",
+     "text": "복도에서는 오른쪽으로 걸어요."
+    },
+    {
+     "title": "🪜 손잡이 잡기",
+     "text": "계단에서는 손잡이를 잡아요."
+    },
+    {
+     "title": "🐢 천천히 걷기",
+     "text": "미끄러운 곳은 천천히 걸어요."
+    },
+    {
+     "title": "🚪 비상구 비우기",
+     "text": "비상구 앞에 물건을 두지 않아요."
+    }
+   ]
+  },
+  {
+   "type": "activity",
+   "title": "🔍 우리 학교 표지를 찾아요",
+   "minutes": 10,
+   "items": [
+    "🚶 짝과 함께 복도를 천천히 걸어요.",
+    "👀 표지를 찾아서 색깔과 모양을 봐요.",
+    "✏️ 찾은 표지를 그림으로 그려요.",
+    "🗣️ 어떤 뜻인지 친구에게 말해 줘요."
+   ],
+   "note": "활동 10분. 일찍 끝나면 다른 층의 표지도 찾아 보게 해요. 뛰지 않고 걷도록 안내해요."
+  },
+  {
+   "type": "quiz",
+   "title": "✅ 알아맞혀 봐요",
+   "questions": [
+    {
+     "q": "빨간 동그라미에 빗금이 있는 표지는 무슨 뜻일까요?",
+     "choices": [
+      "🚫 하면 안 돼요",
+      "✅ 꼭 해요",
+      "🟢 안내해요"
+     ],
+     "answer": 0,
+     "explain": "빨간 동그라미와 빗금은 하면 안 된다는 뜻이에요."
+    },
+    {
+     "q": "노란 세모 표지는 무슨 뜻일까요?",
+     "choices": [
+      "⚠️ 조심해요",
+      "🚪 나가는 길",
+      "🏃 뛰어도 돼요"
+     ],
+     "answer": 0,
+     "explain": "노란 세모는 조심하라는 뜻이에요."
+    },
+    {
+     "q": "초록색 비상구 표지는 무엇을 알려 줄까요?",
+     "choices": [
+      "🔥 불이 났어요",
+      "🚪 나가는 길이에요",
+      "🛑 멈춰요"
+     ],
+     "answer": 1,
+     "explain": "초록색 비상구 표지는 안전하게 나가는 길을 알려 줘요."
+    }
+   ]
+  },
+  {
+   "type": "closing",
+   "title": "🌈 오늘 배운 것을 기억해요",
+   "sub": "빨강은 멈춰요, 노랑은 조심해요, 파랑은 꼭 해요, 초록은 안전해요.",
+   "next": [
+    "🔴 빨강 멈춰요",
+    "🟡 노랑 조심해요",
+    "🔵 파랑 꼭 해요",
+    "🟢 초록 안전해요"
+   ]
+  }
+ ]
+}
