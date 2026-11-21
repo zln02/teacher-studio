@@ -54,3 +54,4 @@
 .hx.v3 .ilbg{opacity:.2}
 /* 19 미션 판: 예전 .board(격자)와 이름이 겹쳐서 블록으로 */
 .duo3.v3 .board{display:block;gap:0;margin:0}
+.lab.v3 .body3.narrow{right:560px}
