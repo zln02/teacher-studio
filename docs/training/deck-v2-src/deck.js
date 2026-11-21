@@ -108,6 +108,7 @@
     var k = s.getAttribute('data-fx');
     if (k && FX[k] && FX[k].enter) FX[k].enter(s, st);
     [].forEach.call(s.querySelectorAll('.timer'), timerInit);
+    [].forEach.call(s.querySelectorAll('.stw'), swInit);
   }
   function leave(s) {
     clearTimers();
@@ -268,6 +269,50 @@
     t.toggle = function () { if (left <= 0) { left = total; run = false; draw(); return; } run = !run; if (run) { last = Date.now(); iv = setInterval(tick, 250); } else clearInterval(iv); draw(); };
     t.addEventListener('click', function (e) { e.stopPropagation(); t.toggle(); });
     draw();
+  }
+
+  /* ---------- 시연 스톱워치: 시계 하나를 여러 장(.sw)이 같이 보여 줘요. 장을 넘겨도 계속 돌아요 ---------- */
+  var SW = { run: false, t0: 0, acc: 0, iv: 0, laps: [] };
+  function swNow() { return SW.acc + (SW.run ? Date.now() - SW.t0 : 0); }
+  function swFmt(ms) { var d = Math.floor(ms / 100), s = Math.floor(d / 10), m = Math.floor(s / 60); s = s % 60; return m + ':' + (s < 10 ? '0' : '') + s + '.' + (d % 10); }
+  function swDraw() {
+    var ms = swNow(), txt = swFmt(ms);
+    [].forEach.call(document.querySelectorAll('.stw'), function (w) {
+      w.querySelector('.swt').textContent = txt;
+      var sp = w.querySelector('.sws');
+      if (sp) sp.textContent = SW.run ? '재는 중 · T 멈춤' : (ms > 0 ? '멈춤 · T 계속 · R 처음으로' : (w.classList.contains('mini') ? 'T 시작 · R 처음으로' : '눌러서 시작 · T'));
+      w.classList.toggle('run', SW.run);
+    });
+    [].forEach.call(document.querySelectorAll('.relay .rn'), function (n) {
+      var i = +n.getAttribute('data-i'), v = SW.laps[i];
+      n.classList.toggle('on', v !== undefined);
+      n.querySelector('.swst').textContent = v === undefined ? '·' : swFmt(v);
+    });
+  }
+  function swToggle() {
+    if (SW.run) { SW.acc += Date.now() - SW.t0; SW.run = false; clearInterval(SW.iv); }
+    else { SW.t0 = Date.now(); SW.run = true; SW.iv = setInterval(swDraw, 50); }
+    swDraw();
+  }
+  function swReset() { if (SW.run) clearInterval(SW.iv); SW.run = false; SW.acc = 0; SW.laps = []; swDraw(); }
+  function swLap(i) {
+    if (!SW.run && !swNow()) return;
+    if (i === undefined) { i = 0; while (i < 4 && SW.laps[i] !== undefined) i++; }
+    if (i < 4) SW.laps[i] = swNow();
+    swDraw();
+  }
+  function swInit(w) {
+    if (w.__init) return; w.__init = true;
+    w.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var t = e.target.closest ? e.target.closest('button') : null;
+      if (t && t.classList.contains('swre')) swReset();
+      else if (t && t.classList.contains('swlap')) swLap();
+      else swToggle();
+    });
+    var rel = w.parentNode.querySelector('.relay');
+    if (rel) [].forEach.call(rel.querySelectorAll('.rn'), function (n) { n.addEventListener('click', function (e) { e.stopPropagation(); swLap(+n.getAttribute('data-i')); }); });
+    swDraw();
   }
 
   /* =====================================================================
@@ -1864,12 +1909,14 @@
     else if (k === 'n' || k === 'N') notesEl.classList.toggle('on');
     else if (k === 'f' || k === 'F') toggleFS();
     else if (k === 'b' || k === 'B' || k === '.') document.getElementById('black').classList.toggle('on');
-    else if (k === 't' || k === 'T') { var tm = slides[cur].querySelector('.timer'); if (tm && tm.toggle) tm.toggle(); }
+    else if (k === 't' || k === 'T') { var tm = slides[cur].querySelector('.timer'); if (tm && tm.toggle) tm.toggle(); else if (slides[cur].querySelector('.stw')) swToggle(); }
+    else if ((k === 'r' || k === 'R') && slides[cur].querySelector('.stw')) swReset();
+    else if ((k === 'l' || k === 'L') && slides[cur].querySelector('.stw')) swLap();
     else if (/^[0-9]$/.test(k)) { jump += k; }
     else if (k === 'Enter' && jump) { go(+jump - 1, 0); jump = ''; }
     else if (k === 'Escape') { jump = ''; }
   });
-  stage.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.timer')) return; if (e.clientX < window.innerWidth * 0.2) prev(); else next(); });
+  stage.addEventListener('click', function (e) { if (e.target.closest && e.target.closest('.timer,.stw,.relay')) return; if (e.clientX < window.innerWidth * 0.2) prev(); else next(); });
   function toggleFS() {
     var d = document, el = d.documentElement;
     if (!d.fullscreenElement && !d.webkitFullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen).call(el); }

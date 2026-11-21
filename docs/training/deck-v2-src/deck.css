@@ -906,3 +906,54 @@ h1,h2,.big,.stmt .big{font-weight:800}
 
 /* motion QA: 벽을 다시 세울 때는 전환 없이 */
 .crack .wall.reset .brick,.crack .wall.reset .cracks,.crack .wall.reset .cracks path{transition:none!important}
+
+/* 시간이 남으면 · 시연: 찍고 → 보내고 → 풀고 → 받기 (스톱워치 하나를 두 장이 같이 써요) */
+.demo .dh,.cut .dh{font-size:64px;margin-bottom:0}
+.stw{cursor:pointer;pointer-events:auto;user-select:none;-webkit-user-select:none}
+.stw .swt{display:block;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--dink);line-height:1}
+.stw .sws{display:block;color:var(--dsub);font-weight:600}
+.stw.run .swt{color:var(--warm)}
+.stw.big{position:absolute;left:50%;top:254px;transform:translateX(-50%);width:1000px;padding:34px 40px 30px;border-radius:32px;text-align:center;
+  background:linear-gradient(180deg,rgba(30,31,35,.82) 0%,rgba(18,19,22,.86) 100%);border:1px solid var(--edge);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 36px 70px -44px rgba(0,0,0,.9)}
+.stw.big.run{border-color:rgba(217,168,92,.5)}
+.stw.big .swt{font-size:170px}
+.stw.big .sws{font-size:28px;margin-top:12px}
+.swb{display:flex;justify-content:center;gap:18px;margin-top:26px}
+.swb button{font:inherit;font-size:26px;font-weight:700;color:var(--dink);background:rgba(243,240,233,.06);border:1px solid var(--edge);border-radius:999px;padding:12px 26px;display:flex;align-items:center;gap:10px;cursor:pointer}
+.swb button .ic{font-size:26px;color:var(--warm)}
+.swb kbd{font:inherit;font-size:20px;color:var(--dsub);border:1px solid var(--edge);border-radius:8px;padding:1px 9px;margin-left:4px}
+.relay{position:absolute;left:128px;right:128px;top:660px;display:flex;align-items:stretch;pointer-events:auto}
+.relay i{flex:1;align-self:center;height:3px;margin:0 10px;background:repeating-linear-gradient(90deg,rgba(217,168,92,.9) 0 12px,transparent 12px 20px);animation:flowx 1s linear infinite}
+.rn{flex:none;width:330px;padding:22px 24px 18px;border-radius:24px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;column-gap:18px;row-gap:4px;align-items:center;
+  background:linear-gradient(180deg,var(--glass-hi) 0%,var(--glass-lo) 100%);border:1px solid var(--edge);transition:border-color .3s}
+.rn .bd{grid-row:span 2;width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:38px}
+.rn b{font-size:38px;font-weight:800;letter-spacing:-.02em;color:var(--dink)}
+.rn span{font-size:24px;line-height:1.35;color:var(--dsub)}
+.rn .swst{grid-column:1 / -1;font-style:normal;font-size:30px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--dsub);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.rn.on{border-color:rgba(217,168,92,.6)}
+.rn.on .swst{color:var(--warm)}
+.dline{position:absolute;left:128px;right:128px;bottom:104px;font-size:30px;color:var(--dsub);text-align:center}
+.reduced .relay i{animation:none!important}
+@media (prefers-reduced-motion: reduce){.relay i{animation:none!important}}
+/* 예시 문항: 휴대폰으로 찍기 좋게 밝은 종이 한 장 */
+.demoq .paper{position:absolute;left:50%;top:190px;transform:translateX(-50%);width:1400px;padding:54px 70px 60px;border-radius:14px;background:#f3f0e9;color:#1b1a17;box-shadow:0 50px 90px -50px rgba(0,0,0,.95)}
+.demoq .ph{display:flex;justify-content:space-between;font-size:26px;font-weight:700;color:#5b574f;padding-bottom:20px;margin-bottom:34px;border-bottom:2px solid #1b1a17}
+.demoq .qn{font-size:48px;font-weight:600;line-height:1.55;letter-spacing:-.02em;color:#1b1a17}
+.demoq .qn b{color:#1b1a17;font-weight:800;margin-right:8px}
+.demoq .ch{list-style:none;display:flex;gap:56px;margin-top:44px;font-size:46px;font-weight:600;color:#1b1a17}
+.demoq .ch i{font-style:normal;margin-right:10px}
+.stw.mini{position:absolute;right:128px;bottom:104px;display:flex;align-items:center;gap:18px;padding:16px 28px;border-radius:22px;
+  background:linear-gradient(180deg,rgba(30,31,35,.82) 0%,rgba(18,19,22,.86) 100%);border:1px solid var(--edge)}
+.stw.mini>.ic{font-size:40px;color:var(--warm)}
+.stw.mini .swt{font-size:56px}
+.stw.mini .sws{font-size:20px;margin-top:4px}
+/* 어느 단계에서 끊을까 */
+.ctab{margin-top:40px;display:flex;flex-direction:column;gap:14px}
+.cr{display:grid;grid-template-columns:300px 1fr;align-items:center;gap:30px;padding:20px 32px;border-radius:22px;
+  background:linear-gradient(180deg,var(--glass-hi) 0%,var(--glass-lo) 100%);border:1px solid var(--edge);font-size:34px;line-height:1.4;color:var(--dink)}
+.cr.hd{background:none;border:none;padding:0 32px;font-size:24px;font-weight:700;color:var(--dsub)}
+.cr b{color:var(--warm);font-weight:800}
+.cs{display:flex;align-items:center;gap:20px}
+.cs .bd{width:64px;height:64px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:34px}
+.cs b{font-size:40px;color:var(--dink)}
+.cut .neqbar{bottom:100px}
