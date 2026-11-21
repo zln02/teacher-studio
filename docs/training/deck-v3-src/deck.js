@@ -4,6 +4,7 @@
   var REDUCED = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   if (/[?&]reduced=1/.test(location.search)) REDUCED = true;
   var NOGL = /[?&]nogl=1/.test(location.search);
+  if (/[?&]theme=light/.test(location.search)) document.documentElement.className += ' light';
   document.documentElement.className += ' js' + (REDUCED ? ' reduced' : '') + (/[?&]slots=1/.test(location.search) ? ' show-slots' : '');
   var wipe = document.getElementById('wipe'), lastAg = null;
   var A = window.anime;
@@ -13,6 +14,7 @@
   var cur = -1, step = 0, scale = 1;
   var AGENDA = /*__AGENDA__*/['여는 말', '하네스', '같은 부탁 다른 결과', '김치볶음밥', '실습', '마무리'];   // AI 커닝은 따로 덱(ai-cheating/)
   var FOOT = /*__FOOT__*/'AI에게 무기를 주면 · 박진영';
+  var SECT = ['INTRO', 'HARNESS', 'SAME ASK', 'STORY', 'HANDS-ON', 'WRAP-UP', 'EXTRA'], TITLE = document.title.split(' · ')[0] + ' — 교사 연수';
 
   /* ---------- 무대 맞춤 ---------- */
   function fit() {
@@ -95,7 +97,13 @@
     slides.forEach(function (s, i) {
       var f = s.querySelector('.foot');
       if (!f) { f = document.createElement('div'); f.className = 'foot'; s.appendChild(f); }
-      f.innerHTML = '<span>' + FOOT + '</span><span><b>' + pad(i + 1) + '</b> / ' + pad(slides.length) + '</span>';
+      if (s.classList.contains('v3') && !s.querySelector('.dtop')) {
+        var dt = document.createElement('div'); dt.className = 'dtop';
+        var ag = +s.getAttribute('data-agenda') || 0, code = SECT[ag] || '';
+        dt.innerHTML = '<span><b>' + pad(ag) + '</b> · ' + code + '</span><span>' + TITLE + '</span>';
+        s.appendChild(dt);
+      }
+      f.innerHTML = '<span>' + (s.getAttribute('data-src') ? '// ' + s.getAttribute('data-src') : FOOT) + '</span><span><b>' + pad(i + 1) + '</b> / ' + pad(slides.length) + '</span>';
     });
   }
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -407,7 +415,7 @@
     if (env) sc.environment = env;
     var bd = IMG['bd_' + seg];
     // v3: 그림이 있으면 3D 장면 뒤 배경을 어둡게 한 그림으로 (3D가 주인공, 그림은 뒤에)
-    var il = { cover: 'il_cover_a_dk', robot: 'il_kitchen_backdrop_dk', made: 'il_closing_dk' }[kind];
+    var il = null;   // 스킨 D: 3D 뒤에는 그림 없이 깨끗한 무대
     if (il && IMG[il]) bd = IMG[il];
     if (bd && !S.noBg) { var t = new THREE.Texture(bd); t.needsUpdate = true; t.center.set(0.5, 0.5); t.repeat.set(0.9, 0.9); sc.background = t; S.bg = t; }
     if (env) sc.traverse(function (o) { if (o.isHemisphereLight) o.intensity *= 0.3; else if (o.isDirectionalLight) o.intensity *= (S.lightK || 0.75); });
@@ -597,11 +605,11 @@
 
   /* =====================================================================
      3D 물건 상자 (KIT) · 점토 느낌 재질 + 부드러운 스튜디오 빛 + 테두리 빛 하나
-     icons: lightbulb file-text layout-grid hammer pencil send gamepad-2 presentation clapperboard timer chart-column scale
+     icons: chef-hat scroll-text package utensils-crossed thumbs-up shield-check lightbulb file-text layout-grid hammer pencil send gamepad-2 presentation clapperboard timer chart-column scale
      ===================================================================== */
   // 3D 재질 색은 여기 한 곳에서만 정해요 (어두운 키노트: 짙은 새틴 몸체 + 강조색 빛)
   var P = { cream: 0x4b4f5a, stone2: 0x646976, paper: 0xece8df, slab: 0x1d2026, sand: 0x7d8088, ground: 0x15171b, road: 0x0c0d10, curb: 0x2c2f37, roadBad: 0x25272e,
-    terra: 0x8fc4d6, terra2: 0x8fc4d6, teal: 0x8fc4d6, teal2: 0x6fa9be, car: 0x4a6a7a, ink: 0x101114, brown: 0x2f3138, wood: 0x6b5442, amber: 0xd9a85c,
+    dacc: 0xff8a3d, terra: 0x8fc4d6, terra2: 0x8fc4d6, teal: 0x8fc4d6, teal2: 0x6fa9be, car: 0x4a6a7a, ink: 0x101114, brown: 0x2f3138, wood: 0x6b5442, amber: 0xd9a85c,
     mint: 0x8fc4d6, cool: 0x8fc4d6, coral: 0xd5806a, dk: 0x141210, dk2: 0x1f1c19, skin: 0xe9bb97, hair: 0x1c130f, leaf: 0x3d6b54, idle: 0x3d4048 };
   var CSS = { acc: '#8fc4d6', acc2: '#8fc4d6', warm: '#d9a85c', ink: '#0e1418', paper: '#f3f0e9' };
   function M(color, o) { return new THREE.MeshStandardMaterial(Object.assign({ color: color, roughness: 0.62, metalness: 0.0 }, o || {})); }
@@ -685,16 +693,16 @@
   // 글씨 + 아이콘 카드 (앞면 +z)
   function card(w, h, color, text, fg, icon) {
     // 색은 하나로: 짙은 남색 유리 타일 + 강조색 아이콘 (color가 호박색이면 따뜻한 강조). 카드마다 다른 색을 쓰지 않아요.
-    var g = new THREE.Group(), warm = color === P.amber, acc = warm ? '#f2a94e' : CSS.acc;   // v3: 호박색이면 따뜻한 먹빛 카드
-    var body = rbox(w, h, 0.16, Math.min(w, h) * 0.16, PH.plastic(warm ? 0x2a2119 : 0x1b1d22, { roughness: 0.6, clearcoat: 0.12, envMapIntensity: 0.5 })); g.add(body);
+    var g = new THREE.Group(), dk = color === P.dacc, warm = color === P.amber, acc = dk ? '#ff8a3d' : warm ? '#f2a94e' : CSS.acc;   // v3: 호박색이면 따뜻한 먹빛 카드
+    var body = rbox(w, h, 0.16, Math.min(w, h) * 0.16, PH.plastic(dk ? 0x1d232b : warm ? 0x2a2119 : 0x1b1d22, { roughness: 0.6, clearcoat: 0.12, envMapIntensity: 0.5 })); g.add(body);
     var W = 512, H = Math.round(512 * h / w), img = null;
     var t = tex(W, H, paint);
     function paint(c) {
-      var gr = c.createLinearGradient(0, 0, W * 0.4, H); gr.addColorStop(0, warm ? '#3b2e22' : '#2b2e36'); gr.addColorStop(1, warm ? '#2a2119' : '#1b1d22');
+      var gr = c.createLinearGradient(0, 0, W * 0.4, H); gr.addColorStop(0, dk ? '#262e38' : warm ? '#3b2e22' : '#2b2e36'); gr.addColorStop(1, dk ? '#1d232b' : warm ? '#2a2119' : '#1b1d22');
       c.fillStyle = gr; rr2d(c, 3, 3, W - 6, H - 6, 58); c.fill();
       var sh = c.createLinearGradient(0, 0, 0, H * 0.5); sh.addColorStop(0, 'rgba(255,255,255,.06)'); sh.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = sh; rr2d(c, 3, 3, W - 6, H * 0.5, 58); c.fill();
-      c.strokeStyle = warm ? 'rgba(242,169,78,.35)' : 'rgba(243,240,233,.2)'; c.lineWidth = 3; rr2d(c, 5, 5, W - 10, H - 10, 56); c.stroke();
-      c.fillStyle = warm ? '#f6eee2' : '#f3f0e9'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.strokeStyle = dk ? 'rgba(255,138,61,.55)' : warm ? 'rgba(242,169,78,.35)' : 'rgba(243,240,233,.2)'; c.lineWidth = 3; rr2d(c, 5, 5, W - 10, H - 10, 56); c.stroke();
+      c.fillStyle = dk ? '#eef1f5' : warm ? '#f6eee2' : '#f3f0e9'; c.textAlign = 'center'; c.textBaseline = 'middle';
       c.font = '700 ' + (text.length > 4 ? 60 : 74) + 'px ' + FONT;
       if (icon) { if (img) { c.drawImage(img, W / 2 - 60, H * 0.35 - 60, 120, 120); } c.fillText(text, W / 2, H * 0.76); }
       else c.fillText(text, W / 2, H / 2 + 4);
@@ -881,43 +889,48 @@
   var SCENES = {};
 
   /* 표지: 공정 카드 여섯 장이 두 줄로 떠 있고, 빛이 기획 → 배포로 지나가요 */
+  /* 표지 (스킨 D): 가운데 하네스 핵(요리사)에 모듈 다섯이 하나씩 날아와 끼워지고, 선이 이어지고, 신호가 한 번 지나가요. 그다음 가만히 */
   SCENES.cover = function () {
     var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 16 / 9, 0.5, 100);
-    cam.position.set(0, 0.4, 19); cam.lookAt(0.4, 0, 0);
+    scene.background = new THREE.Color(0x161a20);
+    cam.position.set(0, 0.6, 19); cam.lookAt(0.4, 0, 0);
     rig(scene, false, 9, 5.5, 0);
-    var grp = new THREE.Group(); grp.position.set(5.65, 0.0, 0); grp.scale.setScalar(0.92); scene.add(grp);
-    var defs = [['기획', P.amber, null, 'lightbulb'], ['대본', P.amber, null, 'file-text'], ['콘티', P.amber, null, 'layout-grid'],
-      ['제작', P.amber, null, 'hammer'], ['수정', P.amber, null, 'pencil'], ['배포', P.amber, null, 'send']];
-    var pos = [[-2.45, 1.15, 0.3], [0, 1.45, -0.2], [2.45, 1.15, 0.3], [-2.45, -1.25, 0.1], [0, -0.95, -0.3], [2.45, -1.25, 0.1]];
-    var items = defs.map(function (d, i) {
-      var c = card(2.15, 1.5, d[1], d[0], d[2], d[3]);
-      c.userData = { p: V(pos[i][0], pos[i][1], pos[i][2]), ph: i * 1.1 };
-      grp.add(c); return c;
+    var rim = new THREE.DirectionalLight(0x5cc8c2, 0.55); rim.position.set(10, 4, -7); scene.add(rim);
+    var grp = new THREE.Group(); grp.position.set(5.5, 0.15, 0); grp.scale.setScalar(0.92); scene.add(grp);
+    var core = card(2.2, 2.2, P.dacc, '요리사', null, 'chef-hat'); grp.add(core);
+    var names = [['레시피', 'scroll-text'], ['밀키트', 'package'], ['주방도구', 'utensils-crossed'], ['시식', 'thumbs-up'], ['위생 규칙', 'shield-check']];
+    var mods = names.map(function (n, i) {
+      var a = -Math.PI / 2 + i * Math.PI * 2 / 5, c = card(1.9, 1.2, P.cool, n[0], null, n[1]);
+      c.userData = { p: V(Math.cos(a) * 3.1, -Math.sin(a) * 2.5, 0), t0: TOK.sec(TOK.s) + i * TOK.sec(TOK.gap * 4) };
+      grp.add(c);
+      var lg = new THREE.BufferGeometry(); lg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+      var ln = new THREE.Line(lg, new THREE.LineBasicMaterial({ color: 0x3a4451 })); ln.position.z = -0.12; grp.add(ln); c.userData.ln = ln;
+      return c;
     });
-    var path = new THREE.CatmullRomCurve3(pos.map(function (p) { return V(p[0], p[1], p[2] + 0.2); }), false, 'catmullrom', 0.4);
-    var tube = pathTube(path, 0.035, P.amber, 0.35); tube.position.z = -0.35; grp.add(tube);
-    var pulse = pulseMesh(0.1, P.amber); grp.add(pulse);
-    var sh = catcher(14, 8, 0.12); sh.position.set(0, -2.6, 0); grp.add(sh);
-    var mx = 0, my = 0;
-    window.addEventListener('mousemove', function (e) { mx = e.clientX / window.innerWidth - 0.5; my = e.clientY / window.innerHeight - 0.5; });
-    // v3: 카드가 차례로 통통 튀어 들어와요 (spring: 넘쳤다 돌아옴, 한 장 0.8초 · 0.09초 간격)
-    var S = { scene: scene, camera: cam, labels: [], pu: 0, age: 99,
-      setStep: function (n, snap) { if (snap) { S.age = (REDUCED || V3DIR < 0) ? 99 : 0; S.pu = 0; } },
+    var pulse = pulseMesh(0.09, 0xff8a3d); grp.add(pulse);
+    var sh = catcher(14, 8, 0.12); sh.position.set(0, -2.9, 0); grp.add(sh);
+    var S = { scene: scene, camera: cam, labels: [], age: 99, noDrift: true, noBg: true,
+      setStep: function (n, snap) { if (snap) S.age = (REDUCED || V3DIR < 0) ? 99 : 0; },
       finish: function () { S.age = 99; },
       update: function (dt, t, snap) {
         if (!snap) S.age += dt;
-        items.forEach(function (c, i) {
-          var u = c.userData, ta = Math.max(0, (S.age - TOK.sec(TOK.xs) - i * TOK.sec(TOK.gap)) / TOK.sec(TOK.m)), k = ta >= 1 ? 1 : EZ.bounce(ta);
-          c.scale.setScalar(Math.max(0.001, k));
-          c.position.copy(u.p);   // v3: 내려앉은 뒤에는 가만히 (반복 움직임 없음)
-          c.position.y -= (1 - Math.min(1, k)) * 0.9;
-          c.rotation.set(-0.05, -0.22 - (1 - Math.min(1, ta)) * (1 - Math.min(1, ta)) * 3.1, 0);   // 돌면서 자리에
+        var A = S.age, ck = Math.max(0, Math.min(1, A / TOK.sec(TOK.m)));
+        core.scale.setScalar(Math.max(0.001, ck >= 1 ? 1 : EZ.spring(ck))); core.rotation.set(-0.04, -0.2, 0);
+        mods.forEach(function (c) {
+          var u = c.userData, q = Math.max(0, Math.min(1, (A - u.t0) / TOK.sec(TOK.m))), e = 1 - Math.pow(1 - q, 3), k = q >= 1 ? 1 : EZ.spring(q);
+          c.visible = q > 0;
+          var far = u.p.clone().multiplyScalar(2.4); far.z = 5;
+          c.position.set(far.x + (u.p.x - far.x) * e, far.y + (u.p.y - far.y) * e, far.z + (u.p.z - far.z) * e);
+          c.rotation.set(-0.04, -0.2 + (1 - e) * 1.4, 0);
+          c.scale.setScalar(Math.max(0.001, 0.6 + 0.4 * k));
+          var lq = Math.max(0, Math.min(1, (A - u.t0 - TOK.sec(TOK.m) * 0.7) / TOK.sec(TOK.s))), pa = u.ln.geometry.attributes.position;
+          pa.setXYZ(0, 0, 0, 0); pa.setXYZ(1, u.p.x * lq, u.p.y * lq, 0); pa.needsUpdate = true; u.ln.visible = lq > 0;
         });
-        S.pu = snap ? 0.42 : Math.min(1, S.pu + dt * 0.35); pulse.visible = S.pu < 1;   // 빛 한 번만 지나가요
-        pulse.position.copy(path.getPointAt(S.pu)); pulse.position.z += 0.1; face(pulse.userData.halo, cam);
-        var tx = 0, ty = 0.4;   // v3: 마우스를 따라 움직이지 않아요
-        cam.position.x += (tx - cam.position.x) * (snap ? 1 : damp(2, dt)); cam.position.y += (ty - cam.position.y) * (snap ? 1 : damp(2, dt));
-        cam.lookAt(0.4, 0, 0);
+        // 마지막 모듈이 끼워진 뒤 신호 한 번: 레시피 → 요리사
+        var last = mods[mods.length - 1].userData.t0 + TOK.sec(TOK.m + TOK.s), pq = Math.max(0, Math.min(1, (A - last) / TOK.sec(TOK.m)));
+        pulse.visible = pq > 0 && pq < 1;
+        var p0 = mods[0].userData.p; pulse.position.set(p0.x * (1 - pq), p0.y * (1 - pq), 0.1); face(pulse.userData.halo, cam);
+        cam.position.set(0, 0.6, 19); cam.lookAt(0.4, 0, 0);
       } };
     return S;
   };
@@ -933,7 +946,8 @@
     var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, 16 / 9, 1.5, 120);
     rig(scene, false, 8, 0, 0);
     fogFor(scene, 'road', 12, 42);
-    var fl = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), M(0x1f2023, Object.assign({ roughness: 0.82, metalness: 0.0, envMapIntensity: 0.25 }, pbr('asphalt_02', 24, 24))));
+    scene.background = new THREE.Color(0x161a20);
+    var fl = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), M(0x1c2229, { roughness: 0.38, metalness: 0.15, envMapIntensity: 0.5 }));   // 스킨 D: 깨끗한 무대 바닥 (살짝 비침)
     fl.rotation.x = -Math.PI / 2; fl.receiveShadow = true; scene.add(fl);
     var back = new THREE.DirectionalLight(0xffe6c2, 0.55); back.position.set(-3, 5, -8); scene.add(back);
     var sweepU = { value: -6 };
@@ -960,7 +974,9 @@
     for (var k = 0; k < NP; k++) { var a = k * 2.39996, r = (k * 0.618034) % 1; p0.push(V((r - 0.5) * 5.4, 0.05, ((k * 0.3819) % 1 - 0.5) * 0.6)); pv.push(V(Math.cos(a) * (1 + r * 3.2), 1.2 + ((k * 0.7548) % 1) * 4.2, Math.sin(a) * (0.6 + r * 2.4))); }
     var pgeo = new THREE.BufferGeometry(); pgeo.setAttribute('position', new THREE.BufferAttribute(ppos, 3));
     var pmat = new THREE.PointsMaterial({ color: 0xcfc4ae, size: 0.045, map: dotTex(), transparent: true, depthWrite: false, opacity: 0 });
-    var pts = noSh(new THREE.Points(pgeo, pmat)); pts.frustumCulled = false; scene.add(pts);
+    var pts = noSh(new THREE.Points(pgeo, pmat)); pts.frustumCulled = false; pts.visible = false; scene.add(pts);   // 스킨 D: 빛 조각은 끄고
+    var RM = [['레시피', 'scroll-text'], ['밀키트', 'package'], ['주방도구', 'utensils-crossed'], ['시식', 'thumbs-up'], ['위생 규칙', 'shield-check']].map(function (n, i) {
+      var c = card(1.25, 0.8, P.cool, n[0], null, n[1]); c.userData = { x: (i - 2) * 1.45, t0: 0 }; scene.add(c); return c; });
     var L = [lbl('HARNESS', 'hx', V(0, -0.35, 0.6))];
     var Y = SZ / 2 - 0.02, TI = 0.2 + 2 * 0.2 + 0.42;   // 마지막 글자가 닿는 때
     var CA = V(0, 2.4, 17), CB = V(0, 1.15, 9.6), LK = V(0, 0.95, 0);
@@ -989,6 +1005,10 @@
         pgeo.attributes.position.needsUpdate = true;
         pmat.opacity = tau > 0 && tau < 1.8 ? (1 - tau / 1.8) * 0.5 : 0;
         sweepU.value = -6 + Math.max(0, Math.min(1, (A - 1.3) / 0.9)) * 12;
+        RM.forEach(function (c, i) {   // 글자가 내려앉은 뒤 모듈이 하나씩 와서 끼워져요 (아래 한 줄)
+          var q = Math.max(0, Math.min(1, (A - TI - 0.3 - i * TOK.sec(TOK.gap * 2)) / TOK.sec(TOK.m))), e = 1 - Math.pow(1 - q, 3), k = q >= 1 ? 1 : EZ.spring(q);
+          c.visible = q > 0; c.position.set(c.userData.x, 0.42 + (1 - e) * 1.6, 1.7 + (1 - e) * 2.5); c.rotation.set(-0.35 - (1 - e) * 0.8, 0, 0); c.scale.setScalar(Math.max(0.001, 0.7 + 0.3 * k));
+        });
         S.fx.bloom = 0.1 + (tau > 0 ? 0.22 * Math.exp(-tau * 3) : 0);
         var push = 1 - Math.pow(1 - Math.min(1, A / 2.6), 3);
         cam.position.lerpVectors(CA, CB, push);
@@ -1269,6 +1289,25 @@
   }
   var KP = { wall: '#f1c88e', wallLo: '#d99a5e', floor: '#c58a55', floorLine: '#9c6436', cab: 0x1f6f7a, door: 0x2b8792, top: 0xfff0d8, knob: 0xf2b53a, wood: 0xb5733c,
     tomato: 0xe24a2c, mustard: 0xf2b53a, leaf: 0x58b45c, mintJar: 0x7fcbbb, white: 0xffffff, steel: 0x3b3f4e, robot: 0x4fa8c4, robotJoint: 0xf2f6fb, robotEye: 0x17203a };
+  /* 스킨 D: 13장 무대 (밝은 나무 부엌 대신 깨끗한 석판 무대 · 같은 자리의 조리대 · 화구) */
+  function cleanStage(scene) {
+    var Y = -1.2, WZ = -3.4;
+    var wallT = tex(512, 256, function (c, w, h) { var g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#1a1f26'); g.addColorStop(1, '#242b34'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+      var v = c.createRadialGradient(w * 0.55, h * 0.4, 10, w * 0.55, h * 0.4, w * 0.6); v.addColorStop(0, 'rgba(255,190,140,.10)'); v.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = v; c.fillRect(0, 0, w, h); });
+    var wall = noSh(new THREE.Mesh(new THREE.PlaneGeometry(34, 13), Bm(0xffffff, { map: wallT }))); wall.position.set(0, Y + 6.5, WZ); scene.add(wall);
+    var floor = new THREE.Mesh(new THREE.PlaneGeometry(34, 17), M(0x1f252d, { roughness: 0.5, metalness: 0.1 })); floor.rotation.x = -Math.PI / 2; floor.position.set(0, Y, WZ + 8.5); floor.receiveShadow = true; scene.add(floor);
+    var top = rbox(10.4, 2.5, 0.26, 0.12, M(0x3a4350, { roughness: 0.45 })); top.rotation.x = -Math.PI / 2; top.position.set(0, -0.13, 0.1); scene.add(top);
+    var body = rbox(9.9, 1.02, 2.1, 0.1, M(0x232a33, { roughness: 0.7 })); body.position.set(0, Y + 0.51, 0.08); scene.add(body);
+    var edge = noSh(new THREE.Mesh(new THREE.BoxGeometry(9.9, 0.03, 0.02), Bm(0xff8a3d))); edge.position.set(0, Y + 1.0, 1.14); scene.add(edge);
+    var SVX = -1.5;
+    var stove = rbox(2.0, 1.5, 0.12, 0.1, M(0x14181d, { roughness: 0.3 })); stove.rotation.x = -Math.PI / 2; stove.position.set(SVX, 0.06, 0.2); scene.add(stove);
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.05, 10, 32), M(0x4a5462)); ring.rotation.x = Math.PI / 2; ring.position.set(SVX, 0.13, 0.2); scene.add(ring);
+    var fire = noSh(new THREE.Mesh(new THREE.RingGeometry(0.26, 0.48, 32), Bm(0xff7a2a, { transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false }))); fire.rotation.x = -Math.PI / 2; fire.position.set(SVX, 0.15, 0.2); scene.add(fire);
+    var rimL = new THREE.DirectionalLight(lin(0x5cc8c2), 0.5); rimL.position.set(8, 5, -6); scene.add(rimL);
+    var motes = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial()); motes.geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3)); motes.visible = false;
+    scene.traverse(function (o) { if (o.isMesh && !o.userData.noShadow) { o.castShadow = true; o.receiveShadow = true; } });
+    return { Y: Y, WZ: WZ, SVX: SVX, beams: [], motes: motes, mp: new Float32Array(0), fire: fire, lamps: [], WX: -3.5 };
+  }
   function toonKitchen(scene) {
     var Y = -1.2, WZ = -3.4;
     // 벽: 가운데가 밝고 모서리·바닥 쪽이 어두운 그림(구워 넣은 그늘)
@@ -1397,12 +1436,12 @@
   }
   function robot3dScene() {
     var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, 16 / 9, 0.5, 80);
-    scene.background = lin(0x6b3a22);
+    scene.background = lin(0x1a1f26);
     // 빛 셋: 키(따뜻한 앞-왼쪽 위, 그림자) · 필(하늘빛 반구광, 그늘이 푸르스름하게) · 림(재질의 가장자리 빛 + 뒤쪽 약한 빛)
     scene.add(new THREE.HemisphereLight(lin(0xc4d8ff), lin(0xd8935c), 0.46));
     var sun = new THREE.DirectionalLight(lin(0xffe9c8), 1.3); sun.position.set(-6, 10, 8); sun.target.position.set(0.5, 0, -0.5); scene.add(sun); scene.add(sun.target);
     sun.castShadow = true; var sc2 = sun.shadow.camera; sc2.left = -10; sc2.right = 10; sc2.top = 7; sc2.bottom = -7; sc2.near = 1; sc2.far = 34; sun.shadow.mapSize.set(1024, 1024); sun.shadow.radius = 5; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.035;
-    var K = toonKitchen(scene), Y = K.Y, RZ = -1.75, HOME = 0.6;
+    var K = cleanStage(scene), Y = K.Y, RZ = -1.75, HOME = 0.6;
     // v3: 코드로 만든 3D 로봇 요리사(robot.js의 RobotChef)가 주인공. 없으면 예전 GLB 로봇으로
     var RCH = (typeof window.RobotChef === 'function') ? window.RobotChef(THREE, { reduced: REDUCED, outline: true }) : null;
     var RBI = RCH ? RCH.beats.map(function (x) { return x.id; }) : [];
@@ -2047,6 +2086,7 @@
     else if ((k === 'r' || k === 'R') && slides[cur].getAttribute('data-scene') === 'robot') robotSwitch();
     else if ((k === 'r' || k === 'R') && slides[cur].querySelector('.stw')) swReset();
     else if ((k === 'l' || k === 'L') && slides[cur].querySelector('.stw')) swLap();
+    else if (k === 'l' || k === 'L') document.documentElement.classList.toggle('light');   // 밝은 방이면 밝은 판
     else if (/^[0-9]$/.test(k)) { jump += k; }
     else if (k === 'Enter' && jump) { go(+jump - 1, 0); jump = ''; }
     else if (k === 'Escape') { jump = ''; }

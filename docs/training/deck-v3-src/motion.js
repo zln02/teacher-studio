@@ -22,8 +22,8 @@
     snap: function (t) { return 1 - Math.pow(1 - t, 5); },                     // 빠르게 들어와 딱 멈춤
     inout: function (t) { return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; },
     fall: function (t) { return t * t; },                                      // 무게 있게 떨어짐
-    spring: function (t) { return t >= 1 ? 1 : 1 - Math.exp(-6.2 * t) * Math.cos(12.5 * t); },   // 약 16% 넘쳤다 돌아옴
-    bounce: function (t) { return t >= 1 ? 1 : 1 - Math.exp(-5.2 * t) * Math.cos(16 * t); }      // 더 통통
+    spring: function (t) { return t >= 1 ? 1 : 1 - Math.exp(-8.5 * t) * Math.cos(9 * t); },   // 스킨 D: 정확하게 닿고 아주 조금(약 4%) 자리 잡기
+    bounce: function (t) { return t >= 1 ? 1 : 1 - Math.exp(-7.5 * t) * Math.cos(10 * t); }      // 조금 더 (약 7%)
   };
   function clamp01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
   function lerp(a, b, t) { return a + (b - a) * t; }
@@ -84,6 +84,15 @@
       if (!REDUCED) { el.style.clipPath = 'inset(-10% ' + ((1 - e) * 100).toFixed(2) + '% -10% 0)'; el.style.transform = 'translateX(' + (-14 * (1 - e)).toFixed(1) + 'px)'; }
       if (e >= 1) { el.style.clipPath = ''; el.style.transform = ''; }
     });
+  };
+  // 글자 치기: 주석 · 이름표가 한 글자씩 짧게 쳐져요 (전체 0.3~0.6초)
+  MO.type = function (el, at) {
+    if (!el.__full) el.__full = el.textContent;
+    var full = el.__full, n = full.length, per = Math.max(12, Math.min(30, 480 / Math.max(1, n)));
+    el.style.opacity = 1; el.style.clipPath = ''; el.style.transform = '';
+    if (REDUCED) { el.textContent = full; return null; }
+    el.textContent = '';
+    return MO.tw(Math.round(per * n), at, 'linear', function (e) { el.textContent = full.slice(0, Math.round(n * e)); });
   };
   // 탁: 아래(또는 dx, dy)에서 빠르게 와서 딱 멈춰요
   MO.snap = function (el, at, o) {
@@ -209,8 +218,8 @@
   var V3DIR = 1;
   function v3hd(s, at, instant) {
     var k = q(s, ':scope > .hd .kicker'), h = q(s, ':scope > .hd h2');
-    if (instant) { if (k) { k.style.opacity = 1; k.style.clipPath = ''; k.style.transform = ''; } if (h) MO.wipeSet(h, true); return; }
-    if (k) MO.reveal(k, at);
+    if (instant) { if (k) { if (k.__full) k.textContent = k.__full; k.style.opacity = 1; k.style.clipPath = ''; k.style.transform = ''; } if (h) MO.wipeSet(h, true); return; }
+    if (k) MO.type(k, at);
     if (h) MO.wipe(h, at + TOK.xs);
   }
 

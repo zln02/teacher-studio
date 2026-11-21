@@ -1,0 +1,115 @@
+/* =====================================================================
+   스킨 D · 「엔지니어의 깔끔한 강의」 (build.py가 맨 마지막에 붙여요). 모양은 이 파일과 토큰만 바꾸면 돼요.
+   바탕: 부드러운 석판색 · 면 한 단계 밝게 · 가는 선 · 점 격자(아주 옅게) · 무대 한쪽에만 은은한 빛
+   강조: 따뜻한 주황 하나(핵심 낱말) + 차가운 청록 하나(하네스 AI · 답에만)
+   글자: 본문 Pretendard(TS Deck Sans) · 주석은 고정폭(라틴은 Consolas, 한글은 Pretendard로 떨어지게)
+   밝은 방: L 키 또는 ?theme=light → html.light
+   ===================================================================== */
+:root{
+  --d-bg:#161a20;--d-bg2:#1a1f26;--d-surf:#1d232b;--d-surf2:#232a33;--d-line:#2c343f;--d-line2:#3a4451;
+  --d-ink:#eef1f5;--d-sub:#b7c0cc;--d-mute:#8a94a3;--d-acc:#ff8a3d;--d-accbg:rgba(255,138,61,.12);--d-cool:#5cc8c2;--d-coolbg:rgba(92,200,194,.12);
+  --d-dot:rgba(238,241,245,.055);--d-glow:rgba(120,150,190,.10);
+  --mono:Consolas,"Cascadia Mono","TS Deck Sans","Noto Sans KR",monospace;
+  /* v3 토큰을 D 값으로 (모든 장이 이 토큰을 써요) */
+  --v-bg:var(--d-bg);--v-bg2:var(--d-bg2);--v-card:var(--d-surf);--v-card2:var(--d-surf2);--v-line:var(--d-line);
+  --v-ink:var(--d-ink);--v-sub:var(--d-sub);--v-acc:var(--d-acc);--v-cool:var(--d-cool);--v-on:#1a1206;--v-brick:#3a4250;--v-brick2:#2c333e;
+  --c-bg:var(--d-surf);--c-bg2:var(--d-surf);--c-line:var(--d-line);--c-hi:inset 0 1px 0 rgba(255,255,255,.03);--c-shadow:0 14px 30px -22px rgba(0,0,0,.6);--c-r:10px}
+html.light{
+  --d-bg:#f4f5f7;--d-bg2:#eef0f3;--d-surf:#ffffff;--d-surf2:#f7f8fa;--d-line:#d9dee5;--d-line2:#c6cdd6;
+  --d-ink:#161a20;--d-sub:#4a5463;--d-mute:#6b7685;--d-acc:#e0661a;--d-accbg:rgba(224,102,26,.1);--d-cool:#178a85;--d-coolbg:rgba(23,138,133,.1);
+  --d-dot:rgba(22,26,32,.07);--d-glow:rgba(120,150,190,.12);--v-on:#ffffff;--v-brick:#dfe3e9;--v-brick2:#cfd5dd}
+#stage{background:var(--d-bg)}
+
+/* 무대: 평평한 석판 + 아주 옅은 점 격자 + 오른쪽 위 은은한 빛(글자 블록 뒤가 아니라 무대 한쪽) */
+.slide.v3{color:var(--d-ink);background:radial-gradient(900px 640px at 86% 18%,var(--d-glow),rgba(0,0,0,0) 70%),var(--d-bg)!important;box-shadow:none}
+.slide.v3:before{background:radial-gradient(var(--d-dot) 1.4px,transparent 1.6px) 20px 20px/40px 40px!important;transform:none}
+#stage:after{opacity:0}
+
+/* 틀: 위 줄(구간 코드 · 제목) · 아래 줄(근거 · 쪽) — 고정폭 주석 */
+.v3 .dtop{position:absolute;left:96px;right:96px;top:34px;display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--d-line);
+  font-family:var(--mono);font-size:21px;letter-spacing:.04em;color:var(--d-mute);z-index:6;pointer-events:none}
+.v3 .dtop b{color:var(--d-acc);font-weight:400}
+.v3 .foot{left:96px;right:96px;bottom:34px;padding-top:14px;border-top:1px solid var(--d-line);font-family:var(--mono);font-size:21px;color:var(--d-mute)}
+.v3 .foot b{color:var(--d-ink);font-weight:400}
+.storyc.v3 .dtop,.storyc.v3 .foot{display:none}
+
+/* 글자 */
+.v3>.hd .kicker{font-family:var(--mono);font-size:24px;font-weight:400;letter-spacing:.02em;color:var(--d-mute);margin-bottom:18px}
+.v3>.hd .kicker:before{content:"//";width:auto;height:auto;background:none;opacity:1;color:var(--d-acc);margin-right:4px}
+.v3>.hd h2{font-weight:700;letter-spacing:-.025em;color:var(--d-ink)}
+.v3 h1{font-weight:800}
+.v3 h1 em,.v3 h2 em,.v3 .big em{color:var(--d-acc)}
+.v3 em .kwu{height:4px;bottom:-.08em;border-radius:2px}
+/* 가림막 → 선 긋기: 가는 주황 선이 지나가며 글자가 드러나요 */
+.m-wipe .wbar{top:auto;bottom:-10px;height:4px;left:0;right:0;border-radius:2px;background:var(--d-acc)}
+.mono,.v3 .src,.v3 .hk,.v3 .pl,.v3 .mh,.v3 small.real,.v3 p.real,.v3 .cno{font-family:var(--mono)}
+
+/* 면(카드): 반듯한 10px 모서리 · 1.5px 선 · 그림자는 아주 옅게 */
+.v3 .nt,.v3 .tb,.v3 .card,.v3 .hxapp,.v3 .ask,.v3 .eqbar,.v3 .typebox,.v3 .prompt,.v3 .scr,.v3 .seg,.v3 .menu li,.v3 .tips li,.v3 .resp,.v3 .fi .f,.v3 .fi .b,.v3 .hc{
+  background:var(--d-surf)!important;border:1.5px solid var(--d-line)!important;border-radius:10px;box-shadow:var(--c-shadow)!important}
+.v3 .hc{border-radius:999px}
+.v3 .tb{border-radius:10px}
+.v3 .bd{border-radius:8px;color:var(--d-sub);background:transparent;border:1.5px solid var(--d-line)}
+.v3 .card h3{font-weight:700}
+
+/* 「하네스 AI」 · 답 = 청록 하나 */
+.cmp.v3 .shot.h .hd,.floor.v3 .lv.hi .lb,.lab.v3 .scr.h .body{color:var(--d-cool)}
+.cmp.v3 .shot.h .frame,.lab.v3 .scr.h{border:2px solid var(--d-cool)!important}
+.crack.v3 .fi .b{border-left:6px solid var(--d-cool)!important}
+.crack.v3 .fi .b b,.crack.v3 .fi .b .ic{color:var(--d-cool)}
+.floor.v3 .lv.hi .bar{background:linear-gradient(180deg,rgba(92,200,194,.7),rgba(92,200,194,.18))!important;border:0!important}
+.floor.v3 .lv .bar{background:var(--d-surf2);border:1.5px solid var(--d-line);border-radius:8px 8px 2px 2px}
+
+/* 2 알림 카드 · 3 벽 */
+.v3 .nt .src{font-family:var(--mono);font-size:21px;color:var(--d-mute)}
+.wall3.stacked .tb{background:var(--d-surf2)!important;border-color:var(--d-line2)!important}
+.v3 .tb .mortar{display:none}
+.wtag3{color:var(--d-acc);font-family:var(--mono);letter-spacing:.3em;font-weight:700}
+
+/* 6 하네스의 유래: 사진은 글자 칸을 비켜, 오른쪽에 틀을 두른 「그림 1」 + 설명 */
+.horsep.v3{padding:0}
+.horsep.v3 .ph{left:auto;right:96px;top:150px;bottom:auto;width:1000px;height:600px;border:1.5px solid var(--d-line);border-radius:10px;overflow:hidden}
+.horsep.v3 .ph:after{background:none}
+.horsep.v3 .ph:before{content:"그림 1 · 말에 채운 하네스(마구) · CC0 Bernard Spragg";position:absolute;left:0;right:0;bottom:-44px;font-family:var(--mono);font-size:21px;color:var(--d-mute);z-index:3}
+.horsep.v3 .ph{overflow:visible}
+.horsep.v3 .kb{overflow:hidden;border-radius:9px}
+.horsep.v3 .kb img{filter:saturate(.85) brightness(.95)}
+.horsep.v3 .mean{left:96px;right:auto;width:680px;bottom:auto;top:520px;flex-direction:column;align-items:flex-start;gap:14px}
+.horsep.v3 .mean .w{border-right:0;padding:0;font-family:var(--mono);font-size:22px}
+.horsep.v3 .mean p{font-size:46px;text-shadow:none}
+.horsep.v3 .pin b{background:var(--d-surf);border:1.5px solid var(--d-acc);font-size:26px}
+
+/* 7 지도 · 식당 */
+.hx.v3 .hxapp{border-radius:10px}
+.hx.v3 .hxapp:before{height:2px;opacity:1}
+.hx.v3 .hxcore .brain{background:var(--d-surf2);color:var(--d-acc);border:2.5px solid var(--d-acc);box-shadow:none}
+.hx.v3 .hxcore .o1{stroke:var(--d-line2)}
+.hx.v3 .hxcore .strap{stroke:var(--d-acc);stroke-width:2.5}
+.hx.v3 .hxcore .ln line{stroke:var(--d-line2)}
+.hx.v3 .amap .fi .b{border-top:4px solid var(--d-acc)!important}
+.hx.v3 .amap small{font-family:var(--mono)}
+.hx.v3 .ilbg,.floor.v3 .ilbg{display:none}
+
+/* 13 그림책: 깨끗한 무대(밝은 판 대신 장면 테두리만) */
+.storyc.v3 .gl{box-shadow:0 0 0 1.5px var(--d-line)}
+.storyc.v3 .kcp,.storyc.v3 .storytag{background:var(--d-surf)!important;border:1.5px solid var(--d-line)!important;box-shadow:none!important}
+.storyc.v3 .kcp b,.storyc.v3 .storytag{color:var(--d-ink)}
+.storyc.v3 .kcp span{color:var(--d-sub)}
+.storyc.v3 .storytag .ic{color:var(--d-acc)}
+.storyc.v3 .ub{background:var(--d-ink);color:var(--d-bg)}
+.storyc.v3 .punch{background:rgba(22,26,32,.96)}
+html.light .storyc.v3 .punch{background:rgba(244,245,247,.97)}
+
+/* 19 판 · 21 */
+.duo3.v3 .seg.cur{background:var(--d-accbg)!important;border-color:var(--d-acc)!important;color:var(--d-ink)}
+.duo3.v3 .seg.cur b{background:var(--d-acc);color:#1a1206}
+.duo3.v3 .seg.cur small{color:var(--d-sub)}
+.tips3.v3 .tips li .n{color:var(--d-acc);font-family:var(--mono);font-weight:700}
+.tips3.v3 .resp{border-color:var(--d-cool)!important}
+.v3 .timer .ring{stroke:var(--d-cool)}
+.v3 .timer .track{stroke:var(--d-line)}
+
+/* 3D 장(1 · 5 · 20)의 왼쪽 어둠막도 석판색으로 */
+.cover.v3 .gl:after,.made3.v3 .gl:after{background:linear-gradient(90deg,var(--d-bg) 0%,rgba(22,26,32,.7) 38%,rgba(22,26,32,0) 60%)}
+html.light .cover.v3 .gl:after,html.light .made3.v3 .gl:after{background:linear-gradient(90deg,var(--d-bg) 0%,rgba(244,245,247,.7) 38%,rgba(244,245,247,0) 60%)}
+.reveal.v3 .gl:after{background:none}

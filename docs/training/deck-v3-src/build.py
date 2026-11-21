@@ -255,7 +255,7 @@ def main() -> int:
         raise SystemExit("three.min.js hash mismatch (expected npm three@0.128.0 build/three.min.js)")
     three = three.decode("utf-8")
     anime = (REPO / "shared/vendor/animejs/anime-4.5.0.umd.min.js").read_text(encoding="utf-8")
-    css = (HERE / "deck.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion2.css").read_text(encoding="utf-8") + "\n" + (HERE / "focus.css").read_text(encoding="utf-8")
+    css = (HERE / "deck.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion2.css").read_text(encoding="utf-8") + "\n" + (HERE / "focus.css").read_text(encoding="utf-8") + "\n" + (HERE / "skin-d.css").read_text(encoding="utf-8")
     slides = Path(a.slides).read_text(encoding="utf-8")
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     js = js.replace("/*__FOOT__*/'AI에게 무기를 주면 · 박진영'", json.dumps(a.foot, ensure_ascii=False))
