@@ -26,7 +26,7 @@ html.light{
 #stage:after{opacity:0}
 
 /* 틀: 위 줄(구간 코드 · 제목) · 아래 줄(근거 · 쪽) — 고정폭 주석 */
-.v3 .dtop{position:absolute;left:96px;right:96px;top:34px;display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--d-line);
+.v3 .dtop{position:absolute;left:96px;right:96px;top:44px;display:flex;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid var(--d-line);
   font-family:var(--mono);font-size:21px;letter-spacing:.04em;color:var(--d-mute);z-index:6;pointer-events:none}
 .v3 .dtop b{color:var(--d-acc);font-weight:400}
 .v3 .foot{left:96px;right:96px;bottom:34px;padding-top:14px;border-top:1px solid var(--d-line);font-family:var(--mono);font-size:21px;color:var(--d-mute)}
@@ -137,3 +137,4 @@ html.light .cover.v3 .gl:after,html.light .made3.v3 .gl:after{background:linear-
 .hx.v3 .hxapp .bar i{display:none}
 .horsep.v3 .mean{width:640px}
 .horsep.v3 .mean p{white-space:normal;font-size:44px;line-height:1.3}
+.section.v3 .bigno{top:400px}
