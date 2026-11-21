@@ -1204,6 +1204,52 @@
     "use",
     "general"
    ]
+  },
+  {
+   "id": "u10",
+   "request": "학급 단체 사진을 학급 블로그에 올려도 되는지 알려줘",
+   "route": "law",
+   "direction": null,
+   "max_questions": 2,
+   "must_not": [
+    "asks_student_info"
+   ],
+   "use": {
+    "use": [
+     "none"
+    ],
+    "asks_use": false,
+    "formats_any": []
+   },
+   "tags": [
+    "use",
+    "step-aside",
+    "teacher"
+   ]
+  },
+  {
+   "id": "u11",
+   "request": "내년 동아리 운영 방향을 같이 정리해 보자, 파일은 필요 없어",
+   "route": [
+    "co-plan"
+   ],
+   "direction": null,
+   "max_questions": 5,
+   "must_not": [
+    "route:law"
+   ],
+   "use": {
+    "use": [
+     "none"
+    ],
+    "asks_use": false,
+    "formats_any": []
+   },
+   "tags": [
+    "use",
+    "step-aside",
+    "general"
+   ]
   }
  ]
 }
