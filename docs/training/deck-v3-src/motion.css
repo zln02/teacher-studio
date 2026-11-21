@@ -1,0 +1,110 @@
+/* =====================================================================
+   deck-v3 · 모션 그래픽 층 (.v3 슬라이드에만 걸려요. build.py가 deck.css 뒤에 붙여요)
+   색: 따뜻한 먹빛 바탕 + 강조 하나(호박색) + 보조 하나(안개 하늘색: 「답 · 하네스 AI」에만)
+   글자 뒤에는 유리·번짐·빛 없음. 움직임은 deck.js의 MO(모션 어휘)만 써요:
+   통통(spring) · 탁(snap) · 뒤집기(flip) · 돌며 모이기(gather) · 가림막(wipe) · 글자 움직임(kin)
+   ===================================================================== */
+:root{--v-bg:#17120e;--v-bg2:#221a13;--v-card:#2a2119;--v-card2:#33281e;--v-line:rgba(245,234,216,.15);
+  --v-ink:#f6eee2;--v-sub:#cbbda9;--v-acc:#f2a94e;--v-cool:#8fc4d6;--v-on:#1c1309;--v-brick:#5b3f29;--v-brick2:#402c1d}
+.slide.v3{color:var(--v-ink);box-shadow:none;
+  background:radial-gradient(1200px 800px at 82% 10%,rgba(242,169,78,.10),rgba(242,169,78,0) 60%),linear-gradient(165deg,var(--v-bg2) 0%,var(--v-bg) 70%)}
+.v3 *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.v3 .foot{color:var(--v-sub)}
+.v3 .foot b{color:var(--v-ink)}
+.v3 h1 em,.v3 h2 em,.v3 .big em{color:var(--v-acc)}
+
+/* 한 격자: 머리글(kicker + 제목)은 모든 장에서 같은 자리 · 같은 여백(왼쪽 128px, 위 104px) */
+.v3 .hd{position:absolute;left:128px;right:128px;top:104px;z-index:4}
+.v3 .hd .kicker{margin-bottom:22px;color:var(--v-acc);font-size:28px;font-weight:700}
+.v3 .hd h2{font-size:76px;font-weight:800;letter-spacing:-.04em;line-height:1.12;margin:0;width:-webkit-fit-content;width:fit-content}
+.v3 .hd h2.big3{font-size:96px;letter-spacing:-.045em}
+
+/* 가림막(wipe): 색 막대가 덮고 → 걷히며 글자가 남아요 */
+.m-wipe{position:relative}
+.m-wipe .wt{display:block}
+.m-wipe .wbar{position:absolute;left:-14px;right:-14px;top:2%;bottom:2%;background:var(--v-acc);transform:scaleX(0);transform-origin:0 50%;pointer-events:none;border-radius:4px}
+/* 글자 움직임(kin): 낱말은 안 끊기게 */
+.kw{display:inline-block;white-space:nowrap}
+.kc{display:inline-block}
+
+/* 1 표지 */
+.cover.v3 .hero{position:absolute;left:128px;top:300px;width:1040px;z-index:3}
+.cover.v3 h1{font-size:132px;font-weight:800;letter-spacing:-.045em;line-height:1.1;max-width:none}
+.cover.v3 .m-rule{display:block;width:132px;height:8px;border-radius:4px;background:var(--v-acc);margin:48px 0 34px;transform-origin:0 50%}
+.cover.v3 .tag{margin:0;font-size:42px;color:var(--v-sub);font-weight:600;letter-spacing:-.02em}
+.cover.v3 .who{left:128px;bottom:120px;color:var(--v-sub);z-index:3}
+.cover.v3 .who b{color:var(--v-ink)}
+.cover.v3 .gl:after{background:linear-gradient(90deg,rgba(23,18,14,.93) 0%,rgba(23,18,14,.66) 40%,rgba(23,18,14,0) 62%),linear-gradient(0deg,rgba(23,18,14,.55) 0%,rgba(23,18,14,0) 24%)}
+
+/* 2 여기저기서: 알림 카드 4 x 2 */
+.pour.v3 .feed{position:absolute;left:128px;right:128px;top:440px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.nt{height:184px;padding:26px 30px 28px;border-radius:22px;background:var(--v-card);border:1px solid var(--v-line);display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 18px 40px -22px rgba(0,0,0,.55)}
+.nt .src{display:flex;gap:10px;align-items:center;font-size:24px;font-weight:700;color:var(--v-sub);letter-spacing:.04em}
+.nt .src .ic{color:var(--v-acc);width:28px;height:28px}
+.nt b{font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1.22}
+
+/* 3 진입장벽 · 4 옛날 이야기: 두 장에서 같은 자리에 서는 벽 */
+.wall3{position:absolute;left:128px;width:1664px;top:360px;height:600px}
+.tb{position:absolute;left:0;height:110px;display:flex;align-items:center;gap:20px;padding:0 40px;border-radius:56px 56px 56px 14px;font-size:40px;font-weight:800;letter-spacing:-.03em;white-space:nowrap;
+  background:var(--v-card2);border:1px solid var(--v-line);color:var(--v-ink);isolation:isolate;overflow:hidden;box-shadow:0 18px 40px -22px rgba(0,0,0,.6)}
+.tb .ic{font-size:46px;color:var(--v-acc);position:relative}
+.tb span{position:relative}
+.tb .mortar{position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,var(--v-brick),var(--v-brick2));opacity:0}
+.tb.b1{top:40px}
+.tb.b2{top:170px;left:120px}
+.tb.b3{top:300px;left:240px}
+.wtag3{position:absolute;left:0;right:0;top:446px;text-align:center;font-size:64px;font-weight:800;letter-spacing:.34em;padding-left:.34em;color:var(--v-acc)}
+.wall3.stacked .tb{left:362px;width:940px;border-radius:14px;justify-content:center;border-color:rgba(242,169,78,.3)}
+.wall3.stacked .tb .mortar{opacity:1}
+.cracks3{position:absolute;left:362px;top:30px;width:940px;height:420px;overflow:visible;pointer-events:none}
+.cracks3 path{fill:none;stroke:#f6e6cc;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.crack.v3 .ans{position:absolute;left:128px;right:128px;top:430px}
+.fc{width:1280px;height:172px;perspective:1800px}
+.fi{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.fi .f,.fi .b{position:absolute;inset:0;display:flex;align-items:center;gap:24px;padding:0 44px;border-radius:24px;-webkit-backface-visibility:hidden;backface-visibility:hidden;font-size:52px;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+.fi .f{background:var(--v-card);border:2px dashed rgba(245,234,216,.28);color:var(--v-sub)}
+.fi .f .ic{color:var(--v-sub)}
+.fi .b{transform:rotateY(180deg);background:var(--v-card2);border:1px solid rgba(143,196,214,.5);border-left:8px solid var(--v-cool);color:var(--v-ink)}
+.fi .b .ic{color:var(--v-cool);stroke-width:2.6}
+.fi .b b{color:var(--v-cool);font-weight:800}
+.crack.v3 .one{margin-top:72px;font-size:76px;font-weight:800;letter-spacing:-.035em;line-height:1.2}
+.crack.v3 .one em{font-style:normal;color:var(--v-acc);display:inline-block}
+
+/* 6 하네스의 유래 */
+.horsep.v3 .kb{animation:none}
+.horsep.v3 .mean{animation:none}
+.horsep.v3 .mean .w{color:var(--v-acc)}
+.horsep.v3 .mean em{color:var(--v-acc)}
+.horsep.v3 .mean p{position:relative}
+.horsep.v3 .pin i{left:-24px;top:-24px;width:48px;height:48px;border:4px solid var(--v-acc);background:rgba(23,18,14,.4)}
+.horsep.v3 .pin i:after{background:var(--v-acc);width:14px;height:14px;margin:-7px 0 0 -7px}
+.horsep.v3 .pin u{width:5px;left:-2.5px;bottom:24px;background:var(--v-acc)}
+.horsep.v3 .pin b{bottom:calc(24px + var(--lead,150px));font-size:34px;background:rgba(23,18,14,.92);border:1px solid rgba(242,169,78,.55);color:var(--v-ink)}
+.horsep.v3 .pin b small{color:var(--v-sub)}
+.horsep.v3 .mean u{position:absolute;left:0;bottom:-12px;height:5px;width:100%;border-radius:3px;background:var(--v-acc);transform-origin:0 50%}
+
+/* 7 식당들도 */
+.hx.v3 .hxgrid{top:274px}
+.hx.v3 .hxapp{background:linear-gradient(180deg,#2a2119,#211a14);border-color:var(--v-line)}
+.hx.v3 .hxapp.rb{--bc:var(--v-acc)}
+.hx.v3 .hxapp.rc{--bc:var(--v-cool)}
+.hx.v3 .hxcore .o1{animation:none;stroke:rgba(245,234,216,.22)}
+.hx.v3 .hxcore .strap{transition:none;stroke:var(--v-acc);stroke-width:4;opacity:1}
+.hx.v3 .hxcore .brain{background:var(--v-acc);color:var(--v-on)}
+.hx.v3 .hc{height:54px;margin-top:-27px;padding:0 20px 0 16px;background:#2b2219;border-color:rgba(245,234,216,.22);color:var(--v-ink)}
+.hx.v3 .hc .ic{color:var(--v-cool)}
+.hx.v3 .hc.df{border-color:rgba(242,169,78,.6)}
+.hx.v3 .hc.df .ic{color:var(--v-acc)}
+.hx.v3 .hc.no{background:#1d1712;border:1.5px dashed rgba(245,234,216,.34);color:var(--v-sub)}
+.hx.v3 .hxcap,.hx.v3 .hxpunch{top:858px}
+.hx.v3 .hxpunch .p1{font-size:40px}
+.hx.v3 .hxpunch .p2{font-size:34px}
+.hx.v3 .hxcap p{opacity:0;color:var(--v-ink)}
+.hx.v3 .hxcap p b{color:var(--v-acc)}
+.hx.v3 .hxcap .hk{color:var(--v-cool)}
+.hx.v3 .hxpunch{opacity:0}
+.hx.v3 .hxpunch p b{color:var(--v-acc)}
+.hx.v3 .hxpunch .p2{color:var(--v-sub)}
+.hx.v3 .hxpunch .p2 em{color:var(--v-acc)}
+.hx.v3 .hxtm{color:var(--v-sub)}
+.hx.v3 .hxtm .lg i.d{border-color:rgba(242,169,78,.7)}
