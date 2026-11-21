@@ -1,0 +1,224 @@
+/* =====================================================================
+   deck-v3 phase 2 (8~21장) + 바탕 껍데기(shell). build.py가 motion.css 뒤에 붙여요
+   ===================================================================== */
+/* 바탕 껍데기: 코드로 그린 따뜻한 빛 한 줄기 + 종이 결. 장에 들어올 때 빛이 한 번(TOK.l) 제자리로 오고, 그다음엔 가만히.
+   빛은 12% 이하라 글자 대비(4.5:1 이상)를 바꾸지 않아요 */
+.slide.v3{isolation:isolate}
+.slide.v3:before{content:"";position:absolute;left:-120px;right:-120px;top:0;bottom:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(760px 520px at var(--lx,80%) var(--ly,12%),rgba(242,169,78,.12),rgba(242,169,78,0) 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .32' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .96 0 0 0 0 .86 0 0 0 0 .7 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='360' height='360' filter='url(%23p)'/%3E%3C/svg%3E");
+  transform:translate3d(var(--ldx,0px),0,0)}
+.section.v3{--lx:22%;--ly:30%}
+.tips3.v3,.made3.v3{--lx:70%;--ly:20%}
+
+/* 그림 자리 (그림 화풍이 정해지면 채워요). 지금은 보이지 않고, ?slots=1 로 열면 점선과 이름이 보여요 */
+.illust-slot{position:relative;pointer-events:none}
+.show-slots .illust-slot{outline:2px dashed rgba(242,169,78,.75);outline-offset:-2px;background:rgba(242,169,78,.06)}
+.show-slots .illust-slot:after{content:attr(data-scene);position:absolute;left:12px;top:8px;font-size:22px;font-weight:700;color:#f2a94e;white-space:nowrap}
+
+/* 공통 카드 · 딱지 (v3 장) */
+.v3 .card{background:var(--v-card);border:1px solid var(--v-line);box-shadow:0 18px 40px -22px rgba(0,0,0,.55)}
+.v3 .card:before{content:none}
+.v3 .bd{color:var(--v-acc);background:rgba(242,169,78,.1);border:1px solid rgba(242,169,78,.3);box-shadow:none}
+.v3 .capline b{color:var(--v-acc)}
+.v3 h3{font-weight:800}
+
+/* 8 섹션 */
+.section.v3>.hd h2{font-size:132px;letter-spacing:-.05em;line-height:1.06}
+.section.v3 .bigno{position:absolute;right:128px;top:170px;display:flex;font-size:460px;line-height:.9;font-weight:800;letter-spacing:-.06em;color:rgba(242,169,78,.1);z-index:0;-webkit-text-stroke:0}
+.section.v3 .illust-slot.sec{position:absolute;right:128px;top:190px;width:760px;height:540px}
+.section.v3 .agenda{bottom:130px}
+.section.v3 .agenda div{position:relative;color:var(--v-sub);border-top:2px solid rgba(245,234,216,.18)}
+.section.v3 .agenda div.done{border-top-color:rgba(245,234,216,.4)}
+.section.v3 .agenda div.cur{color:var(--v-ink);border-top-color:rgba(245,234,216,.18)}
+.section.v3 .agenda u{position:absolute;left:0;right:0;top:-4px;height:6px;border-radius:3px;background:var(--v-acc);transform:scaleX(0);transform-origin:0 50%}
+
+/* 9~12 같은 부탁, 다른 결과 */
+.cmp.v3 .cno{top:108px;color:var(--v-sub)}
+.cmp.v3 .ask{position:absolute;left:128px;top:168px;margin:0;background:var(--v-card2);border:1px solid rgba(242,169,78,.45);color:var(--v-ink);box-shadow:none}
+.cmp.v3 .ask .ic{color:var(--v-acc)}
+.cmp.v3 .pair{position:absolute;left:128px;right:128px;top:300px;perspective:2400px}
+.cmp.v3 .shot .hd{color:var(--v-sub)}
+.cmp.v3 .shot.h .hd{color:var(--v-cool)}
+.cmp.v3 .shot p{color:var(--v-sub)}
+.cmp.v3 .shot.h p{color:var(--v-ink)}
+.cmp.v3 .frame{border-color:rgba(245,234,216,.16)}
+.cmp.v3 .shot.h .frame{border:2px solid rgba(143,196,214,.7)}
+
+/* 13 그림책 (3D 로봇이 주인공 · 글자 움직임은 motion2.js) */
+.storyc.v3 .ub,.storyc.v3 .stamp i,.storyc.v3 .punch,.storyc.v3 .punch *{animation:none!important}
+.storyc.v3 .ub,.storyc.v3 .kcp,.storyc.v3 .stamp,.storyc.v3 .punch{opacity:0}
+.storyc.v3 .stamp{display:inline-block}
+.storyc.v3 .punch{background:radial-gradient(1200px 700px at 50% 45%,rgba(34,26,19,.95),rgba(23,18,14,.98))}
+.storyc.v3 .punch .p1 em{color:var(--v-acc)}
+.storyc.v3 .punch .w{color:var(--v-acc)}
+.storyc.v3 .punch .pi{background:var(--v-acc);color:var(--v-on)}
+.storyc.v3 .illust-slot.pun{width:420px;height:240px;flex:none}
+.storyc.v3 .punch{gap:28px}
+
+/* 14 바닥 */
+.floor.v3 .levels{top:300px;height:560px}
+.floor.v3 .illust-slot.fl{width:260px;height:130px}
+.floor.v3 .lv.hi .bar{height:300px;transition:none}
+.floor.v3 .lv .lb{font-weight:800}
+.floor.v3 .lv.hi .lb{color:var(--v-cool)}
+
+/* 15 하네스는 누가 */
+.who.v3 .flow2{position:absolute;left:128px;top:300px;width:1300px;margin:0}
+.who.v3 .flow2 .card{gap:12px}
+.who.v3 .illust-slot.pp{width:100%;height:150px}
+.who.v3 .flow2 h3{font-weight:800}
+.who.v3 .flow2 .arr{color:var(--v-acc)}
+.who.v3 .eqbar{background:var(--v-card2);border:1px solid var(--v-line);border-left:4px solid var(--v-acc);gap:28px}
+.who.v3 .eqbar b{color:var(--v-acc);font-weight:800}
+.who.v3 .eqbar span{font-size:32px}
+.who.v3 .gcs{display:flex;flex-wrap:nowrap;gap:10px;margin-left:auto}
+.who.v3 .gcs i{display:inline-block;font-style:normal;font-size:26px;font-weight:700;padding:8px 16px;border-radius:999px;background:rgba(242,169,78,.14);border:1px solid rgba(242,169,78,.45);color:var(--v-ink);white-space:nowrap}
+
+/* 16~19 실습 (차분 · 잘 읽히게) */
+.lab.v3 .body3{position:absolute;left:128px;right:128px;top:300px}
+.lab.v3 .pick,.lab.v3 .modes,.lab.v3 .typebox,.lab.v3 .prompt{margin-top:0}
+.lab.v3 .pick h3{font-weight:800}
+.lab.v3 .modes h3{font-weight:800}
+.lab.v3 .modes li:before{background:var(--v-acc)}
+.lab.v3 .modes li b{color:var(--v-acc)}
+.lab.v3 .modes .tagp{color:var(--v-acc)}
+.lab.v3 .typebox{background:var(--v-card);border:1px solid rgba(242,169,78,.4)}
+.lab.v3 .typebox .ic{color:var(--v-acc)}
+.lab.v3 .typebox .send{background:var(--v-acc);color:var(--v-on)}
+.lab.v3 .planb .ic{color:var(--v-cool)}
+.lab.v3 .timer .ring{stroke:var(--v-acc)}
+.lab.v3 .timer .track{stroke:rgba(245,234,216,.15)}
+.lab.v3 .prompt{background:var(--v-card);border:1px solid var(--v-line);border-left:4px solid var(--v-acc)}
+.lab.v3 .prompt .pl,.lab.v3 .prompt b{color:var(--v-acc)}
+.lab.v3 .scr{background:var(--v-card);border:1px solid var(--v-line)}
+.lab.v3 .scr.h{border:2px solid rgba(143,196,214,.6)}
+.lab.v3 .scr .bar{background:rgba(245,234,216,.05);border-bottom:1px solid var(--v-line)}
+.lab.v3 .scr.h .body{color:var(--v-cool)}
+
+/* 20 같이 쓰려고 준비했어요 (표지와 같은 자리 · 같은 모양) */
+.made3.v3 .made{display:none}
+.made3.v3 .hero{position:absolute;left:128px;top:300px;width:1040px;z-index:3}
+.made3.v3 h1{font-size:120px;font-weight:800;letter-spacing:-.045em;line-height:1.1;max-width:none}
+.made3.v3 h1 em{color:var(--v-acc)}
+.made3.v3 .m-rule{display:block;width:132px;height:8px;border-radius:4px;background:var(--v-acc);margin:44px 0 32px;transform-origin:0 50%;transform:scaleX(0)}
+.made3.v3 .sub{margin:0;font-size:38px;color:var(--v-sub);max-width:820px;line-height:1.5}
+.made3.v3 .gl:after{background:linear-gradient(90deg,rgba(23,18,14,.93) 0%,rgba(23,18,14,.66) 40%,rgba(23,18,14,0) 62%),linear-gradient(0deg,rgba(23,18,14,.55) 0%,rgba(23,18,14,0) 24%)}
+
+/* 21 가져가실 세 가지 */
+.tips3.v3 .tips{position:absolute;left:128px;top:190px;width:1180px;margin:0}
+.tips3.v3 .tips li{background:var(--v-card);border:1px solid var(--v-line);box-shadow:none}
+.tips3.v3 .tips li .n{color:var(--v-acc);font-weight:800;display:inline-block}
+.tips3.v3 .tips li h3{font-weight:800}
+.tips3.v3 .tips li p{color:var(--v-sub)}
+.tips3.v3 .resp{background:var(--v-card2);border:1px solid rgba(143,196,214,.45);font-weight:800}
+.tips3.v3 .resp .ic{color:var(--v-cool)}
+.tips3.v3 .qr p{color:var(--v-sub)}
+
+/* 14 바닥: 한 줄 메시지 + 작은 설명 */
+.floor.v3 .capline small{display:block;margin-top:8px;font-size:32px;font-weight:600;color:var(--v-sub);letter-spacing:-.02em}
+
+/* 16~18 보여 주기 (미리 설치) */
+.lab.v3 .ready{display:flex;align-items:center;gap:16px;margin-top:40px;font-size:34px;font-weight:600;color:var(--v-sub)}
+.lab.v3 .ready .ic{font-size:40px;color:var(--v-cool);flex:none}
+.lab.v3 .ready b{color:var(--v-ink);font-weight:800}
+.lab.v3 .ready.home .ic{color:var(--v-acc)}
+.lab.v3 .act{display:grid;grid-template-columns:120px 1fr 140px;align-items:center;gap:36px;width:1500px;padding:56px 60px}
+.lab.v3 .act .no{display:flex;align-items:center;justify-content:center;width:110px;height:110px;border-radius:30px;background:var(--v-acc);color:var(--v-on);font-size:64px;font-weight:800}
+.lab.v3 .act h3{font-size:64px;letter-spacing:-.035em;line-height:1.2}
+.lab.v3 .act h3 b,.lab.v3 .act p b{color:var(--v-acc)}
+.lab.v3 .act p{font-size:34px;color:var(--v-sub);margin-top:14px}
+.lab.v3 .act .ic.big{font-size:120px;color:var(--v-cool);justify-self:center}
+.lab.v3 .planb{margin-top:36px}
+
+/* 19 두 화면 비교 → 모둠 미션 판 (질문 한 줄 · 다섯 단계 · 예시 세 칸(일상 · 업무 · 수업) · 큰 시계) */
+.duo3.v3 .hd.hb,.duo3.v3 .board{opacity:0}
+.duo3.v3 .board{position:absolute;left:128px;right:128px;top:280px;bottom:96px}
+.duo3.v3 .order{font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1.2;color:var(--v-ink)}
+.duo3.v3 .order small{font-size:34px;font-weight:700;color:var(--v-sub);margin-left:24px;letter-spacing:-.02em}
+.duo3.v3 .seqbar{display:flex;gap:14px;margin-top:24px;width:1664px}
+.duo3.v3 .seg{flex:1;display:grid;grid-template-columns:44px 1fr;column-gap:10px;row-gap:8px;align-content:start;min-height:176px;padding:18px 18px;border-radius:22px;background:var(--v-card);border:2px solid var(--v-line);color:var(--v-ink);cursor:pointer;pointer-events:auto;user-select:none;-webkit-user-select:none}
+.duo3.v3 .seg b{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:50%;background:rgba(245,234,216,.1);font-size:24px;font-weight:800;color:var(--v-sub)}
+.duo3.v3 .seg span{display:contents}
+.duo3.v3 .seg em{font-style:normal;font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1.2;align-self:center}
+.duo3.v3 .seg small{grid-column:1 / -1;font-size:21px;font-weight:600;line-height:1.35;color:var(--v-sub)}
+.duo3.v3 .seg.done{border-color:rgba(242,169,78,.45)}
+.duo3.v3 .seg.done b{background:rgba(242,169,78,.25);color:var(--v-ink)}
+.duo3.v3 .seg.cur{background:var(--v-acc);border-color:var(--v-acc);color:var(--v-on)}
+.duo3.v3 .seg.cur b{background:var(--v-on);color:var(--v-acc)}
+.duo3.v3 .seg.cur small{color:rgba(28,19,9,.82)}
+.duo3.v3 .menu{position:absolute;left:0;top:300px;width:1324px;display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.duo3.v3 .menu .mh{display:block;font-size:24px;font-weight:700;letter-spacing:.06em;color:var(--v-acc);margin-bottom:12px}
+.duo3.v3 .menu ul{list-style:none;display:flex;flex-direction:column;gap:10px}
+.duo3.v3 .menu li{display:flex;align-items:center;gap:10px;min-height:56px;padding:8px 14px;border-radius:16px;background:var(--v-card);border:1px solid var(--v-line);font-size:26px;font-weight:700;line-height:1.25}
+.duo3.v3 .menu li .ic{font-size:28px;color:var(--v-acc);flex:none}
+.duo3.v3 .menu .slowv{grid-column:1 / -1;display:flex;align-items:center;gap:10px;font-size:24px;font-weight:600;color:var(--v-sub)}
+.duo3.v3 .menu .slowv .ic{font-size:26px}
+.duo3.v3 .board .timer{position:absolute;right:0;top:300px;width:300px;height:300px}
+.duo3.v3 .board .timer .tt b{font-size:76px}
+.duo3.v3 .board .timer .tt span{font-size:22px}
+.duo3.v3 .wait{position:absolute;left:0;bottom:0;font-size:28px;font-weight:600;color:var(--v-sub)}
+
+/* 7 오늘의 비유 지도 (클릭 0~1) → 식당 (클릭 2~) */
+.hx.v3.map>.hd:not(.hm),.hx.v3.map .hxgrid,.hx.v3.map .hxcap,.hx.v3.map .hxpunch,.hx.v3.map .hxtm{visibility:hidden}
+.hx.v3:not(.map) .amap,.hx.v3:not(.map) .hd.hm{visibility:hidden}
+.hx.v3 .amap{position:absolute;left:128px;right:128px;top:330px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px;z-index:3}
+.hx.v3 .amap .fc{width:auto;height:360px;perspective:1600px}
+.hx.v3 .amap .fi .f,.hx.v3 .amap .fi .b{flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:12px;padding:30px 28px;white-space:normal}
+.hx.v3 .amap .fi .f{border:1px solid var(--v-line);background:var(--v-card)}
+.hx.v3 .amap .fi .b{justify-content:flex-start;border:1px solid rgba(242,169,78,.45);border-top:6px solid var(--v-acc);background:var(--v-card2)}
+.hx.v3 .amap small{font-size:22px;font-weight:700;letter-spacing:.06em;color:var(--v-sub)}
+.hx.v3 .amap b{font-size:44px;font-weight:800;line-height:1.2;letter-spacing:-.03em;color:var(--v-ink)}
+.hx.v3 .amap .b b{font-size:36px;margin:0}
+.hx.v3 .amap .fc:nth-child(4) .b b{font-size:30px}
+.hx.v3 .amap b i{display:block;font-style:normal;font-size:28px;font-weight:700;color:var(--v-sub)}
+.hx.v3 .amap .b .ic{font-size:56px;color:var(--v-acc);stroke-width:2}
+/* 비유 표 작은 칩 (비유를 쓰는 장의 오른쪽 아래) */
+.legend3{position:absolute;right:128px;bottom:84px;z-index:3;padding:6px 16px;border-radius:999px;border:1px solid var(--v-line);font-size:22px;font-weight:600;color:var(--v-sub);background:rgba(23,18,14,.6)}
+
+/* 9~12 영역 표시 (일상 · 업무 · 수업) · 13 그림책 끝 다섯 단계 · 21 다음 한 걸음 */
+.cmp.v3 .cno .area{display:inline-block;margin-right:16px;padding:4px 16px;border-radius:999px;border:1px solid rgba(242,169,78,.5);color:var(--v-acc);font-size:24px;font-weight:700;vertical-align:2px}
+.storyc.v3 .seq5{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;max-width:1500px}
+.storyc.v3 .seq5 span{font-size:26px;font-weight:700;color:var(--v-sub);margin-right:8px}
+.storyc.v3 .seq5 b{font-size:30px;font-weight:800;padding:8px 18px;border-radius:999px;background:rgba(242,169,78,.14);border:1px solid rgba(242,169,78,.45);color:var(--v-ink)}
+.tips3.v3 .tips{top:176px}
+.tips3.v3 .tips li{padding:14px 26px;margin-bottom:10px;grid-template-columns:84px 1fr;align-items:center}
+.tips3.v3 .tips li .n{font-size:56px}
+.tips3.v3 .tips li h3{font-size:40px}
+.tips3.v3 .tips li p{font-size:26px;margin-top:2px}
+.tips3.v3 .qr{top:176px;width:380px}
+.tips3.v3 .next{position:absolute;right:128px;top:690px;width:380px;font-size:28px;font-weight:700;line-height:1.4;color:var(--v-ink)}
+.tips3.v3 .next b{display:block;font-size:24px;letter-spacing:.06em;color:var(--v-acc);margin-bottom:8px}
+
+/* =====================================================================
+   카드 체계 (한 벌): 따뜻한 1px 실선 + 위쪽 안쪽 빛 한 줄 + 아래로 떨어지는 부드러운 그림자 한 겹 (빛 번짐 · 유리 · 흐림 없음)
+   모서리 22px · 넉넉한 안쪽 여백 · 판은 불투명(종이 결은 바탕에만, 글자 판 밑에는 없음) · 한 줄에 카드 셋까지
+   호박색은 장마다 한 번: 제목의 핵심 낱말(색 + 그어지는 밑줄). 카드 쪽 호박색은 번호 딱지 · 왼쪽 줄 중 하나만
+   ===================================================================== */
+:root{--c-bg:#2a2119;--c-bg2:#31261c;--c-line:rgba(244,214,168,.17);--c-hi:inset 0 1px 0 rgba(255,236,206,.08);
+  --c-shadow:0 10px 0 -6px rgba(8,6,4,.35),0 24px 44px -26px rgba(0,0,0,.7);--c-r:22px}
+.v3 .nt,.v3 .tb,.v3 .card,.v3 .hxapp,.v3 .ask,.v3 .eqbar,.v3 .typebox,.v3 .prompt,.v3 .scr,.v3 .seg,.v3 .menu li,.v3 .tips li,.v3 .resp,.v3 .fi .f,.v3 .fi .b,.v3 .hc{
+  box-shadow:var(--c-hi),var(--c-shadow)}
+.v3 .nt,.v3 .card,.v3 .hxapp,.v3 .eqbar,.v3 .typebox,.v3 .prompt,.v3 .scr,.v3 .tips li,.v3 .resp{border-radius:var(--c-r);border:1px solid var(--c-line);background:linear-gradient(180deg,var(--c-bg2),var(--c-bg))}
+.v3 .menu li,.v3 .seg:not(.cur){border-color:var(--c-line)}
+.v3 .tb{border-color:var(--c-line)}
+.v3 .wall3.stacked .tb{border-color:rgba(242,169,78,.3)}
+.v3 .fi .f{border-color:var(--c-line)}
+.v3 .card{padding:40px 44px}
+.v3 .pick .card{padding:60px 60px 56px}
+.v3 .planb .card{padding:32px 36px}
+.v3 .act.card{padding:56px 60px}
+/* 핵심 낱말 밑줄 */
+.v3 h2 em,.v3 h1 em{position:relative;display:inline-block}
+.v3 em .kwu{position:absolute;left:0;right:0;bottom:-.04em;height:.075em;min-height:5px;border-radius:4px;background:var(--v-acc);transform:scaleX(0);transform-origin:0 50%;pointer-events:none}
+.v3 .tag em,.v3 .p2 em{display:inline}
+
+/* 그림(일러스트) 자리: build.py가 illust/<이름>.jpg 가 있을 때만 [data-il] 배경을 채워요. 없으면 비어 있어요
+   뒤 배경(ilbg)은 많이 어둡게(18%) 깔아 글자 대비 4.5:1 이상을 지켜요. 3D 장면 뒤 그림은 deck.js dress()가 어둡게 한 판을 써요 */
+.v3 .ilbg{position:absolute;inset:0;z-index:0;opacity:.18;background-size:cover;background-position:center;pointer-events:none}
+.v3 .ilbg.right{left:50%;opacity:.14;-webkit-mask-image:linear-gradient(90deg,transparent,#000 40%);mask-image:linear-gradient(90deg,transparent,#000 40%)}
+.v3 .illust-slot[data-il]{background-size:contain;background-repeat:no-repeat;background-position:center;border-radius:18px}
+.lab.v3 .illust-slot.ok{position:absolute;right:0;top:-10px;width:420px;height:300px}
+.lab.v3 .act{width:1180px}
+.duo3.v3 .menu .mi{display:inline-block;width:64px;height:36px;margin-right:10px;vertical-align:-10px;border-radius:8px;background-size:cover;background-position:center}

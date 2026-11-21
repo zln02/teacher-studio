@@ -15,7 +15,7 @@
 
 버퍼: 설치가 길어지면 마음껏 만들기를 줄이고(최소 15분), 시연이 길어지면 12번(큰 숫자)을 건너뛰어요.
 
-선택 2부 구간(감독 교사 대상 10분): [cheating-segment.md](cheating-segment.md), 슬라이드 cheating-deck.html. 마무리(55–60) 앞 또는 별도 시간에 붙여요.
+선택 2부 구간(감독 교사 대상 10분): [cheating-segment.md](ai-cheating/cheating-segment.md), 슬라이드 ai-cheating/ai-cheating-deck.html. 마무리(55–60) 앞 또는 별도 시간에 붙여요.
 
 ## 0–5분 오프닝 (1–4)
 - 「안녕하세요. 오늘은 외울 것도, 시험도 없어요. 보시고, 같이 해 보시면 돼요.」

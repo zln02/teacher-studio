@@ -32,4 +32,9 @@ phase 1 (1~7장)을 모션 그래픽 덱으로 바꾸면서 `skills/teacher-moti
     v3 층(motion.css)만 재는 옵션이 있으면 바꾼 장만 점검할 수 있어요. 37장까지 다 바꾼 뒤 옛 CSS를 걷어 내고 다시 재야 해요.
 11. **느린 PC 점검에서 찾은 것** (record.py --fps-check, 소프트웨어 렌더링 1280x720): 6장 사진이 매 프레임 필터째 다시 그려져 7 fps →
     `.kb{will-change:transform}` 한 줄로 71 fps. 「큰 사진·필터를 움직일 때는 합성 층으로」를 DESIGN-RULES 움직임 장에 넣을 만해요.
+    고칠 코드(제안, skills/는 건드리지 않았어요): `var mt = cs.transform.match(/matrix\(([^,]+),([^,]+)/); var rot = mt ? Math.abs(parseFloat(mt[2])) : 0;`
+    (`matrix3d`는 회전량을 0으로 보고 넘어가기. 뒤집힌 카드처럼 3D로 돈 요소는 화면 모양이 달라 어차피 이 탐침으로 잴 수 없어요.)
+13. **phase 2에서 더 필요했던 것**: 「단계마다 이 요소를 이 움직임으로」를 HTML 속성으로 적는 길(`data-k="단계" data-m="snap|spring|grow|draw|tip|wipe"` + `data-at="ms"`).
+    v3는 FX.v3gen 하나로 14~19 · 21장을 돌려요. 스킬의 무대에도 이런 선언형 단계가 있으면 덱마다 JS를 안 써도 돼요.
+14. **그림 자리(illust-slot)**: 그림 화풍이 정해지기 전에 자리와 크기만 잡아 두는 약속(`<div class="illust-slot" data-scene="이름">`, `?slots=1`로 보기)이 스킬에 없어요. 슬라이드 스킬과 같이 쓰면 좋아요.
 12. **녹화 함정**: Playwright `clock.pause_at()`을 부팅 뒤에 부르면 시간이 한 번에 건너뛰어 막 시작한 움직임이 끝나 버려요 → 설치 직후(goto 전)에 멈춰 두기.

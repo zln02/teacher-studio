@@ -1,4 +1,19 @@
-# 교사 연수 자료: AI를 진짜 잘 쓰는 사람들은 이렇게 써요 (60분 · 실습형)
+# 교사 연수 자료 지도 (2026. 11. 23. 「AI에게 무기를 주면」)
+
+| 무엇 | 파일 | 메모 |
+|---|---|---|
+| **메인 연수 덱** | [deck-v3.html](deck-v3.html) **21장** | 하네스 이야기만. 모션 그래픽 · 따뜻한 색. 소스 [deck-v3-src/](deck-v3-src/) (`py deck-v3-src/build.py`) |
+| 예비 덱 | [deck-v2.html](deck-v2.html) | 예전 37장 통합본 그대로 (AI 커닝 포함). 메인 덱이 안 열릴 때만 |
+| **AI 커닝 (따로)** | [ai-cheating/](ai-cheating/) | 따로 하는 자리용 16장 덱 · 대본 · 근거 조사 · 범위 규칙 |
+| 진행 계획 · 시간표 | [plan-v2.md](plan-v2.md) | 60분 시간표, 비유 표, 준비 상태 |
+| 모둠 메뉴판 | [menu-card.md](menu-card.md) | 일상 · 업무 · 수업 예시 (예시일 뿐) |
+| 종이 안내지 | [handout/](handout/) | A4 2쪽 |
+
+발표 키: → / Space / PageDown 다음, ← 이전, N 노트, F 전체 화면, 숫자 + Enter 그 장으로, T 타이머.
+
+---
+
+# (예전 자료) 교사 연수 자료: AI를 진짜 잘 쓰는 사람들은 이렇게 써요 (60분 · 실습형)
 
 대상: 업무에 AI를 써 보려는 초·중·고 선생님 (AI를 처음 쓰는 분 포함).
 핵심 메시지: **AI는 이미 잘해요. 무기(도구·재료)를 안 쥐여 줘서 중간에 지치는 거예요. 재료와 도구를 쥐여 주면 달라져요.**
@@ -27,7 +42,7 @@
 | [script.md](script.md) | 분 단위 진행 대본(발표자 멘트), 두 창 시연 체크리스트, 설치 따라 하기·문제 해결, 대체 멘트, 자주 묻는 질문 |
 | [deck.json](deck.json) | 슬라이드 21장 (교사 스튜디오 슬라이드 도구용 내용 파일, 발표자 메모 포함) |
 | [deck.md](deck.md) | 슬라이드를 읽기 쉽게 풀어 쓴 것 + 슬라이드 도구가 아직 못 하는 것 |
-| [cheating-segment.md](cheating-segment.md) | 2부 구간: AI 커닝, 이번 사건은 어떻게 이루어졌나 (10분 대본, deck-v2 17~25장, 선택 나눔 A4 감독 체크리스트, 근거 [ai-cheating-research.md](ai-cheating-research.md)). 옛 감독용 슬라이드 [cheating-deck.html](cheating-deck.html)는 참고용 |
+| [ai-cheating/](ai-cheating/) | AI 커닝 이야기는 따로 뺐어요: 대본 [cheating-segment.md](ai-cheating/cheating-segment.md), 근거 [ai-cheating-research.md](ai-cheating/ai-cheating-research.md), 덱 [ai-cheating-deck.html](ai-cheating/ai-cheating-deck.html) |
 | [predicted-requests.md](predicted-requests.md) | 예상 요청 30가지 (아이디어 목록 + 사전 테스트 목록, 기대 무기·상태) |
 | [menu-card.md](menu-card.md) | 모둠 책상용 메뉴판 (A4 1장) |
 | [pocket-card.md](pocket-card.md) | 가져가는 포켓 카드 (이렇게 시키세요 + 재료) |

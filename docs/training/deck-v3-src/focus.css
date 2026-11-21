@@ -1,0 +1,42 @@
+/* =====================================================================
+   집중 정리(focus pass) · build.py가 motion2.css 뒤에 붙여요
+   장마다 강조색은 한 곳(제목의 핵심 낱말 + 밑줄). 나머지는 무채색 쪽으로 물러나요.
+   바탕은 평평한 따뜻한 먹빛, 종이 결은 겨우 보일 만큼. 그림은 뜻을 돕는 곳에서만, 글자 뒤에서는 물러나게
+   ===================================================================== */
+.slide.v3:before{background:radial-gradient(760px 520px at var(--lx,80%) var(--ly,12%),rgba(242,169,78,.06),rgba(242,169,78,0) 70%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='360'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .32' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .96 0 0 0 0 .86 0 0 0 0 .7 0 0 0 .022 0'/%3E%3C/filter%3E%3Crect width='360' height='360' filter='url(%23p)'/%3E%3C/svg%3E")}
+.cover.v3:before,.section.v3:before,.made3.v3:before{background:radial-gradient(760px 520px at var(--lx,80%) var(--ly,12%),rgba(242,169,78,.10),rgba(242,169,78,0) 70%)}
+.v3>.hd .kicker{color:var(--v-sub)}
+.cover.v3 .m-rule,.made3.v3 .m-rule{background:rgba(245,234,216,.28)}
+.v3 .bd{color:var(--v-sub);background:rgba(245,234,216,.06);border-color:var(--c-line)}
+.v3 .nt .src .ic{color:var(--v-sub)}
+.v3 .tb .ic{color:var(--v-sub)}
+.section.v3 .bigno{color:rgba(245,234,216,.06)}
+.who.v3 .flow2 .arr{color:var(--v-sub)}
+.who.v3 .eqbar{border-left:1px solid var(--c-line)}
+.who.v3 .eqbar b{color:var(--v-ink)}
+.who.v3 .gcs i{background:rgba(245,234,216,.06);border-color:var(--c-line)}
+.lab.v3 .typebox{border-color:var(--c-line)}
+.lab.v3 .typebox .ic{color:var(--v-sub)}
+.lab.v3 .typebox .send{background:rgba(245,234,216,.14);color:var(--v-ink)}
+.lab.v3 .modes li:before{background:var(--v-sub)}
+.lab.v3 .modes li b,.lab.v3 .act h3 b,.lab.v3 .act p b{color:var(--v-ink)}
+.lab.v3 .modes .tagp{color:var(--v-sub)}
+.lab.v3 .act .no{background:rgba(245,234,216,.12);color:var(--v-ink)}
+.lab.v3 .ready.home .ic{color:var(--v-sub)}
+.lab.v3 .prompt{border-left:1px solid var(--c-line)}
+.lab.v3 .prompt .pl{color:var(--v-sub)}
+.lab.v3 .prompt b{color:var(--v-ink)}
+.lab.v3 .timer .ring{stroke:var(--v-cool)}
+.duo3.v3 .menu li .ic{color:var(--v-sub)}
+.duo3.v3 .menu .mh{color:var(--v-sub)}
+.duo3.v3 .seg.done{border-color:rgba(245,234,216,.3)}
+.duo3.v3 .seg.done b{background:rgba(245,234,216,.16)}
+.floor.v3 .capline b{color:var(--v-ink)}
+.tips3.v3 .next b{color:var(--v-sub)}
+.storyc.v3 .seq5 b{background:rgba(245,234,216,.08);border-color:rgba(245,234,216,.2)}
+.horsep.v3 .mean .w{color:var(--v-sub)}
+/* 그림: 7장 식당 그림은 비유 지도(글자 적음)에서만 아래쪽에 깔고, 식당 판(글자 많음)에서는 빼요. 14장은 글자 쪽(왼쪽 위)으로 갈수록 사라져요 */
+.hx.v3 .ilbg{opacity:.32;-webkit-mask-image:linear-gradient(180deg,transparent 45%,#000 85%);mask-image:linear-gradient(180deg,transparent 45%,#000 85%)}
+.hx.v3:not(.map) .ilbg{visibility:hidden}
+.floor.v3 .ilbg{opacity:.14;-webkit-mask-image:linear-gradient(200deg,#000 0%,transparent 60%);mask-image:linear-gradient(200deg,#000 0%,transparent 60%)}

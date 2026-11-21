@@ -45,7 +45,7 @@ SYNC = """(t) => { var n = 0; document.getAnimations().forEach(function (a) {
 MARK = """() => { document.querySelectorAll('.slide.on .nt, .slide.on .tb, .slide.on .hc, .slide.on .pin b, .slide.on .hxapp .bar').forEach(function (e) { e.setAttribute('data-fit', ''); }); }"""
 BOUNDS = """() => {
   var s = document.querySelector('.slide.on'), st = document.getElementById('stage').getBoundingClientRect(), k = st.width / 1920, out = [];
-  s.querySelectorAll('h1,h2,p,b,span,.kicker,.nt,.tb,.hc,.fi,.wtag3,.who,.mean').forEach(function (e) {
+  s.querySelectorAll('h1,h2,h3,p,b,span,li,.kicker,.nt,.tb,.hc,.fi,.wtag3,.who,.mean,.ask,.shot,.kcp,.ub,.stamp,.card,.eqbar,.resp,.qr,.typebox,.timer,.scr').forEach(function (e) {
     var cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden') return;
     var o = 1, p = e; while (p && p !== s) { o *= parseFloat(getComputedStyle(p).opacity); p = p.parentElement; } if (o < 0.5) return;
     if (e.closest('.note') || e.closest('.labels') || e.closest('.foot')) return;
@@ -56,7 +56,7 @@ BOUNDS = """() => {
     if (e.scrollWidth > e.clientWidth + 2 && /hidden|clip/.test(cs.overflow + cs.overflowX)) out.push(['overflow', tag, e.scrollWidth, e.clientWidth]);
   });
   // 글자 덩어리끼리 겹침 (머리글 · 본문 블록만)
-  var blocks = [].slice.call(s.querySelectorAll('.hd, .hero, .feed, .wall3, .ans, .mean, .hxgrid, .hxcap p, .hxpunch, .hxtm, .who')).filter(function (e) {
+  var blocks = [].slice.call(s.querySelectorAll(':scope > .hd, .hero, .feed, .wall3, .ans, .mean, .hxgrid, .hxcap p, .hxpunch, .hxtm, .cover .who, .ask, .pair, .agenda, .kcap, .levels, .capline, .flow2, .eqbar, .body3, .timer, .tips, .resp, .qr, .bigno, .stamps, .ub')).filter(function (e) {
     var o = 1, p = e; while (p && p !== s) { o *= parseFloat(getComputedStyle(p).opacity); p = p.parentElement; } return o > 0.5 && e.getBoundingClientRect().width > 2; });
   for (var i = 0; i < blocks.length; i++) for (var j = i + 1; j < blocks.length; j++) {
     var a = blocks[i].getBoundingClientRect(), b = blocks[j].getBoundingClientRect();
@@ -132,8 +132,16 @@ def hold_ms(slide, step):
         return 3000
     if slide == 4 and step == 0:
         return 3000
-    if slide == 7 and step == 5:
+    if slide == 7 and step in (0, 2, 7):
+        return 3200
+    if slide == 13:
+        return 4600 if step in (0, 3, 4, 5) else 3000
+    if slide == 20:
+        return 3600
+    if slide == 19 and step == 1:
         return 3400
+    if slide in (8, 21):
+        return 3000
     return 2300
 
 
@@ -258,7 +266,7 @@ def qa(a, out):
                 break
             R.adv(900)
             hidden = R.pg.evaluate("""() => { var s = document.querySelector('.slide.on'), n = [];
-              s.querySelectorAll('h1,h2,.kicker,.nt,.tb,.hc,.fi,.one,.mean,.hxcap p,.hxpunch').forEach(function (e) {
+              s.querySelectorAll('h1,h2,.kicker,.nt,.tb,.hc,.fi,.one,.mean,.hxcap p,.hxpunch,.shot,.ask,.kcp,.ub,.stamp,[data-k],.agenda div').forEach(function (e) {
                 n.push([e.className || e.tagName, getComputedStyle(e).opacity]); }); return n; }""")
             R.shot().resize((640, 360)).save(out / f"reduced-{sl:02d}-{sp}.jpg", quality=80)
             rep["reduced"].append({"slide": sl, "step": sp, "opacity": hidden})

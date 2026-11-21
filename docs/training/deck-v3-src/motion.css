@@ -7,17 +7,17 @@
 :root{--v-bg:#17120e;--v-bg2:#221a13;--v-card:#2a2119;--v-card2:#33281e;--v-line:rgba(245,234,216,.15);
   --v-ink:#f6eee2;--v-sub:#cbbda9;--v-acc:#f2a94e;--v-cool:#8fc4d6;--v-on:#1c1309;--v-brick:#5b3f29;--v-brick2:#402c1d}
 .slide.v3{color:var(--v-ink);box-shadow:none;
-  background:radial-gradient(1200px 800px at 82% 10%,rgba(242,169,78,.10),rgba(242,169,78,0) 60%),linear-gradient(165deg,var(--v-bg2) 0%,var(--v-bg) 70%)}
+  background:linear-gradient(165deg,var(--v-bg2) 0%,var(--v-bg) 70%)}
 .v3 *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 .v3 .foot{color:var(--v-sub)}
 .v3 .foot b{color:var(--v-ink)}
 .v3 h1 em,.v3 h2 em,.v3 .big em{color:var(--v-acc)}
 
 /* 한 격자: 머리글(kicker + 제목)은 모든 장에서 같은 자리 · 같은 여백(왼쪽 128px, 위 104px) */
-.v3 .hd{position:absolute;left:128px;right:128px;top:104px;z-index:4}
-.v3 .hd .kicker{margin-bottom:22px;color:var(--v-acc);font-size:28px;font-weight:700}
-.v3 .hd h2{font-size:76px;font-weight:800;letter-spacing:-.04em;line-height:1.12;margin:0;width:-webkit-fit-content;width:fit-content}
-.v3 .hd h2.big3{font-size:96px;letter-spacing:-.045em}
+.v3>.hd{position:absolute;left:128px;right:128px;top:104px;z-index:4}
+.v3>.hd .kicker{margin-bottom:22px;color:var(--v-acc);font-size:28px;font-weight:700}
+.v3>.hd h2{font-size:76px;font-weight:800;letter-spacing:-.04em;line-height:1.12;margin:0;width:-webkit-fit-content;width:fit-content}
+.v3>.hd h2.big3{font-size:96px;letter-spacing:-.045em}
 
 /* 가림막(wipe): 색 막대가 덮고 → 걷히며 글자가 남아요 */
 .m-wipe{position:relative}

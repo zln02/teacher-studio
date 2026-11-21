@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import re
 import sys
 from pathlib import Path
@@ -30,14 +31,14 @@ THREE_HEAD = "<script>/* three.js r128 · MIT License · Copyright (c) 2010-2021
 COMPARE_DIR = HERE.parent / "compare"
 BARE_DIR = V2 / "compare-bare"
 CASES = [
-    ("game", "중2 과학 빛 복습 게임", "기획 3안을 먼저 보여 주고, 고른 안으로 만들고 스스로 점검해요",
+    ("game", "수업", "중2 과학 빛 복습 게임", "기획 3안을 먼저 보여 주고, 고른 안으로 만들고 스스로 점검해요",
      "「첫 번째 부탁이에요. 왼쪽은 바로 만들었고, 오른쪽은 기획 3안부터 보여 줬어요. 저는 하나 골랐을 뿐이에요.」"),
-    ("parents", "학부모 총회 발표자료", "누가 보는지부터 묻고, 발표 흐름을 먼저 잡아요",
+    ("parents", "업무", "학부모 총회 발표자료", "누가 보는지부터 묻고, 발표 흐름을 먼저 잡아요",
      "「학부모 총회 발표자료예요. 오른쪽은 누가 보시는지, 몇 분인지부터 물어보고 흐름을 먼저 잡았어요.」"),
-    ("data", "우리 반 성적 엑셀 분석", "이름은 숨기고, 그래프와 쉬운 말로 보여 줘요",
+    ("data", "업무", "우리 반 성적 엑셀 분석", "이름은 숨기고, 그래프와 쉬운 말로 보여 줘요",
      "「성적 엑셀이에요. 오른쪽은 학생 이름을 숨기고 그래프와 쉬운 말로 정리했어요. 학생 정보는 이렇게 지켜야 해요.」"),
-    ("law", "가정통신문에 이 그림 써도 돼?", "최신 법을 직접 찾아보고, 근거와 함께 알려 줘요",
-     "「이 그림 써도 되나요? 왼쪽은 그럴듯하게 대답했고, 오른쪽은 최신 법을 직접 찾아 근거를 붙였어요. 그래도 마지막 판단과 책임은 선생님께 있어요.」"),
+    ("law", "업무", "가정통신문에 이 그림 써도 돼?", "최신 법을 직접 찾아보고, 근거와 함께 알려 줘요",
+     "「이 그림 써도 되나요? 왼쪽은 그럴듯하게 대답했고, 오른쪽은 최신 법을 직접 찾아 근거를 붙였어요. 그래도 마지막 판단과 책임은 사람에게, 여러분께 있어요.」"),
 ]
 
 
@@ -66,13 +67,14 @@ def shot(case: str, side: str) -> str:
 
 def compare_slides() -> str:
     out = []
-    for k, (case, ask, cap, note) in enumerate(CASES, 1):
-        out.append(f"""<section class="slide" data-agenda="2">
-  <div class="kicker">같은 부탁, 다른 결과</div><div class="cno">{k} / {len(CASES)}</div>
+    for k, (case, area, ask, cap, note) in enumerate(CASES, 1):
+        # v3: 머리글은 네 장이 같은 자리에 그대로 이어져요(움직이지 않음) · 부탁 말풍선 = 통통 · 그냥 AI = 왼쪽에서 탁 · 하네스 AI = 카드 뒤집기
+        out.append(f"""<section class="slide cmp v3" data-agenda="2" data-fx="v3cmp" data-steps="2">
+  <div class="hd"><div class="kicker m-k">같은 부탁, 다른 결과</div></div><div class="cno"><span class="area">{area}</span>{k} / {len(CASES)}</div>
   <div class="ask"><svg class="ic"><use href="#message-square"/></svg>「{ask}」</div>
   <div class="pair">
-    <div class="shot" data-b="1"><div class="hd">그냥 AI<i>요리사 혼자, 맨손으로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
-    <div class="shot h" data-b="2"><div class="hd"><svg class="ic"><use href="#sparkles"/></svg>하네스 AI<i>하네스를 채우고</i></div>{shot(case, "harness")}<p>{cap}</p></div>
+    <div class="shot sb"><div class="hd">그냥 AI<i>요리사 혼자, 맨손으로</i></div>{shot(case, "bare")}<p>바로 만들어요. 빈칸은 짐작으로 채워요</p></div>
+    <div class="shot h"><div class="hd"><svg class="ic"><use href="#sparkles"/></svg>하네스 AI<i>하네스를 채우고</i></div>{shot(case, "harness")}<p>{cap}</p></div>
   </div>
   <aside class="note">[8~15분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
 </section>""")
@@ -181,6 +183,46 @@ def cine_assets() -> tuple[str, str]:
     return json.dumps(js), "\n".join(css)
 
 
+ILLUST = HERE / "illust"          # 그림(장면 일러스트): illust/<이름>.jpg · 그림 자리 data-il="<이름>"에 들어가요 (없으면 빈 자리 그대로)
+
+
+def prep_illust(src: Path) -> None:
+    """--illust-src 폴더의 그림(png/webp/jpg)을 1600px · JPEG(≤250 KB)로 줄여 illust/에 넣어요."""
+    from PIL import Image
+    ILLUST.mkdir(exist_ok=True)
+    for p in sorted(src.glob("*")):
+        if p.suffix.lower() not in (".png", ".webp", ".jpg", ".jpeg") or p.stem == "sheet":
+            continue
+        im = Image.open(p).convert("RGB")
+        im.thumbnail((1600, 900))
+        out = ILLUST / (p.stem + ".jpg")
+        for q in (82, 74, 66, 58):
+            im.save(out, "JPEG", quality=q, optimize=True, progressive=True)
+            if out.stat().st_size <= 250 * 1024:
+                break
+        print(f"  illust {p.name} -> {out.name} {out.stat().st_size // 1024} KB")
+
+
+def illust_assets() -> tuple[dict, str]:
+    """(JS 그림 {il_이름: dataURI} · CSS [data-il=이름] 배경). 3D 장면 뒤 배경은 어둡게 한 판(il_이름_dk)도 같이."""
+    import base64
+    import io
+    from PIL import Image, ImageEnhance
+    js, css = {}, []
+    for p in sorted(ILLUST.glob("*.jpg")) if ILLUST.exists() else []:
+        k = p.stem
+        uri = data_uri(p)
+        css.append(f'[data-il="{k}"]{{background-image:url({uri})}}')
+        if k not in ("cover-a", "kitchen-backdrop", "closing"):   # 3D 장면 뒤에 까는 것만 어둡게 한 판을 만들어요
+            continue
+        im = ImageEnhance.Brightness(Image.open(p).convert("RGB")).enhance(0.4)
+        buf = io.BytesIO(); im.save(buf, "JPEG", quality=78, optimize=True)
+        js["il_" + k.replace("-", "_") + "_dk"] = "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    if js:
+        print(f"  illustrations: {len(css)}")
+    return js, "\n".join(css)
+
+
 def post_fx() -> str:
     out = []
     for f in POST_FILES:
@@ -193,6 +235,12 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--three", default=str(V2 / "vendor" / "three-0.128.0.min.js"))
     ap.add_argument("--no-fonts", action="store_true")
+    ap.add_argument("--slides", default=str(HERE / "slides.html"), help="다른 덱(예: ai-cheating/deck-src/slides.html)을 같은 엔진으로 만들 때")
+    ap.add_argument("--out", default=str(OUT))
+    ap.add_argument("--title", default="AI에게 무기를 주면 · 교사 연수")
+    ap.add_argument("--foot", default="AI에게 무기를 주면 · 박진영")
+    ap.add_argument("--illust-src", default="", help="그림 폴더(예: 임시 폴더의 illust-gpt)를 줄여서 illust/에 넣고 만들어요")
+    ap.add_argument("--agenda", default="", help="쉼표로 구분한 구간 이름 (비우면 본 덱 기본값)")
     a = ap.parse_args()
     three_p = Path(a.three)
     if three_p.exists():
@@ -205,9 +253,14 @@ def main() -> int:
         raise SystemExit("three.min.js hash mismatch (expected npm three@0.128.0 build/three.min.js)")
     three = three.decode("utf-8")
     anime = (REPO / "shared/vendor/animejs/anime-4.5.0.umd.min.js").read_text(encoding="utf-8")
-    css = (HERE / "deck.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion.css").read_text(encoding="utf-8")
-    slides = (HERE / "slides.html").read_text(encoding="utf-8")
-    js = (HERE / "deck.js").read_text(encoding="utf-8").replace("/*__MOTION__*/", (HERE / "motion.js").read_text(encoding="utf-8"), 1)
+    css = (HERE / "deck.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion2.css").read_text(encoding="utf-8") + "\n" + (HERE / "focus.css").read_text(encoding="utf-8")
+    slides = Path(a.slides).read_text(encoding="utf-8")
+    js = (HERE / "deck.js").read_text(encoding="utf-8")
+    js = js.replace("/*__FOOT__*/'AI에게 무기를 주면 · 박진영'", json.dumps(a.foot, ensure_ascii=False))
+    js = js.replace("/*__MOTION__*/", (HERE / "motion.js").read_text(encoding="utf-8") + (HERE / "motion2.js").read_text(encoding="utf-8"), 1)
+    if a.agenda.strip():   # 다른 덱: 구간 이름을 바꿔요 ("-" 하나면 빈 목록)
+        names = [x.strip() for x in a.agenda.split(",") if x.strip() and x.strip() != "-"]
+        js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
     for bad in ("?.", "??"):
@@ -215,7 +268,13 @@ def main() -> int:
             nxt = js[m.end():m.end() + 1]
             if bad == "??" or re.match(r"[A-Za-z_$\[(]", nxt):
                 raise SystemExit(f"ES2017 rule: {bad} in deck.js at {m.start()}")
+    if a.illust_src:
+        prep_illust(Path(a.illust_src))
     assets_js, cine_css = cine_assets()
+    il_js, il_css = illust_assets()
+    if il_js:
+        assets_js = assets_js.rstrip("}") + ("," if assets_js.strip() != "{}" else "") + json.dumps(il_js)[1:]
+    cine_css = cine_css + "\n" + il_css
     js = js.replace("/*__ASSETS__*/{}", assets_js).replace("/*__MODELS__*/{}", models_js())
     css = css + "\n" + cine_css
     post = post_fx()
@@ -224,7 +283,7 @@ def main() -> int:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
-<title>AI에게 무기를 주면 · 교사 연수</title>
+<title>{a.title}</title>
 <meta name="generator" content="교사 스튜디오 · 박진영 (hand-built deck-v3 · motion)">
 <!--
   Third-party code inlined below (see docs/training/deck-v2-NOTICE.md):
@@ -272,8 +331,9 @@ def main() -> int:
         html, rep = embed(html, families=["Noto Sans KR"])   # 본문은 Pretendard(TS Deck Sans), Noto Sans KR는 대비용
         html = html.replace("</head>", deck_font_css(html) + "</head>", 1)
         print("fonts:", {k: v for k, v in rep.items() if k != "prompt"})
-    OUT.write_text(html, encoding="utf-8")
-    print(f"wrote {OUT} ({len(html.encode('utf-8')) / 1024:.0f} KB)")
+    out = Path(a.out)
+    out.write_text(html, encoding="utf-8")
+    print(f"wrote {out} ({len(html.encode('utf-8')) / 1024:.0f} KB)")
     return 0
 
 

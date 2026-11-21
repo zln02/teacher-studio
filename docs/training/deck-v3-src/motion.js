@@ -64,9 +64,19 @@
       if (t < 0.45) { w.bar.style.transformOrigin = '0 50%'; w.bar.style.transform = 'scaleX(' + a.toFixed(4) + ')'; w.wt.style.opacity = 0; }
       else { w.bar.style.transformOrigin = '100% 50%'; w.bar.style.transform = 'scaleX(' + (1 - b).toFixed(4) + ')'; w.wt.style.opacity = 1; }
       w.wt.style.transform = t < 0.45 ? 'translateX(-16px)' : 'translateX(' + (-16 * (1 - b)).toFixed(1) + 'px)';
-    });
+    }, function () { MO.underline(el, 0); });
   };
-  MO.wipeSet = function (el, on) { var w = MO.prepWipe(el); w.bar.style.transform = 'scaleX(0)'; w.wt.style.opacity = on ? 1 : 0; w.wt.style.transform = ''; };
+  // 핵심 낱말(제목 속 em) 밑에 호박색 줄이 한 번 그어져요 (TOK.s, 그다음엔 가만히)
+  MO.kwu = function (el) {
+    var em = el.querySelector('em'); if (!em) return null;
+    var u = em.querySelector('.kwu'); if (!u) { u = document.createElement('i'); u.className = 'kwu'; em.appendChild(u); }
+    return u;
+  };
+  MO.underline = function (el, at) {
+    var u = MO.kwu(el); if (!u) return;
+    MO.tw(TOK.s, at, 'snap', function (e) { u.style.transform = 'scaleX(' + e.toFixed(4) + ')'; });
+  };
+  MO.wipeSet = function (el, on) { var w = MO.prepWipe(el); w.bar.style.transform = 'scaleX(0)'; w.wt.style.opacity = on ? 1 : 0; w.wt.style.transform = ''; var u = MO.kwu(el); if (u) u.style.transform = on ? 'scaleX(1)' : 'scaleX(0)'; };
   // 가림 막대 없이 왼쪽부터 드러나기 (머리글 kicker)
   MO.reveal = function (el, at, dur) {
     return MO.tw(dur || TOK.m - TOK.xs, at, 'out', function (e) {
@@ -198,7 +208,7 @@
   // 장에 들어올 때: 앞으로 오면 움직이고, 뒤로 오거나(←) 바로 그 단계로 뛰면 끝 모습으로
   var V3DIR = 1;
   function v3hd(s, at, instant) {
-    var k = q(s, '.hd .kicker'), h = q(s, '.hd h2');
+    var k = q(s, ':scope > .hd .kicker'), h = q(s, ':scope > .hd h2');
     if (instant) { if (k) { k.style.opacity = 1; k.style.clipPath = ''; k.style.transform = ''; } if (h) MO.wipeSet(h, true); return; }
     if (k) MO.reveal(k, at);
     if (h) MO.wipe(h, at + TOK.xs);
@@ -210,8 +220,8 @@
       var h1 = q(s, 'h1'), rule = q(s, '.m-rule'), tag = q(s, '.tag'), who = q(s, '.who'), inst = V3DIR < 0;
       var L = TOK.lead;   // 3D 카드가 먼저 통통 내려앉고(장면 쪽 COVER_IN), 글자가 같은 박자로 따라와요
       v3hd(s, L, inst);
-      if (inst) { MO.wordsSet(h1, true); [rule, tag, who].forEach(function (e) { show(e, true); }); return; }
-      MO.words(h1, L + TOK.xs + TOK.gap);
+      if (inst) { MO.wordsSet(h1, true); var u0 = MO.kwu(h1); if (u0) u0.style.transform = 'scaleX(1)'; [rule, tag, who].forEach(function (e) { show(e, true); }); return; }
+      MO.words(h1, L + TOK.xs + TOK.gap); var u1 = MO.kwu(h1); if (u1) u1.style.transform = 'scaleX(0)'; MO.underline(h1, L + TOK.m + TOK.l);
       MO.tw(TOK.s, L + TOK.m, 'snap', function (e) { rule.style.transform = 'scaleX(' + e.toFixed(4) + ')'; });
       MO.snap(tag, L + TOK.m + TOK.gap);
       MO.snap(who, L + TOK.m + 2 * TOK.gap);
@@ -272,7 +282,7 @@
       show(one, st >= 2); q(one, 'em').style.transform = '';
     },
     enter: function (s, st) {
-      var wall = q(s, '.wall3'), bs = qa(s, '.tb'), tag = q(s, '.wtag3'), path = q(s, '.cracks3 path'), k = q(s, '.hd .kicker'), h = q(s, '.hd h2');
+      var wall = q(s, '.wall3'), bs = qa(s, '.tb'), tag = q(s, '.wtag3'), path = q(s, '.cracks3 path'), k = q(s, ':scope > .hd .kicker'), h = q(s, ':scope > .hd h2');
       bs.forEach(function (b) { b.style.transform = ''; b.style.opacity = ''; });
       tag.style.transform = ''; tag.style.opacity = '';
       path.style.strokeDashoffset = 1; q(s, '.cracks3').style.opacity = '';
