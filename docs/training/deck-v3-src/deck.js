@@ -1395,7 +1395,7 @@
     if (old && !snap) { a.play(); old.crossFadeTo(a, 0.22, false); } else { if (old) old.stop(); a.play(); }
     R.cur = name;
   }
-  SCENES.robot = function () {
+  function robot3dScene() {
     var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(28, 16 / 9, 0.5, 80);
     scene.background = lin(0x6b3a22);
     // 빛 셋: 키(따뜻한 앞-왼쪽 위, 그림자) · 필(하늘빛 반구광, 그늘이 푸르스름하게) · 림(재질의 가장자리 빛 + 뒤쪽 약한 빛)
@@ -1403,8 +1403,15 @@
     var sun = new THREE.DirectionalLight(lin(0xffe9c8), 1.3); sun.position.set(-6, 10, 8); sun.target.position.set(0.5, 0, -0.5); scene.add(sun); scene.add(sun.target);
     sun.castShadow = true; var sc2 = sun.shadow.camera; sc2.left = -10; sc2.right = 10; sc2.top = 7; sc2.bottom = -7; sc2.near = 1; sc2.far = 34; sun.shadow.mapSize.set(1024, 1024); sun.shadow.radius = 5; sun.shadow.bias = -0.0008; sun.shadow.normalBias = 0.035;
     var K = toonKitchen(scene), Y = K.Y, RZ = -1.75, HOME = 0.6;
-    var R = robotRig(), robot = R ? R.root : chefAI();
-    robot.position.set(HOME, R ? Y : Y + 1.0, RZ); scene.add(robot);
+    // v3: 코드로 만든 3D 로봇 요리사(robot.js의 RobotChef)가 주인공. 없으면 예전 GLB 로봇으로
+    var RCH = (typeof window.RobotChef === 'function') ? window.RobotChef(THREE, { reduced: REDUCED, outline: true }) : null;
+    var RBI = RCH ? RCH.beats.map(function (x) { return x.id; }) : [];
+    var CLICK = [{ b: 'enter', wok: false }, { b: 'puzzle', wok: false }, { b: 'puzzle', wok: false }, { b: 'turn', wok: false },
+      { b: 'wave', wok: false }, { b: 'enter', wok: true, end: true }, { b: 'toss', wok: true }, { b: 'bow', wok: true }];
+    var R = RCH ? null : robotRig(), robot;
+    if (RCH) { robot = new THREE.Group(); robot.position.set(HOME - 1.1 * 1.35, Y, RZ); robot.scale.setScalar(1.35); robot.add(RCH.root); }
+    else { robot = R ? R.root : chefAI(); robot.position.set(HOME, R ? Y : Y + 1.0, RZ); }
+    scene.add(robot);
     if (R) scene.add(R.hat);
     var rsh = contact(1.25, 0.6); scene.add(rsh);
     var qm = plane(0.62, 0.62, markTex('?', '#7c6cf0')); scene.add(qm);
@@ -1488,8 +1495,17 @@
         if (!snap) { S.a += dt; S.time += dt; }
         var n = S.st, A = S.a, live = !snap;
         // 로봇 연기
-        var p = act(n, A); robot.position.x = p.x; robot.position.z = RZ;
-        S.ry += (p.ry - S.ry) * (snap ? 1 : damp(10, dt)); robot.rotation.y = S.ry;
+        var p, wokHeld = false;
+        if (RCH) {   // 클릭 → 로봇 박자 (pose는 시간만의 함수: ← · 줄인 움직임은 끝 모습)
+          var c = CLICK[Math.min(7, n)], bi = RBI.indexOf(c.b);
+          wokHeld = c.wok && (n > 5 || A > FL[0][0].userData.t0 + 0.8 || snap);
+          var P = RCH.pose(bi, (snap || c.end || REDUCED) ? 99 : A); P.wokOn = wokHeld;
+          RCH.apply(P, t);
+          p = { hop: 0, q: 0, e: 0 };
+        } else {
+          p = act(n, A); robot.position.x = p.x; robot.position.z = RZ;
+          S.ry += (p.ry - S.ry) * (snap ? 1 : damp(10, dt)); robot.rotation.y = S.ry;
+        }
         if (R) {
           play(R, p.an, p.ts, snap);
           if (snap) { var ac = R.acts[R.cur]; if (ac) { ac.time = R.cur === 'ThumbsUp' ? ac.getClip().duration * 0.55 : R.cur === 'Punch' ? ac.getClip().duration * 0.4 : 0.3; } R.mixer.update(0); } else R.mixer.update(dt);
@@ -1500,6 +1516,7 @@
             if (md.Sad !== undefined) mi[md.Sad] += (p.sad - mi[md.Sad]) * (snap ? 1 : damp(6, dt)); }
           if (R.headEnd) { robot.updateMatrixWorld(true); R.headEnd.getWorldPosition(_hp); R.headEnd.getWorldQuaternion(_hq); R.hat.position.copy(_hp); R.hat.quaternion.copy(_hq); R.hat.scale.set(1 + s * 0.5, 1 - s, 1 + s * 0.5); R.hat.visible = true; } else R.hat.visible = false;
         }
+        rsh.visible = qm.visible = em.visible = !RCH;
         rsh.position.set(robot.position.x, Y + 0.016, RZ + 0.05); rsh.material.opacity = 1 - Math.min(0.5, p.hop * 0.6); rsh.scale.setScalar(1 - Math.min(0.3, p.hop * 0.35));
         var head = V(robot.position.x + 1.0, Y + 4.25 + p.hop, RZ + 0.2);
         qm.position.copy(head); qm.position.y += live ? Math.sin(t * 3) * 0.05 : 0; face(qm, cam); qm.rotation.z += 0.18; qm.scale.setScalar(Math.max(0.001, p.q));
@@ -1507,10 +1524,12 @@
         L[0].el.style.opacity = n === 3 && A > 1.0 && A < 2.2 ? 1 : 0;
         // 맨밥 · 따로 김치
         var gone = n >= 4 ? cl(1 - A / 0.35) : 1; if (n >= 5) gone = 0;
-        bowl.visible = ((n === 1 && A > 6.0) || n === 2 || n === 3 || n === 4) && gone > 0.01;
-        bowl.position.copy(serveA); squash(bowl, n === 1 ? A - 6.0 : 9, gone);
-        side.visible = ((n === 3 && A > 3.2) || n === 4) && gone > 0.01;
-        side.position.copy(serveB); squash(side, n === 3 ? A - 3.2 : 9, gone);
+        var BW = RCH ? 1.6 : 6.0;
+        bowl.visible = ((n === 1 && (A > BW || snap)) || n === 2 || n === 3 || n === 4) && gone > 0.01;
+        bowl.position.copy(serveA); squash(bowl, n === 1 && !snap ? A - BW : 9, gone);
+        var SW = RCH ? 4.2 : 3.2;
+        side.visible = ((n === 3 && (A > SW || snap)) || n === 4) && gone > 0.01;
+        side.position.copy(serveB); squash(side, n === 3 && !snap ? A - SW : 9, gone);
         // 레시피 카드: 휙 날아와 펼쳐지고, 다음부터는 조리대 왼쪽 받침에 세워 둬요
         var rc = recipe; rc.visible = n >= 4; stand.visible = n >= 5;
         if (n === 4) {
@@ -1535,26 +1554,28 @@
           for (var k = 0; k < 10; k++) { var q0 = cl(u2 - k * 0.035), qq = q0 * q0 * (3 - 2 * q0), vis = u2 > 0 && u2 < 1; tp.setXYZ(k, vis ? (1 - qq) * (1 - qq) * d.from.x + 2 * (1 - qq) * qq * mid.x + qq * qq * d.seat.x : 0, vis ? (1 - qq) * (1 - qq) * d.from.y + 2 * (1 - qq) * qq * mid.y + qq * qq * d.seat.y : -50, vis ? (1 - qq) * (1 - qq) * d.from.z + 2 * (1 - qq) * qq * mid.z + qq * qq * d.seat.z : 0); }
           tp.needsUpdate = true;
         });
-        // 요리: 불 · 웍 흔들기 · 뒤집개 · 밥알 튀기 · 지글 불꽃 · 만화 김
+        if (RCH && wokHeld) wok.visible = false;   // 로봇이 든 웍이 내려앉은 그 웍이에요
+        // 요리: 불 · 웍 흔들기 · 뒤집개 · 밥알 튀기 · 지글 불꽃 · 만화 김 (v3: 반복 입자 · 김 · 반짝이는 꺼요)
         var cooking = n === 6 && A > 0.85, SV = K.SVX;
-        if (n === 6 && A > 0.4) { spat.position.set(SV + 0.25, 0.62 + (live ? Math.sin(t * 9) * 0.12 : 0.06), 0.0); spat.rotation.set(-0.9, 0.2, 0.3); }
+        if (!RCH && n === 6 && A > 0.4) { spat.position.set(SV + 0.25, 0.62 + (live ? Math.sin(t * 9) * 0.12 : 0.06), 0.0); spat.rotation.set(-0.9, 0.2, 0.3); }
         if (n >= 7) { rice.visible = false; egg.visible = false; }
-        K.fire.material.opacity = cooking ? (live ? 0.75 + Math.sin(t * 22) * 0.2 : 0.85) : 0;
+        K.fire.material.opacity = cooking && !RCH ? 0.85 : 0;
         wok.userData.rice.visible = cooking;
         if (n >= 6) { wok.rotation.z = cooking && live ? Math.sin(t * 7) * 0.12 : 0; wok.position.y = 0.14 + (cooking && live ? Math.abs(Math.sin(t * 7)) * 0.06 : 0); }
         for (var i = 0; i < tossN; i++) { var ph = ((live ? t * 1.3 : 0.45) + i / tossN) % 1, an = i * 2.39996, sp = 0.2 + (i % 5) * 0.06; tossP[i * 3] = SV + Math.cos(an) * sp * ph; tossP[i * 3 + 1] = cooking ? 0.45 + ph * 1.6 - ph * ph * 1.8 : -50; tossP[i * 3 + 2] = 0.2 + Math.sin(an) * sp * ph * 0.6; }
-        tossG.attributes.position.needsUpdate = true;
+        tossG.attributes.position.needsUpdate = true; toss.visible = !RCH;
         for (var j = 0; j < sizzN; j++) { var ph2 = ((live ? t * 2.2 : 0.3) + j / sizzN) % 1, an2 = j * 1.7; sizzP[j * 3] = SV + Math.cos(an2) * (0.5 + ph2 * 0.5); sizzP[j * 3 + 1] = cooking ? 0.3 + ph2 * 0.6 : -50; sizzP[j * 3 + 2] = 0.2 + Math.sin(an2) * (0.4 + ph2 * 0.4); }
-        sizzG.attributes.position.needsUpdate = true;
+        sizzG.attributes.position.needsUpdate = true; sizz.visible = false;
         var served = n >= 7 && A > 0.6;
         steam.forEach(function (pf, k) { var ph3 = ((live ? t * 0.35 : 0.4) + k / 3) % 1, src = n >= 7 ? V(HERO.x + 0.1, 0.55, HERO.z) : V(SV, 0.55, 0.2), on = cooking || served; pf.position.set(src.x + Math.sin(k * 2 + ph3 * 4) * 0.22, src.y + ph3 * 1.5, src.z - 0.1); pf.scale.setScalar(on ? (0.2 + ph3 * 0.42) * (1 - ph3 * 0.75) : 0.001); });
         // 완성 접시 · 반짝이
-        plate.visible = served; plate.position.copy(HERO); squash(plate, n >= 7 ? A - 0.6 : -1, 1);
+        steam.forEach(function (pf) { pf.visible = false; });
+        plate.visible = served && !RCH; plate.position.copy(HERO); squash(plate, n >= 7 ? A - 0.6 : -1, 1);
         spark.forEach(function (b, k) { var a2 = k / 8 * 6.28 + (live ? t * 0.7 : 0.4); b.position.set(HERO.x + Math.cos(a2) * 1.15, 0.55 + Math.sin(t * 2 + k) * 0.22, HERO.z + Math.sin(a2) * 0.5); b.material.opacity = served && A > 0.8 ? (snap ? 0.8 : 0.45 + 0.45 * Math.sin(t * 5 + k)) : 0; face(b, cam); });
         // 햇살 · 먼지 · 등
-        K.beams.forEach(function (b, k) { b.material.opacity = 0.085 + (live ? Math.sin(t * 0.6 + k) * 0.02 : 0); });
+        K.beams.forEach(function (b) { b.material.opacity = 0.085; });   // v3: 가만히
         K.lamps.forEach(function (g) { face(g.userData.glow, cam); });
-        if (live) { var mp = K.mp; for (var m = 0; m < mp.length; m += 3) { mp[m + 1] += Math.sin(t * 0.5 + m) * 0.0015; mp[m] += 0.0012; if (mp[m] > K.WX + 4.4) mp[m] -= 4; } K.motes.geometry.attributes.position.needsUpdate = true; }
+        if (false) { var mp = K.mp; for (var m = 0; m < mp.length; m += 3) { mp[m + 1] += Math.sin(t * 0.5 + m) * 0.0015; mp[m] += 0.0012; if (mp[m] > K.WX + 4.4) mp[m] -= 4; } K.motes.geometry.attributes.position.needsUpdate = true; }
         S.fx.bloom = 0.16 + flash * 0.35 + (served ? 0.1 : 0);
         // 그림책 카메라: 무대처럼 조금 위에서. 장면마다 한 번만 천천히 다가가요
         var cp = n === 6 ? V(-0.9, 4.3, 10.6) : n === 4 ? V(-0.5, 4.0, 10.8) : n >= 7 ? V(0.7, 3.9, 9.9) : n === 5 ? V(0.5, 5.2, 13.6) : V(0.3, 5.0, 13.9);
@@ -1563,9 +1584,90 @@
         var kk = snap ? 1 : camK(2.4, A, dt); S.cp.lerp(cp, kk); S.cl.lerp(cl2, kk); cam.position.copy(S.cp); cam.lookAt(S.cl);
         S.focusObj = n === 4 ? recipe : n === 6 ? wok : n >= 7 ? plate : robot;
       } };
+    spark.forEach(function (b) { b.visible = false; });
     S.setStep(0, true);
     return S;
+  }
+
+  /* 종이 인형 로봇 (예비): 진짜 그래픽 칩이 없는 PC(소프트웨어 렌더링)에서 쓰는 가벼운 판. 같은 여덟 박자
+     그림 조각은 build.py가 PUPPET에 넣어요 (deck-v3-src/puppet/*.webp). 반복 움직임 없음, 카메라 고정 */
+  var PUPPET = /*__PUPPET__*/{};
+  function robotPuppetScene() {
+    var scene = new THREE.Scene(), cam = new THREE.PerspectiveCamera(30, 16 / 9, 0.5, 120);
+    scene.background = new THREE.Color(0x221a13);
+    function ptex(key) { var t = new THREE.Texture(); var im = new Image(); im.onload = function () { t.image = im; t.needsUpdate = true; }; if (PUPPET[key]) im.src = PUPPET[key]; t.minFilter = THREE.LinearFilter; return t; }
+    function pplane(key, w, h, o) { return new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial(Object.assign({ map: ptex(key), transparent: true, depthWrite: false }, o || {}))); }
+    var PART = { head: ['head', 453, 428, 227, 418], torso: ['torso', 432, 355, 216, 346], armL: ['armL', 145, 360, 86, 42], armR: ['armR', 144, 363, 58, 42], wok: ['wok', 596, 234, 548, 62], base: ['base', 436, 262, 218, 254] };
+    function part(name, ord) {
+      var P = PART[name], w = P[1] / 100, h = P[2] / 100, ox = (P[1] / 2 - P[3]) / 100, oy = -(P[2] / 2 - P[4]) / 100, g = new THREE.Group();
+      var sh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ map: ptex(P[0]), color: 0x000000, transparent: true, opacity: 0.28, depthWrite: false }));
+      sh.position.set(ox + 0.07, oy - 0.1, -0.02); sh.renderOrder = ord; g.add(sh);
+      var m = pplane(P[0], w, h); m.position.set(ox, oy, 0); m.renderOrder = ord + 1; g.add(m); return g;
+    }
+    var wall = pplane('kitchen', 46.4, 26.1, { transparent: false, depthWrite: true, color: 0x9a9088 }); wall.position.set(0, 6.98, -10); wall.renderOrder = -10; scene.add(wall);
+    var LW = 34, LH = 34 * 106 / 1672, lip = pplane('lip', LW, LH, { transparent: false }); lip.position.set(0, -0.29 - LH / 2, 3); lip.renderOrder = 100; scene.add(lip);
+    var root = new THREE.Group(), body = new THREE.Group(); scene.add(root); root.add(body);
+    var base = part('base', 10); base.position.z = -0.05; body.add(base);
+    var upper = new THREE.Group(); upper.position.y = 2.12; body.add(upper); upper.add(part('torso', 20));
+    var neck = new THREE.Group(); neck.position.set(0, 3.0, 0.25); upper.add(neck);
+    var armL = new THREE.Group(); armL.position.set(-1.92, 2.36, 0.12); upper.add(armL); armL.add(part('armL', 30));
+    var armR = new THREE.Group(); armR.position.set(1.92, 2.36, 0.14); upper.add(armR);
+    var wokG = new THREE.Group(); wokG.position.set(0.27, -2.58, -0.05); armR.add(wokG); wokG.add(part('wok', 40));
+    armR.add(part('armR', 50)); neck.add(part('head', 60));
+    cam.position.set(0, 5.74, 30.6); cam.lookAt(0, 5.74, 0);
+    var HOME = 4.6;
+    function c01(x) { return x < 0 ? 0 : x > 1 ? 1 : x; }
+    function seg(t, a, d) { return c01((t - a) / d); }
+    function bump(u) { return u <= 0 || u >= 1 ? 0 : Math.sin(Math.PI * u); }
+    // 여덟 박자 (ms): 0 들어오기 · 1·2 갸우뚱 · 3 뒤돌아 다녀오기 · 4 찡긋(손 인사) · 5 웍이 손에 · 6 웍 휙휙 · 7 꾸벅
+    function pose(n, t) {
+      var o = { x: HOME, hop: 0, lean: 0, upX: 0, upR: 0, headZ: 0, headX: 0, aL: 0.08, aR: 0.32, wokR: 0, wokY: 0, wok: n >= 5 ? 1 : 0 };
+      if (n === 0) { var u = seg(t, 0, 1800), e = EZ.out(u); o.x = HOME + 15 * (1 - e); o.hop = Math.abs(Math.sin(u * Math.PI * 3)) * 0.6 * (u < 1 ? 1 : 0); o.lean = -0.09 * (1 - e); }
+      else if (n === 1 || n === 2) { var q = EZ.spring(seg(t, 0, TOK.m)); o.headZ = (n === 1 ? 0.22 : -0.22) * q; o.aL = 0.08 - 0.9 * q; o.aR = 0.32 + 0.9 * q; o.hop = bump(seg(t, 0, 380)) * 0.3; }
+      else if (n === 3) { var a = seg(t, 200, 900), b = seg(t, 2300, 900); o.x = HOME + 6 * (EZ.inout(a) - EZ.inout(b)); o.lean = 0.06 * (bump(a) - bump(b)); }
+      else if (n === 4) { var r1 = EZ.spring(seg(t, 0, TOK.m)), w = seg(t, TOK.m, 1800), down = EZ.inout(seg(t, 2600, TOK.m)); o.aL = 0.08 + (-2.55 + Math.sin(w * Math.PI * 4) * 0.25 * (w < 1 ? 1 : 0) - 0.08) * r1 * (1 - down); o.headZ = 0.13 * r1 * (1 - down); }
+      else if (n === 5) { o.wok = EZ.spring(seg(t, 300, TOK.m)); o.aR = 0.32 + 0.3 * o.wok; }
+      else if (n === 6) { var up = EZ.spring(seg(t, 0, TOK.m)); o.aR = 0.32 + 0.73 * up; o.aL = 0.08 + 0.37 * up; for (var k = 0; k < 3; k++) { var tu = seg(t, 700 + k * 820, 640); o.wokY += bump(c01(tu * 3)) * 0.32; o.wokR += bump(c01(tu * 3)) * 0.22; o.headX += bump(tu) * -0.08; } }
+      else { var bw = EZ.inout(seg(t, 200, TOK.l)), rise = EZ.spring(seg(t, 1900, TOK.l)), d = bw * (1 - rise); o.upX = 0.62 * d; o.headX = 0.35 * d; o.aL = 0.08 + 0.42 * d; o.aR = 0.32 + 0.28 * d; o.hop = bump(seg(t, 2500, 520)) * 0.5; }
+      return o;
+    }
+    var S = { scene: scene, camera: cam, labels: [], st: 0, a: 0, noBg: true, noDrift: true, puppet: true, fx: { bloom: 0, blur: 0, grain: 0, vig: 0.2 },
+      setStep: function (n, snap) { S.st = n; S.a = (snap && (REDUCED || V3DIR < 0)) ? 99 : 0; },
+      finish: function () { S.a = 99; },
+      update: function (dt, t, snap) {
+        if (!snap) S.a += dt;
+        var o = pose(Math.min(7, S.st), (snap || REDUCED) ? 1e6 : S.a * 1000);
+        root.position.set(o.x, o.hop, 0); root.rotation.z = o.lean;
+        upper.rotation.x = o.upX; upper.rotation.z = o.upR; neck.rotation.z = o.headZ; neck.rotation.x = o.headX;
+        armL.rotation.z = o.aL; armR.rotation.z = o.aR;
+        wokG.visible = o.wok > 0.01; wokG.scale.setScalar(Math.max(0.001, o.wok)); wokG.rotation.z = -o.aR + 0.12 + o.wokR; wokG.position.y = -2.58 + o.wokY;
+      } };
+    S.setStep(0, true);
+    return S;
+  }
+
+  /* 로봇 고르기: ?robot=3d · ?robot=puppet · 기본은 자동(소프트웨어 렌더링이면 종이 인형). R 키로 바로 바꿔요 */
+  var ROBOT_Q = /[?&]robot=puppet/.test(location.search) ? 'puppet' : /[?&]robot=3d/.test(location.search) ? '3d' : 'auto';
+  var ROBOT_MODE = null;
+  function softGL() {
+    try { var g = GL.r.getContext(), ext = g.getExtension('WEBGL_debug_renderer_info'), s = ext ? g.getParameter(ext.UNMASKED_RENDERER_WEBGL) : ''; return /SwiftShader|llvmpipe|Basic Render|Software/i.test(String(s)); } catch (e) { return false; }
+  }
+  SCENES.robot = function (el) {
+    if (!ROBOT_MODE) ROBOT_MODE = ROBOT_Q !== 'auto' ? ROBOT_Q : (softGL() ? 'puppet' : '3d');
+    var S = ROBOT_MODE === 'puppet' ? robotPuppetScene() : robot3dScene(el);
+    S.mode = ROBOT_MODE;
+    if (S.mode === '3d' && ROBOT_Q === 'auto') {   // 처음 1초 동안 초당 20장이 안 되면 종이 인형으로 바꿔요
+      var u0 = S.update, n0 = 0, t0 = 0;
+      S.update = function (dt, t, snap) { u0(dt, t, snap); if (!snap && !S.checked) { n0++; t0 += dt; if (t0 >= 1) { S.checked = true; if (n0 < 20) setTimeout(function () { robotSwitch('puppet'); }, 0); } } };
+    }
+    return S;
   };
+  function robotSwitch(mode) {
+    ROBOT_MODE = mode || (ROBOT_MODE === 'puppet' ? '3d' : 'puppet');
+    delete GL.cache.robot;
+    var s = slides[cur];
+    if (s && s.getAttribute('data-scene') === 'robot') { var lb = s.querySelector('.labels'); while (lb && lb.firstChild) lb.removeChild(lb.firstChild); sceneStep(s, step, true); }
+  }
 
   /* 어두운 구간 공통 바닥 */
   function darkFloor(scene, w, d, y) { var f = rbox(w, d, 0.3, 0.2, M(0x2a2019, { roughness: 0.95 })); f.rotation.x = -Math.PI / 2; f.position.y = (y || 0) - 0.15; f.receiveShadow = true; scene.add(f); return f; }
@@ -1942,6 +2044,7 @@
     else if (k === 'f' || k === 'F') toggleFS();
     else if (k === 'b' || k === 'B' || k === '.') document.getElementById('black').classList.toggle('on');
     else if (k === 't' || k === 'T') { var tm = slides[cur].querySelector('.timer'); if (tm && tm.toggle) tm.toggle(); else if (slides[cur].querySelector('.stw')) swToggle(); }
+    else if ((k === 'r' || k === 'R') && slides[cur].getAttribute('data-scene') === 'robot') robotSwitch();
     else if ((k === 'r' || k === 'R') && slides[cur].querySelector('.stw')) swReset();
     else if ((k === 'l' || k === 'L') && slides[cur].querySelector('.stw')) swLap();
     else if (/^[0-9]$/.test(k)) { jump += k; }

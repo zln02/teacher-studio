@@ -132,6 +132,8 @@ def models_js() -> str:
     import base64
     out = {p.stem[2:]: p.read_text(encoding="utf-8") for p in sorted(ASSETS.glob("m_*.gltf"))}
     for p in sorted(ASSETS.glob("m_*.glb")):   # 뼈대·애니메이션이 있는 모델은 glb 그대로 (RobotExpressive, CC0)
+        if p.stem == "m_robot" and (HERE / "robot.js").exists():   # v3: 로봇은 코드로 만든 RobotChef(robot.js) → GLB는 안 넣어요 (약 620 KB 줄어요)
+            continue
         out[p.stem[2:]] = "glb:" + base64.b64encode(p.read_bytes()).decode()
     print(f"  models: {list(out)} ({sum(len(v) for v in out.values()) // 1024} KB)")
     return json.dumps(out)
@@ -275,9 +277,13 @@ def main() -> int:
     if il_js:
         assets_js = assets_js.rstrip("}") + ("," if assets_js.strip() != "{}" else "") + json.dumps(il_js)[1:]
     cine_css = cine_css + "\n" + il_css
+    import base64 as _b64
+    pup = {p.stem: "data:image/webp;base64," + _b64.b64encode(p.read_bytes()).decode() for p in sorted((HERE / "puppet").glob("*.webp"))} if 'data-scene="robot"' in slides else {}
+    js = js.replace("/*__PUPPET__*/{}", json.dumps(pup))
     js = js.replace("/*__ASSETS__*/{}", assets_js).replace("/*__MODELS__*/{}", models_js())
     css = css + "\n" + cine_css
     post = post_fx()
+    robot_js = (HERE / "robot.js").read_text(encoding="utf-8") if (HERE / "robot.js").exists() and 'data-scene="robot"' in slides else ""
     html = f"""<!doctype html>
 <html lang="ko">
 <head>
@@ -319,6 +325,9 @@ def main() -> int:
 </script>
 <script>/* anime.js 4.5.0 · MIT License · Copyright (c) 2025 Julian Garnier */
 {anime}
+</script>
+<script>/* RobotChef (deck-v3-src/robot.js) · 이 저장소에서 새로 만든 코드 로봇 요리사 */
+{robot_js}
 </script>
 <script>
 {js}

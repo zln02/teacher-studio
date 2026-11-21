@@ -211,8 +211,8 @@
   FX.v3duo = {
     set: function (s, st) {
       var A = st === 0;
-      [q(s, '.hd.ha'), q(s, '.duoA')].forEach(function (e) { show(e, A); });
-      [q(s, '.hd.hb'), q(s, '.board')].forEach(function (e) { show(e, !A); });
+      [q(s, '.hd.hda'), q(s, '.duoA')].forEach(function (e) { show(e, A); });
+      [q(s, '.hd.hdb'), q(s, '.board')].forEach(function (e) { show(e, !A); });
       MO.kinSet(q(s, '.order .m-kin'), !A);
       qa(s, '.hd .kicker, .board .seg, .board .seqbar i, .board .menu li, .board .menu .mh, .board .timer, .board .wait, .duoA .prompt, .duoA .screens').forEach(function (e) { show(e, true); });
       qa(s, '.hd h2').forEach(function (h) { MO.wipeSet(h, true); });
@@ -237,8 +237,8 @@
       if (dir === -1 || st > 1) { FX.v3duo.set(s, st); if (dir !== -1) FX.v3duo.mark(s, st, true); return; }
       // 클릭 1: (가)가 위로 빠지고 (나) 미션 판이 들어와요. 주문 한 줄은 글자 움직임(핵심 문장)
       FX.v3duo.set(s, 0);
-      [q(s, '.hd.ha'), q(s, '.duoA')].forEach(function (o) { MO.tw(TOK.xs, 0, 'out', function (e) { o.style.opacity = 1 - e; o.style.transform = 'translateY(' + (-TOK.move * e).toFixed(1) + 'px)'; if (e >= 1) { o.style.opacity = 0; o.style.transform = ''; } }); });
-      var hb = q(s, '.hd.hb'), bd = q(s, '.board');
+      [q(s, '.hd.hda'), q(s, '.duoA')].forEach(function (o) { MO.tw(TOK.xs, 0, 'out', function (e) { o.style.opacity = 1 - e; o.style.transform = 'translateY(' + (-TOK.move * e).toFixed(1) + 'px)'; if (e >= 1) { o.style.opacity = 0; o.style.transform = ''; } }); });
+      var hb = q(s, '.hd.hdb'), bd = q(s, '.board');
       hb.style.opacity = 1; bd.style.opacity = 1;
       MO.reveal(q(hb, '.kicker'), TOK.xs);
       MO.wipe(q(hb, 'h2'), TOK.xs + TOK.gap);

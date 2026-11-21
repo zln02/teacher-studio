@@ -40,3 +40,17 @@
 .hx.v3 .ilbg{opacity:.32;-webkit-mask-image:linear-gradient(180deg,transparent 45%,#000 85%);mask-image:linear-gradient(180deg,transparent 45%,#000 85%)}
 .hx.v3:not(.map) .ilbg{visibility:hidden}
 .floor.v3 .ilbg{opacity:.14;-webkit-mask-image:linear-gradient(200deg,#000 0%,transparent 60%);mask-image:linear-gradient(200deg,#000 0%,transparent 60%)}
+/* 13 그림책: 아래 설명 · 위 말풍선을 무대 가장자리에서 조금 더 안쪽으로 */
+.storyc.v3 .kcap{bottom:96px;left:96px}
+.storyc.v3 .ub{top:72px;right:96px}
+.storyc.v3 .stamps{top:200px;right:96px}
+/* 18 시계는 본문 높이에 맞춰요 · 21 다섯 줄이 책임 한 줄과 겹치지 않게 */
+.lab.v3 .timer{top:300px}
+.tips3.v3 .tips li{padding:12px 24px;margin-bottom:8px}
+.tips3.v3 .tips li h3{font-size:38px}
+.tips3.v3 .tips li p{font-size:24px}
+.tips3.v3 .resp{bottom:100px;padding:22px 36px;font-size:34px}
+.v3 .kicker:before{background:currentColor;opacity:.6}
+.hx.v3 .ilbg{opacity:.2}
+/* 19 미션 판: 예전 .board(격자)와 이름이 겹쳐서 블록으로 */
+.duo3.v3 .board{display:block;gap:0;margin:0}

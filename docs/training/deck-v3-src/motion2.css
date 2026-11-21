@@ -25,8 +25,8 @@
 .v3 h3{font-weight:800}
 
 /* 8 섹션 */
-.section.v3>.hd h2{font-size:132px;letter-spacing:-.05em;line-height:1.06}
-.section.v3 .bigno{position:absolute;right:128px;top:170px;display:flex;font-size:460px;line-height:.9;font-weight:800;letter-spacing:-.06em;color:rgba(242,169,78,.1);z-index:0;-webkit-text-stroke:0}
+.section.v3>.hd h2{font-size:120px;letter-spacing:-.05em;line-height:1.08}
+.section.v3 .bigno{position:absolute;right:128px;top:330px;display:flex;font-size:360px;line-height:.9;font-weight:800;letter-spacing:-.06em;color:rgba(242,169,78,.1);z-index:0;-webkit-text-stroke:0}
 .section.v3 .illust-slot.sec{position:absolute;right:128px;top:190px;width:760px;height:540px}
 .section.v3 .agenda{bottom:130px}
 .section.v3 .agenda div{position:relative;color:var(--v-sub);border-top:2px solid rgba(245,234,216,.18)}
@@ -133,7 +133,7 @@
 .lab.v3 .planb{margin-top:36px}
 
 /* 19 두 화면 비교 → 모둠 미션 판 (질문 한 줄 · 다섯 단계 · 예시 세 칸(일상 · 업무 · 수업) · 큰 시계) */
-.duo3.v3 .hd.hb,.duo3.v3 .board{opacity:0}
+.duo3.v3 .hd.hdb,.duo3.v3 .board{opacity:0}
 .duo3.v3 .board{position:absolute;left:128px;right:128px;top:280px;bottom:96px}
 .duo3.v3 .order{font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1.2;color:var(--v-ink)}
 .duo3.v3 .order small{font-size:34px;font-weight:700;color:var(--v-sub);margin-left:24px;letter-spacing:-.02em}

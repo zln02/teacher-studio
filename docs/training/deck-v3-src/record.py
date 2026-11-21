@@ -27,6 +27,7 @@ from playwright.sync_api import sync_playwright
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 DECK = HERE.parent / "deck-v3.html"
+QUERY = ""   # 예: "?robot=3d"
 ARGS = ["--mute-audio", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"]
 sys.path.insert(0, str(REPO / "skills" / "teacher-motion" / "scripts"))
 from clipcheck import CLIP_JS  # noqa: E402  (harness probe, read-only)
@@ -57,7 +58,7 @@ BOUNDS = """() => {
   });
   // 글자 덩어리끼리 겹침 (머리글 · 본문 블록만)
   var blocks = [].slice.call(s.querySelectorAll(':scope > .hd, .hero, .feed, .wall3, .ans, .mean, .hxgrid, .hxcap p, .hxpunch, .hxtm, .cover .who, .ask, .pair, .agenda, .kcap, .levels, .capline, .flow2, .eqbar, .body3, .timer, .tips, .resp, .qr, .bigno, .stamps, .ub')).filter(function (e) {
-    var o = 1, p = e; while (p && p !== s) { o *= parseFloat(getComputedStyle(p).opacity); p = p.parentElement; } return o > 0.5 && e.getBoundingClientRect().width > 2; });
+    var o = 1, p = e; while (p && p !== s) { o *= parseFloat(getComputedStyle(p).opacity); p = p.parentElement; } return o > 0.5 && getComputedStyle(e).visibility !== 'hidden' && e.getBoundingClientRect().width > 2; });
   for (var i = 0; i < blocks.length; i++) for (var j = i + 1; j < blocks.length; j++) {
     var a = blocks[i].getBoundingClientRect(), b = blocks[j].getBoundingClientRect();
     if (blocks[i].contains(blocks[j]) || blocks[j].contains(blocks[i])) continue;
@@ -97,7 +98,7 @@ class Stage:
         if fake:
             self.pg.clock.install(time=0)
             self.pg.clock.pause_at(1000)   # 처음부터 멈춰 둬요: 부팅 뒤에 시간을 건너뛰면 막 시작한 움직임이 한 번에 끝나 버려요
-        self.pg.goto(DECK.as_uri() + "#" + str(start))
+        self.pg.goto(DECK.as_uri() + QUERY + "#" + str(start))
         for _ in range(600):
             if fake:
                 self.pg.clock.run_for(50)
@@ -175,14 +176,17 @@ def video(a, out):
             print(f"  slide {sl} step {sp}: {k} frames", flush=True)
             S.key()
             S.adv(0)
+            if S.state() == st:
+                break
         errs = S.errors
         b.close()
     import imageio_ffmpeg
     ff = imageio_ffmpeg.get_ffmpeg_exe()
-    mp4 = out / ("preview-slides%d-%d.mp4" % (first, last))
+    stem = a.name or ("preview-slides%d-%d" % (first, last))
+    mp4 = out / (stem + ".mp4")
     subprocess.run([ff, "-y", "-loglevel", "error", "-framerate", str(a.fps), "-i", str(frames_dir / "f%05d.jpg"),
                     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "20", "-movflags", "+faststart", str(mp4)], check=True)
-    gif = out / ("preview-slides%d-%d.gif" % (first, last))
+    gif = out / (stem + ".gif")
     subprocess.run([ff, "-y", "-loglevel", "error", "-i", str(mp4), "-vf",
                     "fps=12,scale=640:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=bayer:bayer_scale=4",
                     str(gif)], check=True)
@@ -246,9 +250,11 @@ def qa(a, out):
             except Exception as e:  # noqa: BLE001  (harness probe crashed: see harness-notes.md)
                 clip = [["probe-crash", str(e)[:120]]]
             rep["steps"].append({"slide": sl, "step": sp, "during": issues, "end": end, "clip": clip})
-            print(f"  {sl}.{sp}: during {len(issues)} · end {len(end)} · clip {len(clip)}", flush=True)
+            print(f"  {sl}.{sp}: during {len(issues)} · end {len(end)} · clip {len(clip)}", (json.dumps(issues + end + [c for c in clip if c[1] != "BUTTON"], ensure_ascii=False)[:400] if (issues or end or len(clip) > 2) else ""), flush=True)
             S.key()
             S.adv(0)
+            if S.state() == st:   # 마지막 장 끝: 더 넘어가지 않아요
+                break
         # 뒤로 가기: 끝 모습이 바로 맞는지(움직임 없이) → 넘침만 다시
         for _ in range(6):
             S.key("ArrowLeft")
@@ -272,6 +278,8 @@ def qa(a, out):
             rep["reduced"].append({"slide": sl, "step": sp, "opacity": hidden})
             R.key()
             R.adv(0)
+            if R.state() == st:
+                break
         rep["errors"] += R.errors
         b.close()
     (out / "qa.json").write_text(json.dumps(rep, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -322,7 +330,11 @@ def main() -> int:
     ap.add_argument("--fps-check", action="store_true")
     ap.add_argument("--gpu", action="store_true", help="fps check with the real GPU instead of SwiftShader")
     ap.add_argument("--beats", default="", help="frame:label,... -> motion-beats.png from an existing frames dir")
+    ap.add_argument("--query", default="", help='주소 뒤에 붙일 것, 예: "?robot=puppet"')
+    ap.add_argument("--name", default="", help="미리보기 파일 이름 앞부분 (기본: preview-slidesA-B)")
     a = ap.parse_args()
+    global QUERY
+    QUERY = a.query
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     if a.beats:
