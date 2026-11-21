@@ -17,7 +17,6 @@ import argparse
 import json
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 SKILL = Path(__file__).resolve().parent.parent
@@ -28,6 +27,7 @@ from build_game import build  # noqa: E402
 sys.path.insert(0, str(SKILL / "shared" / "fonts"))
 sys.path.insert(0, str(SKILL / "shared" / "tools"))
 import embed  # noqa: E402  (shared/fonts/embed.py: Noto KR cut to this page, offline-safe)
+import workdir  # noqa: E402  (shared/tools/workdir.py)
 
 
 def list_missiles() -> None:
@@ -57,10 +57,11 @@ def fire(missile: str, skin: str, content_path: Path | None, out: Path) -> int:
     data = json.loads(skin_path.read_text(encoding="utf-8"))
     if content_path:
         data = merge(data, json.loads(content_path.read_text(encoding="utf-8")))
-    with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as tmp:
-        json.dump(data, tmp, ensure_ascii=False)
     css = base / "style.css"
-    size = build(Path(tmp.name), base / "logic.js", out, css if css.exists() else None)
+    with workdir.temp_dir("fire", near=out) as td:  # beside the output; removed afterwards
+        tmp = Path(td) / "data.json"
+        tmp.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
+        size = build(tmp, base / "logic.js", out, css if css.exists() else None)
     html, rep = embed.embed(out.read_text(encoding="utf-8"))
     note = ""
     if rep.get("embedded"):

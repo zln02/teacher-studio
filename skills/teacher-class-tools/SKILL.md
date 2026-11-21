@@ -13,13 +13,14 @@ Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", 
 ## When to use / not use
 - Use for: timer, picker, teams, bracket, scoreboard (class or personal/family/club use; do not refuse non-class use).
 - Not for: quizzes or games (-> teacher-game), slides (-> teacher-slides), videos (-> teacher-motion). If the request is clearly a one-off the model can do better inline, say so and do that (no-regret rule).
+- **Floor, not ceiling** (`shared/content/CONTENT-RULES.md`): one spec makes ONE tool. Do not shrink the request to fit it. Two tools asked for one event (「대진표와 점수판」), or rules the spec cannot hold (a sport's own scoring such as 21점·듀스·세트, 코트 배정, 리그전 순위표) -> the room wants them on one screen with those rules: make that page yourself as one offline HTML file with this skill's quality bar (the number the room reads is the biggest thing, one-tap buttons, 「효과 줄이기」「소리 끄기」, no storage, no network, no outside files) and gate it with `python3 ../teacher-studio/scripts/check_webapp.py <file>.html`; or build the tools separately when they really are used apart, and say how to use them together. The tool-picked look is a default: the user's colours or a look that suits the event may replace it.
 - Speak Korean to the teacher, plain words. Do not mention HTML/JSON/spec unless asked. Show the result as an artifact.
 
 ## Steps (yourself, in this chat: write spec, one command, answer; under a minute)
 1. Pick the tool. Do NOT ask when the request has the number it needs (「5분 타이머」「6모둠」) or says 「알아서」「바로」: use the defaults (numbers 1-30 for people, 4 teams, animal team names, sound on for the timer only) and say them in one line. Ask one numbered message only when the count of people or teams is unknowable.
 2. Write a spec with the keys below from the request's own numbers and names (`assets/spec-examples/` = test fixtures, not patterns for each tool's shape), then:
    `python3 scripts/build_tool.py --spec spec.json --out tool.html`
-   This builds and runs the checker. Fix and rebuild at most 2 times; then tell the teacher plainly what is off.
+   This builds and runs the checker. Fix and rebuild at most 2 times; then tell the teacher plainly what is off. A `NO-BROWSER` line = no screen can open in this environment: `PARTIAL` is then the normal finish; do not try a browser yourself, deliver the file and say the screen was not opened.
 3. Show the page. Last message: file path · 「더블클릭하면 열려요」 · keys (Space/Enter = main action, 「전체화면」 button) · 2 tweaks (예: 「10분으로」「모둠 이름 바꾸기」). No privacy line for a tool that holds no names.
 
 ## Quality bar

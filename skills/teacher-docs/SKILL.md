@@ -35,6 +35,9 @@ Content quality first: before writing any content read references/content-docs.m
 Spec extras: `"design": {"font_size": 14 | "large" | "small", "line": 1.6}` (print scale in pt: every size follows) · `"max_pages"`, `"min_font"` (also `--max-pages`, `--min-font`, `--font-size`) · body blocks `{"pagebreak": true}`, `{"image": "file.png", "width_mm": 80, "caption": ""}`, `{"qr": "https://…", "caption": "", "size_mm": 28}` (offline QR), `{"form": {"fields": [...]}}`. HWPX gets the page break and the sizes; pictures and QR are PDF / Word only (HWPX keeps the caption and the address as text, and says so).
 A good 안내문: lead box (언제·어디서·무엇을·언제까지) -> 일정 표 -> 신청 방법 -> 알아 둘 점 -> 문의 -> 날짜·발신. A good 신청서 (paper, written by hand: name blanks are fine here): 학년/반/번호 · 학생 이름 · 보호자 성함 · 연락처 · choices as □ boxes with real dates and times (1지망 / 2지망) · 하고 싶은 말 · 개인정보는 이 용도로만 쓴다는 한 줄 · 날짜 · 서명 · 「학교장 귀하」. The 안내문 must point to it (「뒷면 신청서」) and must not describe another way to apply.
 
+A good 가정통신문 (any format, HWPX too): one greeting sentence -> what the family does and by when (box or first item) -> 일정·장소·대상 as a table -> 준비물 -> 안전·유의 사항 -> the 회신서 or 동의서 (`reply`) whenever the family must answer, choose or consent -> 문의 -> 날짜·발신. **Floor, not ceiling** (`shared/content/CONTENT-RULES.md`): one A4 is the goal, a half-empty page is not finished; a notice that drops the reply slip, the table or the safety items a school's own notice would carry is thinner than the request.
+`NO-BROWSER` printed = no screen can open in this environment: HWPX and Word are still built and gated; a PDF cannot be printed there (give the `.print.html` and 「Ctrl+P → PDF로 저장」, or run the same command outside the security box). Do not try a browser yourself.
+
 Output: one new file next to the original (never overwrite theirs) + for HWPX a preview page `*.preview.html` (our approximation of 한글: say 「실제 한글 화면과 줄바꿈이 조금 다를 수 있어요」).
 
 ## Spec (`docmodel.py` has the full key list)

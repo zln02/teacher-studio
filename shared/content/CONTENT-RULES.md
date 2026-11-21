@@ -33,9 +33,18 @@ These are principles and decisions, not templates. Never copy wording or structu
 7. **Level is chosen, not defaulted.** Vocabulary, sentence length and amount per screen match the stated grade or audience (`content-writing.md`). Plain is not childish.
 8. **Legal and privacy lines.** No real student data, faces or contact details in content; third-party text, images, music and characters need a stated basis. When the request touches these, go to `skills/teacher-law` (it reads the current law; do not answer from memory, and do not store law text in recipes).
 9. **Honest about limits.** Say what the material does not cover, what was assumed, what was not checked. Never claim a capability (AI, 자동 채점, 저장) the output does not have.
-10. **Length is a budget.** Decide it from the use (minutes of class, one A4, one phone screen) and cut to fit. Do not pad to look thorough. Cutting never removes a condition, an exception or a safety step.
+10. **Length is a budget.** Decide it from the use (minutes of class, one A4, one phone screen) and cut to fit. Do not pad to look thorough, and do not thin to look tidy: the budget caps filler, never depth (see 「Floor, not ceiling」). Cutting never removes a condition, an exception or a safety step.
 11. **Numbers in the recipes are defaults, each with a reason.** Figures such as 「제목 15자」「5-7분」「5초」「1/3」 name a problem (unreadable from the back row, attention drifting, a first screen that does nothing, a quiz that is all recall). Meet the reason, not the number. Deviate when this content needs it and say why in one line; never bend the content to hit a number.
 12. **Check the real thing, in real use.** The draft being right does not make the file right: after building, confirm on the final screen or printout that answers, units, deadlines and attachments survived (not cut off, not shown to students, not different from the 붙임). Then try it as someone who cannot see the picture, hear the sound or drag with a finger (per-kind recipes say how).
+
+## Floor, not ceiling — the tools set the minimum, you set the level
+The generators and gates guarantee a floor: the file opens, reads from the back row, has no leftovers, works offline. They do not decide how much it teaches or how good it looks. That is your job, and the tools must never make your output poorer than what you would have made without them.
+
+- **Depth.** Before building, list what the best practitioner's version of THIS request would contain, then put it in: the thing itself drawn (기관의 위치, 지도, 도형, 장치), a source to read (사료 · 본문 · 실험 자료) with its citation, a worked example, the process step by step, an activity with stages, more than one check question with answers and reasons, the reply slip a notice needs, sources at the end. 「Cut」 in rules 2 and 10 means cut what does not serve the purpose; it never means shorten what does.
+- **Per-screen limits are not content limits.** 「One message per slide」, character caps and item counts keep one screen readable. More to say → another slide, a panel, another round, another part, another page. Never fewer facts.
+- **Where the tool has no place for it, add it yourself.** In this order: (1) the tool's own free fields (custom drawing, custom css / svg, diagram shapes, custom parts), (2) build that piece, or the whole file, yourself in the plain way. Then run the same gate on the result. A hand-made file that passes the gate beats a tool-made file that is thin.
+- **Design.** Tool-picked colours, fonts and layouts are safe defaults, not requirements. Order: the user's design > a look you can justify for this topic and room (your own palette, illustration, composition) > the tool default. Whatever you choose still passes the gates: contrast, text size, no overflow, offline, privacy, no AI house look.
+- **Last check before the final message:** 「Would I have made something richer, deeper or better-looking for this request without these tools?」 If yes, it is not finished: add what is missing.
 
 ## Release status — 「배포용」 or 「교사 초안」
 Some facts cause harm when wrong. These are **blocking facts**: 정답과 채점 기준 · 제출 마감과 일시 · 신청 자격과 선정 기준 · 비용 · 안전 조건(실험 · 체험 · 급식 · 이동) · 법적 근거와 동의 · 공식 문구(성취기준, 조문). Add any fact a reader would act on without asking.
@@ -55,7 +64,7 @@ Run after the draft, and again on the built file. Any 「아니오」 → fix, t
 | G3 | 전문가의 눈 | the checks in the per-kind 「전문가 점검표」 all pass (the things a 수석교사 · 교감 · 장학사 · 홍보 담당 · 통계 담당 would flag first) |
 | G4 | 구체성 | no sentence survives that would fit another topic unchanged; no filler words from the banned list |
 | G5 | 수준 | a reader at the stated level understands it on first reading, and an adult does not feel talked down to |
-| G6 | 분량 | fits the time / page / screen budget with nothing essential missing |
+| G6 | 분량 · 깊이 | fits the time / page / screen budget with nothing essential missing, and is at least as deep and as well made as what you would produce without the tools (Floor, not ceiling) |
 | G7 | 고유함 | structure was derived from this content; it is not a copy of an example or of the previous output |
 | G8 | 선 | no personal data; third-party material has a basis and a credit; limits and assumptions are stated |
 | G9 | 쓸모 | the user can use it tomorrow without rework: answers included, times stated, 다음 할 일 clear |

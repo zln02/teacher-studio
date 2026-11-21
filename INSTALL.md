@@ -47,7 +47,7 @@ py scripts/setup.py --agent codex
 python3 scripts/setup.py --agent codex
 ```
 
-Claude Code에서는 `codex`를 `claude-code`로 바꾼다. 스킬 8개는 서로 옆 폴더를 찾는 한 묶음이므로 함께 등록한다. 설치기는 새 묶음을 임시 위치에서 확인한 뒤 교체한다. 업데이트할 때는 저장소를 `git pull --ff-only`로 갱신한 뒤 같은 명령을 쓴다.
+Claude Code에서는 `codex`를 `claude-code`로 바꾼다. 스킬 8개는 서로 옆 폴더를 찾는 한 묶음이므로 함께 등록한다. 설치기는 새 묶음을 스킬 폴더 옆의 보통 폴더에서 확인한 뒤 교체한다. Windows에서 2026-11-21 이전 설치기로 Codex에 설치했다면 같은 명령으로 한 번 다시 설치한다(이전 설치는 Codex 보안 상자가 스킬 폴더를 읽지 못할 수 있다). 업데이트할 때는 저장소를 `git pull --ff-only`로 갱신한 뒤 같은 명령을 쓴다.
 
 명령 실행이 불가능하고 사용자 폴더에 쓸 수 있다면 `skills` 안의 `teacher-` 폴더를 모두 해당 사용자 스킬 위치에 복사할 수 있다. 이미 설치한 것이 있으면 먼저 별도 위치에 보관한다.
 

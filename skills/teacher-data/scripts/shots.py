@@ -38,10 +38,30 @@ def main() -> int:
     ap.add_argument("--width", type=int, default=1100)
     ap.add_argument("--mobile", action="store_true")
     a = ap.parse_args()
+    if _no_browser_guard():
+        print("SKIP 화면 그림은 건너뜀 (이 환경에서는 브라우저를 띄울 수 없어요)")
+        return 2
     shoot(a.html, a.out, 390 if a.mobile else a.width, 800 if a.mobile else 900)
     print("OK", a.out)
     return 0
 
 
+def _no_browser_guard() -> bool:
+    """True when no browser can start here (an agent's security box). shared/tools/workdir.py then prints ONE line and makes
+    every screen check below skip at once instead of waiting for each launch to fail."""
+    try:
+        here = Path(__file__).resolve().parent
+        for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+            if (d / "workdir.py").is_file():
+                if str(d) not in sys.path:
+                    sys.path.append(str(d))
+                import workdir
+                return workdir.guard_browser()
+    except Exception:  # noqa: BLE001 - the guard must never stop a build
+        pass
+    return False
+
+
 if __name__ == "__main__":
+    _no_browser_guard()
     sys.exit(main())

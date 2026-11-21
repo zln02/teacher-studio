@@ -22,9 +22,23 @@ import html
 import json
 import re
 import sys
-import tempfile
 import webbrowser
 from pathlib import Path
+
+
+def _load_workdir():
+    """shared/tools/workdir.py: work folders that never need %TEMP% (an agent's security box cannot use tempfile's private folders) + the no-browser probe."""
+    here = Path(__file__).resolve().parent
+    for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+        if (d / "workdir.py").is_file():
+            if str(d) not in sys.path:
+                sys.path.append(str(d))
+            import workdir as _w
+            return _w
+    raise ImportError("shared/tools/workdir.py not found (run tools/sync_shared.py)")
+
+
+workdir = _load_workdir()
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -633,7 +647,7 @@ def main() -> int:
         kind = kind_of(d)
         des = d.get("design") if isinstance(d.get("design"), dict) else {}
         pal_arg = a.palette_from or (des.get("palette_from") if isinstance(des.get("palette_from"), str) else None)
-        path = Path(a.html) if a.html else Path(tempfile.gettempdir()) / "storyboard.html"
+        path = Path(a.html) if a.html else workdir.named("storyboard.html")
         style = choose_style(d, a.style, kind)
         path.write_text(render_html(fr, title, palette(pal_arg), style, device_for(d, kind, a.device), kind, embed=True), encoding="utf-8")
         print("READY " + str(path))

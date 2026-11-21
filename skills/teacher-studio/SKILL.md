@@ -9,6 +9,7 @@ license: Apache-2.0
 The user (often a teacher who cannot code; also anyone: club, family, shop) asks in plain words. You make it, or plan it with them, fast and at commercial quality.
 Answer in the user's language (Korean by default), plain words, no dev terms (`teacher-game/references/teacher-language.md`). Non-class requests are fine: swap grade/subject for purpose, mood, audience, screen.
 Use a matching generator and its checker. Say which checks ran, what could not be checked and whether the requested file was produced.
+**The tools are a floor, not a ceiling** (`shared/content/CONTENT-RULES.md`): they guarantee a file that opens and passes the gate; depth and looks stay your job. Add richer content, drawings and structure whenever you can beat the default (the tool's free fields, or make that part yourself); the user's or your own considered design may replace the tool's look. The gates still apply.
 Run scripts with whichever of `python3` / `python` / `py` exists, or the path `doctor` recorded as `python_path` in `~/.teacher-studio/env.json`; `scripts/run.cmd` (Windows) / `scripts/run.sh` do this lookup: `scripts/run.cmd studio.py doctor`. Use a writable working folder for results. Use the host's active skill list to choose external tools. If the shell cannot run, use the available tools to make and check what you can.
 
 **Make three decisions, in this order. In each list take the FIRST line that matches and stop reading that list.**
@@ -62,8 +63,10 @@ Content quality first: before writing any content read references/content-writin
 - **Yourself, here**: one file = one conversation. No helper agent, no background task, no planning step the user did not ask for. The skill's one build command is the shortcut.
 - **Say the time first** for anything over ~1 minute (「게임 만들고 점검하는 데 2분쯤 걸려요」).
 - **Read little**: the routed skill's SKILL.md, then only the file it names. Never engine or stage sources.
+- **Work folder**: write the spec and by-products in the current folder, never the system temp folder (`TEACHER_STUDIO_TMP` moves our scripts' own).
+- **`NO-BROWSER` line** = no screen can open here (security box). Final: no browser, no installs, no home-made screenshot or page test (.pptx: look at `-sketch-sheet.png` once). `PARTIAL` is then a normal finish: deliver and say 「화면은 직접 열어 확인하지 못했어요」 (`references/studio-details.md` E).
 - **2-fix cap**: a build/check path still failing after 2 fixes -> do it the plain way and say 「도구가 말을 안 들어서, 직접 만드는 방식으로 바꿨어요」.
-- **Fit or step aside**: use a tool only when the request clearly fits it; otherwise row 13.
+- **Fit or step aside**: use a tool only when the request clearly fits it; otherwise row 13. If it fits only after shrinking the request (two things asked, one built), add the missing part yourself and gate it.
 - **Variety**: a fresh look per job; legacy skins are used only when the user names one.
 - **Vague complaints** (「별로야」「이상해」「아까가 나았어」): diagnose yourself, do not interrogate (`references/vague-fix.md`, `scripts/diagnose.py`); 2 fix loops, then options.
 - **Other skills and documents**: use them when they beat our path; log (`scripts/skill_scout.py log`) and end with 「출처: <이름> (<만든 곳>, <라이선스>)」.

@@ -27,7 +27,6 @@ import json
 import re
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
@@ -138,7 +137,8 @@ def transcribe(path: Path, ff: str, start: float, end: float, consent: bool) -> 
         if not ok or not ensure._importable("faster_whisper"):
             return {"ok": False, "segments": [], "prompt": f"자막 도구 설치가 안 됐어요: {err}"}
     from faster_whisper import WhisperModel
-    with tempfile.TemporaryDirectory() as td:
+    import workdir
+    with workdir.temp_dir("subs", near=path) as td:
         wav = Path(td) / "a.wav"
         r = _run([ff, "-hide_banner", "-loglevel", "error", "-y", "-ss", f"{start:.3f}", "-t", f"{end - start:.3f}", "-i", str(path),
                   "-vn", "-ac", "1", "-ar", "16000", str(wav)])

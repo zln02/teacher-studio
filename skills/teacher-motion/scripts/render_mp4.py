@@ -17,7 +17,6 @@ import argparse
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
@@ -28,6 +27,7 @@ try:
     import ensure  # shared/tools/ensure.py
 except ImportError:
     ensure = None
+import workdir  # noqa: E402  (shared/tools/workdir.py: an ordinary staging folder beside the output, never tempfile's private one)
 
 
 def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None, consent: bool = False) -> None:
@@ -50,7 +50,7 @@ def render(page: Path, out: Path, fps: int, max_mb: float, seconds: float | None
         raise SystemExit("ffmpeg not found: use the 🎥 button in the page (Chrome) instead.")
     if fps <= 0 or max_mb <= 0 or (seconds is not None and seconds <= 0):
         raise ValueError("재생 시간, 프레임 수, 최대 크기는 0보다 커야 해요.")
-    with tempfile.TemporaryDirectory(prefix=".teacher-video-", dir=out.parent) as staging:
+    with workdir.temp_dir("video", near=out) as staging:
         video = Path(staging) / "video.mp4"
         duration = _encode(sync_playwright, channel, ffmpeg, page, video, fps, max_mb, seconds)
         if not video.is_file() or video.stat().st_size == 0:
@@ -108,5 +108,22 @@ def main() -> None:
         raise SystemExit(f"영상 파일을 만들지 못했어요. {exc}") from exc
 
 
+def _no_browser_guard() -> bool:
+    """True when no browser can start here (an agent's security box). shared/tools/workdir.py then prints ONE line and makes
+    every screen check below skip at once instead of waiting for each launch to fail."""
+    try:
+        here = Path(__file__).resolve().parent
+        for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+            if (d / "workdir.py").is_file():
+                if str(d) not in sys.path:
+                    sys.path.append(str(d))
+                import workdir
+                return workdir.guard_browser()
+    except Exception:  # noqa: BLE001 - the guard must never stop a build
+        pass
+    return False
+
+
 if __name__ == "__main__":
+    _no_browser_guard()
     main()

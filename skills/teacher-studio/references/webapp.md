@@ -10,8 +10,10 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 2. Write `app.json` from the request (Spec below). Choose the parts from what the user will DO, not from a stock pair:
    - asks questions in words -> `helper` · tries code -> `runner` · changes quantities and watches a result, fills a form, sorts, counts -> `custom` (your own controls)
    - 1 part when one job is enough; 2-3 only when the request has that many jobs. The page layout is picked from the parts (how many, which kinds, how much text), so do not arrange it yourself.
+   - 「직접 해 보며 익히는」「연습」「실험」「시뮬레이션」 = the user DOES things: `custom` parts with real activities. A `helper` question box alone is never the answer to that request.
+   - **Floor, not ceiling** (`shared/content/CONTENT-RULES.md`): a learning program is as deep as a good lesson on that unit. Cover each idea the unit has (for 경우의 수: 수형도·표로 세기, 합의 법칙, 곱의 법칙, 대표 유형) with something to try, practice questions that give the answer and the reason at once, and a harder challenge. Three parts is the builder's limit, not the content's: one `custom` part may hold several activities (your own tabs or steps inside its `html`). If the page you would make by hand is richer than what the parts allow, build it by hand as one offline HTML file and gate it with `check_webapp.py`. The style picked from `words` is a default; the user's `palette`, or one you choose for the topic, replaces it.
    - `../assets/webapp/examples/` holds test fixtures, not patterns for the builder. Open one only to see how a `custom` part wires `html` / `js`; never reuse its questions, its part order or its `words`. A page that repeats one gets the WARN 「예시를 그대로 따라간 것 같아요」.
-3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds and checks. Report `PARTIAL` when checks could not run and `NOT READY` when a check failed.
+3. `py <skill>/scripts/build_webapp.py --spec app.json --out <이름>.html --shot <이름>.png` (`python3` on Mac/Linux). It builds and checks. Report `PARTIAL` when checks could not run and `NOT READY` when a check failed. A `NO-BROWSER` line = no screen can open in this environment: do not try a browser yourself or write your own page test; `PARTIAL` is the normal finish, say the screen was not opened.
 4. FAIL -> fix the spec (shorter labels, a missing `<label>`, `?.`), rebuild. Max 2 fixes, then the plain way (no-regret rule).
 5. Final message: full path, 「더블클릭하면 브라우저에서 열려요」, the check line, the honest-AI line below, 2 tweak offers (예: 「질문 더 넣기」「파이썬 예시로」).
 
@@ -22,6 +24,7 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 4. **Facts are right for the grade**; unsure -> 「확인 필요」. Formulas are shown the way the textbook writes them.
 5. **Readable on the projector**: test with P (projector mode); labels are short enough not to wrap inside buttons.
 6. The honest-AI line and what it can / cannot do (`can`, `cannot`) are written for this app.
+7. **The screen is full of the subject, not of empty space**: after the first click nothing leaves most of the page blank, and repeating an action replaces the last result instead of stacking the same answer again.
 
 ## Spec
 ```

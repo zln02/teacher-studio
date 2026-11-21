@@ -69,7 +69,7 @@ def expected() -> dict[Path, bytes]:
             for f in _files(SHARED / "fonts"):
                 add(f, base / "fonts" / f.relative_to(SHARED / "fonts"))
         if cfg["tools"]:
-            for tool in ("ensure.py", "stamp.py", "example_likeness.py"):
+            for tool in ("ensure.py", "stamp.py", "example_likeness.py", "workdir.py"):
                 add(SHARED / "tools" / tool, base / "tools" / tool)
         if plan_skill in ("teacher-game", "teacher-motion", "teacher-studio", "teacher-class-tools", "teacher-slides"):
             add(SHARED / "tools" / "syntax_check.py", base / "tools" / "syntax_check.py")

@@ -181,7 +181,21 @@ import csv  # noqa: E402
 import html.parser  # noqa: E402
 import shutil  # noqa: E402
 import subprocess  # noqa: E402
-import tempfile  # noqa: E402
+
+
+def _load_workdir():
+    """shared/tools/workdir.py: work folders that never need %TEMP% (an agent's security box cannot use tempfile's private folders) + the no-browser probe."""
+    here = Path(__file__).resolve().parent
+    for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+        if (d / "workdir.py").is_file():
+            if str(d) not in sys.path:
+                sys.path.append(str(d))
+            import workdir as _w
+            return _w
+    raise ImportError("shared/tools/workdir.py not found (run tools/sync_shared.py)")
+
+
+workdir = _load_workdir()
 
 # use -> (audience, Korean label, base use for formats). Teacher names and general names share one format table.
 USES = {
@@ -305,7 +319,7 @@ def conv_pdf(src: Path, dest: Path, yes: bool = False, spec: Path | None = None)
     em = _ensure_mod()
     soffice = em.find_libreoffice() if em else (shutil.which("soffice") or "")
     if soffice:
-        with tempfile.TemporaryDirectory() as td:
+        with workdir.temp_dir("pdf", near=dest) as td:
             subprocess.run([soffice, "--headless", "--convert-to", "pdf", "--outdir", td, str(src)], capture_output=True, timeout=180)
             got = Path(td) / (src.stem + ".pdf")
             if got.exists():
@@ -360,7 +374,7 @@ def conv_pptx(src: Path, dest: Path, yes: bool = False, spec: Path | None = None
     d = _sibling_scripts("teacher-slides")
     if not d:
         return {"ok": False, "error": "슬라이드 도구(teacher-slides)가 없어요"}
-    with tempfile.TemporaryDirectory() as td:
+    with workdir.temp_dir("pptx", near=dest) as td:
         cmd = [sys.executable, str(d / "deck.py"), "--spec", str(spec), "--out", str(Path(td) / "deck.html"), "--pptx", str(dest), "--no-check"]
         if yes:
             cmd.append("--yes")
@@ -586,5 +600,22 @@ def main() -> int:
     return 0
 
 
+def _no_browser_guard() -> bool:
+    """True when no browser can start here (an agent's security box). shared/tools/workdir.py then prints ONE line and makes
+    every screen check below skip at once instead of waiting for each launch to fail."""
+    try:
+        here = Path(__file__).resolve().parent
+        for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+            if (d / "workdir.py").is_file():
+                if str(d) not in sys.path:
+                    sys.path.append(str(d))
+                import workdir
+                return workdir.guard_browser(quiet=True)  # this script rarely needs a browser: the line is printed only where one is needed
+    except Exception:  # noqa: BLE001 - the guard must never stop a build
+        pass
+    return False
+
+
 if __name__ == "__main__":
+    _no_browser_guard()
     sys.exit(main())

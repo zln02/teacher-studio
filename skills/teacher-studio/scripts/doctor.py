@@ -14,7 +14,6 @@ import platform
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 # Windows consoles (cp949) cannot encode emoji/check marks: never crash on output.
@@ -50,9 +49,9 @@ def _writable(folder: Path) -> bool:
     while not parent.exists() and parent != parent.parent:
         parent = parent.parent
     try:
-        with tempfile.TemporaryFile(dir=parent) as probe:
-            probe.write(b"teacher-studio")
-            probe.flush()
+        probe = parent / f".teacher-studio-probe-{os.getpid()}"
+        probe.write_bytes(b"teacher-studio")
+        probe.unlink()
     except OSError:
         return False
     return True

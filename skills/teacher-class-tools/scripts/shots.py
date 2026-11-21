@@ -11,8 +11,22 @@ from __future__ import annotations
 import json
 import re
 import sys
-import tempfile
 from pathlib import Path
+
+
+def _load_workdir():
+    """shared/tools/workdir.py: work folders that never need %TEMP% (an agent's security box cannot use tempfile's private folders) + the no-browser probe."""
+    here = Path(__file__).resolve().parent
+    for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+        if (d / "workdir.py").is_file():
+            if str(d) not in sys.path:
+                sys.path.append(str(d))
+            import workdir as _w
+            return _w
+    raise ImportError("shared/tools/workdir.py not found (run tools/sync_shared.py)")
+
+
+workdir = _load_workdir()
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -36,13 +50,16 @@ LABELS = {"timer": ["시작 전", "끝나기 5초 전", "시간 끝", "세로 �
 
 def main(src: Path, out: Path) -> int:
     from PIL import Image, ImageDraw, ImageFont
+    if workdir.guard_browser():
+        print("SKIP 화면 그림은 건너뜀 (브라우저를 띄울 수 없는 환경)")
+        return 2
     from playwright.sync_api import sync_playwright
     html = src.read_text(encoding="utf-8")
     T = json.loads(re.search(r"window\.TOOL = (\{.*?\});</script>", html, re.S).group(1).replace("<\\/", "</"))
     tool, data = T["tool"], T["data"]
     warn = int(max(0, data.get("minutes", 5) * 60 - 5) * 1000) if tool == "timer" else 0
     shots: list[Path] = []
-    td = Path(tempfile.mkdtemp())
+    td = workdir.make("shots", near=out)
     with sync_playwright() as p:
         b = None
         for kw in ({}, {"channel": "chrome"}, {"channel": "msedge"}):
@@ -99,6 +116,7 @@ def main(src: Path, out: Path) -> int:
         d.text((x, y + 4), f"{T['title']} · {LABELS[tool][k]}", fill=(255, 224, 120), font=font)
         sheet.paste(land[k] if k < 3 else port, (x, y + lab))
     sheet.save(out)
+    workdir.cleanup(td)
     print(f"wrote {out}")
     return 0
 

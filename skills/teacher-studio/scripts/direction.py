@@ -21,9 +21,23 @@ import html
 import json
 import re
 import sys
-import tempfile
 import webbrowser
 from pathlib import Path
+
+
+def _load_workdir():
+    """shared/tools/workdir.py: work folders that never need %TEMP% (an agent's security box cannot use tempfile's private folders) + the no-browser probe."""
+    here = Path(__file__).resolve().parent
+    for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+        if (d / "workdir.py").is_file():
+            if str(d) not in sys.path:
+                sys.path.append(str(d))
+            import workdir as _w
+            return _w
+    raise ImportError("shared/tools/workdir.py not found (run tools/sync_shared.py)")
+
+
+workdir = _load_workdir()
 
 for _s in (sys.stdout, sys.stderr):
     if hasattr(_s, "reconfigure"):
@@ -436,7 +450,7 @@ def main() -> int:
     pal = user_palette(a.palette_from or "saved", _prefs_module())
     d = build(a.request, _prefs_arg(a.prefs), a.seed, pal)
     if a.html or a.open:
-        path = Path(a.html) if a.html else Path(tempfile.gettempdir()) / "teacher-studio-moods.html"
+        path = Path(a.html) if a.html else workdir.named("teacher-studio-moods.html")
         path.parent.mkdir(parents=True, exist_ok=True)
         try:
             pitches = json.loads(a.pitches) if a.pitches else {}

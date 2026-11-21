@@ -31,7 +31,6 @@ import site
 import socket
 import subprocess
 import tarfile
-import tempfile
 import urllib.request
 import sys
 from pathlib import Path
@@ -186,10 +185,9 @@ def ensure_acorn(consent: bool = False) -> dict:
         if hashlib.sha256(data).hexdigest() != ACORN_SHA256:
             raise ValueError("unexpected parser checksum")
         cache.mkdir(parents=True, exist_ok=True)
-        with tempfile.TemporaryDirectory(dir=cache) as tmp:
-            candidate = Path(tmp) / parser.name
-            candidate.write_bytes(data)
-            candidate.replace(parser)
+        candidate = cache / f".{parser.name}.{os.getpid()}.part"  # a plain file beside the target (no private temp folder)
+        candidate.write_bytes(data)
+        candidate.replace(parser)
     except (OSError, ValueError, KeyError, tarfile.TarError):
         return {"ok": False, "path": "", "prompt": "오래된 크롬용 점검 도구를 받지 못했어요."}
     return {"ok": True, "path": str(parser.resolve()), "prompt": ""}

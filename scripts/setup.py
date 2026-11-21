@@ -16,7 +16,7 @@ import argparse
 import shutil
 import subprocess
 import sys
-import tempfile
+import uuid
 from typing import Callable
 from pathlib import Path
 
@@ -49,7 +49,11 @@ def install(agent: str, validate: Callable[[Path], None] | None = None) -> Path:
 
 
 def _install_bundle(dest: Path, validate: Callable[[Path], None] | None) -> None:
-    work = Path(tempfile.mkdtemp(prefix=".teacher-studio-", dir=dest.parent))
+    # An ordinary folder, NOT tempfile.mkdtemp(): on Windows (Python 3.12.4+) mkdtemp makes the folder readable by its
+    # creator only, the skills staged inside keep that after the move, and an agent's security box (Codex) then cannot
+    # read SKILL.md or run the scripts. A plain mkdir inherits the permissions of the skills folder's parent.
+    work = dest.parent / f".teacher-studio-{uuid.uuid4().hex[:8]}"
+    work.mkdir()
     staged, backup = work / "new", work / "previous"
     replaced, activated = [], []
     keep_backup = False

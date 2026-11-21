@@ -7,6 +7,7 @@ license: Apache-2.0
 # 교사 스튜디오 · 게임 (Teacher Studio · Game)
 
 You write ONE short spec (content + mechanic + design direction). The scripts do the engine, the look, the sounds and the checks, so every model gets the same quality.
+**That is the floor, not the ceiling** (`references/advanced.md` F): a plain 4-choice quiz with no picture is the least this skill makes. Something to see in the topic -> draw it (`custom_svg`, `custom_css`); content with a shape -> the mechanic that fits, mixed item kinds; no mechanic carries it (stages that play differently, a picture to tap) -> make the game yourself as one offline HTML file and gate it with `../teacher-studio/scripts/check_webapp.py`. Never a thinner game than you would make without this skill.
 Reply in the user's language (Korean by default), plain words, no dev terms (file, HTML, spec, script -> 「게임 파일」「설계」). The user's own template, colours or question sheet come first.
 Class use is the default; family, club and shop games are welcome with the same tool (`"use": "personal"`). Never refuse them or turn them into a lesson.
 
@@ -24,7 +25,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
    - `CONTENT FIX` (the build stopped before assembling, 1 second) -> fix those questions in the spec, rerun. Add `--ok-content` only when the user gave these exact questions.
    - `WARN` -> leave it unless it names text the user would see cut or covered.
    - `sheet: <png>` -> open that picture ONCE and run the look check below. A problem -> change `design.words` / `seed` / `style` only, rebuild once.
-   - `READY <path>` -> go to step 6. `PARTIAL` -> state the missing checks and offer the generated file when useful. For `FAIL`, fix the listed issues before using the file; use the fallback if two fixes fail.
+   - `READY <path>` -> go to step 6. `PARTIAL` -> state the missing checks and offer the generated file when useful. `NO-BROWSER` printed -> no screen opens here: `PARTIAL` is the normal finish; no browser, no home-made play test; say the screen was not opened. For `FAIL`, fix the listed issues before using the file; use the fallback if two fixes fail.
 6. **Last message, always a real answer** (never 「만드는 중」): full path of the file · 「더블클릭하면 브라우저에서 열려요, F = 전체 화면, ⚙️ = 선생님 메뉴(일시정지·정답 보기·점수 조정)」 · what is inside (문항 수, 팀, 시간) · check result in one line · 2-3 tweaks in plain words (「글자 더 크게」「문제 더 어렵게」「다른 분위기로」).
 
 ## Request -> mechanic (first match)
@@ -37,7 +38,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
 | 빙고 | `bingo` | `{word, clue}`, `grid` 3 or 4 |
 | 주사위 말판·보드게임 | `board` | quiz items, `tiles`, `maxTurns` |
 | 분류·끌어서 넣기 | `sort` | `{q, a}` (`a` = bin name, 2-4 bins) |
-| anything else | closest mechanic; custom code only if the user insists (`references/advanced.md`) | |
+| anything else | closest mechanic if it truly carries the idea, else your own game (`references/advanced.md` C, F) | |
 「복습 게임」 with no type = `quiz` with teams. Pick another mechanic when the content is pairs (용어-뜻 -> `match`) or groups (-> `sort`).
 
 ## Spec fields (a shape, not a sample: every value comes from this request)
@@ -50,7 +51,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
   {"type": "ox", "q": "<참·거짓이 분명한 문장>", "answer": 0, "exp": "<근거>"}
  ]}
 ```
-- Never write colours, fonts or sizes: the tool picks them (12 styles, 10 question layouts picked from the content; leave `design.seed` out: every build is a new look, the printed seed reproduces one). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
+- Colours, fonts and sizes: the tool's pick is the default; the user's design or a look that fits this topic may replace it (`design.style`, `palette_from`, `custom_css`; the check still applies). The tool picks from (12 styles, 10 question layouts picked from the content; leave `design.seed` out: every build is a new look, the printed seed reproduces one). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
 - Family / club / shop: `"use": "personal"`; far screen or elders: `"design": {"large": true}`; student tablets: `"device": "tablet"`; phones: `"device": "phone"`.
 - The user's logo or template colours: `design.palette_from` (`../teacher-studio/references/user-colors.md`).
 

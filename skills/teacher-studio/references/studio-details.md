@@ -50,3 +50,14 @@
 - Reference photo/video: pull 3-4 colours, type feel, layout density, pace; say it in one line; adjust. Never reuse their logos or art. 「이 사이트처럼」 + URL/screenshot -> `learn-from-reference.md` (`ref_analyze.py`).
 - The user's template, logo, PPT/POTX/Word/HWPX/CSS colours come first (`user-colors.md`, `color_from.py` -> spec `design.palette_from`).
 - After building: 1 line what, 1 line how, 2 tweaks. No dev terms.
+
+## E. Inside an agent's security box (Codex and others): work folder and `NO-BROWSER`
+- **Work folder.** Scripts never need the system temp folder. Intermediate files go, in this order, to `$TEACHER_STUDIO_TMP`, `<output folder>/.teacher-studio-work/`, `<current folder>/.teacher-studio-work/`, the system temp folder, `~/.teacher-studio/tmp`; the first that accepts a file is used and the folder is removed afterwards (`shared/tools/workdir.py`). Write your own spec files in the current working folder too.
+- **`NO-BROWSER`.** The box refuses the channel a headless browser needs, so Chrome, Edge and Playwright cannot start whatever you try. A script prints the line once and goes on with the checks that need no browser:
+  | making | what still runs | what is skipped | say |
+  |---|---|---|---|
+  | .pptx | blanks, text fit, shapes inside, empty-looking slides + a rough picture `review/<name>-sketch-sheet.png` (Pillow) | the closer `-approx-sheet.png` | 「밑그림 미리보기로 확인했어요」 |
+  | game · class tool · web app · web deck | static checks (offline, old-Chrome syntax, storage, privacy, structure) -> `PARTIAL` | play-through, overflow, contrast on pixels, screenshots | 「화면은 직접 열어 확인하지 못했어요」 |
+  | HWPX · Word | everything (no browser needed) | - | - |
+  | PDF | nothing: printing needs a browser | the PDF itself | give the `.print.html` and 「Ctrl+P → PDF로 저장」, or run outside the box |
+- Do not spend turns on it: no launching a browser with other flags, no installs, no home-made screenshot, DOM-emulation or drawing script. `TEACHER_STUDIO_NO_BROWSER=1` forces this path anywhere (for a test), `=0` forces a real try.

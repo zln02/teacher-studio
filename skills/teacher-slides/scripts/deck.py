@@ -46,6 +46,10 @@ try:
     import example_likeness  # noqa: E402
 except ImportError:
     example_likeness = None
+try:
+    import workdir  # noqa: E402  (shared/tools: work folders that do not need %TEMP%, the no-browser probe)
+except ImportError:
+    workdir = None
 
 ASSETS = SKILL / "assets" / "deck"
 PURPOSE_ICON = {"학부모 설명회": "heart-handshake", "수업": "graduation-cap", "연수": "lightbulb", "발표": "megaphone", "동아리": "rocket", "개인": "sparkles"}
@@ -317,11 +321,24 @@ def main() -> int:
     a = ap.parse_args()
     spec = json.loads(a.spec.read_text(encoding="utf-8"))
     only = bool(a.pptx_only and a.pptx)
+    scratch = None
     if only and not a.out:  # PowerPoint only: the web page is just a by-product (kept out of the user's folder)
-        import tempfile
-        a.out = Path(tempfile.mkdtemp(prefix="deck-")) / "deck.html"
         if a.pptx == "auto":
             a.pptx = str(a.spec.with_suffix(".pptx"))
+        # an ordinary folder beside the .pptx (never tempfile.mkdtemp: an agent's security box cannot write into those), removed at the end
+        scratch = workdir.make("deck", near=Path(a.pptx)) if workdir else Path(a.pptx).resolve().parent / f".deck-work-{time.strftime('%H%M%S')}"
+        scratch.mkdir(parents=True, exist_ok=True)
+        a.out = scratch / "deck.html"
+    if workdir:
+        workdir.guard_browser()  # no browser in this environment: say it once, skip the screen checks without waiting
+    try:
+        return _run(a, spec, only)
+    finally:
+        if only and scratch is not None:
+            (workdir.cleanup(scratch) if workdir else __import__("shutil").rmtree(scratch, ignore_errors=True))
+
+
+def _run(a, spec, only) -> int:
     out = a.out or OUT_DIR / f"deck-{a.spec.stem}-{time.strftime('%m%d-%H%M%S')}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     ov: dict = {"purpose": a.purpose, "mood": a.mood}

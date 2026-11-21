@@ -23,7 +23,6 @@ import random
 import re
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 for _s in (sys.stdout, sys.stderr):
@@ -43,6 +42,7 @@ for _sub in ("fonts", "vendor", "tools", "design"):
 import embed  # noqa: E402  (shared/fonts/embed.py)
 import system as ds  # noqa: E402  (shared/design/system.py: type, motion, polish layer)
 import inline  # noqa: E402  (shared/vendor/inline.py)
+import workdir  # noqa: E402  (shared/tools/workdir.py: work folders that never need %TEMP%, the no-browser probe)
 from build_game import build  # noqa: E402
 
 
@@ -262,7 +262,7 @@ def assemble(spec: dict, tokens: dict, out: Path) -> tuple[int, dict]:
     if spec.get("custom_css"):  # AI-written extra flair; validated by specs.validate, scanned by check_game like all other css
         css += "\n/* custom_css */\n" + sanitize_css(spec["custom_css"])
     css += "\n/* TS:CSS END */\n"
-    with tempfile.TemporaryDirectory() as td:
+    with workdir.temp_dir("game", near=out) as td:  # beside the output, never tempfile's private folder
         td = Path(td)
         (td / "d.json").write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
         (td / "l.js").write_text(logic, encoding="utf-8")
@@ -401,5 +401,22 @@ def main() -> int:
     return 0
 
 
+def _no_browser_guard() -> bool:
+    """True when no browser can start here (an agent's security box). shared/tools/workdir.py then prints ONE line and makes
+    every screen check below skip at once instead of waiting for each launch to fail."""
+    try:
+        here = Path(__file__).resolve().parent
+        for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+            if (d / "workdir.py").is_file():
+                if str(d) not in sys.path:
+                    sys.path.append(str(d))
+                import workdir
+                return workdir.guard_browser()
+    except Exception:  # noqa: BLE001 - the guard must never stop a build
+        pass
+    return False
+
+
 if __name__ == "__main__":
+    _no_browser_guard()
     sys.exit(main())

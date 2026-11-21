@@ -17,7 +17,6 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -26,6 +25,7 @@ for _p in (SKILL / "shared" / "tools", SKILL.parent.parent / "shared" / "tools")
     if _p.exists():
         sys.path.insert(0, str(_p))
         break
+import workdir  # noqa: E402  (shared/tools/workdir.py: work folders that never need %TEMP%, the no-browser probe)
 
 
 def need(name: str, consent: bool = False) -> None:
@@ -186,16 +186,23 @@ def watermark(src, out, text: str = "DRAFT", alpha: float = 0.18, stamp_pdf=None
     if stamp_pdf is None:
         if any(ord(ch) > 255 for ch in text):
             raise ValueError("한글 워터마크는 stamp_pdf가 필요해요 (doc_html로 만든 한 쪽 PDF)")
-        tmp = Path(tempfile.mkdtemp()) / "stamp.pdf"
+        made = workdir.make("stamp", near=out)
+        tmp = made / "stamp.pdf"
         box = r.pages[0].mediabox
         mini_pdf([{"stamp": text, "alpha": alpha}], tmp, size=(float(box.width), float(box.height)))
         stamp_pdf = tmp
-    stamp = PdfReader(str(stamp_pdf)).pages[0]
-    w = PdfWriter(clone_from=r)
-    for pg in w.pages:
-        pg.merge_page(stamp)
-    with open(out, "wb") as f:
-        w.write(f)
+    else:
+        made = None
+    try:
+        stamp = PdfReader(str(stamp_pdf)).pages[0]
+        w = PdfWriter(clone_from=r)
+        for pg in w.pages:
+            pg.merge_page(stamp)
+        with open(out, "wb") as f:
+            w.write(f)
+    finally:
+        if made is not None:
+            workdir.cleanup(made)
     return Path(out)
 
 
@@ -233,6 +240,11 @@ def _browser_exe() -> str:
 def html_to_pdf(html_path, pdf) -> dict:
     """Print our A4 HTML to PDF: Playwright with the PC's Chrome/Edge (or its own Chromium), else the browser's --print-to-pdf."""
     html_path, pdf = Path(html_path).resolve(), Path(pdf).resolve()
+    blocked = workdir.browser_blocked()
+    if blocked:  # an agent's security box: neither Playwright nor Chrome's own print can start, so do not wait for both to fail
+        workdir.say_no_browser(blocked)
+        return {"ok": False, "how": "", "path": "", "no_browser": True,
+                "error": "이 실행 환경에서는 브라우저를 띄울 수 없어 PDF로 바꾸지 못했어요: 만든 웹 문서를 크롬/엣지에서 열고 Ctrl+P → PDF로 저장 (또는 보안 상자 밖에서 같은 명령을 다시 실행)"}
     channel = ""
     try:
         import ensure
@@ -257,7 +269,7 @@ def html_to_pdf(html_path, pdf) -> dict:
         pass
     exe = _browser_exe()
     if exe:
-        with tempfile.TemporaryDirectory() as prof:
+        with workdir.temp_dir("chrome-profile", near=pdf) as prof:
             subprocess.run([exe, "--headless=new", "--disable-gpu", "--no-pdf-header-footer", f"--user-data-dir={prof}",
                             f"--print-to-pdf={pdf}", html_path.as_uri()], capture_output=True, timeout=120)
         if pdf.exists() and pdf.stat().st_size > 800:

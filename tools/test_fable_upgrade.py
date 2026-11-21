@@ -143,7 +143,8 @@ class LawArticles(unittest.TestCase):
 
 class LeanRecipes(unittest.TestCase):
     def test_skill_files_stay_small_and_name_the_one_command(self):
-        limits = {"teacher-game": 11000, "teacher-law": 7000, "teacher-studio": 15000}
+        # 2026-11 cross-vendor fix: +~900 bytes each for the "floor, not ceiling" rule and the NO-BROWSER line (details live in references/)
+        limits = {"teacher-game": 11900, "teacher-law": 7000, "teacher-studio": 16000}
         for name, cap in limits.items():
             self.assertLess(len((SK / name / "SKILL.md").read_bytes()), cap, name)
         game = (SK / "teacher-game" / "SKILL.md").read_text(encoding="utf-8")

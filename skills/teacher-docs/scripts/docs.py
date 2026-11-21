@@ -269,7 +269,6 @@ def main() -> int:
         return finish(out, r["kind"], spec, a.max_pages, a.min_font)
     if a.cmd == "append":  # one command: build the extra page(s) from a spec and put them at the end of an existing PDF
         import pdf_tools
-        import tempfile
         if a.file.suffix.lower() != ".pdf" or a.out.suffix.lower() != ".pdf":
             print("FIX append는 PDF에 쪽을 붙여요: docs.py append 원본.pdf --spec 신청서.json --out 새파일.pdf")
             return 1
@@ -283,7 +282,7 @@ def main() -> int:
                     print(f"FIX 원본 {n}쪽에 이미 「{spec.get('title')}」가 있어요. 한 번 더 붙이면 같은 쪽이 두 장이 돼요 -> 그 쪽을 새것으로 바꾸려면 --replace-from {n}, "
                           f"그대로 두고 선생님께 「이미 {n}쪽에 있어요」라고 알리려면 아무것도 붙이지 않기, 정말 한 장 더면 --again")
                     return 1
-        with tempfile.TemporaryDirectory() as td:
+        with pdf_tools.workdir.temp_dir("append", near=a.out) as td:
             extra = Path(td) / "extra.pdf"
             r = make(spec, extra, None, a.yes, a.spec.resolve().parent)
             if not r["ok"]:
@@ -363,5 +362,22 @@ def main() -> int:
     return 1
 
 
+def _no_browser_guard() -> bool:
+    """True when no browser can start here (an agent's security box). shared/tools/workdir.py then prints ONE line and makes
+    every screen check below skip at once instead of waiting for each launch to fail."""
+    try:
+        here = Path(__file__).resolve().parent
+        for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+            if (d / "workdir.py").is_file():
+                if str(d) not in sys.path:
+                    sys.path.append(str(d))
+                import workdir
+                return workdir.guard_browser(quiet=True)  # this script rarely needs a browser: the line is printed only where one is needed
+    except Exception:  # noqa: BLE001 - the guard must never stop a build
+        pass
+    return False
+
+
 if __name__ == "__main__":
+    _no_browser_guard()
     raise SystemExit(main())
