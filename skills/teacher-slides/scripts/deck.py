@@ -428,6 +428,11 @@ def _run(a, spec, only) -> int:
             for w_ in pr_["warnings"]:
                 if "줄여" in w_ or "넘쳐" in w_:
                     print("NOTE", w_)
+            if pr_.get("audience") == "young" and not a.template:  # 유치원-초3: the words are read from the back row
+                sm_ = deck_pptx.small_text(px)
+                if sm_:
+                    print("WARN pptx: 저학년 글씨: slide " + ", ".join(str(n_) for n_, _ in sm_) + "에 22pt보다 작은 글이 많아요 (저학년은 24pt 넘게) -> 그 장의 말을 줄이거나"
+                          " (한 칸에 한 줄, 낱말 위주), 칸 수를 줄이거나, 내용을 한 장 더 나눠 크게 (그림의 이름표·옆 칸 설명도 포함)")
             import pptx_check
             ck = pptx_check.check_pptx(px, __import__("placeholders").with_blanks(spec.get("fillins"), spec.get("template_blanks")),
                                        lesson=dctx.context_of(spec) == "class")

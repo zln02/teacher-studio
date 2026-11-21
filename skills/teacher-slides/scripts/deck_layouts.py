@@ -211,7 +211,12 @@ def _named_sides(ctx, a: dict, b_: dict):
     c = ctx.dz["colors"]
     out = []
     for f in meaning.assign(labs, [c["pr"], c["ac"]]):
-        out.append((f, meaning.on(f), _dstyle.mix(c["bg1"], f, 0.2)))
+        pill = f
+        for _ in range(8):  # the label on the pill must pass the page's 4.5:1 gate: a bright red or green is deepened a step at a time
+            if meaning.contrast(meaning.on(pill), pill) >= 4.5:
+                break
+            pill = _dstyle.mix(pill, "#000000" if meaning.on(pill) == "#ffffff" else "#ffffff", 0.08)
+        out.append((pill, meaning.on(pill), _dstyle.mix(c["bg1"], f, 0.2)))
     return out
 
 
@@ -547,6 +552,23 @@ def quiz_side(ctx, it):
     return {"html": "".join(h), "role": "content", "solve": 1}
 
 
+def quiz_set(ctx, it):
+    """Two or three check questions on one slide (a short deck): a row each, its choices side by side; one click marks every answer."""
+    qs = it["questions"]
+    n = len(qs)
+    top, room, gap = 300, 720, 28
+    rh = (room - gap * (n - 1)) / n
+    h = [head(ctx, {**it, "title": it.get("title") or "확인 문제"}, MX, 96, CW, 180, 72, 48)]
+    for i, q in enumerate(qs):
+        y = top + i * (rh + gap)
+        h.append(f'<div class="bx disc" style="left:{MX:.0f}px;top:{y + 8:.0f}px;width:64px;height:64px;font-size:32px">{i + 1}</div>')
+        h.append(T(ctx, q["q"], MX + 88, y, CW - 88, 80, 44, 30, cls="p", va="m", lh=1.15))
+        k = len(q["choices"])
+        h.append(_choices(ctx, {**q, "answer": int(q.get("answer", 0))}, MX + 88, y + 92, CW - 88, int(rh - 96), 34, k, 20))
+    ctx.max_b = max(ctx.max_b, 1)
+    return {"html": "".join(h), "role": "content", "solve": 1}
+
+
 # ===================================================== timeline
 def timeline_rail(ctx, it):
     ev = it["events"][:6]
@@ -760,7 +782,9 @@ REG: dict[str, list] = {
                    ("bars", "bento", bignumbers_bars, lambda it: all(_numval(m["value"]) is not None for m in it["items"]) and min(_numval(m["value"]) for m in it["items"]) >= 0.2 * max(_numval(m["value"]) for m in it["items"]))],
     "quote": [("big", "poster", quote_big, _always), ("side", "editorial", quote_side, _always), ("center", "center", quote_center, _always)],
     "illustration": [("right", "split", illu_right, _always), ("left", "bento", illu_left, _always)],
-    "quiz": [("list", "stack", quiz_list, lambda it: len(it["choices"]) <= 5), ("grid", "bento", quiz_grid, lambda it: len(it["choices"]) <= 4), ("side", "split", quiz_side, _always)],
+    "quiz": [("set", "stack", quiz_set, lambda it: len(it.get("questions") or []) > 1),
+             ("list", "stack", quiz_list, lambda it: len(it["choices"]) <= 5 and not it.get("questions")),
+             ("grid", "bento", quiz_grid, lambda it: len(it["choices"]) <= 4 and not it.get("questions")), ("side", "split", quiz_side, lambda it: not it.get("questions"))],
     "timeline": [("rail", "stack", timeline_rail, lambda it: len(it["events"]) <= 5), ("vertical", "editorial", timeline_vertical, _always)],
     "chart": [("side", "split", chart_side, _always), ("full", "bigtype", chart_full, _always)],
     "math": [("center", "center", math_center, _always), ("split", "split", math_split, _always)],
