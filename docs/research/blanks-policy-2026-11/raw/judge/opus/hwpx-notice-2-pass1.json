@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "hwpx-notice",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-bare",
+  "B": "codex-harness",
+  "C": "claude-bare",
+  "D": "claude-harness"
+ },
+ "result": {
+  "A": {
+   "content": 2,
+   "design": 3,
+   "readability": 4,
+   "fit": 2,
+   "note": "The layout is tidy, with an overview table, preparation checklist and reply slip in a clear order. However, the date, place, travel times and fee are all left as [ ] blanks, so it's really a template and can't be sent without being filled in."
+  },
+  "B": {
+   "content": 4,
+   "design": 3,
+   "readability": 4,
+   "fit": 3,
+   "note": "It gives concrete details: the date (2026. 12. 10.), place, schedule, a 15,000 won fee and the reply deadline. However, the safety guidance is plain running text rather than a list, and the reply slip has no space for the student's class or name, so the school would need to fix it before use."
+  },
+  "C": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 5,
+   "note": "It has the most complete content: a formal greeting and '아래' section, a 7-row summary table, 7 numbered safety notes, a reply deadline, and a full consent form with class, name, health notes and emergency contact. It runs to two pages, but it could be sent almost as is."
+  },
+  "D": {
+   "content": 1,
+   "design": 1,
+   "readability": 1,
+   "fit": 1,
+   "note": "No output file was produced, so this could not be evaluated."
+  },
+  "ranking": [
+   "C",
+   "B",
+   "A",
+   "D"
+  ]
+ },
+ "cost": 0.26356899999999994,
+ "secs": 19,
+ "raw": "{\"A\":{\"content\":2,\"design\":3,\"readability\":4,\"fit\":2,\"note\":\"The layout is tidy, with an overview table, preparation checklist and reply slip in a clear order. However, the date, place, travel times and fee are all left as [ ] blanks, so it's really a template and can't be sent without being filled in.\"},\"B\":{\"content\":4,\"design\":3,\"readability\":4,\"fit\":3,\"note\":\"It gives concrete details: the date (2026. 12. 10.), place, schedule, a 15,000 won fee and the reply deadline. However, the safety guidance is plain running text rather than a list, and the reply slip has no space for the student's class or name, so the school would need to fix it before use.\"},\"C\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":5,\"note\":\"It has the most complete content: a formal greeting and '아래' section, a 7-row summary table, 7 numbered safety notes, a reply deadline, and a full consent form with class, name, health notes and emergency contact. It runs to two pages, but it could be sent almost as is.\"},\"D\":{\"content\":1,\"design\":1,\"readability\":1,\"fit\":1,\"note\":\"No output file was produced, so this could not be evaluated.\"},\"ranking\":[\"C\",\"B\",\"A\",\"D\"]}"
+}

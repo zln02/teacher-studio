@@ -1,0 +1,32 @@
+{
+ "secs": 261,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 6614,
+ "tok": {
+  "input": 1194774,
+  "cached": 1150464,
+  "output": 6614,
+  "reasoning": 218
+ },
+ "turns": 15,
+ "failed_cmds": 2,
+ "is_error": false,
+ "errors": [],
+ "last": "[겨울방학 코딩 캠프 참가 안내문과 신청서.pdf](<C:/Users/User/Downloads/xv-eval-work/blanks/pdf-guide-codex-harness-2/work/겨울방학 코딩 캠프 참가 안내문과 신청서.pdf>)를 현재 폴더에 저장했습니다.\n\nA4 2쪽입니다. 1쪽에는 캠프 일정, 날짜별 활동, 신청 방법을 담았고, 2쪽에는 손으로 작성하는 참가 신청서를 넣었습니다. PDF가 정상적으로 열리는지, 한글 글꼴이 포함됐는지, 두 페이지의 인쇄 배치가 적절한지 확인했습니다.\n\n**배포 전에 실제 정보로 바꿔 넣을 곳**\n\n- **운영** · 우리 학교 중학교 1~2학년 20명, 2027년 1월 11~13일 매일 09:30~12:00, 09:20 집결, 교내 컴퓨터실\n- **활동과 준비물** · 블록 코딩으로 장애물 피하기 게임 만들기, 무료, 학교 컴퓨터 사용, 필기구와 물병 지참\n- **신청과 연락** · 2026년 12월 14~18일 담임 교사에게 제출, 정원 초과 시 추첨과 대기 순번 배정, 12월 22일 결과 안내. 학교명, 발신일과 발신자, 문의 및 변경·취소 연락처도 예시입니다.\n\n중간 작업 파일은 `.camp-build` 폴더에 남아 있습니다. 자동 승인 검토에서 작업 파일 삭제 명령이 차단됐습니다.",
+ "name": "pdf-guide-codex-harness-2",
+ "task": "pdf-guide",
+ "vendor": "codex",
+ "cond": "harness",
+ "run": 2,
+ "file": "겨울방학 코딩 캠프 참가 안내문과 신청서.pdf",
+ "all_files": [
+  ".camp-build\\camp.json",
+  ".camp-build\\render.py",
+  ".camp-build\\겨울방학 코딩 캠프 참가 안내문과 신청서.preview.png",
+  ".camp-build\\겨울방학 코딩 캠프 참가 안내문과 신청서.print.html",
+  "겨울방학 코딩 캠프 참가 안내문과 신청서.pdf"
+ ],
+ "opens": true,
+ "merged": []
+}

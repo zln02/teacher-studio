@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "promo-ppt",
+ "run": 2,
+ "pass_": 1,
+ "mapping": {
+  "A": "codex-bare",
+  "B": "codex-harness",
+  "C": "claude-harness",
+  "D": "claude-bare"
+ },
+ "result": {
+  "A": {
+   "content": 2,
+   "design": 5,
+   "readability": 4,
+   "fit": 3,
+   "note": "A has the most polished look: illustrations, icons, a timeline and a consistent green-and-yellow palette. Its weakness is content: the date, venue, course and sign-up method are all left as blanks like [날짜·시간], so the information is thin and it can't be used without editing."
+  },
+  "B": {
+   "content": 3,
+   "design": 3,
+   "readability": 2,
+   "fit": 3,
+   "note": "B gives concrete details (December 5, the main sports field, a 1.5 km course, free entry, sign up by December 2) and has nice illustrations. The problem is that titles and body text are both small and nearly the same size, so there's no visual hierarchy and it looks unfinished."
+  },
+  "C": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 5,
+   "note": "C is the most complete, with a specific schedule table, course steps, items to bring, prizes, a rain plan and a QR code for sign-up. It can be used almost as is. The dark background and pink are strong, and some cards are a little dense."
+  },
+  "D": {
+   "content": 4,
+   "design": 4,
+   "readability": 4,
+   "fit": 4,
+   "note": "D is a bright, well-organized design that suits a family event. It covers the purpose, a timeline, a choice of two courses, perks and items to bring. However, the date, school name, contact details and other key items are left as ○○ blanks that still need filling in."
+  },
+  "ranking": [
+   "C",
+   "D",
+   "A",
+   "B"
+  ]
+ },
+ "cost": 0.2696482,
+ "secs": 18,
+ "raw": "{\"A\":{\"content\":2,\"design\":5,\"readability\":4,\"fit\":3,\"note\":\"A has the most polished look: illustrations, icons, a timeline and a consistent green-and-yellow palette. Its weakness is content: the date, venue, course and sign-up method are all left as blanks like [날짜·시간], so the information is thin and it can't be used without editing.\"},\"B\":{\"content\":3,\"design\":3,\"readability\":2,\"fit\":3,\"note\":\"B gives concrete details (December 5, the main sports field, a 1.5 km course, free entry, sign up by December 2) and has nice illustrations. The problem is that titles and body text are both small and nearly the same size, so there's no visual hierarchy and it looks unfinished.\"},\"C\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":5,\"note\":\"C is the most complete, with a specific schedule table, course steps, items to bring, prizes, a rain plan and a QR code for sign-up. It can be used almost as is. The dark background and pink are strong, and some cards are a little dense.\"},\"D\":{\"content\":4,\"design\":4,\"readability\":4,\"fit\":4,\"note\":\"D is a bright, well-organized design that suits a family event. It covers the purpose, a timeline, a choice of two courses, perks and items to bring. However, the date, school name, contact details and other key items are left as ○○ blanks that still need filling in.\"},\"ranking\":[\"C\",\"D\",\"A\",\"B\"]}"
+}

@@ -1,0 +1,51 @@
+{
+ "judge": "opus",
+ "task": "promo-ppt",
+ "run": 1,
+ "pass_": 1,
+ "mapping": {
+  "A": "claude-bare",
+  "B": "codex-harness",
+  "C": "claude-harness",
+  "D": "codex-bare"
+ },
+ "result": {
+  "A": {
+   "content": 3,
+   "design": 4,
+   "readability": 4,
+   "fit": 3,
+   "note": "A has a complete structure, including purpose, overview, schedule, benefits and sign-up, with a tidy green-and-yellow layout. The date, venue, course length and contact details are all left as placeholders (○), so they must be filled in before use."
+  },
+  "B": {
+   "content": 4,
+   "design": 5,
+   "readability": 4,
+   "fit": 5,
+   "note": "B uses illustrations and a consistent colour scheme for a warm, polished look. It includes real details such as the date (December 5), times, the sign-up deadline and the sign-up method, so it is nearly ready to use. The course is described only in general terms, and the small labels are hard to read."
+  },
+  "C": {
+   "content": 5,
+   "design": 4,
+   "readability": 4,
+   "fit": 4,
+   "note": "C has the most specific content: 2km and 4km courses, a timetable, a 5,000-won fee, a sign-up period and safety rules. The 'program' table on the packing-list slide is out of place, and the QR code links to an example URL that must be replaced."
+  },
+  "D": {
+   "content": 2,
+   "design": 4,
+   "readability": 3,
+   "fit": 2,
+   "note": "D has attractive illustrations and a calm design. Almost all the key information (school name, date, time, place, sign-up details) is left as [placeholders], and much of the body text is too small."
+  },
+  "ranking": [
+   "B",
+   "C",
+   "A",
+   "D"
+  ]
+ },
+ "cost": 0.2721482,
+ "secs": 20,
+ "raw": "{\"A\":{\"content\":3,\"design\":4,\"readability\":4,\"fit\":3,\"note\":\"A has a complete structure, including purpose, overview, schedule, benefits and sign-up, with a tidy green-and-yellow layout. The date, venue, course length and contact details are all left as placeholders (○), so they must be filled in before use.\"},\"B\":{\"content\":4,\"design\":5,\"readability\":4,\"fit\":5,\"note\":\"B uses illustrations and a consistent colour scheme for a warm, polished look. It includes real details such as the date (December 5), times, the sign-up deadline and the sign-up method, so it is nearly ready to use. The course is described only in general terms, and the small labels are hard to read.\"},\"C\":{\"content\":5,\"design\":4,\"readability\":4,\"fit\":4,\"note\":\"C has the most specific content: 2km and 4km courses, a timetable, a 5,000-won fee, a sign-up period and safety rules. The 'program' table on the packing-list slide is out of place, and the QR code links to an example URL that must be replaced.\"},\"D\":{\"content\":2,\"design\":4,\"readability\":3,\"fit\":2,\"note\":\"D has attractive illustrations and a calm design. Almost all the key information (school name, date, time, place, sign-up details) is left as [placeholders], and much of the body text is too small.\"},\"ranking\":[\"B\",\"C\",\"A\",\"D\"]}"
+}

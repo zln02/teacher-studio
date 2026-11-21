@@ -1,0 +1,36 @@
+{
+ "secs": 224,
+ "timed_out": false,
+ "cost": 0.34596020000000005,
+ "out_tok": 6250,
+ "turns": 17,
+ "is_error": false,
+ "last": "겨울방학 코딩 캠프 안내문(1쪽)과 신청서(2쪽)를 한 개의 PDF로 만들어 지금 폴더에 저장했습니다.\n\n**파일**: `C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\xv3\\runs\\pdf-guide-claude-harness-2\\work\\겨울방학_코딩캠프_안내문_신청서.pdf`\n\n미리보기 그림(`.preview.png`)과 수정용 원본(`camp.json`)도 같은 폴더에 있습니다. PDF는 A4 2쪽이라 양면 인쇄해서 쓰시면 됩니다.\n\n**점검 결과**: 자동 점검은 전부 통과했습니다.\n- 빈칸·자리표시 글자, 날짜·시간 형식, 띄어쓰기, 글꼴 포함 여부, 쪽수 2쪽, 가장 작은 글자 9pt를 확인했습니다.\n- 미리보기 그림도 한 번 열어 봤습니다. 처음에는 신청서 서명란에 날짜가 두 번 나와서 고쳤습니다.\n- 인쇄했을 때의 실제 모양은 직접 확인하지 못했습니다.\n\n**내용**\n- **1쪽 안내문**: 한눈에 보기 상자, 5일 일정표, 신청 방법과 선발(정원 초과 시 추첨·대기), 준비물과 취소, 알아 둘 점, 문의 순서입니다.\n- **2쪽 신청서**: 학년·반·번호, 학생 이름, 보호자 성함·연락처, 참가 여부, 이전 코딩 경험, 귀가 방법, 건강 유의 사항, 하고 싶은 말, 개인정보 이용 문구, 서명과 「학교장 귀하」를 넣었습니다.\n\n**바꿔 넣을 곳** (말씀하신 내용이 없어서 제가 예시로 채운 값입니다. PDF 맨 아래에도 예시라는 한 줄이 들어 있습니다.)\n- 캠프 기간 2027. 1. 4.(월)∼1. 8.(금), 09:30∼12:00\n- 신청 마감 2026. 12. 18.(금), 결과 발표 2026. 12. 22.(화), 취소 마감 2026. 12. 31.(목)\n- 정원 24명, 대상 3∼6학년\n- 장소: 컴퓨터실\n- 참가비 없음(간식·교재는 학교 준비), 준비물\n- 학교 대표전화 번호\n- 일정표의 주제와 활동\n- 안내문 발송일 2026. 11. 23.\n\n참가비 없음, 사진 사용 문구, 신청서의 개인정보 이용 문구는 학교 규정과 맞는지 한 번 확인해 주세요.\n\n글자 크기나 분위기, 학교 이름·날짜 같은 내용은 말씀만 하시면 바로 바꿔서 다시 만들어 드립니다.",
+ "denials": [
+  [
+   "Bash",
+   "cd \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-07218752ac6e/scratchpad/cfg-harness3/skills/teacher-docs/assets/examples\" && ls && cat *guide*.json | head -60"
+  ],
+  [
+   "PowerShell",
+   "$s=\"C:\\Users\\User\\AppData\\Local\\Temp\\claude\\30da2aaa5cef6c30\\c8098317-2fbb-4131-bf8f-07218752ac6e\\scratchpad\\cfg-harness3\\skills\\teacher-docs\\scripts\\docs.py\"; py $s make --spec camp.json --out 겨울방학_코"
+  ],
+  [
+   "Bash",
+   "sed -i 's/\"sign\": \"2026년   월   일      보호자:               (서명)\"/\"sign\": \"보호자:               (서명)\"/' camp.json && py \"C:/Users/User/AppData/Local/Temp/claude/30da2aaa5cef6c30/c8098317-2fbb-4131-bf8f-072"
+  ]
+ ],
+ "name": "pdf-guide-claude-harness-2",
+ "task": "pdf-guide",
+ "vendor": "claude",
+ "cond": "harness",
+ "run": 2,
+ "file": "겨울방학_코딩캠프_안내문_신청서.pdf",
+ "all_files": [
+  "camp.json",
+  "겨울방학_코딩캠프_안내문_신청서.pdf",
+  "겨울방학_코딩캠프_안내문_신청서.preview.png"
+ ],
+ "opens": true,
+ "merged": []
+}

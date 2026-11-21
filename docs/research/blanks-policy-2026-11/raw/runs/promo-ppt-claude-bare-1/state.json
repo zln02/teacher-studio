@@ -1,0 +1,33 @@
+{
+ "secs": 90,
+ "timed_out": false,
+ "cost": 0.35323950000000004,
+ "out_tok": 1733,
+ "turns": 2,
+ "is_error": false,
+ "last": "6장짜리 가족 걷기 대회 홍보 PPT를 만들어서 현재 폴더에 저장했습니다.\n\n**파일:** `가족걷기대회_홍보.pptx`\n\n구성은 아래 순서입니다.\n1. 표지\n2. 대회 취지\n3. 행사 개요\n4. 프로그램 일정\n5. 참가 혜택·준비물\n6. 신청 안내·문의\n\n디자인은 초록·하늘·노랑 색 조합에 맑은 고딕 글꼴을 썼습니다. 제목은 40pt 이상, 본문은 20pt 이상입니다.\n\n이 환경에는 LibreOffice가 없어서 슬라이드를 이미지로 확인하지는 못했습니다. 글자 줄 수를 계산해서 넘침이 없는지만 확인했으니, PowerPoint에서 한 번 열어 보시길 권합니다.\n\n학교 정보를 몰라서 아래 항목은 직접 채워 주셔야 합니다.\n- **일시:** \"○월 ○일(토) 오전 9시\"로 적어 뒀습니다(1·3장). 요일이 다르면 고쳐 주세요.\n- **장소:** \"○○초등학교 운동장\"으로 적어 뒀습니다(1·3장).\n- **코스:** \"약 ○km (○○분 소요)\"입니다(3장).\n- **신청 방법과 기한:** 방법은 가정통신문 신청서 제출로 가정해서 적었고, 기한은 \"○월 ○일(○)까지\"입니다(6장).\n- **문의처:** 담당 교사 이름과 전화번호 자리입니다(6장).\n- **프로그램 시간:** 4장의 09:00~12:00 시간은 제가 예시로 넣은 것이라 빈칸 표시가 없습니다. 실제 일정과 맞는지 꼭 확인해 주세요.",
+ "denials": [
+  [
+   "PowerShell",
+   "python -c \"import pptx;print(pptx.__version__)\"; Get-Command soffice -ErrorAction SilentlyContinue | Select Source; Test-Path \"C:\\Program Files\\LibreOffice\\program\\soffice.exe\""
+  ],
+  [
+   "PowerShell",
+   "python -c \"import pptx;print(pptx.__version__)\"; Get-Command soffice -ErrorAction SilentlyContinue | Select Source"
+  ],
+  [
+   "Bash",
+   "mkdir -p /tmp/ppbuild && cat > /tmp/ppbuild/build.py <<'EOF'\nimport sys\nfrom pptx import Presentation\nfrom pptx.util import Inches, Pt\nfrom pptx.dml.color import RGBColor\nfrom pptx.enum.shapes import "
+  ]
+ ],
+ "name": "promo-ppt-claude-bare-1",
+ "task": "promo-ppt",
+ "vendor": "claude",
+ "cond": "bare",
+ "run": 1,
+ "file": "가족걷기대회_홍보.pptx",
+ "all_files": [
+  "가족걷기대회_홍보.pptx"
+ ],
+ "opens": true
+}

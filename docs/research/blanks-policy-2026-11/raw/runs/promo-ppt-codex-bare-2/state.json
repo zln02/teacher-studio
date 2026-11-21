@@ -1,0 +1,27 @@
+{
+ "secs": 204,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 6634,
+ "tok": {
+  "input": 280242,
+  "cached": 259072,
+  "output": 6634,
+  "reasoning": 460
+ },
+ "turns": 6,
+ "failed_cmds": 0,
+ "is_error": false,
+ "errors": [],
+ "last": "[우리 학교 가족 걷기 대회.pptx](<C:/Users/User/Downloads/xv-eval-work/blanks/promo-ppt-codex-bare-2/work/우리 학교 가족 걷기 대회.pptx>)를 현재 폴더에 저장했습니다.\n\n가족이 공원을 걷는 일러스트를 넣은 표지와 행사 안내, 당일 진행, 준비물, 안전 수칙, 참가 신청까지 총 6장입니다.\n\n배포 전에 대괄호로 표시한 학교명, 일시, 집결 장소, 코스, 우천 시 안내, 신청 및 문의 정보를 채워 주세요. 모두 파워포인트에서 바로 수정할 수 있습니다.",
+ "name": "promo-ppt-codex-bare-2",
+ "task": "promo-ppt",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "우리 학교 가족 걷기 대회.pptx",
+ "all_files": [
+  "우리 학교 가족 걷기 대회.pptx"
+ ],
+ "opens": true
+}

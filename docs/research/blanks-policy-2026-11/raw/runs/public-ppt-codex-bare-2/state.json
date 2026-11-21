@@ -1,0 +1,27 @@
+{
+ "secs": 237,
+ "timed_out": false,
+ "cost": null,
+ "out_tok": 9499,
+ "tok": {
+  "input": 218850,
+  "cached": 200064,
+  "output": 9499,
+  "reasoning": 798
+ },
+ "turns": 6,
+ "failed_cmds": 1,
+ "is_error": false,
+ "errors": [],
+ "last": "교육지원청 보고용 PowerPoint를 9장으로 만들어 현재 폴더에 저장했습니다. 사업 추진 내용, 잔반량 변화 그래프, 실적 산출 근거, 향후 운영 계획을 담았습니다.\n\n[2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx](<C:/Users/User/Downloads/xv-eval-work/blanks/public-ppt-codex-bare-2/work/2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx>)\n\n실제 사업 자료가 없어 실적 수치와 운영 사례는 예시로 표시했습니다. 제출 전 학교명과 보고일을 입력하고, 예시를 학교의 계량일지와 운영 기록에 맞게 교체해야 합니다.",
+ "name": "public-ppt-codex-bare-2",
+ "task": "public-ppt",
+ "vendor": "codex",
+ "cond": "bare",
+ "run": 2,
+ "file": "2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx",
+ "all_files": [
+  "2026학년도 학교 급식 잔반 줄이기 사업 운영 결과.pptx"
+ ],
+ "opens": true
+}
