@@ -280,6 +280,8 @@ def main() -> int:
     if il_js:
         assets_js = assets_js.rstrip("}") + ("," if assets_js.strip() != "{}" else "") + json.dumps(il_js)[1:]
     cine_css = cine_css + "\n" + il_css
+    if a.skin == "e" and (HERE / "illust-e").exists():   # E 바탕 · 그림 (illust-e/<이름>.jpg → [data-il="<이름>"])
+        cine_css += "\n" + "\n".join('[data-il="%s"]{background-image:url(%s)}' % (p.stem, data_uri(p)) for p in sorted((HERE / "illust-e").glob("*.jpg")))
     import base64 as _b64
     pup = {p.stem: "data:image/webp;base64," + _b64.b64encode(p.read_bytes()).decode() for p in sorted((HERE / "puppet").glob("*.webp"))} if 'data-scene="robot"' in slides else {}
     js = js.replace("/*__PUPPET__*/{}", json.dumps(pup))

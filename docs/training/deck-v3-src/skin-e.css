@@ -4,8 +4,12 @@
    큰 글자 장면 · 펜 주석(파랑 · 빨강) · 단계 알약 · 낱말 밝히기 · HUD 틀 · 7 앱 화면 · 8 주방
    바탕 석판 · 주황 하나 · 청록(하네스)은 스킨 D 그대로
    ===================================================================== */
-:root{--e-red:#ff6b62;--e-blue:#6ea8ff;--e-tick:rgba(238,241,245,.16);--e-kshade:rgba(22,26,32,.82)}
-html.light{--e-red:#d63b33;--e-blue:#2a63d6;--e-tick:rgba(22,26,32,.18);--e-kshade:rgba(244,245,247,.86)}
+/* 공통 색 (레퍼런스 영상에서 뽑음): 먹 #121214 · 종이 #F0EDE6 · 주홍 #E4502F(강조 하나) · 코발트 #3338F0(하네스 AI · 펜, 먹 위 글자는 #6F74FF) · 회색 #8E8E92 · 라임 #D8E46C(정답 표시만)
+   대비: 먹 위 본문 #F0EDE6 16:1 · 회색 5.7:1 · 코발트 글자 #6F74FF 5.0:1 · 주홍 4.9:1 / 종이 위 회색 글자 #5c5c61 5.7:1 · 코발트 6.1:1 · 주홍은 큰 글자만(3.3:1) */
+:root{--d-bg:#121214;--d-bg2:#161618;--d-surf:#1a1a1d;--d-surf2:#212125;--d-line:#2b2b30;--d-line2:#3d3d43;--d-ink:#F0EDE6;--d-sub:#bdbab4;--d-mute:#8E8E92;--d-acc:#E4502F;--d-accbg:rgba(228,80,47,.13);--d-cool:#6F74FF;--d-coolbg:rgba(111,116,255,.14);--d-dot:rgba(240,237,230,.045);--d-glow:rgba(228,80,47,.07);--v-on:#121214;--v-brick:#2a2a2f;--v-brick2:#202024;--e-red:#ff6a4a;--e-blue:#8a8eff;--e-lime:#D8E46C;--e-tick:rgba(240,237,230,.16);--e-kshade:rgba(18,18,20,.8);--e-scrim:rgba(18,18,20,.62);--v-bg:var(--d-bg);--v-bg2:var(--d-bg2);--v-card:var(--d-surf);--v-card2:var(--d-surf2);--v-line:var(--d-line);--v-ink:var(--d-ink);--v-sub:var(--d-sub);--v-acc:var(--d-acc);--v-cool:var(--d-cool);--c-bg:var(--d-surf);--c-bg2:var(--d-surf);--c-line:var(--d-line);--c-hi:none;--c-shadow:none;--c-r:12px;--ink:var(--d-ink);--sub:var(--d-sub);--acc:var(--d-acc);--warm:var(--d-acc)}
+html.light,.slide.v3.e-paper{--d-bg:#F0EDE6;--d-bg2:#e9e5dc;--d-surf:#f7f5f0;--d-surf2:#ebe7df;--d-line:#d6d1c6;--d-line2:#bdb7ab;--d-ink:#121214;--d-sub:#3d3d42;--d-mute:#5c5c61;--d-acc:#E4502F;--d-accbg:rgba(228,80,47,.1);--d-cool:#3338F0;--d-coolbg:rgba(51,56,240,.08);--d-dot:rgba(18,18,20,.06);--d-glow:rgba(228,80,47,.06);--v-on:#ffffff;--v-brick:#e3ded4;--v-brick2:#d8d2c6;--e-red:#E4502F;--e-blue:#3338F0;--e-lime:#9aa82a;--e-tick:rgba(18,18,20,.18);--e-kshade:rgba(240,237,230,.86);--e-scrim:rgba(240,237,230,.7);--v-bg:var(--d-bg);--v-bg2:var(--d-bg2);--v-card:var(--d-surf);--v-card2:var(--d-surf2);--v-line:var(--d-line);--v-ink:var(--d-ink);--v-sub:var(--d-sub);--v-acc:var(--d-acc);--v-cool:var(--d-cool);--c-bg:var(--d-surf);--c-bg2:var(--d-surf);--c-line:var(--d-line);--c-hi:none;--c-shadow:none;--c-r:12px;--ink:var(--d-ink);--sub:var(--d-sub);--acc:var(--d-acc);--warm:var(--d-acc)}
+html.light .slide.v3.e-ink{--d-bg:#121214;--d-bg2:#161618;--d-surf:#1a1a1d;--d-surf2:#212125;--d-line:#2b2b30;--d-line2:#3d3d43;--d-ink:#F0EDE6;--d-sub:#bdbab4;--d-mute:#8E8E92;--d-acc:#E4502F;--d-accbg:rgba(228,80,47,.13);--d-cool:#6F74FF;--d-coolbg:rgba(111,116,255,.14);--d-dot:rgba(240,237,230,.045);--d-glow:rgba(228,80,47,.07);--v-on:#121214;--v-brick:#2a2a2f;--v-brick2:#202024;--e-red:#ff6a4a;--e-blue:#8a8eff;--e-lime:#D8E46C;--e-tick:rgba(240,237,230,.16);--e-kshade:rgba(18,18,20,.8);--e-scrim:rgba(18,18,20,.62);--v-bg:var(--d-bg);--v-bg2:var(--d-bg2);--v-card:var(--d-surf);--v-card2:var(--d-surf2);--v-line:var(--d-line);--v-ink:var(--d-ink);--v-sub:var(--d-sub);--v-acc:var(--d-acc);--v-cool:var(--d-cool);--c-bg:var(--d-surf);--c-bg2:var(--d-surf);--c-line:var(--d-line);--c-hi:none;--c-shadow:none;--c-r:12px;--ink:var(--d-ink);--sub:var(--d-sub);--acc:var(--d-acc);--warm:var(--d-acc)}
+
 
 /* ---- 큰 글자 장면 ---- */
 .v3 .e-big{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:8;visibility:hidden;pointer-events:none;padding-bottom:20px}
@@ -150,3 +154,76 @@ html.reduced .v3 .e-ev .e-w{transition:none}
 .who.v3 .flow2 p{font-size:38px}
 .who.v3 .eqbar span{font-size:36px}
 .kitchen1.v3 .hxpunch p{color:var(--d-ink)}
+
+/* ---- 장면 바탕 (역할별 한 벌 · 같은 색 보정 · 같은 빛 방향): data-e-bg = A 밤의 주방 · B 작업실 · C 추상 빛 ---- */
+#stage{background:var(--d-bg)}
+.slide.v3{color:var(--d-ink)}
+.slide.v3 .e-scene{position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;pointer-events:none}
+.slide.v3 .e-scene:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--d-bg) 0%,var(--e-scrim) 46%,rgba(0,0,0,0) 100%),linear-gradient(0deg,var(--d-bg) 0%,rgba(0,0,0,0) 30%)}
+.slide.v3[data-e-bg="A"] .e-scene{opacity:.8}
+.slide.v3[data-e-bg="B"] .e-scene{opacity:.55}
+.slide.v3[data-e-bg="C"] .e-scene{opacity:.7}
+html.light .slide.v3:not(.e-ink) .e-scene,.slide.v3.e-paper .e-scene{display:none}
+.slide.v3.e-0 .e-scene{opacity:0!important}
+/* 큰 글자 장면: 바탕은 평평하게 + 오른쪽 위에서 은은한 빛 하나 */
+.slide.v3.e-0{background:radial-gradient(1100px 700px at 78% 12%,var(--d-glow),rgba(0,0,0,0) 70%),var(--d-bg)!important}
+
+/* ---- 카드 체계 (6가지): 평평 · 가는 선 1.5px · 그림자 없음 · 모서리 12px ---- */
+.v3 .nt,.v3 .tb,.v3 .card,.v3 .ask,.v3 .eqbar,.v3 .typebox,.v3 .prompt,.v3 .scr,.v3 .seg,.v3 .menu li,.v3 .tips li,.v3 .resp,.v3 .fi .f,.v3 .fi .b,.v3 .hc,.v3 .hxapp,.e-card .e-pic,.e-win{box-shadow:none!important}
+.v3 .nt,.v3 .card,.v3 .eqbar,.v3 .typebox,.v3 .prompt,.v3 .scr,.v3 .tips li,.v3 .resp,.v3 .fi .f,.v3 .fi .b{border-radius:12px!important;border:1.5px solid var(--d-line)!important;background:var(--d-surf)!important}
+/* (2) 단계 카드: 번호는 고정폭 */
+.tips3.v3 .tips li .n{font-family:var(--mono);font-weight:400;font-size:40px;color:var(--d-acc)}
+/* (3) 부탁 카드: 커서 하나 */
+.v3 .ask{border-radius:12px!important;border:1.5px solid var(--d-line2)!important;background:var(--d-surf)!important}
+.v3 .ask:after{content:"";display:inline-block;width:3px;height:1em;margin-left:8px;vertical-align:-.12em;background:var(--d-acc)}
+/* (4) 비교 한 쌍: 가운데 가는 줄 · 하네스 AI = 코발트 */
+.cmp.v3 .pair:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1.5px solid var(--d-line)}
+.cmp.v3 .shot.h .frame{border-color:var(--d-cool)!important}
+.cmp.v3 .shot.h .hd,.floor.v3 .lv.hi .lb{color:var(--d-cool)}
+.floor.v3 .lv.hi .bar{background:linear-gradient(180deg,rgba(51,56,240,.8),rgba(51,56,240,.25))!important}
+/* 14 「이게 하네스!」: 칠한 타일 대신 선 아이콘 틀 · 오늘 순서는 한 줄로 이어진 마디 */
+.storyc.v3 .punch{background:radial-gradient(1100px 700px at 50% 40%,var(--e-scrim),var(--d-bg))!important}
+.storyc.v3 .punch .pi{background:transparent!important;color:var(--d-acc)!important;border:2px solid var(--d-acc);border-radius:12px;width:84px;height:84px}
+.storyc.v3 .punch .pi.r{color:var(--d-cool)!important;border-color:var(--d-cool)}
+.storyc.v3 .seq5{position:relative;gap:0 26px;background:linear-gradient(var(--d-line2),var(--d-line2)) 0 50%/100% 2px no-repeat;padding:0 12px}
+.storyc.v3 .seq5 span{background:var(--d-bg);padding-right:14px;font-family:var(--mono);font-weight:400;font-size:22px;color:var(--d-mute)}
+.storyc.v3 .seq5 b{position:relative;background:var(--d-bg)!important;border:2px solid var(--d-line2)!important;border-radius:12px;font-weight:700;padding:10px 20px}
+.storyc.v3 .stamp i{background:var(--d-bg)!important;color:var(--d-acc)!important;border:2px solid var(--d-acc);box-shadow:none!important;border-radius:12px;font-weight:800}
+.storyc.v3 .stamp.s2 i,.storyc.v3 .stamp.s3 i{color:var(--d-cool)!important;border-color:var(--d-cool)}
+
+/* ---- 허브 도식 (1 · 21) · 하네스 (5): 같은 바탕 위 선 그림 · 선 굵기 하나(2px) · 빛 하나 ---- */
+.v3 .e-hub{position:absolute;pointer-events:none;z-index:3}
+.v3 .e-hub-a{left:1060px;top:190px;width:760px;height:700px;transform:perspective(2000px) rotateY(-12deg) rotateX(3deg);transform-origin:30% 50%}
+.v3 .e-hub-a:before{content:"";position:absolute;left:130px;top:100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(closest-side,var(--d-glow),rgba(0,0,0,0))}
+.v3 .e-wires{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible}
+.v3 .e-wire,.v3 .e-strap{fill:none;stroke:var(--d-line2);stroke-width:2;stroke-dasharray:1}
+.v3 .e-strap{stroke:var(--d-acc)}
+.v3 .e-node{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:180px;height:128px;border:2px solid var(--d-line2);border-radius:12px;background:var(--d-bg);color:var(--d-cool)}
+.v3 .e-node .ic{width:48px;height:48px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.v3 .e-node b{font-size:28px;font-weight:700;letter-spacing:-.02em;color:var(--d-ink);white-space:nowrap}
+.v3 .e-node.e-core{width:220px;height:180px;border-color:var(--d-acc);color:var(--d-acc)}
+.v3 .e-node.e-core .ic{width:64px;height:64px}
+.v3 .e-node.e-core b{font-size:38px}
+.v3 .e-node.e-dotcore{width:34px;height:34px;border-radius:50%;border:2px solid var(--d-acc);background:var(--d-bg);box-shadow:0 0 0 10px var(--d-accbg)}
+.v3 .e-run{position:absolute;left:0;top:0;width:12px;height:12px;border-radius:50%;background:var(--d-acc);opacity:0;z-index:2}
+.cover.v3.e-0 .e-hub{visibility:hidden}
+.made3.v3 .hero{z-index:4}
+.reveal.v3{background:radial-gradient(1000px 640px at 50% 30%,var(--d-glow),rgba(0,0,0,0) 70%),var(--d-bg)!important}
+.reveal.v3 .e-rv{position:absolute;left:120px;right:120px;top:170px;text-align:center;z-index:3}
+.reveal.v3 .e-rvh{margin:0 auto;width:fit-content;font-size:300px;font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--d-ink)}
+.reveal.v3 .e-rvs{margin-top:26px;font-family:var(--mono);font-size:30px;letter-spacing:.6em;color:var(--d-mute)}
+.reveal.v3 .e-hub-rv{left:0;top:0;width:1920px;height:1080px}
+.reveal.v3 .e-hub-rv .e-node{width:200px}
+
+/* ---- 그림 한 점 (spot): 같은 화풍(평평한 포스터 · 공통 색) · 왼쪽은 바탕으로 스며들게 ---- */
+.v3 .e-spot{position:absolute;right:96px;bottom:110px;width:880px;height:495px;z-index:1;background-size:cover;background-position:right center;pointer-events:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 40%);mask-image:linear-gradient(90deg,transparent 0%,#000 40%)}
+.section.v3 .e-spot{top:150px;bottom:auto;width:820px;height:461px}
+.section.v3 .bigno{display:none}
+.who.v3 .e-spot{top:624px;bottom:auto;right:128px;width:420px;height:236px;border-radius:12px;-webkit-mask-image:none;mask-image:none;background-position:70% center}
+.slide.v3.e-0 .e-spot{opacity:0!important}
+.v3 .e-spot{z-index:0;mix-blend-mode:lighten;right:72px;bottom:96px;width:720px;height:405px}
+.section.v3 .e-spot{top:150px;bottom:auto;width:820px;height:461px}
+.who.v3 .e-spot{mix-blend-mode:normal;top:624px;bottom:auto;right:128px;width:420px;height:236px}
+.wallsl.v3 .wall3{z-index:2}
+html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-image:none;mask-image:none}

@@ -221,11 +221,75 @@
     }
   };
 
+
+  /* ---- 허브 도식 (1 · 21장): 가운데 마디에서 가는 선이 그려져 나가고, 주황 점이 선을 따라 달려 마디에 닿으면 마디가 나타나요 ---- */
+  function hubPrep(h) {
+    if (h.__hub) return h.__hub;
+    var svg = q(h, '.e-wires'), nodes = qa(h, '.e-node'), core = q(h, '.e-core'), W = [];
+    nodes.forEach(function (n) { n.style.left = (+n.getAttribute('data-x') - n.offsetWidth / 2) + 'px'; n.style.top = (+n.getAttribute('data-y') - n.offsetHeight / 2) + 'px'; });
+    var cx = +core.getAttribute('data-x'), cy = +core.getAttribute('data-y');
+    nodes.forEach(function (n) {
+      if (n === core) return;
+      var x = +n.getAttribute('data-x'), y = +n.getAttribute('data-y'), p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      p.setAttribute('d', 'M' + cx + ' ' + cy + ' L' + x + ' ' + y); p.setAttribute('pathLength', '1'); p.setAttribute('class', 'e-wire'); p.style.strokeDasharray = 1;
+      svg.insertBefore(p, svg.firstChild);
+      var dot = emk('i', 'e-run', '', h);
+      W.push({ n: n, p: p, x0: cx, y0: cy, x1: x, y1: y, dot: dot });
+    });
+    h.__hub = { core: core, W: W };
+    return h.__hub;
+  }
+  function hubSet(h, on) {
+    var H = hubPrep(h);
+    show(H.core, on); H.core.style.filter = '';
+    H.W.forEach(function (w) { show(w.n, on); w.n.style.filter = ''; w.p.style.strokeDashoffset = on ? 0 : 1; w.dot.style.opacity = 0; });
+  }
+  function hubDraw(h, at) {
+    var H = hubPrep(h);
+    hubSet(h, false);
+    if (REDUCED) { hubSet(h, true); return; }
+    eIn(H.core, at, { dy: 0, s: 0.85, blur: 8 });
+    H.W.forEach(function (w, i) {
+      var t0 = at + 160 + i * 60;
+      MO.tw(240, t0, 'inout', function (e) {
+        w.p.style.strokeDashoffset = (1 - e).toFixed(4);
+        w.dot.style.opacity = e >= 1 ? 0 : 1;
+        w.dot.style.left = (lerp(w.x0, w.x1, e) - 6).toFixed(1) + 'px'; w.dot.style.top = (lerp(w.y0, w.y1, e) - 6).toFixed(1) + 'px';
+      });
+      eIn(w.n, t0 + 200, { dy: 0, s: 0.9, blur: 8 });
+    });
+  }
+  /* 5 하네스: 큰 글자(음절 떨어지기) → 한 줄(하네스 끈)이 그려지며 다섯 부품이 줄 끝에 붙어요 · 클릭 없음 */
+  FX.eReveal = {
+    enter: function (s) {
+      eHudIn(s, 0);
+      var h = q(s, '.e-rvh'), sub = q(s, '.e-rvs'), hub = q(s, '.e-hub-rv'), strap = q(hub, '.e-strap'), nodes = qa(hub, '.e-node');
+      nodes.forEach(function (n) { n.style.left = (+n.getAttribute('data-x') - n.offsetWidth / 2) + 'px'; n.style.top = (+n.getAttribute('data-y') - n.offsetHeight / 2) + 'px'; });
+      strap.style.strokeDasharray = 1;
+      if (V3DIR < 0 || REDUCED) { eDropSet(h, true); show(sub, true); strap.style.strokeDashoffset = 0; nodes.forEach(function (n) { show(n, true); n.style.filter = ''; }); return; }
+      eDropSet(h, false); sub.style.opacity = 0; strap.style.strokeDashoffset = 1; nodes.forEach(function (n) { n.style.opacity = 0; });
+      eDrop(h, 120);
+      eIn(sub, 420, { dy: 12, blur: 4 });
+      MO.tw(520, 560, 'inout', function (e) { strap.style.strokeDashoffset = (1 - e).toFixed(4); });
+      nodes.forEach(function (n, i) { eIn(n, 760 + i * 60, { dy: 24, s: 0.92, blur: 8 }); });
+    }
+  };
+  /* 21 같이 쓰려고: 표지와 짝 · 글자는 v3made 그대로, 오른쪽 허브가 그려져요 */
+  FX.eMade = {
+    enter: function (s, st) {
+      eHudIn(s, 0);
+      FX.v3made.enter(s, st);
+      var h = q(s, '.e-hub');
+      if (V3DIR < 0 || REDUCED) { hubSet(h, true); return; }
+      hubDraw(h, 120);
+    }
+  };
+
   /* ============ 1 표지: 점 → 선 → 큰 제목(가운데) · 클릭 1에 제목이 제자리로(FLIP) + 3D 카드 ============ */
   function coverFlip(s) { var h1 = q(s, 'h1'), o = eoff(h1, s), w = h1.offsetWidth, hh = h1.offsetHeight, K = 1.62; return { dx: 960 - (o.x + w / 2), dy: 500 - (o.y + hh / 2), k: K, w: w, h: hh }; }
   function coverPrep(s) { if (q(s, '.e-line')) return; emk('i', 'e-line', '', s); eDot(s); var h1 = q(s, 'h1'); MO.split(h1); h1.style.width = 'fit-content'; }
   function coverSet(s) {
-    var h1 = q(s, 'h1'), gl = q(s, '.gl'); h1.style.transform = ''; h1.style.filter = ''; eDropSet(h1, true); eBgOff(gl);
+    var h1 = q(s, 'h1'); h1.style.transform = ''; h1.style.filter = ''; eDropSet(h1, true); hubSet(q(s, '.e-hub'), true);
     q(s, '.e-line').style.opacity = 0; eDot(s).style.opacity = 0;
     [q(s, '.m-rule'), q(s, '.tag'), q(s, '.who')].forEach(function (e) { show(e, true); e.style.filter = ''; });
     q(s, '.m-rule').style.transform = 'scaleX(1)';
@@ -236,24 +300,23 @@
       eInst(function () { FX.v3cover.enter(s, 0); });
       if (st >= 1) { s.classList.remove('e-0'); coverSet(s); return; }
       s.classList.add('e-0');
-      var inst = V3DIR < 0 || REDUCED, h1 = q(s, 'h1'), F = coverFlip(s), d = eDot(s), ln = q(s, '.e-line'), gl = q(s, '.gl');
+      var inst = V3DIR < 0 || REDUCED, h1 = q(s, 'h1'), F = coverFlip(s), d = eDot(s), ln = q(s, '.e-line'), hub = q(s, '.e-hub');
       h1.style.transformOrigin = '50% 50%';
       h1.style.transform = 'translate(' + F.dx.toFixed(1) + 'px,' + F.dy.toFixed(1) + 'px) scale(' + F.k + ')';
       var base = 500 + F.h * F.k / 2 + 26, half = F.w * F.k / 2;
       ln.style.left = (960 - half) + 'px'; ln.style.width = (2 * half) + 'px'; ln.style.top = base + 'px';
       d.style.left = '947px'; d.style.top = (base - 12) + 'px';
-      gl.classList.add('e-bg');
-      if (inst) { eDropSet(h1, true); ln.style.opacity = 1; ln.style.transform = ''; d.style.opacity = 0; gl.style.transform = ''; return; }
+      hubSet(hub, false);
+      if (inst) { eDropSet(h1, true); ln.style.opacity = 1; ln.style.transform = ''; d.style.opacity = 0; return; }
       eDropSet(h1, false); ln.style.opacity = 0;
       MO.tw(ET.inn, 80, 'snap', function (e) { d.style.opacity = 1; d.style.transform = 'scale(' + (e < 1 ? EZ.bounce(e) : 1).toFixed(3) + ')'; });
       MO.tw(240, 300, 'snap', function (e) { ln.style.opacity = 1; ln.style.transform = 'scaleX(' + Math.max(0.012, e).toFixed(4) + ')'; d.style.opacity = 1 - e; });
       eDrop(h1, 420);
-      eDrift(gl, 0);
     },
     step: function (s, st, dir) {
       MO.stop();
       if (dir === -1 || REDUCED) { eInst(function () { FX.eCover.enter(s, st); }); return; }
-      var h1 = q(s, 'h1'), F = coverFlip(s), ln = q(s, '.e-line'), gl = q(s, '.gl'), rule = q(s, '.m-rule'), tag = q(s, '.tag'), who = q(s, '.who'), kk = q(s, ':scope > .hd .kicker');
+      var h1 = q(s, 'h1'), F = coverFlip(s), ln = q(s, '.e-line'), hub = q(s, '.e-hub'), rule = q(s, '.m-rule'), tag = q(s, '.tag'), who = q(s, '.who'), kk = q(s, ':scope > .hd .kicker');
       eDropSet(h1, true); ln.style.opacity = 1; ln.style.transform = ''; eDot(s).style.opacity = 0;
       [rule, tag, who].forEach(function (e) { e.style.opacity = 0; });
       if (kk) kk.style.opacity = 0;
@@ -269,8 +332,7 @@
       }, function () { ln.style.opacity = 0; rule.style.opacity = 1; rule.style.transform = 'scaleX(1)'; });
       if (kk) MO.type(kk, 200);
       eIn(tag, 260, { dy: 24 }); eIn(who, 330, { dy: 24 });
-      eBgLift(gl);
-      if (GL.active && GL.sceneEl === s) GL.active.age = 0;
+      hubDraw(hub, 220);
     }
   };
 
@@ -521,12 +583,7 @@
     }
   };
 
-  /* 3D 「같이 쓰려고 준비했어요」 카드: 따뜻한 호박색 대신 표지와 같은 석판 + 주황 (이 덱만) */
-  setTimeout(function () {
-    if (typeof SCENES === 'undefined' || !SCENES.made) return;
-    var made0 = SCENES.made;
-    SCENES.made = function (a) { var keep = P.amber, S; P.amber = P.dacc; try { S = made0(a); } finally { P.amber = keep; } S.noBg = true; S.scene.background = new THREE.Color(0x161a20); return S; };   // 바탕도 표지처럼 평평한 석판
-  }, 0);
+
 
   /* 처음 한 번: 모든 장에 HUD 틀 · 로봇 요리사 그림 조각 넣기 */
   slides.forEach(function (s) { eHud(s); });
@@ -534,3 +591,12 @@
     [].forEach.call(s.querySelectorAll('img[data-puppet]'), function (im) { var k = im.getAttribute('data-puppet'); if (PUPPET[k]) im.src = PUPPET[k]; });
     [].forEach.call(s.querySelectorAll('[data-puppet-bg]'), function (e) { var k = e.getAttribute('data-puppet-bg'); e.style.backgroundImage = 'linear-gradient(var(--e-kshade),var(--e-kshade))' + (PUPPET[k] ? ',url(' + PUPPET[k] + ')' : ''); });
   }); }, 0);
+
+  /* 장면 바탕 넣기: 장 파일의 data-e-bg (A 밤의 주방 · B 작업실 · C 추상 빛) · 같은 부탁 비교 4장은 B */
+  slides.forEach(function (s) {
+    var bg = s.getAttribute('data-e-bg') || (s.classList.contains('cmp') ? 'B' : '');
+    if (!bg || s.querySelector(':scope > .e-scene')) return;
+    s.setAttribute('data-e-bg', bg);
+    var d = document.createElement('div'); d.className = 'e-scene'; d.setAttribute('data-il', 'e-bg-' + bg.toLowerCase());
+    s.insertBefore(d, s.firstChild);
+  });

@@ -1,0 +1,50 @@
+{
+ "e-bg-a": {
+  "file": "deck-v3-src/illust-e/e-bg-a.jpg",
+  "kind": "bg",
+  "slides": "5, 6, 8, 21 (이야기 · 비유: 밤의 주방)",
+  "prompt": "Slide background, near-black ink #121214 with soft vermilion #E4502F and a little cobalt #3338F0 light, film grain, light from upper right; left 55% dark and calm; no text/logos/people. Scene: a professional restaurant kitchen at night, dim and warm-lit, vermilion-orange pendant lamps on the right, stainless steel counters and hanging pans with faint cobalt reflections, heavily defocused.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 137
+ },
+ "e-bg-b": {
+  "file": "deck-v3-src/illust-e/e-bg-b.jpg",
+  "kind": "bg",
+  "slides": "1, 9, 10~13 (하네스 · 비교: 작업실)",
+  "prompt": "Same base prompt. Scene: an engineer's workshop at night, very subtle: faint blueprint grid on the back wall (lines only, no writing), soft vermilion desk lamp glow on the right, a few tools laid out neatly, faint cobalt glow from an off-frame screen, heavily defocused.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 131
+ },
+ "e-bg-c": {
+  "file": "deck-v3-src/illust-e/e-bg-c.jpg",
+  "kind": "bg",
+  "slides": "2~4, 17~20, 22 (글 많은 장 · 실습: 추상 빛)",
+  "prompt": "Same base prompt. Scene: no objects at all: soft volumetric light beams and gentle bokeh, a very faint thin blueprint grid, calm and minimal, vermilion glow upper right, faint cobalt glow lower left.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 126
+ },
+ "spot-wall": {
+  "file": "deck-v3-src/illust-e/spot-wall.jpg",
+  "kind": "spot",
+  "slides": "3 (진입장벽)",
+  "prompt": "Flat editorial illustration, Swiss poster style, palette ink #121214 / paper #F0EDE6 / vermilion #E4502F / cobalt #3338F0 / grey #8E8E92, the robot chef from the reference image (deck puppet), plain ink background, subject on the right, no text/logos. Scene: the robot chef in front of a tall wall of stacked grey bricks, looking up at it, curious.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 61
+ },
+ "spot-plates": {
+  "file": "deck-v3-src/illust-e/spot-plates.jpg",
+  "kind": "spot",
+  "slides": "9 (같은 부탁, 다른 결과)",
+  "prompt": "Same spot style. Scene: two identical bowls side by side: left plain white rice, right finished kimchi fried rice with a fried egg; the robot chef behind, presenting them.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 57
+ },
+ "spot-tools": {
+  "file": "deck-v3-src/illust-e/spot-tools.jpg",
+  "kind": "spot",
+  "slides": "16 (하네스는 누가)",
+  "prompt": "Same spot style. Scene: a friendly engineer (simple flat figure) hands a neat toolbox to a teacher figure; small tool icons float above the toolbox.",
+  "tool": "Codex CLI image generation (codex exec)",
+  "size_kb": 63
+ }
+}
