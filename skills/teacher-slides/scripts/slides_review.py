@@ -41,6 +41,7 @@ PROBE_JS = r"""
   var sl = document.querySelector('.sl.on'), out = {texts: [], overflow: [], offstage: [], small: [], midword: [], keepall: [], elements: 0, icons: 0, media: false}, st = {w: 1920, h: 1080};
   var scale = document.getElementById('stage').getBoundingClientRect().width / 1920;
   function R(e){ var r = e.getBoundingClientRect(); return [r.left / scale, r.top / scale, r.width / scale, r.height / scale]; }
+  function cssPath(e){ var p = []; while (e && e !== sl){ var i = 1, s = e; while ((s = s.previousElementSibling)) i++; p.unshift(':nth-child(' + i + ')'); e = e.parentElement; } return '#' + sl.id + ' > ' + p.join(' > '); }
   var all = sl.querySelectorAll('*');
   for (var i = 0; i < all.length; i++){
     var e = all[i], cs = getComputedStyle(e);
@@ -61,7 +62,7 @@ PROBE_JS = r"""
       var tr = r; try { var rg0 = document.createRange(); var rs = []; for (var k2 = 0; k2 < e.childNodes.length; k2++) if (e.childNodes[k2].nodeType === 3 && e.childNodes[k2].nodeValue.trim()){ rg0.selectNodeContents(e.childNodes[k2]); var b0 = rg0.getBoundingClientRect(); rs.push(b0); }
         if (rs.length){ var l0 = Math.min.apply(null, rs.map(function(x){ return x.left; })), t0 = Math.min.apply(null, rs.map(function(x){ return x.top; })), r0 = Math.max.apply(null, rs.map(function(x){ return x.right; })), b1 = Math.max.apply(null, rs.map(function(x){ return x.bottom; })); tr = [l0 / scale, t0 / scale, (r0 - l0) / scale, (b1 - t0) / scale]; } } catch (e0) {}
       out.texts.push({t: txt.slice(0, 14), r: tr, fs: parseFloat(cs.fontSize), color: cs.color});
-      if (parseFloat(cs.fontSize) < floor - 0.5) out.small.push([tag, parseFloat(cs.fontSize), txt.slice(0, 14)]);
+      if (parseFloat(cs.fontSize) < floor - 0.5) out.small.push([tag, parseFloat(cs.fontSize), txt.slice(0, 14), cssPath(e)]);
       if (/[가-힣]/.test(txt) && cs.wordBreak !== 'keep-all') out.keepall.push([tag, txt.slice(0, 14)]);
       if (r[0] < safe - 2 || r[0] + r[2] > 1920 - safe + 2 || r[1] < safe - 2 - 24 || r[1] + r[3] > 1080 - safe + 2 + 24){
         if (!/\bon-img\b|\bchip\b|\bpn\b/.test(cls)) out.offstage.push([tag, txt.slice(0, 14), Math.round(r[0]), Math.round(r[1]), Math.round(r[2]), Math.round(r[3])]);
@@ -147,8 +148,26 @@ def _launch(p):
     return None
 
 
-def review(path: Path, out: Path | None, name: str = "") -> dict:
-    """Screenshots + metrics. Returns {"results": [(level, msg)], "slides": [...], "fingerprint": [...]}."""
+FIX_ID = "ts-floor-fix"
+
+
+def floor_fix_css(small: list, floor: int) -> str:
+    """CSS that lifts every too-small text found by the probe to the floor (selectors are the probe's exact element paths)."""
+    sels = sorted({str(x[3]) for x in small if len(x) > 3 and x[3]})
+    return "".join(f"{sel}{{font-size:{floor}px!important;line-height:1.2}}" for sel in sels)
+
+
+def apply_floor_fix(html: str, css: str) -> str:
+    """Put (or replace) the one floor-fix style block before </head>. Idempotent."""
+    import re as _re
+    html = _re.sub(r'<style id="%s">.*?</style>\n?' % FIX_ID, "", html, flags=_re.S)
+    return html.replace("</head>", f'<style id="{FIX_ID}">{css}</style>\n</head>', 1) if css else html
+
+
+def review(path: Path, out: Path | None, name: str = "", fix_small: bool = False) -> dict:
+    """Screenshots + metrics. Returns {"results": [(level, msg)], "slides": [...], "fingerprint": [...]}.
+    fix_small: text under the floor is raised to the floor in the file itself (one style block), then the deck is reviewed again;
+    anything that then overflows is reported as a normal FAIL with the slide number (shorten that slide)."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -189,7 +208,7 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
             clean = None
             if have_px:
                 pg.add_style_tag(content="#__hide *{}")
-                pg.evaluate("(function(){var s=document.createElement('style');s.id='__notext';s.textContent='.sl.on *{color:transparent!important;text-shadow:none!important;-webkit-text-fill-color:transparent!important;-webkit-text-stroke:0!important}.sl.on em{background:none!important;box-shadow:none!important}.sl.on canvas,.sl.on img,.sl.on video{visibility:hidden!important}';document.head.appendChild(s);})()")
+                pg.evaluate("(function(){var s=document.createElement('style');s.id='__notext';s.textContent='.sl.on *{color:transparent!important;text-shadow:none!important;-webkit-text-fill-color:transparent!important;-webkit-text-stroke:0!important}.sl.on em{background:none!important;box-shadow:none!important}.sl.on canvas,.sl.on img,.sl.on video,.sl.on .e-pen{visibility:hidden!important}';document.head.appendChild(s);})()")
                 pg.wait_for_timeout(80)
                 clean = pg.screenshot()
                 pg.evaluate("document.getElementById('__notext').remove()")
@@ -208,8 +227,11 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
                 m["low_contrast"] = low[:3]
             for k in ("small", "overflow", "offstage", "midword", "keepall"):
                 m[k] = info[k][:3]
+            m["_small_all"] = info["small"]
+            m["small"] = [x[:3] for x in info["small"][:3]]
             slides.append(m)
         page_texts = pg.evaluate("[].map.call(document.querySelectorAll('.sl'),function(s){return (s.textContent||'')+' '+(s.getAttribute('data-note')||'')})")
+        all_small = [x for s_ in slides for x in (s_.get("_small_all") or [])]
         fillins = pg.evaluate("(window.DOC.deck||{}).fillins || []")
         b.close()
     # ---- results
@@ -223,7 +245,7 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
 
     try:  # placeholders: [대괄호], 20XX, OO, 000, 학교명 ... FAIL unless the spec listed them as fill-ins
         import placeholders as _ph
-        left = [(i + 1, m) for i, tx in enumerate(page_texts) for m in _ph.leftovers(tx, fillins)]
+        left = [(i + 1, m) for i, tx in enumerate(page_texts) for m in _ph.leftovers(tx.replace(_ph.EXAMPLE_NOTE_DECK, ""), fillins)]
         results.append(("FAIL" if left else "PASS", "no placeholders left (대괄호 빈칸, 20XX, OO, 000, 학교명 ...)" + (f": {left[:8]}" if left else "")))
         listed = _ph.fillin_list(page_texts, fillins)
         if listed:
@@ -235,7 +257,21 @@ def review(path: Path, out: Path | None, name: str = "") -> dict:
         bad = [(s["n"], s[key]) for s in slides if s.get(key)]
         results.append((level if bad else "PASS", label + (f": {[(a, b_[:2]) for a, b_ in bad[:4]]}" if bad else "")))
 
-    agg("small", f"all text >= {floor}px")
+    if fix_small and all_small:  # enlarge, then look again (the second look is the verdict)
+        css = floor_fix_css(all_small, int(floor))
+        path.write_text(apply_floor_fix(path.read_text(encoding="utf-8"), css), encoding="utf-8")
+        again = review(path, out, name, False)
+        where = sorted({s["n"] for s in slides if s.get("small")})
+        again["results"].insert(0, ("FIX", f"작은 글씨 {len(all_small)}곳을 {floor}px로 키웠어요 (장 {where}). 넘치면 그 장의 글을 줄이세요"))
+        return again
+    for s_ in slides:
+        s_.pop("_small_all", None)
+    bad_small = [(s["n"], s["small"]) for s in slides if s.get("small")]
+    if bad_small:
+        results.append(("FAIL", f"all text >= {floor}px: " + "; ".join(f"장 {n}: 「{x[2]}」 {x[1]:.0f}px" for n, xs in bad_small[:4] for x in xs[:2])
+                        + f" -> 고칠 곳: 그 글을 {floor}px 이상으로 (--fix-small 이 자동으로 키워요) 또는 글을 줄이기"))
+    else:
+        results.append(("PASS", f"all text >= {floor}px"))
     agg("overflow", "no text overflow")
     agg("offstage", "everything inside the stage and the 96px safe margin", "FAIL")
     agg("keepall", "keep-all line breaking on Korean text")
@@ -327,6 +363,7 @@ def main() -> int:
     ap.add_argument("--out", type=Path)
     ap.add_argument("--name", default="")
     ap.add_argument("--compare", nargs="+", type=Path)
+    ap.add_argument("--fix-small", action="store_true", help="raise text under the floor to the floor in the file, then review again")
     a = ap.parse_args()
     if a.compare:
         res = compare(a.compare)
@@ -340,7 +377,7 @@ def main() -> int:
         print()
         print("RESULT: PASS (0 fail, 1 warn)")
         return 0
-    r = review(a.deck, a.out, a.name)
+    r = review(a.deck, a.out, a.name, a.fix_small)
     for lv, msg in r["results"]:
         print(f"{lv:4} {msg}")
     fails = sum(1 for lv, _ in r["results"] if lv == "FAIL")

@@ -34,7 +34,7 @@ _OTHER = [
 def _bracket_is_ui(inner: str) -> bool:
     """`[1]`, `[x]`, our own UI hints like `[삽입 > 비디오]` are not blanks."""
     s = inner.strip()
-    return (not s) or s.isdigit() or ">" in s or "삽입" in s or s.lower() in ("x", "enter", "esc", "space")
+    return (not s) or s.isdigit() or ">" in s or "삽입" in s or s.lower() in ("x", "enter", "esc", "space") or s == "예시 값 안내"  # our own note label (EXAMPLE_NOTE_DECK)
 
 
 def find(text: str) -> list[str]:

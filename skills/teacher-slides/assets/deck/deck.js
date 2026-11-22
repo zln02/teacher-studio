@@ -7,10 +7,11 @@ var chrome = document.getElementById("chrome"), pn = chrome.querySelector(".pn")
 function qa(el, s){ return [].slice.call(el.querySelectorAll(s)); }
 function cssVar(n){ return getComputedStyle(document.documentElement).getPropertyValue("--" + n).trim(); }
 function maxStep(sl){ var m = 0; qa(sl, "[data-b]").forEach(function(e){ m = Math.max(m, +e.getAttribute("data-b")); }); return m; }
-function applyStep(sl, k){
+function applyStep(sl, k, still){
   qa(sl, "[data-b]").forEach(function(e){ e.classList.toggle("on", +e.getAttribute("data-b") <= k); });
   var sv = sl.getAttribute("data-solve");
   sl.classList.toggle("solved", sv !== null && k >= +sv);
+  if (window.TSE) TSE.step(sl, k, !!still);   /* preset E motion vocabulary (shared/design/motion_e.js): back / print / static = final state */
 }
 function fitAll(sl){
   qa(sl, "[data-fit]").forEach(function(b){
@@ -24,8 +25,10 @@ function show(i, all){
   cur = i; var sl = slides[i];
   slides.forEach(function(s){ s.classList.remove("on"); });
   void sl.offsetWidth; sl.classList.add("on");
-  var m = maxStep(sl); step = all ? m : 0; applyStep(sl, step);
+  var m = maxStep(sl); step = all ? m : 0;
   fitAll(sl);
+  if (window.TSE && document.body.classList.contains("e-motion")) TSE.hud(sl, i, slides.length);
+  applyStep(sl, step, all);
   /*#chart*/ initCharts(sl); /*#end*/
   /*#math*/ initMath(sl); /*#end*/
   /*#timer*/ initTimer(sl); /*#end*/
@@ -35,7 +38,7 @@ function show(i, all){
   if (location.hash !== "#" + (i + 1)) { try { history.replaceState(null, "", "#" + (i + 1)); } catch (e) {} }
 }
 function next(){ var sl = slides[cur], m = maxStep(sl); if (step < m){ step++; applyStep(sl, step); } else if (cur < slides.length - 1){ show(cur + 1); } else { S.toast("마지막 장이에요"); } }
-function prev(){ var sl = slides[cur]; if (step > 0){ step--; applyStep(sl, step); } else if (cur > 0){ show(cur - 1, true); } }
+function prev(){ var sl = slides[cur]; if (step > 0){ step--; applyStep(sl, step, true); } else if (cur > 0){ show(cur - 1, true); } }
 function setBlack(on){ black.classList.toggle("on", on); }
 /*#timer*/
 function fmt(s){ s = Math.max(0, Math.ceil(s)); var m = Math.floor(s / 60), r = s % 60; return (m < 10 ? "0" : "") + m + ":" + (r < 10 ? "0" : "") + r; }
@@ -123,7 +126,7 @@ function onKey(e){
 }
 function allOn(on){
   document.body.classList.toggle("printing", on);
-  slides.forEach(function(sl){ if (on){ sl.classList.add("on"); applyStep(sl, 99); /*#chart*/ initCharts(sl); /*#end*/ /*#math*/ initMath(sl); /*#end*/ fitAll(sl); } else { sl.classList.remove("on"); } });
+  slides.forEach(function(sl){ if (on){ sl.classList.add("on"); applyStep(sl, 99, true); /*#chart*/ initCharts(sl); /*#end*/ /*#math*/ initMath(sl); /*#end*/ fitAll(sl); } else { sl.classList.remove("on"); } });
   if (!on && cur >= 0) show(cur, true);
 }
 window.addEventListener("beforeprint", function(){ allOn(true); });

@@ -583,7 +583,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         f_ = fill or C["card"]
         # a card the colour of the page is invisible (white on white): it gets a hairline so lists, choices and panels keep their shape
         same = _dg._contrast(f_, C["bg1"]) < 1.07
-        c = rect(s, x, y, w, h, f_, line=C["line"] if (same or dz["lang"]["card"] in ("hair", "chalk", "glass")) else None, lw=1.25 if same else 1.5)
+        c = rect(s, x, y, w, h, f_, line=C["line"] if (same or dz["lang"]["card"] in ("hair", "chalk", "glass", "e")) else None, lw=1.25 if same else 1.5)
         return c
 
     def edge(s, x, y, w, h, c, top=False):

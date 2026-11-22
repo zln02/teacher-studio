@@ -169,6 +169,11 @@ def background(dz: dict, idx: int, role: str) -> str:
                 y = 1080 - (j + 1) * u
                 sq.append(f'<rect x="{x}" y="{y}" width="{u}" height="{u}"/>')
         body.append(f'<g fill="{pr}" fill-opacity="{_op(.22 * s + .06)}">{"".join(sq)}</g>')
+    elif gen == "hud":   # preset E: ink field, a faint 96px blueprint grid on covers, one accent tick (the live HUD corners come from motion_e.js)
+        if big:
+            grid = "".join(f'<path d="M{x} 0V1080"/>' for x in range(96, 1920, 96)) + "".join(f'<path d="M0 {y}H1920"/>' for y in range(96, 1080, 96))
+            body.append(f'<g stroke="{tx}" stroke-opacity=".035" stroke-width="1">{grid}</g>')
+        body.append(f'<rect x="128" y="{1080 - 64}" width="1664" height="1" fill="{tx}" fill-opacity=".12"/><rect x="128" y="{1080 - 68}" width="48" height="5" fill="{pr}"/>')
     elif gen == "minimal":
         body.append(f'<rect x="96" y="{96 if top else 982}" width="1728" height="2" fill="{tx}" fill-opacity=".14"/>')
         if big:

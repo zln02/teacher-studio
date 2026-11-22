@@ -24,6 +24,17 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 7. **Budget**: slide count follows the story and the activities, not a quota. A rough check is one slide per 1.5-3 minutes of talking; activity, discussion and check slides stay up much longer. Cut slides to fit the time; do not shrink text to fit.
 8. **Check the build output against the claims list**, not only the gate: is each claim still the first thing seen on its slide?
 
+## Scene rules (learned from the 2026-11-23 training deck; every context, any style, strongest with preset E)
+- **Big-type opening only on key-message slides.** The syllable drop (`statement`, `title`, `hero`, `section` in preset E) is for the two or three sentences the room must leave with. A list, a table or a chart never opens with big type; if every slide shouts, none does.
+- **One idea per scene.** One claim, one picture or figure, one takeaway. A second idea gets its own slide (or a `panel` when it is evidence for the same claim).
+- **Picture-led over text-only small cards.** Prefer one drawing, diagram, real screen or backdrop with 2-3 large labels to six small text cards. A row of tiny cards that each hold one line is a list pretending to be a design: make it `steps`, a `diagram`, or fewer, larger cards.
+- **Analogy for AI beginners: the real thing first, then the analogy.** Show the actual screen or object (the app window, the real form, the real tool) and point at its parts; only then the picture that explains it (「식당으로 치면 …」). An analogy shown alone leaves the audience unable to find the thing on their own screen.
+- **Do not show N identical boards when one scene with changing labels says it.** Three copies of the same layout with different words = one scene whose label changes on each click (`pills`, the build steps, `pen` notes).
+- **Evidence lines keep exact numbers and their source; no invented claims.** 「92 % → 71 %」 stays 「92 % → 71 %」 with 「자료: …」; never round into a slogan, never add a figure nobody measured. A world fact you cannot check is left out (and named in the last message).
+- **Cursor / 「making-of」 scenes end on a real output and carry no speed claim.** A demo cursor or a drag scene must finish on the actual result (the real screenshot, the real file), never on a mock; and no 「3초 만에」「1분이면」 unless it was timed and the timing is shown as measured.
+- **Pen notes point, they do not explain.** One or two marks per slide (`"pen": [{"mark": "circle", "text": "83%", "note": "목표 초과"}]`), a note of a few words; the explanation stays in the talk or the `takeaway`.
+- **Garnish (고명) last, and only where it helps.** A backdrop or illustration is added after the content passes; dense slides (table, chart, long text) get none (the build skips them and says so); pictures carry no text, logos or real faces, and keep one look across the deck (`shared/design/garnish.py`). A picture must not teach a wrong fact (a light ray drawn against the law it illustrates is cut, not dimmed).
+
 ## By context
 **class**
 - Outline comes from `content-lesson.md` steps 3-9: objectives → evidence → 오개념 → rhythm. Every 5-7 minutes of input is followed by a `quiz` or `activity` slide.

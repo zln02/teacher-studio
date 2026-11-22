@@ -96,6 +96,7 @@ CARD_CSS = {
     "polaroid": ".cd{box-shadow:0 24px 48px -28px rgba(0,0,0,.4);border-radius:8px}",
     "pixel": ".cd{border:4px solid var(--tx);box-shadow:6px 6px 0 var(--tx);border-radius:0}.ch,.tbtn,.vbtn,.chl{border-radius:0}.disc,.dot,.dotb,.chip{border-radius:0}",
     "chalk": ".cd{background:transparent;border:3px dashed var(--line)}",
+    "e": ".cd{background:var(--card);border:1.5px solid var(--line);box-shadow:none;border-radius:12px}",  # preset E: flat, hairline, no shadow
 }
 TITLE_CSS = {
     "rule": "", "glow": "", "stack3d": "", "chalk": "", "plain": "", "serif": "", "underline": "", "stamp": "",
@@ -229,6 +230,12 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         rep["errors"] = ["palette contrast: " + "; ".join(issues)]
         return rep
     prepare(spec, dz)
+    import deck_e  # preset E motion words, pen / pills, garnish (고명)
+    gcss, gassign, gnotes, gerrs = deck_e.garnish_plan(spec, dz, base)
+    rep["warnings"] += gnotes
+    if gerrs:
+        rep["errors"] = gerrs
+        return rep
     picks = pick_layouts(dz, spec["slides"])
     builds_on = (spec.get("design") or {}).get("builds", True) is not False
     parts, css_extra, fp, types = [], [], [], set()
@@ -236,6 +243,8 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         ctx = Ctx(dz, i, builds_on and it.get("build", True) is not False or it["type"] == "quiz")
         res = fn(ctx, it)
         res["html"] = ctxlay.decorate(ctx, it, res, spec)
+        res["html"], enotes = deck_e.dress(res["html"], it, dz, ctx.max_b, ctx.builds)
+        rep["warnings"] += enotes
         sid = f"s{i + 1}"
         fcss, fsvg, probs = dspec.flair(it, sid)
         rep["warnings"] += probs
@@ -251,12 +260,18 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
         types.add(it["type"])
         if it["type"] == "panel" and any(b.get("kind") == "chart" for b in it.get("blocks") or []):
             types.add("chart")
+        scene = f'<div class="e-scene {gassign[i]}" aria-hidden="true"></div>' if i in gassign else ""
         parts.append(f'<section class="sl tr-{dz["lang"]["trans"]}" id="{sid}" data-type="{it["type"]}" data-layout="{layout_id}" data-family="{fam}"{solve}{note}>'
-                     f'{art.background(dz, i, role)}{fsvg}{res["html"]}</section>')
+                     f'{art.background(dz, i, role)}{scene}{fsvg}{res["html"]}</section>')
     js = (ASSETS / "deck.js").read_text(encoding="utf-8")
     for tag, used in (("chart", "chart" in types), ("math", "math" in types), ("timer", "timer" in types)):
         js = re.sub(rf"/\*#{tag}\*/(.*?)/\*#end\*/", (lambda m: m.group(1)) if used else "", js, flags=re.S)
     css = (ASSETS / "deck.css").read_text(encoding="utf-8") + "\n" + ctxlay.CSS + __import__("deck_panel").CSS + style_css(dz) + "\n" + "\n".join(css_extra)
+    e_on = deck_e.uses_motion(spec, dz)
+    if e_on or gassign:
+        css += "\n" + deck_e.css(dz) + "\n" + gcss
+    if e_on:
+        js = deck_e.js() + "\n" + js
     scene = ('<div id="deck">' + "".join(parts) + '</div><div id="chrome"><div class="prog"></div><div class="pn"></div></div><div id="notes"></div><div id="black"></div>')
     import placeholders as ph_
     doc = {"title": spec.get("title") or spec["slides"][0].get("title", "슬라이드"), "skin": "deck",
@@ -267,6 +282,8 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
     size = build_stage.build(doc, js, out, css, libs, True, False, False, scene, True)
     html = out.read_text(encoding="utf-8")
     html = html.replace("</head>", f'<meta name="ts-deck" content="style={dz["style"]};seed={seed}">\n</head>', 1)
+    if deck_e.active(dz):
+        html = html.replace("<body>", '<body class="e-motion">', 1)
     out.write_text(html, encoding="utf-8")
     if (spec.get("seed") is None and seed is not None and avoid is not None) or True:
         try:
@@ -275,7 +292,7 @@ def build_deck(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             RECENT.write_text(json.dumps((hist + [dz["style"]])[-6:]), encoding="utf-8")
         except Exception:
             pass
-    rep.update(ok=True, seed=seed, avoid=list(avoid or []), style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts),
+    rep.update(ok=True, garnish=sorted(set(gassign.values())), seed=seed, avoid=list(avoid or []), style=dz["style"], palette=dz["palette"], fingerprint=fp, size=size, purpose=dz["purpose"], why=dz["why"], slides=len(parts),
                context=dz.get("context", ""))
     return rep
 
@@ -308,10 +325,10 @@ def placeholder_gate(spec: dict):
 
     def walk(v):
         if isinstance(v, str):
-            texts.append(v)
+            texts.append(v.replace(ph.EXAMPLE_NOTE_DECK, ""))  # our own one-line example note (speaker notes) is not a leftover blank
         elif isinstance(v, dict):
             for k, x in v.items():
-                if k not in ("fillins", "file", "url", "palette_from", "seed", "tex"):
+                if k not in ("fillins", "file", "url", "palette_from", "seed", "tex", "garnish"):
                     walk(x)
         elif isinstance(v, list):
             for x in v:
@@ -415,7 +432,7 @@ def _run(a, spec, only) -> int:
         # the page is opened once in a headless browser (a few seconds): without it the result is PARTIAL, never PASS
         code = subprocess.run([sys.executable, str(HERE / "check_page.py"), str(out)]).returncode or code
     if a.review and not only:
-        code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review)]).returncode or code
+        code = subprocess.run([sys.executable, str(HERE / "slides_review.py"), str(out), "--out", str(a.review), "--fix-small"]).returncode or code
     if a.pptx:
         px = out.with_suffix(".pptx") if a.pptx == "auto" else Path(a.pptx)
         import deck_pptx

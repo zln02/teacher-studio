@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Slide style language: spec words -> one of the 12 shared styles + palette + composition rules (deterministic per seed).
+"""Slide style language: spec words -> one of the 13 shared styles + palette + composition rules (deterministic per seed).
 
-The 12 styles come from shared/design/styles.py (same taxonomy as games). Here each style also gets a SLIDE composition language:
+The 13 styles come from shared/design/styles.py (same taxonomy as games). Here each style also gets a SLIDE composition language:
 title treatment, card style, emphasis style, background generator, transition and which layout families it prefers.
 Palettes: the style's own palette, or (seeded) a validated shared/design palette with the same light/dark tone.
 Everything derived from colours is contrast-guarded here (muted text, emphasis colour, marker tints) so the page checker never has to.
@@ -56,6 +56,9 @@ LANG: dict[str, dict] = {
                         prefer={"stack": 4, "split": 3, "editorial": 2, "bento": 1, "poster": 1, "bigtype": 1}),
     "nature-calm": dict(font="sans", tw=700, ls=-0.035, title="underline", card="flat", em="color", bg="bands", trans="fade", rad=20,
                         prefer={"editorial": 3, "stack": 3, "split": 2, "poster": 2, "bento": 1, "bigtype": 1}),
+    # preset E (shared/design/preset_e.py): HUD backdrop, flat hairline cards, big tight type, fast blur-in builds (motion_e.js)
+    "ink-poster": dict(font="sans", tw=800, ls=-0.055, title="plain", card="e", em="color", bg="hud", trans="fade", rad=12,
+                       prefer={"bigtype": 4, "split": 4, "editorial": 3, "poster": 2, "stack": 1, "bento": 1}),
 }
 
 # slides use the style's own (already restrained) palette: the calmer slide-only copies were retired with the neon looks
@@ -64,11 +67,11 @@ SLIDE_PAL: dict[str, dict] = {}
 # what each purpose naturally looks like (weights; a mood word or an explicit style beats these)
 PURPOSE_STYLE = {
     "수업": {"chalk-paper": 3, "nature-calm": 3, "pop-colorful": 3, "pastel-cute": 2, "glass-3d": 3, "anime-cartoon": 2, "minimal-premium": 1, "tv-gameshow": 2, "neon-cyber": 1, "retro-pixel": 1},
-    "연수": {"minimal-premium": 4, "glass-3d": 4, "gold-luxury": 2, "nature-calm": 2, "neon-cyber": 2, "tv-gameshow": 1, "pastel-cute": 1, "chalk-paper": 1},
+    "연수": {"ink-poster": 3, "minimal-premium": 4, "glass-3d": 4, "gold-luxury": 2, "nature-calm": 2, "neon-cyber": 2, "tv-gameshow": 1, "pastel-cute": 1, "chalk-paper": 1},
     "학부모 설명회": {"pastel-cute": 4, "nature-calm": 4, "minimal-premium": 2, "festival-party": 1, "gold-luxury": 1, "glass-3d": 1, "chalk-paper": 1},
-    "발표": {"minimal-premium": 4, "gold-luxury": 3, "glass-3d": 3, "neon-cyber": 2, "nature-calm": 1, "tv-gameshow": 1},
+    "발표": {"ink-poster": 3, "minimal-premium": 4, "gold-luxury": 3, "glass-3d": 3, "neon-cyber": 2, "nature-calm": 1, "tv-gameshow": 1},
     "동아리": {"pop-colorful": 4, "neon-cyber": 3, "anime-cartoon": 3, "retro-pixel": 3, "festival-party": 3, "tv-gameshow": 2, "glass-3d": 2},
-    "개인": {k: 1 for k in STYLES},
+    "개인": {k: 1 for k in style_core.SEEDED},
 }
 # everyday mood words -> style weights (added on top of the purpose weights, x3)
 MOOD_STYLE = {
@@ -93,6 +96,9 @@ MOOD_STYLE = {
     "재미": {"pop-colorful": 2, "anime-cartoon": 2, "tv-gameshow": 2, "festival-party": 2},
     "레트로": {"retro-pixel": 5},
     "칠판": {"chalk-paper": 5},
+    "강렬": {"ink-poster": 4, "pop-colorful": 1},
+    "임팩트": {"ink-poster": 4},
+    "또렷": {"ink-poster": 3, "minimal-premium": 2},
 }
 SUBJECT_STYLE = {
     "과학": {"glass-3d": 2, "nature-calm": 2, "neon-cyber": 1, "chalk-paper": 2},
@@ -206,7 +212,7 @@ def palette_for(style: str, mood: str, seed: int) -> tuple[dict, str]:
     own = dict(STYLES[style]["pal"])
     if style in SLIDE_PAL:  # slides want a calmer base than the game version of this style
         return dict(SLIDE_PAL[style]), style
-    if style in ("minimal-premium", "chalk-paper", "retro-pixel", "tv-gameshow", "anime-cartoon", "neon-cyber"):
+    if style in ("minimal-premium", "chalk-paper", "retro-pixel", "tv-gameshow", "anime-cartoon", "neon-cyber", "ink-poster"):
         return own, style  # these need their signature colours
     data = design_core.load()
     mood_n = design_core.normalize_mood(mood or "", data)
@@ -410,7 +416,7 @@ def resolve(spec: dict, seed: int, avoid: list | None = None) -> dict:
         style, why = pick_style(purpose, words, str(spec.get("subject", "")), seed, str(d.get("style", "")), avoid, context)
     lang = dict(LANG[style])
     pal, pal_name = palette_for(style, mood, seed)
-    hues = topic_hues(spec) if context != "public" and not d.get("style") else None
+    hues = topic_hues(spec) if context != "public" and not d.get("style") and style != "ink-poster" else None  # preset E keeps its one vermilion
     if hues:  # the topic has a colour of its own: the deck takes it (the structure still comes from the style)
         pal, pal_name = topic_palette(hues, bool(STYLES[style]["dark"]), seed, aud), "topic"
     yh = None
