@@ -109,9 +109,11 @@ def ecmp_fill(slides: str) -> str:
                 if (d / (stem + "." + ext)).exists():
                     return d / (stem + "." + ext)
             return None
-        bare, harn, comp = find("bare"), find("harness"), find("compare")
+        bare, harn, comp = find("chat") or find("bare"), find("cowork") or find("harness"), find("compare")
         if bare and harn:
-            b, h = img(bare, "그냥 AI 결과 화면"), img(harn, "하네스 AI 결과 화면")
+            b, h = img(bare, "채팅 결과 화면"), img(harn, "Cowork · Codex 결과 화면")
+        elif harn:
+            b, h = ph.replace("결과 화면 들어갈 자리", "채팅 결과 들어갈 자리"), img(harn, "Cowork · Codex 결과 화면")
         elif comp:
             b, h = img(comp, "그냥 AI와 하네스 AI 결과 화면"), ""
         else:
@@ -122,6 +124,8 @@ def ecmp_fill(slides: str) -> str:
             chips = ["물어본 것 · 들어갈 자리", "고칠 일 · 들어갈 자리", "걸린 시간 · 들어갈 자리"]
         slides = (slides.replace("__ECMP_%s_ASK__" % case, "「%s」" % H.escape(ask.strip("「」")))
                   .replace("__ECMP_%s_bare__" % case, b).replace("__ECMP_%s_harness__" % case, h)
+                  .replace("__ECMP_%s_chat__" % case, b).replace("__ECMP_%s_cowork__" % case, h)
+                  .replace("__ECMP_%s_title__" % case, img(find("title"), "실제로 나온 결과물 예시") if find("title") else "")
                   .replace("__ECMP_%s_CHIPS__" % case, "".join("<span>%s</span>" % H.escape(c) for c in chips[:3]))
                   .replace("__ECMP_%s_NOTE__" % case, H.escape(f.get("note", ""))))
         print("  e-compare", case, "images" if (bare or comp) else "placeholder", "facts" if f else "no facts")

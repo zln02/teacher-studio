@@ -432,6 +432,7 @@
       qa(c, '.e-cr, .e-row, .e-se').forEach(function (e) { show(e, true); e.style.filter = ''; });
       if (cur) q(A, '[data-pin="' + P[i].k + '"]:not(.e-card)').classList.add('e-hl');
     });
+    var al = q(A, '.e-also'); if (al) { show(al, k >= qa(A, '.e-card').length - 1); al.style.filter = ''; }
   }
   FX.eApp = {
     enter: function (s, st) {
@@ -942,4 +943,24 @@
       parts.forEach(function (e, i) { e.style.opacity = 0; eIn(e, 200 + i * 45, { dy: 18, blur: 6 }); });
     },
     step: function (s, st, dir) { MO.stop(); FX.eMission.mark(s, st, dir !== -1 && !REDUCED); }
+  };
+
+  /* ============ 3 진입장벽 → 옛날 이야기 (v5b: 3 · 4장 합침): 클릭 1~4는 v3wall 그대로, 클릭 5에 벽이 흐려지며 내려앉고 「옛날 이야기」 카드 ============ */
+  function wallOld(s, on) {
+    var o = q(s, '.e-old'), w = q(s, '.wall3');
+    show(o, on); o.style.filter = ''; qa(o, 'p').forEach(function (p) { show(p, on); p.style.filter = ''; });
+    w.style.opacity = on ? 0.18 : ''; w.style.filter = on ? 'blur(3px)' : ''; w.style.transform = '';
+  }
+  FX.eWall = {
+    enter: function (s, st) { eHudIn(s, 0); FX.v3wall.enter(s, Math.min(st, 4)); wallOld(s, st >= 5); },
+    step: function (s, st, dir) {
+      if (st <= 4) { FX.v3wall.step(s, st, dir); wallOld(s, false); return; }
+      MO.stop(); v3hd(s, 0, true); FX.v3wall.set(s, 4);
+      if (dir === -1 || REDUCED) { wallOld(s, true); return; }
+      var w = q(s, '.wall3'), o = q(s, '.e-old'), ps = qa(o, 'p');
+      MO.shake(w, 0, 9);
+      MO.tw(260, 200, 'fall', function (e) { w.style.opacity = lerp(1, 0.18, e).toFixed(3); w.style.filter = 'blur(' + (3 * e).toFixed(2) + 'px)'; w.style.transform = 'translateY(' + (30 * e).toFixed(1) + 'px)'; }, function () { w.style.transform = ''; });
+      show(o, true); ps.forEach(function (p) { p.style.opacity = 0; });
+      eIn(ps[0], 380, { dy: 30, blur: 10, dur: 240 }); eIn(ps[1], 560, { dy: 16 });
+    }
   };

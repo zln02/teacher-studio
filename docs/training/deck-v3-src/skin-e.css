@@ -434,3 +434,49 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .tips3.v3 .next{left:128px;right:auto;top:752px;width:1180px;font-size:26px}
 .tips3.v3 .next b{display:inline;margin:0 14px 0 0}
 .tips3.v3 .e-where li{font-size:21px;white-space:nowrap}
+
+/* ================= v5: 채팅 vs Cowork · Codex · 작은 하네스 ================= */
+.ecmp.v3 .e-pair{height:456px}
+.ecmp.v3 .e-chips{top:836px;gap:10px 14px}
+.ecmp.v3 .e-chips span{font-size:26px;padding:6px 16px}
+.use3.v3 .e-bigh{position:absolute;left:128px;right:128px;top:268px;margin:0;font-size:32px;font-weight:600;color:var(--d-sub)}
+.use3.v3 .e-bigh b{color:var(--d-acc)}
+.use3.v3 .e-cols{top:350px}
+.use3.v3 .e-where2{position:absolute;left:128px;right:560px;top:690px;margin:0;font-size:32px;font-weight:700;color:var(--d-ink)}
+.use3.v3 .e-where2 b{font-family:var(--mono);font-weight:400;color:var(--d-acc);margin-right:14px}
+.use3.v3 .e-where2 small{display:block;margin-top:8px;font-size:26px;font-weight:600;color:var(--d-sub)}
+.lab.v3 .e-attach{display:flex;gap:16px;flex-wrap:wrap;margin:18px 0 0;font-size:28px;font-weight:700}
+.lab.v3 .e-attach span{display:flex;align-items:center;gap:10px;padding:8px 18px;border-radius:12px;border:1.5px dashed var(--d-cool);color:var(--d-ink)}
+.lab.v3 .e-attach .ic{width:30px;height:30px;fill:none;stroke:var(--d-cool);stroke-width:2}
+.tofile.v3 .e-big .e-h{font-size:140px}
+.tips3.v3 .e-goal{position:absolute;left:128px;width:1180px;top:812px;margin:0;font-size:24px;font-weight:600;color:var(--d-mute)}
+
+/* ---- 언제 채팅, 언제 Cowork · Codex ---- */
+.when2.v3 .e-two2{position:absolute;left:128px;right:128px;top:262px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.when2.v3 .e-two2 .card{padding:24px 34px 26px;display:flex;flex-direction:column;gap:8px}
+.when2.v3 .e-two2 .e-tag{font-family:var(--mono);font-size:24px;color:var(--d-mute)}
+.when2.v3 .e-w2{border-color:var(--d-cool)!important}
+.when2.v3 .e-w2 .e-tag{color:var(--d-cool)}
+.when2.v3 .e-two2 h3{margin:0 0 4px;display:flex;align-items:center;gap:12px;font-size:44px;font-weight:800;letter-spacing:-.03em}
+.when2.v3 .e-two2 ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.when2.v3 .e-two2 li{display:flex;align-items:center;gap:14px;font-size:36px;font-weight:600;letter-spacing:-.02em;line-height:1.25}
+.when2.v3 .e-two2 .ic{width:40px;height:40px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.when2.v3 .e-w1 .ic{color:var(--d-sub)}
+.when2.v3 .e-w2 .ic{color:var(--d-cool)}
+.when2.v3 .e-diff{position:absolute;left:128px;right:128px;top:706px;display:flex;gap:12px;flex-wrap:wrap}
+.when2.v3 .e-diff span{font-size:30px;font-weight:700;padding:6px 16px;border-radius:12px;border:1.5px solid var(--d-line2);background:var(--d-bg)}
+.when2.v3 .e-diff b{font-family:var(--mono);font-weight:400;font-size:22px;color:var(--d-acc);margin-right:10px}
+.when2.v3 .e-take2{left:128px;right:128px;top:806px;bottom:auto;max-width:none;font-size:50px}
+.when2.v3 .e-take2 small{display:block;margin-top:6px;font-size:26px;font-weight:600;color:var(--d-sub)}
+
+/* ---- v5b: 3 「옛날 이야기」 카드 · 6 「그 밖에」 한 줄 ---- */
+.wallsl.v3 .e-old{position:absolute;left:128px;right:128px;top:420px;z-index:5;opacity:0;text-align:center}
+.wallsl.v3 .e-oh{margin:0;font-size:84px;font-weight:800;letter-spacing:-.04em;line-height:1.15;color:var(--d-ink)}
+.wallsl.v3 .e-oh em{font-style:normal;color:var(--d-acc)}
+.wallsl.v3 .e-os{margin:26px auto 0;display:inline-flex;align-items:center;gap:14px;font-size:38px;font-weight:600;color:var(--d-sub)}
+.wallsl.v3 .e-os b{color:var(--d-ink)}
+.wallsl.v3 .e-os .ic{width:40px;height:40px;fill:none;stroke:var(--d-cool);stroke-width:2.4}
+.e-app .e-also{position:absolute;left:1092px;top:760px;width:700px;margin:0;font-size:30px;font-weight:600;line-height:1.4;color:var(--d-sub);opacity:0}
+.e-app .e-also b{color:var(--d-ink)}
+.use3.v3>.hd h2{font-size:58px;max-width:none}
+.use3.v3 .e-bigh{top:256px}
