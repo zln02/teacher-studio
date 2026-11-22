@@ -75,6 +75,7 @@ FEEL = {
     "anime-cartoon": ("만화 컷", "굵은 먹선 칸과 망점, 빨강 하나"), "pastel-cute": ("파스텔", "연한 분홍과 둥근 모양, 포근함"),
     "retro-pixel": ("픽셀", "네모난 도트 화면, 오락실 느낌"), "minimal-premium": ("에디토리얼", "여백 많고 깔끔, 가는 선과 딱 한 가지 강조색"),
     "chalk-paper": ("칠판", "초록 칠판에 분필 글씨, 교실 느낌"), "nature-calm": ("자연", "연한 풀빛 종이에 짙은 초록, 마음이 편한 느낌"),
+    "ink-poster": ("잉크 포스터", "먹빛 바탕에 종이색 큰 글씨, 주홍 하나. 강연 무대처럼 또렷한 느낌"),
 }
 BUILTIN = {  # used only when styles.py cannot be found (same three looks as shared/design/styles.py)
     "minimal-premium": {"dark": False, "font": "TS Sans", "pal": {"bg1": "#f4f6f8", "text": "#161b20", "primary": "#1a2026", "accent": "#a38043", "card": "#fcfdff"}, "layout": {"poster": 4}, "keys": ["미니멀", "깔끔"]},
@@ -142,6 +143,34 @@ def topic_left(req: str) -> str:
     return t.strip()
 
 
+# 일상 · 업무 · 수업: the same five questions, with defaults that fit who is asking (a teacher's lesson, an office task, a family day).
+DOMAIN_WORDS = {
+    "class": ["수업", "학생", "우리 반", "학급", "차시", "단원", "교과", "복습", "도입", "형성평가", "시험", "학습", "수행평가", "아이들"],
+    "work": ["업무", "회의", "보고", "교직원", "직원", "동료", "공문", "결재", "부서", "회사", "팀", "가정통신문", "안내문", "연수", "행정", "예산", "실적", "민원", "교무"],
+    "daily": ["가족", "친구", "동호회", "여행", "생일", "취미", "결혼", "우리 집", "개인", "주말", "모임", "아이와"],
+}
+DOMAIN_QUESTIONS = {   # domain -> (purpose options, purpose default, audience options, audience default)
+    "class": (["수업 도입", "복습·정리", "행사·발표"], "수업 도입", ["우리 반 학생", "학부모", "동료 선생님"], "우리 반 학생"),
+    "work": (["회의·보고", "안내·공지", "연수·발표"], "회의·보고", ["동료·직원", "학부모·외부", "관리자·기관"], "동료·직원"),
+    "daily": (["모임·행사", "소개·기록", "초대·알리기"], "모임·행사", ["가족", "친구·모임", "누구나"], "가족"),
+}
+NEUTRAL_Q = (["수업·교육", "업무·회의", "일상·모임"], ["학생", "동료·직원", "가족·친구"])
+KIND_DOMAIN = {"game": "class", "tools": "class", "slides": "work", "data": "work", "plan": "work", "motion": "daily"}   # a guess only when nothing else says
+
+
+def domain(request: str, facts: dict) -> tuple[str | None, str]:
+    """(class | work | daily | None, why). Words in the request first, then a grade / subject in it; saved prefs never decide this alone."""
+    req = request or ""
+    score = {d: sum(1 for w in ws if w in req) for d, ws in DOMAIN_WORDS.items()}
+    if facts.get("grade") or any(sv in req for sv in SUBJECTS):
+        score["class"] += 1
+    best = max(score.values())
+    if best == 0:
+        return None, "none"
+    top = [d for d, v in score.items() if v == best]
+    return (top[0], "words") if len(top) == 1 else (None, "tie")
+
+
 def coverage(request: str, facts: dict) -> list[dict]:
     """The five decisions every direction needs. status known|open; recommended answers are defaults the model may offer."""
     req = request or ""
@@ -151,11 +180,18 @@ def coverage(request: str, facts: dict) -> list[dict]:
     mood = _has(req, MOODS)
     mat = _has(req, MATERIAL)
     length = re.search(r"\d+\s*(분|장|문제|개|쪽|초)", req)
+    dom, _why = domain(req, facts)
+    if dom:
+        p_opts, p_rec, a_opts, a_rec = DOMAIN_QUESTIONS[dom]
+    else:  # nothing says lesson, office or home: offer all three, the default follows what is being made
+        guess = KIND_DOMAIN.get(facts.get("kind") or "", "class")
+        p_opts, a_opts = NEUTRAL_Q
+        p_rec, a_rec = p_opts[("class", "work", "daily").index(guess)], a_opts[("class", "work", "daily").index(guess)]
     rows = [
         ("purpose", "무엇을 위한 것", bool(purpose or (facts["kind"] and len(topic) >= 2)), (purpose or [topic])[0] if (purpose or topic) else "",
-         "어떤 때 쓰실 건가요?", ["수업 도입", "복습·정리", "행사·발표"], "수업 도입"),
+         "어떤 때 쓰실 건가요?", p_opts, p_rec),
         ("audience", "보는 사람", bool(aud or facts["grade"] or facts["level"] and "level" not in facts["from_prefs"]), (aud or [facts["grade"] or facts["level"] or ""])[0],
-         "누가 보나요?", ["우리 반 학생", "학부모", "동료·모임"], "우리 반 학생"),
+         "누가 보나요?", a_opts, a_rec),
         ("mood", "분위기", bool(mood), mood[0] if mood else "", "어떤 느낌이 좋으세요?", ["차분하고 깔끔", "신나고 밝게", "고급스럽게"], "차분하고 깔끔"),
         ("material", "자료", bool(mat), mat[0] if mat else "", "참고할 파일·사진이 있나요?", ["없어요, 알아서", "있어요(올릴게요)"], "없어요, 알아서"),
         ("length", "길이·양", bool(length), length.group(0) if length else "", "분량은요?", ["짧게(5분·6장)", "보통(10분·10장)", "길게"], "짧게(5분·6장)"),
@@ -297,7 +333,8 @@ def _first_frame(c: dict, kind: str | None, request: str = "", n: int = 1) -> di
     """What the result's first screen would show, as a storyboard frame (drawn by storyboard.mock)."""
     title = c["sample_title"]
     aud = _has(request, AUDIENCE)
-    who = {"학부모": "학부모님께", "학생": "우리 반 친구들", "동료": "선생님들께", "선생님": "선생님들께", "가족": "우리 가족", "친구": "친구들과"}.get(aud[0] if aud else "", "")
+    who = {"학부모": "학부모님께", "학생": "우리 반 친구들", "동료": "함께 일하는 분들께", "선생님": "선생님들께", "가족": "우리 가족", "친구": "친구들과",
+           "신입": "새로 오신 분들께", "고객": "고객님께", "회원": "회원 여러분께"}.get(aud[0] if aud else "", "")
     base = {"title": title, "note": "", "items": [], "value": "", "kicker": "", "tag": "", "secs": None, "char": "abcd"[n % 4]}
     if kind == "data":
         return {**base, "layout": "report", "items": ["78|평균", "96|최고", "+6|지난번보다"], "kicker": "한눈에 보기"}
@@ -398,7 +435,7 @@ def build(request: str, prefs: dict | None = None, seed: int = 0, palette: dict 
     cs = cards(request, facts, seed, palette)
     route = "co-plan" if facts["kind"] == "plan" else ("make" if facts["kind"] else "unknown")
     return {
-        "request": request, "inferred": facts, "route_hint": route, "vague": vague, "quick": facts["quick"],
+        "request": request, "inferred": facts, "route_hint": route, "vague": vague, "quick": facts["quick"], "domain": domain(request, facts)[0],
         "mode": "build_now" if (facts["quick"] or not vague) else "direction",
         "coverage": cov, "open": [c["key"] for c in cov if c["status"] == "open"],
         "question_budget": 0 if (facts["quick"] or not vague) else 5,
