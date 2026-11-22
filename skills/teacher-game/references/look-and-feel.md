@@ -34,3 +34,8 @@
 | 3연속 | 콤보 배지(자동) | 없음 |
 | 마지막 | 시그니처 대장면 → 결과 | 천천히 내리는 꽃잎 정도 |
 - 「너무 정신없어」 → 효과 줄이기, 「밋밋해」 → 정답 순간만 키운다(문제 화면은 그대로).
+
+## Preset E and garnish
+- `"design": {"style": "ink-poster"}` (or the words 「잉크」「강렬하게」 in `design.words`) = preset E: ink ground, paper type, ONE vermilion accent, flat hairline cards, HUD corners (`shared/design/preset_e.py`).
+- Garnish comes last and only where reading stays easy: `py shared/design/garnish.py env`. Codex present -> one consistent backdrop / character set (no text, logos or faces; a reference picture with `-i` keeps one character; the command is optional, `garnish.py plan` prints it); Claude only -> the theme's own SVG drawings, `garnish.svg_backdrop()` or the CC0 packs in `shared/assets`. Pictures are inlined (no outside image), dimmed behind question text, never behind the choices.
+- Same scene rules as slides: one idea per screen, a demo of how to play ends on the real game screen, no speed claims (「10초면 끝」) that were not measured.

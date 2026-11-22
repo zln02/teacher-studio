@@ -66,10 +66,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
 6. ★ At most 2 in 10 negative questions (「아닌 것은?」). No two questions that test the same fact.
 7. Any answer position is fine: the tool balances positions itself.
 
-## Preset E and garnish (고명) for games
-- `"design": {"style": "ink-poster"}` (or the words 「잉크」「강렬하게」 in `design.words`) = preset E: ink ground, paper type, ONE vermilion accent, flat hairline cards, HUD corners (`shared/design/preset_e.py`).
-- Garnish comes last and only where reading stays easy: `py shared/design/garnish.py env`. Codex present -> one consistent backdrop / character set (no text, logos or faces; a reference picture with `-i` keeps one character; the command is optional, `garnish.py plan` prints it); Claude only -> the theme's own SVG drawings, `garnish.svg_backdrop()` or the CC0 packs in `shared/assets`. Pictures are inlined (no outside image), dimmed behind question text, never behind the choices.
-- Same scene rules as slides: one idea per screen, a demo of how to play ends on the real game screen, no speed claims (「10초면 끝」) that were not measured.
+Preset E (`"design": {"style": "ink-poster"}`) and garnish (고명, last and only where reading stays easy): `references/look-and-feel.md` 「Preset E and garnish」.
 
 ## Look check (on the sheet picture; fix only what fails)
 1. Reading order is question -> choices -> decoration. 2. No text cut off, covered or overlapping (top bar, 「팀 차례」 tag, host character). 3. The scene fits the topic (words/props match). 4. Text is easy to read on its background. 5. It does not look like the last game you made (else change `design.seed`).
