@@ -91,8 +91,8 @@ def main(src: Path):
     # ③ 입력칸 + 보내기
     base = C(x0, y0, x1, y1).copy()
     bd = ImageDraw.Draw(base)
-    bd.rectangle((10, 14, 420, 46), fill=base.getpixel((300, 60)))
-    bd.text((16, 30), "물품 구입 안내문 한글 파일로 만들어 줘", font=font(19), fill=(240, 240, 240), anchor="lm")
+    bd.rectangle((10, 14, 520, 46), fill=base.getpixel((300, 60)))
+    bd.text((16, 30), "다음 주 시설 안전 점검 안내문 한글 파일로 만들어 줘", font=font(19), fill=(240, 240, 240), anchor="lm")
     can, s, ox, oy = fit(base, 1.85)
     d = ImageDraw.Draw(can)
     tx, ty = ox + 6 * s, oy + 30 * s

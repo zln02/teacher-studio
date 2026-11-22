@@ -64,7 +64,7 @@ def build_html() -> str:
         return "data:image/png;base64," + base64.b64encode((HERE / "steps" / f"step{n}.png").read_bytes()).decode()
     caps = [("① 위쪽 「Chat | Work」에서 <b>Work</b>", "컴퓨터용 ChatGPT 앱을 열고 위쪽에서 골라요"),
             ("② <b>「파일」</b>로 양식 붙이기", "있으면 우리 학교 양식 한 장 · 규칙 한 줄(예: 학생 이름은 넣지 않기)"),
-            ("③ <b>한 줄로 부탁</b> → 보내기", "예) 「물품 구입 안내문 한글 파일로 만들어 줘」"),
+            ("③ <b>한 줄로 부탁</b> → 보내기", "예) 「다음 주 시설 안전 점검 안내문 한글 파일로 만들어 줘」"),
             ("④ <b>결과 예</b>: 한글 파일 한 장", "받아서 확인 · 사실 · 숫자 / 남의 개인정보 / 저작권 · 고칠 곳은 「여기 고쳐 줘」")]
     grid = "".join(f'<figure class="stp"><img alt="단계 {i + 1}" src="{simg(i + 1)}"><figcaption><b class="c1">{c1}</b><span>{c2}</span></figcaption></figure>'
                    for i, (c1, c2) in enumerate(caps))
