@@ -285,3 +285,4 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .pour.v3 .e-bubs{inset:auto!important;left:0!important;top:0!important;width:0!important;height:0!important;overflow:visible}
 .pour.v3>.hd .kicker{text-align:center}
 .pour.v3 .e-bubs .nt{width:max-content;max-width:600px}
+.pour.v3>.hd .kicker{justify-content:center}
