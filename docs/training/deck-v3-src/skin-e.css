@@ -593,3 +593,7 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .asks6.v3 .e-asks h3{font-size:34px}
 .asks6.v3 .e-asks p{font-size:27px;line-height:1.42}
 .asks6.v3 .e-asks p.e-or{font-size:21px}
+.asks6.v3 .hd h2{font-size:84px}
+.asks6.v3 .e-free{position:absolute;right:112px;top:150px;margin:0;font-size:40px;font-weight:700;color:var(--d-ink);text-align:right;max-width:640px;line-height:1.3}
+.asks6.v3 .e-free b{color:var(--e-red)}
+.asks6.v3 .e-free{top:96px;font-size:34px;max-width:none;white-space:nowrap}
