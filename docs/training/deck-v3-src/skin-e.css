@@ -431,3 +431,6 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .tips3.v3 .next{top:790px}
 .tips3.v3 .e-def3{top:168px}
 .tips3.v3 .tips{top:226px}
+.tips3.v3 .next{left:128px;right:auto;top:752px;width:1180px;font-size:26px}
+.tips3.v3 .next b{display:inline;margin:0 14px 0 0}
+.tips3.v3 .e-where li{font-size:21px;white-space:nowrap}
