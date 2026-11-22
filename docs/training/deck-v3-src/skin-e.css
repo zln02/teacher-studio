@@ -577,3 +577,19 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .many.v3 .e-cols p{font-size:34px}
 .many.v3 .e-many{top:740px;font-size:54px}
 .many.v3 .e-many small{font-size:30px}
+/* ---- v6 키워드별 부탁 ---- */
+.asks6.v3 .e-asks{position:absolute;left:112px;right:112px;top:246px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.asks6.v3 .e-asks .card{padding:18px 22px;display:flex;flex-direction:column;gap:8px}
+.asks6.v3 .e-asks h3{margin:0;display:flex;align-items:center;gap:12px;font-size:32px;font-weight:800;letter-spacing:-.02em}
+.asks6.v3 .e-asks h3 .ic{width:36px;height:36px;flex:none;fill:none;stroke:var(--e-red);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.asks6.v3 .e-asks .e-10{margin-left:auto;font-family:var(--mono);font-size:18px;font-weight:600;color:var(--d-cool);border:1.5px solid var(--d-cool);border-radius:8px;padding:2px 8px}
+.asks6.v3 .e-asks p{margin:0;font-size:23px;font-weight:500;line-height:1.45;color:var(--d-ink)}
+.asks6.v3 .e-asks p.e-or{font-size:19px;color:var(--d-sub)}
+.asks6.v3 .e-fix{position:absolute;left:112px;right:112px;top:918px;margin:0;display:flex;flex-wrap:wrap;align-items:center;gap:12px;font-size:28px;font-weight:700}
+.asks6.v3 .e-fix b{color:var(--e-red);margin-right:6px}
+.asks6.v3 .e-fix span{padding:6px 16px;border-radius:10px;border:1.5px solid var(--d-line2);background:var(--d-surf)}
+.asks6.v3 .e-asks{top:252px;gap:20px}
+.asks6.v3 .e-asks .card{padding:22px 26px;min-height:310px}
+.asks6.v3 .e-asks h3{font-size:34px}
+.asks6.v3 .e-asks p{font-size:27px;line-height:1.42}
+.asks6.v3 .e-asks p.e-or{font-size:21px}
