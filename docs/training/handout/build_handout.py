@@ -50,23 +50,28 @@ def step(n: int, title: str, detail: str, extra: str = "") -> str:
             f'<div class="sdetail">{detail}</div>{extra}</div></div>')
 
 
+def shot_uri() -> str:
+    import base64
+    return "data:image/png;base64," + base64.b64encode((HERE / "work-screen.png").read_bytes()).decode()
+
+
 def build_html() -> str:
     """deck-e v5: 한 쪽 · Claude Cowork / ChatGPT Codex 들어가는 법만 (교사 스튜디오 설치 안내는 뺐어요)."""
     head = (f'<div class="meta">교사 연수 &nbsp;·&nbsp; 2026. 11. 23.(월) 14:00 &nbsp;·&nbsp; 60분 &nbsp;·&nbsp; AI교육코디네이터 박진영</div>')
     steps = "".join([
-        step(1, '앱 열기', "컴퓨터용 <b>Claude 앱</b> 또는 <b>ChatGPT 앱</b>"),
-        step(2, '채팅 말고, 파일을 만드는 쪽 열기', "Claude: <b>「Cowork」 탭</b> &nbsp;·&nbsp; ChatGPT: <b>「Codex」</b>"),
+        step(1, '앱 열기', "컴퓨터용 <b>ChatGPT 앱</b>"),
+        step(2, '위쪽 「Chat | Work」에서 「Work」 누르기', "「ChatGPT로 Work 시작」 칸이 보이면 준비 끝 &nbsp;(아래 그림 ①)"),
         step(3, '한 줄로 부탁', "",
              '<div class="say">예) 「물품 구입 안내문 만들어 줘」</div>'
-             f'<div class="att">+ 있으면 <b>우리 학교 양식 파일</b>을 같이 붙여요 &nbsp;·&nbsp; 규칙 한 줄(예: 학생 이름은 넣지 않기)</div>'),
+             f'<div class="att">+ 있으면 <b>「파일」</b>(아래 그림 ②)로 <b>우리 학교 양식</b>을 같이 붙여요 &nbsp;·&nbsp; 규칙 한 줄(예: 학생 이름은 넣지 않기)</div>'),
         step(4, '받아서 확인', "사실 · 숫자 / 남의 개인정보 / 저작권 &nbsp;·&nbsp; 고칠 곳은 <b>「여기 고쳐 줘」</b> 한 줄"),
     ])
     qr = deck_qr.svg(SITE)
-    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">Claude Cowork · ChatGPT Codex 시작 안내지</div>'
-          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>Cowork · Codex</b></div></div>'
-          f'<h2>이렇게 시작해요</h2><div class="steps">{steps}</div>'
+    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">ChatGPT 「Work」(작업 모드) 시작 안내지</div>'
+          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>작업 모드(Work)</b></div></div>'
+          f'<h2>이렇게 시작해요</h2><div class="steps">{steps}</div><div class="shot"><img alt="ChatGPT 앱 Work 화면" src="{shot_uri()}"></div>'
           f'<div class="warn">⚠ <b>남의 개인정보는 넣지 않아요</b>&nbsp; (학생 · 학부모 · 교직원 · 가족 누구 것이든)</div>'
-          f'<div class="fine">Cowork · Codex는 대부분 <b>유료 요금제</b>예요 &nbsp;·&nbsp; 메뉴 이름은 앱 · 요금제마다 달라요</div>'
+          f'<div class="fine">컴퓨터용 ChatGPT 앱의 Work는 모든 요금제에서 · 내 폴더 파일까지 읽어요 (공식 안내 기준 2026-11) &nbsp;·&nbsp; 메뉴 이름은 앱 · 요금제마다 달라요</div>'
           f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">오늘 연수 내용 ·<br>막혔을 때는 사이트에</div>'
           f'<div class="st-url">{e(SITE)}</div><div class="st-s">휴대폰 카메라로 QR을 비추면 열려요</div></div></div>'
           f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 여러분께</b></footer></section>')
@@ -81,11 +86,11 @@ body{{font-family:'Noto Sans KR','맑은 고딕','Malgun Gothic',sans-serif;font
 .page{{width:210mm;height:297mm;padding:13mm 15mm 11mm;overflow:hidden;page-break-after:always;break-after:page;position:relative;display:flex;flex-direction:column}}
 .page:last-child{{page-break-after:auto;break-after:auto}}
 .meta{{font-size:10.5pt;color:#333;border-bottom:1.2pt solid {INK};padding-bottom:2.5mm}}
-h1{{font-size:30pt;font-weight:900;margin:4mm 0 0;letter-spacing:-.02em;line-height:1.15}}
+h1{{font-size:26pt;font-weight:900;margin:3mm 0 0;letter-spacing:-.02em;line-height:1.15}}
 .sub{{font-size:11pt;color:#444;margin-top:1mm}}
-h2{{font-size:17pt;font-weight:900;margin:6mm 0 2.5mm;padding-left:3mm;border-left:2.2mm solid {INK};line-height:1.2}}
+h2{{font-size:15pt;font-weight:900;margin:4mm 0 2mm;padding-left:3mm;border-left:2.2mm solid {INK};line-height:1.2}}
 h2.first{{margin-top:5mm}}
-.motto{{margin-top:5mm;border:2.4pt solid {INK};border-radius:3mm;padding:3.5mm 5mm;display:flex;gap:5mm;align-items:center}}
+.motto{{margin-top:3.5mm;border:2.4pt solid {INK};border-radius:3mm;padding:3.5mm 5mm;display:flex;gap:5mm;align-items:center}}
 .m-l{{font-size:11pt;font-weight:800;background:{INK};color:#fff;border-radius:1.5mm;padding:1mm 2.5mm;white-space:nowrap}}
 .m-t{{font-size:19pt;font-weight:500;letter-spacing:-.02em}}
 .m-t b{{font-weight:900}}
@@ -95,7 +100,7 @@ h2.first{{margin-top:5mm}}
 .chip{{display:inline-flex;align-items:center;gap:1mm;font-size:11pt;font-weight:700;border:1pt solid {INK};border-radius:5mm;padding:.6mm 2.4mm;background:#fff}}
 .chip.strong{{background:{INK};color:#fff}}
 .op{{font-weight:900;font-size:13pt}}
-.steps{{display:flex;flex-direction:column;gap:3mm}}
+.steps{{display:flex;flex-direction:column;gap:2mm}}
 .amap{{display:grid;grid-template-columns:repeat(5,1fr);gap:1.6mm;margin-top:3mm}}
 .am{{border:.8pt solid {LINE};border-radius:2mm;padding:1.6mm 2mm}}
 .am-r{{font-size:9.5pt;color:#444}}
@@ -104,17 +109,19 @@ h2.first{{margin-top:5mm}}
 .nextstep{{margin-top:3mm;border:1.4pt solid {INK};border-radius:2mm;padding:2.2mm 3.5mm;font-size:11.5pt}}
 .nextstep b{{margin-right:2mm}}
 h2 small{{font-size:11pt;font-weight:600}}
-.step{{display:flex;gap:4mm;align-items:flex-start;border:1.2pt solid {LINE};border-radius:3mm;padding:2.8mm 4.5mm}}
+.step{{display:flex;gap:4mm;align-items:flex-start;border:1.2pt solid {LINE};border-radius:3mm;padding:2mm 4.5mm}}
 .num{{flex:0 0 12mm;height:12mm;border-radius:50%;background:{INK};color:#fff;font-size:21pt;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}}
 .sbody{{flex:1}}
-.stitle{{font-size:19pt;font-weight:900;line-height:1.25;display:flex;align-items:center;gap:2mm}}
-.sdetail{{font-size:14pt;margin-top:1mm}}
+.stitle{{font-size:17pt;font-weight:900;line-height:1.25;display:flex;align-items:center;gap:2mm}}
+.sdetail{{font-size:13pt;margin-top:.6mm}}
 .att{{font-size:13pt;margin-top:1.5mm}}
-.warn{{margin-top:3.5mm;font-size:14.5pt;border:2pt solid {INK};border-radius:3mm;padding:2.5mm 4.5mm}}
-.fine{{margin-top:2.5mm;font-size:12.5pt;color:#333}}
+.shot{{margin-top:2mm;text-align:center}}
+.shot img{{width:80mm;border-radius:2mm;border:1pt solid {LINE}}}
+.warn{{margin-top:2.5mm;font-size:13.5pt;border:2pt solid {INK};border-radius:3mm;padding:2.5mm 4.5mm}}
+.fine{{margin-top:1.5mm;font-size:11pt;color:#333}}
 .tag{{font-size:10.5pt;font-weight:700;border:1pt solid {INK};border-radius:1.2mm;padding:0 1.6mm;vertical-align:2px}}
 .code{{display:inline-block;margin-top:1.5mm;font-size:16pt;font-weight:800;letter-spacing:.01em;border:1.6pt solid {INK};border-radius:1.8mm;padding:.8mm 3mm;background:{SOFT}}}
-.say{{font-size:16pt;font-weight:800;margin-top:1.5mm;border:1.4pt dashed {INK};border-radius:2mm;padding:1.5mm 3mm;display:inline-block}}
+.say{{font-size:14.5pt;font-weight:800;margin-top:1.5mm;border:1.4pt dashed {INK};border-radius:2mm;padding:1.5mm 3mm;display:inline-block}}
 .prompt{{margin-top:1.5mm;font-size:11.5pt;font-weight:600;border:1.6pt dashed {INK};border-radius:2.5mm;padding:2.5mm 3.5mm;background:{SOFT};line-height:1.5}}
 .planb{{margin-top:3mm;border:1.6pt dashed {INK};border-radius:3mm;padding:2.2mm 4mm}}
 .pb-h{{font-size:15pt;font-weight:900;display:flex;align-items:center;gap:2mm}}
@@ -131,13 +138,13 @@ h2 small{{font-size:11pt;font-weight:600}}
 .c-h{{display:flex;align-items:center;gap:2mm;font-size:12.5pt}}
 .c-h b{{font-weight:900}}
 .c-q{{font-size:11.5pt;margin-top:1mm;line-height:1.45}}
-.site{{margin-top:auto;display:flex;align-items:center;gap:6mm;border:2.4pt solid {INK};border-radius:3mm;padding:3mm 5mm}}
-.qr{{flex:0 0 36mm;width:36mm;height:36mm}}
+.site{{margin-top:2.5mm;display:flex;align-items:center;gap:5mm;border:2.4pt solid {INK};border-radius:3mm;padding:2mm 5mm}}
+.qr{{flex:0 0 30mm;width:30mm;height:30mm}}
 .qr svg{{width:100%;height:100%;display:block}}
-.st-big{{font-size:20pt;font-weight:900;line-height:1.3}}
+.st-big{{font-size:15pt;font-weight:900;line-height:1.3}}
 .st-url{{font-size:13.5pt;font-weight:700;margin-top:2mm;word-break:break-all}}
 .st-s{{font-size:11pt;color:#333;margin-top:1mm}}
-footer{{margin-top:4mm;border-top:1.2pt solid {INK};padding-top:2.5mm;display:flex;justify-content:center;align-items:baseline;font-size:13pt}}
+footer{{margin-top:2.5mm;border-top:1.2pt solid {INK};padding-top:2.5mm;display:flex;justify-content:center;align-items:baseline;font-size:13pt}}
 footer span{{font-size:11pt;color:#333}}
 @media screen{{body{{background:#d9dde3}} .page{{background:#fff;margin:8mm auto;box-shadow:0 2px 10px rgba(0,0,0,.18)}}}}
 """

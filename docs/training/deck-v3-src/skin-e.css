@@ -506,3 +506,4 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .demo1.v3 .e-backup video,.demo1.v3 .e-backup .frame{flex:1;min-height:0;width:100%;border-radius:8px;background:#000;object-fit:contain}
 .demo1.v3 .e-backup .frame.ph{display:grid;place-items:center;align-content:center;gap:12px;font-size:30px;color:var(--d-mute);background:var(--d-surf)}
 .demo1.v3 .e-backup{z-index:9}
+.ecmp.v3 .e-side .e-tag small{font-size:18px;color:var(--d-mute)}
