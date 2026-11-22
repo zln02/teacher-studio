@@ -90,6 +90,26 @@ ECMP = HERE / "compare-e"   # deck-e v4 진짜 비교 3장: compare-e/<case>/ �
 SHOWCASE = HERE / "showcase-e"   # 다른 사람이 채워요: showcase-e/<작품>/shot1.png · shot2.png · (title.txt). 여기서는 읽기만.
 
 
+
+def show1_fill(slides: str) -> str:
+    """9장 커서 장면: showcase-e/1-goldenbell/shot1(+shot2 시상대)을 쓰고, 없으면 예전 비교 그림(__ECMP_class_title__)으로."""
+    if "__SHOW_GB__" not in slides:
+        return slides
+    import base64, io as _io
+    from PIL import Image
+    d = SHOWCASE / "1-goldenbell"
+    def uri(p):
+        im = Image.open(p).convert("RGB"); im.thumbnail((1600, 900))
+        b = _io.BytesIO(); im.save(b, "JPEG", quality=90, optimize=True)
+        return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
+    s1, s2 = d / "shot1.png", d / "shot2.png"
+    if not s1.exists():
+        return slides.replace("__SHOW_GB__", "__ECMP_class_title__")
+    out = f'<img alt="AI + 하네스로 만든 골든벨 퀴즈쇼" src="{uri(s1)}">'
+    if s2.exists():
+        out += f'<img alt="" src="{uri(s2)}">'
+    return slides.replace("__SHOW_GB__", out)
+
 def gal_fill(slides: str) -> str:
     """10장 「이런 것도 만들어요」: showcase-e에 작품이 있으면 그걸로 2×2 (클릭 1 = shot2로 바뀜). 없으면 slides의 예비 칸 그대로."""
     import base64, io as _io, re as _re
@@ -370,7 +390,8 @@ def main() -> int:
             slides = slides.replace('<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="2"', '<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="1"', 1)
             slides = slides.replace("(시연은 3분 30초 안에 · 길어지면 녹화 영상으로)", "(시연은 3분 30초 안에 · 라이브 시연만)", 1)
         print("  demo video", "linked" if dv.exists() else "omitted (live demo only)")
-    if "__ECMP_" in slides:
+    if a.skin == "e":
+        slides = show1_fill(slides)
         slides = ecmp_fill(slides)
         slides = gal_fill(slides)
     for bad in ("?.", "??"):

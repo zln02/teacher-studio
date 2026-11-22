@@ -712,6 +712,8 @@
   function bdShot(s) {   // 10장의 하네스 AI 결과 화면을 그대로 써요 (지어낸 화면 없음)
     var im = q(s, '.e-shot');
     if (!im.getAttribute('src')) { var src = q(s, '.e-src img') || stage.querySelector('.cmp .shot.h .frame img'); if (src) im.src = src.src; }
+    var i2 = q(s, '.e-shot2'), s2 = qa(s, '.e-src img')[1];
+    if (i2 && s2 && !i2.getAttribute('src')) i2.src = s2.src;
     return im;
   }
   var BDCUR = { chef: [BD.W - 160, BD.H - 40], tool: [BD.W - 70, 150], recipe: [BD.W - 40, BD.H + 20], check: [BD.W - 20, -10] };
@@ -724,6 +726,7 @@
     qa(it, '.e-ghost').forEach(function (g) { g.style.opacity = 0; });
     bdSel(s, null, false); q(s, '.e-marq').style.opacity = 0; bdGuides(s, []);
     var ok = q(s, '.e-ok'); ok.style.opacity = 1; ok.style.transform = '';
+    var i2 = q(s, '.e-shot2'); if (i2) i2.style.opacity = i2.getAttribute('src') ? 1 : 0;
     qa(B, '.e-cur').forEach(function (c) { curPrep(c); var p = BDCUR[c.getAttribute('data-who')]; curAt(c, p[0], p[1]); c.style.opacity = 1; curPress(c, false); });
     show(q(B, '.e-cap'), true);
     var sp = q(s, '.e-spot'); if (sp) sp.style.opacity = on ? 0 : '';
@@ -735,6 +738,7 @@
     var sp = q(s, '.e-spot'); if (sp) { sp.style.opacity = 1; tw2(ET.out, 0, 'out', function (e) { sp.style.opacity = 1 - e; }); }
     qa(B, '.e-cur').forEach(function (c) { c.style.opacity = 0; });
     q(s, '.e-ok').style.opacity = 0; show(q(B, '.e-cap'), false);
+    var sh2 = q(s, '.e-shot2'); if (sh2) sh2.style.opacity = 0;
     var F = bdFinal(), small = { x: BD.W - 250, y: BD.H - 150, w: 220, h: 124 }, mid = { x: 24, y: 24, w: 420, h: 236 };
     // 판이 열리고 → 오른쪽 아래 「받침」에 작은 결과 화면 하나
     eIn(art, 0, { dy: 0, s: 0.97, blur: 8 });
@@ -789,6 +793,7 @@
     curGo(Kc, BDCUR.check[0], BDCUR.check[1], 2400, 220);
     curClick(Kc, 2620);
     MO.stamp(q(s, '.e-ok'), 2660, { s: 1.6 });
+    if (sh2 && sh2.getAttribute('src')) tw2(REDUCED ? 1 : 420, 2700, 'out', function (e) { sh2.style.opacity = e.toFixed(3); });
     eIn(q(B, '.e-cap'), 2760, { dy: 10, blur: 3 });
   }
   FX.eSection = {
