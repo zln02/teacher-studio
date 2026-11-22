@@ -756,3 +756,70 @@
     enter: function (s, st) { eHudIn(s, 0); FX.v3gen.enter(s, st); var c = q(s, ':scope > .e-cur.e-solo'); labCur(s, st, V3DIR > 0 && st === 0 && c && +c.getAttribute('data-step') === 0); },
     step: function (s, st, dir) { FX.v3gen.step(s, st, dir); labCur(s, st, dir !== -1); }
   };
+
+  /* ============ 2 여기저기서: 큰 글자 → 위 가운데로 줄어들어 머리글 자리 → 말풍선 여덟 개가 여기저기서 하나씩 「띠용」 ============
+     말풍선 꼬리는 머리글 쪽을 가리켜요. 한 개 약 350ms, 사이 220ms. 움직임 줄이기 · 뒤로 = 끝 모습 바로 */
+  var POUR_AT = [[150, 330], [1340, 330], [520, 500], [1200, 510], [140, 670], [860, 680], [1220, 840], [430, 840]];   // 말풍선 왼쪽 위 (무대 좌표)
+  function pourPrep(s) {
+    if (s.__pour) return;
+    qa(s, '.e-bubs .nt').forEach(function (b, i) {
+      var p = POUR_AT[i]; b.style.left = p[0] + 'px'; b.style.top = p[1] + 'px';
+      var tail = q(b, '.e-tail'); if (!tail) tail = emk('i', 'e-tail', '', b);
+    });
+    s.__pour = true;
+  }
+  function pourTails(s) {   // 꼬리: 말풍선 가운데에서 머리글(가운데 위) 쪽으로 난 선이 테두리와 만나는 곳
+    var hx = 960, hy = 250;
+    qa(s, '.e-bubs .nt').forEach(function (b) {
+      var w = b.offsetWidth, h = b.offsetHeight, cx = b.offsetLeft + w / 2, cy = b.offsetTop + h / 2, a = Math.atan2(hy - cy, hx - cx);
+      var t = Math.min(Math.abs((w / 2) / (Math.cos(a) || 1e-6)), Math.abs((h / 2) / (Math.sin(a) || 1e-6)));
+      var tl = q(b, '.e-tail'); tl.style.left = (w / 2 + Math.cos(a) * t - 2).toFixed(1) + 'px'; tl.style.top = (h / 2 + Math.sin(a) * t - 13).toFixed(1) + 'px';
+      tl.style.transform = 'rotate(' + (a * 180 / Math.PI).toFixed(1) + 'deg)';
+    });
+  }
+  function pourSet(s, st) {
+    pourPrep(s);
+    var hd = q(s, ':scope > .hd'), h2 = q(hd, 'h2'), k = q(hd, '.kicker');
+    s.classList.toggle('e-0', st === 0);
+    eBigSet(s, st === 0);
+    MO.wipeSet(h2, true); [h2, k].forEach(function (e) { show(e, true); e.style.filter = ''; e.style.transform = ''; });
+    if (k.__full) k.textContent = k.__full;
+    qa(s, '.e-bubs .nt').forEach(function (b) { show(b, st >= 1); b.style.filter = ''; b.style.transform = ''; });
+    pourTails(s);
+  }
+  function pourPop(b, at, i) {   // 띠용: 0 → 1.12 → 0.96 → 1, 살짝 기울었다 바로
+    var r0 = (i % 2 ? 1 : -1) * (5 + (i % 3) * 2);
+    b.style.opacity = 0;
+    MO.tw(360, at, 'linear', function (e, t) {
+      var k = t < 0.45 ? lerp(0, 1.12, EZ.out(t / 0.45)) : t < 0.75 ? lerp(1.12, 0.96, EZ.inout((t - 0.45) / 0.3)) : lerp(0.96, 1, EZ.out((t - 0.75) / 0.25));
+      b.style.opacity = clamp01(t * 5);
+      b.style.transform = t >= 1 ? '' : 'scale(' + k.toFixed(4) + ') rotate(' + (r0 * (1 - EZ.spring(t))).toFixed(2) + 'deg)';
+      b.style.filter = t >= 0.3 ? '' : 'blur(' + (5 * (1 - t / 0.3)).toFixed(2) + 'px)';
+    });
+  }
+  FX.ePour = {
+    enter: function (s, st) {
+      eHudIn(s, 0);
+      pourSet(s, st);
+      if (st === 0 && !(V3DIR < 0 || REDUCED)) eBigIn(s, 60);
+    },
+    step: function (s, st, dir) {
+      MO.stop();
+      if (dir === -1 || REDUCED) { eInst(function () { FX.ePour.enter(s, st); }); return; }
+      // 큰 글자 → 머리글 자리로 줄어들기 (FLIP · 260ms · 움직이는 동안만 흐림)
+      pourSet(s, 0);
+      var big = q(s, '.e-big'), eh = q(big, '.e-h'), ek = q(big, '.e-k'), hd = q(s, ':scope > .hd'), h2 = q(hd, 'h2'), k = q(hd, '.kicker');
+      var a = eoff(eh, s), b = eoff(h2, s), sc = h2.offsetWidth / eh.offsetWidth;
+      var dx = (b.x + h2.offsetWidth / 2) - (a.x + eh.offsetWidth / 2), dy = (b.y + h2.offsetHeight / 2) - (a.y + eh.offsetHeight / 2);
+      eDot(s).style.opacity = 0;
+      eh.style.transformOrigin = '50% 50%';
+      MO.tw(ET.out, 0, 'out', function (e) { ek.style.opacity = 1 - e; });
+      MO.tw(280, 0, 'inout', function (e, t) {
+        eh.style.transform = 'translate(' + (dx * e).toFixed(1) + 'px,' + (dy * e).toFixed(1) + 'px) scale(' + lerp(1, sc, e).toFixed(4) + ')';
+        eh.style.filter = t >= 1 ? '' : 'blur(' + (4 * Math.sin(Math.PI * t)).toFixed(2) + 'px)';
+      }, function () { eh.style.transform = ''; eh.style.filter = ''; big.style.visibility = 'hidden'; s.classList.remove('e-0'); show(k, false); MO.tw(200, 0, 'out', function (e) { k.style.opacity = e; }); });
+      var bs = qa(s, '.e-bubs .nt');
+      bs.forEach(function (bb) { bb.style.opacity = 0; });
+      bs.forEach(function (bb, i) { pourPop(bb, 360 + i * 220, i); });
+    }
+  };

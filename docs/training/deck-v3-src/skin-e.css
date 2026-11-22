@@ -263,3 +263,25 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 /* 16장: 그림을 오른쪽 위 칸으로 (「그래서」 띠와 떨어지게) */
 .who.v3 .flow2{width:1260px}
 .who.v3 .e-spot{top:300px;right:128px;width:380px;height:214px}
+
+/* ---- 2 여기저기서: 머리글은 위 가운데 · 말풍선 여덟 개 (뉴스 = 네모 + 출처 · 안내 = 모서리 12 · 말 = 둥근) ---- */
+.pour.v3>.hd{left:120px;right:120px;top:96px;text-align:center}
+.pour.v3>.hd h2{margin:0 auto;font-size:72px}
+.pour.v3 .e-big .e-h{font-size:128px}
+.pour.v3.e-0 .e-bubs{visibility:hidden}
+.pour.v3 .e-bubs{position:absolute;inset:0;display:block;top:0;left:0;right:0;gap:0}
+.pour.v3 .e-bubs .nt{position:absolute;height:auto;width:auto;max-width:520px;padding:20px 30px 24px;display:flex;flex-direction:column;gap:6px;
+  background:var(--d-surf2)!important;border:1.5px solid var(--d-line2)!important;border-radius:12px!important;transform-origin:50% 50%}
+.pour.v3 .e-bubs .nt b{font-size:44px;line-height:1.22;letter-spacing:-.03em;font-weight:800;color:var(--d-ink)}
+.pour.v3 .e-bubs .nt .src{font-family:var(--mono);font-size:21px;font-weight:400;letter-spacing:.04em;color:var(--d-mute)}
+.pour.v3 .e-bubs .nt .src .ic{width:24px;height:24px}
+.pour.v3 .e-bubs .e-news{border-radius:4px!important}
+.pour.v3 .e-bubs .e-news .src{color:var(--d-acc)}
+.pour.v3 .e-bubs .e-notice .src{color:var(--d-sub)}
+.pour.v3 .e-bubs .e-talk{border-radius:40px!important;padding:20px 36px 24px}
+.pour.v3 .e-bubs .e-talk .src{color:var(--d-cool)}
+.pour.v3 .e-bubs .e-talk .src .ic,.pour.v3 .e-bubs .e-news .src .ic{color:inherit!important}
+.pour.v3 .e-tail{position:absolute;width:32px;height:26px;background:var(--d-line2);clip-path:polygon(0 0,100% 50%,0 100%);transform-origin:2px 13px;z-index:-1;margin-top:-2px}
+.pour.v3 .e-bubs{inset:auto!important;left:0!important;top:0!important;width:0!important;height:0!important;overflow:visible}
+.pour.v3>.hd .kicker{text-align:center}
+.pour.v3 .e-bubs .nt{width:max-content;max-width:600px}
