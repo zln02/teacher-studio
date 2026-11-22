@@ -163,7 +163,7 @@ window.TSE = (function () {
       if (!r) return;
       var pad = 14, x0 = r.x - pad, y0 = r.y - pad * 0.6, x1 = r.x + r.w + pad, y1 = r.y + r.h + pad * 0.6, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, d, i, pts = [];
       var kind = m.mark || "circle";
-      if (kind === "under") d = wob([[r.x - 4, r.y + r.h + 8], [r.x + r.w * 0.5, r.y + r.h + 14], [r.x + r.w + 6, r.y + r.h + 6]], 6, k + 3);
+      if (kind === "under") d = wob([[r.x - 4, r.y + r.h - 6], [r.x + r.w * 0.5, r.y + r.h - 1], [r.x + r.w + 6, r.y + r.h - 8]], 5, k + 3);   // inside the descent area: never on the next line
       else if (kind === "box") d = wob([[x0 + 30, y0 - 4], [x1, y0 + 2], [x1 + 4, y1], [x0, y1 + 3], [x0 - 3, y0 + 8], [x0 + 60, y0 - 6]], 6, k + 5);
       else if (kind === "arrow") { var ax = x1 + 140, ay = y0 - 90; d = wob([[ax, ay], [(ax + x1) / 2 + 20, (ay + cy) / 2 - 10], [x1 + 6, cy - 6]], 8, k + 7) + " M" + (x1 + 30).toFixed(1) + " " + (cy - 30).toFixed(1) + " L" + (x1 + 6).toFixed(1) + " " + (cy - 6).toFixed(1) + " L" + (x1 + 36).toFixed(1) + " " + (cy + 2).toFixed(1); }
       else {   // a loop that hugs the words (superellipse, n = 4): it never cuts through the neighbouring letters

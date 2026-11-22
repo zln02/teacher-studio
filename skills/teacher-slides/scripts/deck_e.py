@@ -50,6 +50,7 @@ def css(dz: dict) -> str:
     extra = (".e-note.e-acc{color:var(--e-acc)}.sl>.e-pills{position:absolute;top:46px;left:646px;width:628px;z-index:7}"
              ".sl>.e-pen{z-index:7}.e-motion .b{transition:none!important;transform:none}.e-motion .b:not(.on){opacity:0}"
              ".sl .e-scene{z-index:0}.sl .e-scene~.bx{z-index:1}.sl .e-scene~.art{display:none}"  # the backdrop is the picture: no second drawing on top
+             ".sl .e-note{background:var(--bg1);padding:0 12px;border-radius:6px}"  # the note stays readable over a backdrop
              ".sl .e-hl .e-w.e-lit,.sl .e-hl .e-w.e-num.e-lit{color:inherit}.sl .e-hl .e-w.e-num{font-weight:800}")
     return "\n".join([base, bind, extra])
 
