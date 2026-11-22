@@ -600,3 +600,159 @@
     var d = document.createElement('div'); d.className = 'e-scene'; d.setAttribute('data-il', 'e-bg-' + bg.toLowerCase());
     s.insertBefore(d, s.firstChild);
   });
+
+  /* ============ 커서 (디자인 도구처럼): 이름표 붙은 화살표 · 누르면 쥔 손 · 끌기 · 모서리 늘이기 · 영역 고르기 · 맞춤선 · 흔적 ============
+     9장 클릭 1: 하네스의 네 부분(요리사(AI) · 레시피 · 도구 · 점검)이 커서가 되어, 실제로 나온 결과 화면(10장의 하네스 AI 화면)을 끌어다 놓고 맞춰요.
+     17~19장: 커서 하나가 어디를 누르는지 보여 줘요. 움직임 줄이기 · 뒤로 가기 = 끝 모습 바로. */
+  // icons: hand-grab
+  // 늦게 시작하는 박자: 시작 전에는 아무것도 칠하지 않아요 (MO.tw는 만들 때 시작 모습을 바로 칠하니까, 여러 박자를 미리 줄 세울 때는 이것을)
+  function tw2(dur, at, ease, fn, done) { var on = false; return MO.tw(dur, at, ease, function (e, t) { if (!on) { if (t === 0) return; on = true; } fn(e, t); }, done); }
+  var CUR_SVG = '<svg class="e-ptr" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.5 L4 19.5 L8.6 15.3 L11.8 22 L14.9 20.6 L11.8 14 L18.2 13.6 Z"/></svg><svg class="ic e-hand" aria-hidden="true"><use href="#hand-grab"/></svg>';
+  function curPrep(c) { if (!c.__p) { c.insertAdjacentHTML('afterbegin', CUR_SVG); c.__p = { x: 0, y: 0 }; } return c; }
+  function curAt(c, x, y) { c.__p = { x: x, y: y }; c.style.transform = 'translate(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px)'; }
+  function curGo(c, x, y, at, dur, done) {   // 목적 있는 길: 빠르게 출발해 부드럽게 멈춤 (ease-out)
+    var x0, y0;
+    return tw2(dur || 220, at, 'out', function (e, t) {
+      if (x0 === undefined) { x0 = c.__p.x; y0 = c.__p.y; }
+      c.style.opacity = 1;
+      var bx = lerp(x0, x, e), by = lerp(y0, y, e) - Math.sin(Math.PI * e) * 18;
+      c.style.transform = 'translate(' + bx.toFixed(1) + 'px,' + by.toFixed(1) + 'px)';
+      if (e >= 1) c.__p = { x: x, y: y };
+    }, done);
+  }
+  function curPress(c, on) { c.classList.toggle('e-grab', on); }
+  function curClick(c, at) {   // 누름 → 동그라미 퍼짐
+    tw2(1, at, 'linear', function () {}, function () { curPress(c, true); });
+    tw2(1, at + 120, 'linear', function () {}, function () { curPress(c, false); });
+    var r = q(c, '.e-ring'); if (!r) r = emk('i', 'e-ring', '', c);
+    tw2(260, at + 60, 'out', function (e) { r.style.opacity = (1 - e).toFixed(3); r.style.transform = 'scale(' + lerp(0.3, 1.6, e).toFixed(3) + ')'; });
+  }
+  /* 9장 판 */
+  var BD = { W: 900, H: 506 };
+  function bdFinal() { var w = BD.W - 48, h = w * 9 / 16; return { x: 24, y: (BD.H - h) / 2, w: w, h: h }; }
+  function bdItem(it, r) { it.style.left = r.x.toFixed(1) + 'px'; it.style.top = r.y.toFixed(1) + 'px'; it.style.width = r.w.toFixed(1) + 'px'; it.style.height = r.h.toFixed(1) + 'px'; }
+  function bdSel(s, r, on) { var e = q(s, '.e-sel'); e.style.opacity = on ? 1 : 0; if (r) bdItem(e, r); }
+  function bdGuides(s, list) {   // list: [['v', x] | ['h', y] | ['c', x]], 거리 이름표
+    qa(s, '.e-gd').forEach(function (g) { g.style.opacity = 0; });
+    var d = q(s, '.e-dist'); d.style.opacity = 0;
+    (list || []).forEach(function (g) {
+      var el = q(s, g[0] === 'v' ? '.e-gv' : g[0] === 'h' ? '.e-gh' : '.e-gc');
+      el.style.opacity = 1;
+      if (g[0] === 'h') el.style.top = g[1] + 'px'; else el.style.left = g[1] + 'px';
+      if (g[2]) { d.textContent = g[2]; d.style.left = (g[3] || 0) + 'px'; d.style.top = (g[4] || 0) + 'px'; d.style.opacity = 1; }
+    });
+  }
+  function bdShot(s) {   // 10장의 하네스 AI 결과 화면을 그대로 써요 (지어낸 화면 없음)
+    var im = q(s, '.e-shot');
+    if (!im.getAttribute('src')) { var src = stage.querySelector('.cmp .shot.h .frame img'); if (src) im.src = src.src; }
+    return im;
+  }
+  var BDCUR = { chef: [BD.W - 160, BD.H - 40], tool: [BD.W - 70, 150], recipe: [BD.W - 40, BD.H + 20], check: [BD.W - 20, -10] };
+  function bdSet(s, on) {
+    var B = q(s, '.e-board'), it = q(s, '.e-item');
+    bdShot(s);
+    B.style.visibility = on ? 'visible' : 'hidden';
+    show(q(B, '.e-art'), true); q(B, '.e-art').style.filter = '';
+    bdItem(it, bdFinal()); it.style.opacity = 1; it.style.transform = ''; it.style.filter = '';
+    qa(it, '.e-ghost').forEach(function (g) { g.style.opacity = 0; });
+    bdSel(s, null, false); q(s, '.e-marq').style.opacity = 0; bdGuides(s, []);
+    var ok = q(s, '.e-ok'); ok.style.opacity = 1; ok.style.transform = '';
+    qa(B, '.e-cur').forEach(function (c) { curPrep(c); var p = BDCUR[c.getAttribute('data-who')]; curAt(c, p[0], p[1]); c.style.opacity = 1; curPress(c, false); });
+    show(q(B, '.e-cap'), true);
+    var sp = q(s, '.e-spot'); if (sp) sp.style.opacity = on ? 0 : '';
+  }
+  function bdPlay(s) {
+    var B = q(s, '.e-board'), it = q(s, '.e-item'), art = q(B, '.e-art'), C = {}, G = qa(it, '.e-ghost');
+    qa(B, '.e-cur').forEach(function (c) { curPrep(c); C[c.getAttribute('data-who')] = c; c.style.opacity = 0; curPress(c, false); });
+    bdSet(s, true);
+    var sp = q(s, '.e-spot'); if (sp) { sp.style.opacity = 1; tw2(ET.out, 0, 'out', function (e) { sp.style.opacity = 1 - e; }); }
+    qa(B, '.e-cur').forEach(function (c) { c.style.opacity = 0; });
+    q(s, '.e-ok').style.opacity = 0; show(q(B, '.e-cap'), false);
+    var F = bdFinal(), small = { x: BD.W - 250, y: BD.H - 150, w: 220, h: 124 }, mid = { x: 24, y: 24, w: 420, h: 236 };
+    // 판이 열리고 → 오른쪽 아래 「받침」에 작은 결과 화면 하나
+    eIn(art, 0, { dy: 0, s: 0.97, blur: 8 });
+    bdItem(it, small); it.style.opacity = 0; eIn(it, 120, { dy: 16, blur: 6 });
+    // ① 도구: 화면을 집어(쥔 손) 왼쪽 위로 끌어다 놓기 · 흔적 · 맞춤선 24 · 놓으면 살짝 자리 잡기
+    var T = C.tool; curAt(T, BD.W + 60, 60);
+    curGo(T, small.x + 110, small.y + 60, 260, 230);
+    tw2(1, 500, 'linear', function () {}, function () { curPress(T, true); });
+    tw2(260, 560, 'out', function (e, t) {
+      var r = { x: lerp(small.x, mid.x, e), y: lerp(small.y, mid.y, e), w: lerp(small.w, mid.w, e), h: lerp(small.h, mid.h, e) };
+      bdItem(it, r); it.style.filter = t >= 1 ? '' : 'blur(' + (3 * Math.sin(Math.PI * t)).toFixed(2) + 'px)';
+      G.forEach(function (g, i) { var k = Math.max(0, e - 0.18 * (i + 1)); g.style.opacity = t >= 1 ? 0 : (0.22 / (i + 1)).toFixed(3); g.style.transform = 'translate(' + ((lerp(small.x, mid.x, k) - r.x)).toFixed(1) + 'px,' + ((lerp(small.y, mid.y, k) - r.y)).toFixed(1) + 'px)'; });
+      T.style.transform = 'translate(' + (r.x + 110 * r.w / small.w * 0.5).toFixed(1) + 'px,' + (r.y + 60).toFixed(1) + 'px)';
+      if (e > 0.82) bdGuides(s, [['v', 24, '24', 30, 8], ['h', 24]]);
+    }, function () { T.__p = { x: mid.x + 210, y: mid.y + 60 }; curPress(T, false); });
+    tw2(140, 830, 'out', function (e) { it.style.transform = e >= 1 ? '' : 'scale(' + lerp(1.02, 1, e).toFixed(4) + ')'; });
+    tw2(1, 980, 'linear', function () {}, function () { bdGuides(s, []); });
+    curGo(T, BDCUR.tool[0], BDCUR.tool[1], 990, 240);
+    // ② 레시피: 선택 테두리 · 오른쪽 아래 모서리 손잡이를 끌어 판 가득 늘이기 · 오른쪽 맞춤선 24
+    var R = C.recipe; curAt(R, BD.W - 20, BD.H + 40);
+    curGo(R, mid.x + mid.w, mid.y + mid.h, 980, 220);
+    tw2(1, 1000, 'linear', function () {}, function () { bdSel(s, mid, true); });
+    tw2(1, 1220, 'linear', function () {}, function () { curPress(R, true); });
+    var big = { x: 24, y: 24, w: F.w, h: F.h };
+    tw2(260, 1260, 'out', function (e) {
+      var r = { x: 24, y: 24, w: lerp(mid.w, big.w, e), h: lerp(mid.h, big.h, e) };
+      bdItem(it, r); bdSel(s, r, true);
+      R.style.transform = 'translate(' + (r.x + r.w).toFixed(1) + 'px,' + (r.y + r.h).toFixed(1) + 'px)';
+      if (e > 0.8) bdGuides(s, [['v', BD.W - 24, '24', BD.W - 60, 8]]);
+    }, function () { R.__p = { x: big.x + big.w, y: big.y + big.h }; curPress(R, false); });
+    tw2(1, 1620, 'linear', function () {}, function () { bdGuides(s, []); bdSel(s, null, false); });
+    curGo(R, BDCUR.recipe[0], BDCUR.recipe[1], 1630, 220);
+    // ③ 요리사(AI): 영역 끌어 고르기 → 묶음을 가운데로 옮기기 · 가운데 맞춤선
+    var K = C.chef; curAt(K, -40, -30);
+    var mq = q(s, '.e-marq');
+    curGo(K, -14, -12, 1600, 200);
+    tw2(1, 1800, 'linear', function () {}, function () { curPress(K, true); });
+    tw2(240, 1820, 'out', function (e) {
+      var x1 = lerp(-14, BD.W - 4, e), y1 = lerp(-12, BD.H - 4, e);
+      mq.style.opacity = 1; bdItem(mq, { x: -14, y: -12, w: x1 + 14, h: y1 + 12 });
+      K.style.transform = 'translate(' + x1.toFixed(1) + 'px,' + y1.toFixed(1) + 'px)';
+    }, function () { K.__p = { x: BD.W - 4, y: BD.H - 4 }; curPress(K, false); mq.style.opacity = 0; bdSel(s, big, true); });
+    tw2(1, 2120, 'linear', function () {}, function () { curPress(K, true); });
+    tw2(220, 2150, 'out', function (e) {
+      var r = { x: 24, y: lerp(24, F.y, e), w: F.w, h: F.h }; bdItem(it, r); bdSel(s, r, true);
+      K.style.transform = 'translate(' + (BD.W - 160).toFixed(1) + 'px,' + (lerp(BD.H - 40 - (F.y - 24), BD.H - 40, e)).toFixed(1) + 'px)';
+      if (e > 0.7) bdGuides(s, [['h', BD.H / 2], ['c', BD.W / 2]]);
+    }, function () { K.__p = { x: BD.W - 160, y: BD.H - 40 }; curPress(K, false); });
+    tw2(1, 2480, 'linear', function () {}, function () { bdGuides(s, []); bdSel(s, null, false); });
+    // ④ 점검: 오른쪽 위로 와서 톡 → ✓
+    var Kc = C.check; curAt(Kc, BD.W + 40, -60);
+    curGo(Kc, BDCUR.check[0], BDCUR.check[1], 2400, 220);
+    curClick(Kc, 2620);
+    MO.stamp(q(s, '.e-ok'), 2660, { s: 1.6 });
+    eIn(q(B, '.e-cap'), 2760, { dy: 10, blur: 3 });
+  }
+  FX.eSection = {
+    enter: function (s, st) {
+      eHudIn(s, 0);
+      FX.v3section.enter(s, 0);
+      bdSet(s, st >= 1);
+    },
+    step: function (s, st, dir) {
+      MO.stop();
+      eInst(function () { FX.v3section.enter(s, 0); });
+      if (dir === -1 || REDUCED) { bdSet(s, st >= 1); return; }
+      if (st === 1) bdPlay(s);
+    }
+  };
+  /* 17~19 실습: 커서 하나 (data-to = 누를 곳 · data-step = 몇 번째 클릭에) */
+  function labCur(s, st, anim) {
+    var c = q(s, ':scope > .e-cur.e-solo'); if (!c) return;
+    curPrep(c);
+    var n = +c.getAttribute('data-step'), tg = q(s, c.getAttribute('data-to'));
+    if (!tg || st < n) { c.style.opacity = 0; return; }
+    var o = eoff(tg, s), x = o.x + tg.offsetWidth * 0.55, y = o.y + tg.offsetHeight * 0.6;
+    curPress(c, false);
+    if (!anim || REDUCED || st !== n) { curAt(c, x, y); c.style.opacity = 1; return; }
+    c.style.opacity = 0; curAt(c, x + 260, y + 180);
+    var at = n === 0 ? 1300 : 420;   // 3장은 글자가 쳐진 뒤에
+    MO.tw(120, at, 'out', function (e) { c.style.opacity = e; });
+    curGo(c, x, y, at, 260);
+    curClick(c, at + 300);
+  }
+  FX.eLab = {
+    enter: function (s, st) { eHudIn(s, 0); FX.v3gen.enter(s, st); var c = q(s, ':scope > .e-cur.e-solo'); labCur(s, st, V3DIR > 0 && st === 0 && c && +c.getAttribute('data-step') === 0); },
+    step: function (s, st, dir) { FX.v3gen.step(s, st, dir); labCur(s, st, dir !== -1); }
+  };

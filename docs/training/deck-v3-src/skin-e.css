@@ -227,3 +227,39 @@ html.light .slide.v3:not(.e-ink) .e-scene,.slide.v3.e-paper .e-scene{display:non
 .who.v3 .e-spot{mix-blend-mode:normal;top:624px;bottom:auto;right:128px;width:420px;height:236px}
 .wallsl.v3 .wall3{z-index:2}
 html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-image:none;mask-image:none}
+
+/* ---- 커서 장면 (9 · 17~19): 이름표 붙은 화살표 · 쥔 손 · 선택 테두리 · 맞춤선 · 거리 이름표 ---- */
+.v3 .e-board{position:absolute;left:860px;top:196px;width:900px;height:506px;z-index:4;visibility:hidden;pointer-events:none}
+.v3 .e-art{position:absolute;inset:0;border:1.5px solid var(--d-line2);border-radius:12px;background:var(--d-bg2)}
+.v3 .e-grid{position:absolute;inset:0;border-radius:12px;background:radial-gradient(var(--d-dot) 1.4px,transparent 1.6px) 12px 12px/24px 24px}
+.v3 .e-item{position:absolute;border-radius:8px}
+.v3 .e-shot{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}
+.v3 .e-ghost{position:absolute;inset:0;border-radius:8px;border:2px solid var(--d-cool);opacity:0}
+.v3 .e-sel{position:absolute;border:2px solid var(--d-cool);opacity:0;border-radius:2px}
+.v3 .e-sel i{position:absolute;width:14px;height:14px;background:var(--d-bg);border:2px solid var(--d-cool);margin:-8px}
+.v3 .e-sel i:nth-child(1){left:0;top:0}.v3 .e-sel i:nth-child(2){right:-16px;top:0}.v3 .e-sel i:nth-child(3){left:0;bottom:-16px}.v3 .e-sel i:nth-child(4){right:-16px;bottom:-16px}
+.v3 .e-marq{position:absolute;border:1.5px dashed var(--d-cool);background:var(--d-coolbg);opacity:0}
+.v3 .e-gd{position:absolute;opacity:0;background:var(--d-acc)}
+.v3 .e-gv,.v3 .e-gc{top:-30px;bottom:-30px;width:1.5px}
+.v3 .e-gh{left:-30px;right:-30px;height:1.5px}
+.v3 .e-gc{background:var(--d-cool)}
+.v3 .e-dist{position:absolute;opacity:0;font-family:var(--mono);font-size:20px;color:#fff;background:var(--d-acc);border-radius:4px;padding:1px 7px}
+.v3 .e-ok{position:absolute;right:-22px;top:-22px;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;font-size:30px;font-weight:800;background:var(--e-lime);color:#121214;opacity:0}
+.v3 .e-cap{position:absolute;left:0;top:calc(100% + 18px);margin:0;font-family:var(--mono);font-size:21px;color:var(--d-mute)}
+.v3 .e-cur{position:absolute;left:0;top:0;z-index:8;opacity:0;pointer-events:none;white-space:nowrap}
+.v3 .e-cur .e-ptr{position:absolute;left:-4px;top:-3px;width:36px;height:36px;fill:var(--e-cc);stroke:#fff;stroke-width:1.4;stroke-linejoin:round;transition:none}
+.v3 .e-cur .e-hand{position:absolute;left:-10px;top:-8px;width:40px;height:40px;fill:none;stroke:#fff;stroke-width:2;display:none;filter:drop-shadow(0 0 0 var(--e-cc))}
+.v3 .e-cur.e-grab .e-ptr{display:none}
+.v3 .e-cur.e-grab .e-hand{display:block;color:var(--e-cc);stroke:var(--e-cc)}
+.v3 .e-cur b{position:absolute;left:26px;top:28px;font-size:22px;font-weight:700;padding:3px 12px;border-radius:999px;background:var(--e-cc);color:#fff}
+.v3 .e-cur.e-k-verm{--e-cc:#E4502F}.v3 .e-cur.e-k-cob{--e-cc:#3338F0}.v3 .e-cur.e-k-grey{--e-cc:#6b6b70}.v3 .e-cur.e-k-lime{--e-cc:#a9b53a}
+.v3 .e-cur.e-k-lime b{color:#121214;background:#D8E46C}
+.v3 .e-ring{position:absolute;left:-14px;top:-14px;width:28px;height:28px;border-radius:50%;border:2px solid var(--e-cc);opacity:0}
+.section.v3 .e-board ~ .e-spot,.section.v3 .e-spot{transition:none}
+/* 9장 판 오른쪽 · 아래 순서 막대는 바탕 위에 띠 하나 깔고 */
+.section.v3 .e-scene{opacity:.35}
+.section.v3 .agenda{z-index:3}
+.section.v3 .agenda:before{content:"";position:absolute;left:-128px;right:-128px;top:-50px;bottom:-60px;z-index:-1;background:linear-gradient(0deg,var(--d-bg) 55%,rgba(0,0,0,0))}
+/* 16장: 그림을 오른쪽 위 칸으로 (「그래서」 띠와 떨어지게) */
+.who.v3 .flow2{width:1260px}
+.who.v3 .e-spot{top:300px;right:128px;width:380px;height:214px}
