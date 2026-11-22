@@ -2,7 +2,7 @@
 
 | 무엇 | 파일 | 메모 |
 |---|---|---|
-| **메인 연수 덱 (E)** | [deck-e.html](deck-e.html) **21장 · 60분** | 왜(1~4) → 하네스란(5~7) → 그림책(8) → 같은 부탁 다른 결과(9) · 이런 것도 만들어요(10) → 채팅 vs 작업 모드 비교(11~13) → 언제 무엇을(14) · 브라우저 시연(15) · 주방 + 우리 학교 레시피(16) → 실습(17~20) → 마무리(21). 순서는 [plan-v2.md](plan-v2.md) 「deck-e 순서」. 소스 `deck-v3-src/slides-e.html` + `skin-e.css` + `motion-e.js` (`py deck-v3-src/build.py --skin e --slides docs/training/deck-v3-src/slides-e.html --out docs/training/deck-e.html`) |
+| **메인 연수 덱 (E)** | [deck-e.html](deck-e.html) **19장 · 60분** | 왜(1~4) → 하네스란(5~7) → 그림책(8) → 커서 장면(9) → AI에게 이런 걸 시켜도 만들어 줘요(10) → 하네스는 이미 많아요(11) → 언제 무엇을(12) · 브라우저 시연(13) · 주방 + 우리 학교 레시피(14) → 실습(15~18, 28분) → 마무리(19). 순서는 [plan-v2.md](plan-v2.md) 「deck-e 순서」. 소스 `deck-v3-src/slides-e.html` + `skin-e.css` + `motion-e.js` (`py deck-v3-src/build.py --skin e --slides docs/training/deck-v3-src/slides-e.html --out docs/training/deck-e.html`) |
 | 예비 연수 덱 (v3) | [deck-v3.html](deck-v3.html) **21장** | E가 안 열릴 때. 8장부터 장 번호가 E보다 하나 작아요. 소스 [deck-v3-src/](deck-v3-src/) (`py deck-v3-src/build.py`) |
 | 예비 덱 | [deck-v2.html](deck-v2.html) | 예전 37장 통합본 그대로 (AI 커닝 포함). 메인 덱이 안 열릴 때만 |
 | **AI 커닝 (따로)** | [ai-cheating/](ai-cheating/) | 따로 하는 자리용 16장 덱 · 대본 · 근거 조사 · 범위 규칙 |

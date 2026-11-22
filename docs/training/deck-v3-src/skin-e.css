@@ -559,3 +559,21 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .gal4.v3 .e-gi>i.s2{opacity:0}
 .gal4.v3.e-s2 .e-gi>i.s2{opacity:1}
 @media (prefers-reduced-motion:reduce){.gal4.v3 .e-gi>i{transition:none}}
+/* ---- v6 하네스는 이미 많아요 ---- */
+.many.v3 .e-bigh{position:absolute;left:128px;right:128px;top:262px;margin:0;font-size:34px;font-weight:600;color:var(--d-sub)}
+.many.v3 .e-cols{position:absolute;left:128px;right:128px;top:350px;display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.many.v3 .e-cols .card{padding:30px 30px;display:flex;flex-direction:column;gap:12px;min-height:300px}
+.many.v3 .e-cols .e-tag{font-family:var(--mono);font-size:26px;color:var(--d-acc)}
+.many.v3 .e-cols h3{margin:0;font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1.2}
+.many.v3 .e-cols p{margin:0;font-size:30px;font-weight:600;color:var(--d-sub);line-height:1.4}
+.many.v3 .e-many{position:absolute;left:128px;right:128px;top:730px;margin:0;font-size:44px;font-weight:700;color:var(--d-ink)}
+.many.v3 .e-many small{display:block;margin-top:12px;font-size:28px;font-weight:500;color:var(--d-mute)}
+.lab.v3 .ready small.e-retry{display:block;margin-top:10px;font-size:28px;font-weight:700;color:var(--e-red)}
+.many.v3 .e-many{bottom:auto;max-width:none}
+.lab.v3 .e-retry{position:absolute;right:128px;top:150px;margin:0;font-size:30px;font-weight:700;line-height:1.4;color:var(--e-red);text-align:right;z-index:3}
+.many.v3 .e-cols{top:340px}
+.many.v3 .e-cols .card{min-height:330px;padding:34px}
+.many.v3 .e-cols h3{font-size:50px}
+.many.v3 .e-cols p{font-size:34px}
+.many.v3 .e-many{top:740px;font-size:54px}
+.many.v3 .e-many small{font-size:30px}
