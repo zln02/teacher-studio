@@ -46,6 +46,10 @@ Do it yourself, here. No helper agent, no plan step, no extra skill reads. 「�
 - `ai: "rules"` = prepared answers. Say it in the final message, one line: 「인터넷 AI(챗GPT 같은)가 아니라, 준비한 설명 N개에서 골라 답해요. 그래서 키·비용·인터넷이 필요 없어요.」 The page says the same in 「이 프로그램은?」.
 - If the user wants a real AI chatbot: it needs an account, a key and money, and students may not use AI services directly (18+). Offer the rules version for students and, for the teacher only, how to use an AI service themselves. Do not build a key into a file.
 
+## Garnish and motion (optional, last)
+- After the page works and passes its check: `py shared/design/garnish.py env`. Codex present -> one consistent backdrop or illustration set (no text, logos or faces; `garnish.py plan` prints the optional command, `finish` compresses and writes the prompt manifest). Claude only -> `garnish.svg_backdrop()` or the CC0 packs. Inline the picture, keep it behind a scrim, never behind a form or a table.
+- A talk-like page (an explainer, a guided demo) may use the preset E motion words (`shared/design/motion_e.js`: `TSE.auto()`, `data-e="big|pen|hl|cursor|drag"`); a demo cursor ends on the real result and makes no speed claim.
+
 ## Offline by default
 - No CDN, no outside fonts or images. Python in the browser (Pyodide) is a ~10 MB+ download from the internet, so it breaks on a blocked school network: use the JavaScript pad, and if the class uses Python, show Python as read-only code in helper answers and say so in one line.
 - `"online"` is not supported here; if the user insists on an online library, that is the bare path (R5) with a 「인터넷이 있어야 열려요」 line.

@@ -53,7 +53,7 @@ Never hand the build to a helper agent or a background task. Never read `assets/
   {"type": "ox", "q": "<참·거짓이 분명한 문장>", "answer": 0, "exp": "<근거>"}
  ]}
 ```
-- Colours, fonts and sizes: the tool's pick is the default; the user's design or a look that fits this topic may replace it (`design.style`, `palette_from`, `custom_css`; the check still applies). The tool picks from (12 styles, 10 question layouts picked from the content; leave `design.seed` out: every build is a new look, the printed seed reproduces one). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
+- Colours, fonts and sizes: the tool's pick is the default; the user's design or a look that fits this topic may replace it (`design.style`, `palette_from`, `custom_css`; the check still applies). The tool picks from (13 styles incl. preset E `ink-poster`, 10 question layouts picked from the content; leave `design.seed` out: every build is a new look, the printed seed reproduces one). You steer with `design.words` (2-3 scene words from the topic), `mood` (긴장감·신남·차분·따뜻함·밝음) and, only if the user asks for a look, `design.style`.
 - Family / club / shop: `"use": "personal"`; far screen or elders: `"design": {"large": true}`; student tablets: `"device": "tablet"`; phones: `"device": "phone"`.
 - The user's logo or template colours: `design.palette_from` (`../teacher-studio/references/user-colors.md`).
 
@@ -65,6 +65,11 @@ Never hand the build to a helper agent or a background task. Never read `assets/
 5. ★ `exp` on every question: one line saying WHY, not repeating the answer word (the screen already prints 「정답: …」).
 6. ★ At most 2 in 10 negative questions (「아닌 것은?」). No two questions that test the same fact.
 7. Any answer position is fine: the tool balances positions itself.
+
+## Preset E and garnish (고명) for games
+- `"design": {"style": "ink-poster"}` (or the words 「잉크」「강렬하게」 in `design.words`) = preset E: ink ground, paper type, ONE vermilion accent, flat hairline cards, HUD corners (`shared/design/preset_e.py`).
+- Garnish comes last and only where reading stays easy: `py shared/design/garnish.py env`. Codex present -> one consistent backdrop / character set (no text, logos or faces; a reference picture with `-i` keeps one character; the command is optional, `garnish.py plan` prints it); Claude only -> the theme's own SVG drawings, `garnish.svg_backdrop()` or the CC0 packs in `shared/assets`. Pictures are inlined (no outside image), dimmed behind question text, never behind the choices.
+- Same scene rules as slides: one idea per screen, a demo of how to play ends on the real game screen, no speed claims (「10초면 끝」) that were not measured.
 
 ## Look check (on the sheet picture; fix only what fails)
 1. Reading order is question -> choices -> decoration. 2. No text cut off, covered or overlapping (top bar, 「팀 차례」 tag, host character). 3. The scene fits the topic (words/props match). 4. Text is easy to read on its background. 5. It does not look like the last game you made (else change `design.seed`).

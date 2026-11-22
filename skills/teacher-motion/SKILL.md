@@ -118,6 +118,12 @@ python3 scripts/check_page.py page.html
   4. 반복(loop) 움직임은 `STAGE.timeline(anim, 1)`로 등록(길이 무한대 방지). setTimeout/setInterval로 연출하지 않는다.
   5. 영상 길이 = `STAGE.timeline(tl, 총ms)`. 웹 글꼴이 늦게 오면 `document.fonts` 'loadingdone'에서 fitText 다시.
 
+## 프리셋 E 움직임 낱말 · 고명 (직접 만들 때 · 클릭으로 넘기는 화면)
+- **움직임 낱말** `shared/design/motion_e.js` (ES2017, 라이브러리 없음): `preset_e.motion_js()`를 show.js 앞에 붙이고, 요소에 `data-e="..."` + `data-b="몇 번째 클릭"`만 적으면 돼요. `big` 큰 글자(음절마다 45ms 간격으로 떨어지며 흐림→또렷) · `pen` 펜 선 긋기(`data-e-marks`로 글자를 찾아 동그라미·밑줄·화살표 + 짧은 메모) · `note` 손글씨 메모 · `pills` 단계 알약 · `hl` 근거 한 줄 낱말씩 밝히기(숫자는 강조색) · `dot` 주홍 점이 떨어져 밑줄이 됨 · `drag` 이름표 붙은 커서 여러 개가 끌어다 놓기(맞춤선·선택 테두리, **끝은 진짜 결과물** `data-e-result`) · `cursor` 시연 커서 하나(점 따라 이동·클릭, 끝은 진짜 결과물) · `TSE.hud(장, i, n)` HUD 틀. 클릭 덱이 아니면 `TSE.auto()` (→ / 클릭 = 다음, ← = 끝 모습으로 뒤로).
+- 값(`preset_e.MOTION`): 들어오기 120~260ms, 움직이는 동안만 흐림, 닿으면 가만히. 뒤로 가기 · 인쇄 · `?static=1` · 움직임 줄이기 = 끝 모습 바로. CSS transition 대신 스크립트 움직임만 (녹화기가 시계를 멈추면 transition은 반쯤에서 찍혀요).
+- 장면 규칙: 큰 글자는 핵심 문장에만, 한 장면에 하나, 비유는 진짜 화면을 먼저 보여 준 뒤, 같은 판을 여러 번 보여 주지 말고 이름표만 바꾸기, 커서 장면은 진짜 결과로 끝나고 「몇 초 만에」 같은 속도 주장 금지 (`../teacher-slides/references/content-slides.md` 「Scene rules」).
+- **고명(그림 바탕)**: 마지막에, 읽기를 해치지 않는 곳에만. `py shared/design/garnish.py env` → Codex가 있으면 같은 화풍 바탕 2~3장(글자·로고·얼굴 없음, 왼쪽 55% 어둡게; 명령은 `garnish.py plan`이 보여 주고, 꼭 필요하지 않아요), 없으면 `garnish.svg_backdrop()`(코드로 그린 바탕)이나 무료 그림 모음. 그림은 파일 안에 넣고 글 뒤에서 어둡게.
+
 ## 절대 규칙
 1. **학생 정보 금지**: 학생 이름·얼굴·목소리·학번을 넣지 않는다. 선생님 자료에 보이면 「학생 정보가 보여요. 지우고 진행할까요?」 먼저 묻기.
 2. **사실 확인**: 과목 소개·목표 문구에 사실 내용이 들어가면 확실한 것만. 애매하면 구성표에 「확인 필요」.

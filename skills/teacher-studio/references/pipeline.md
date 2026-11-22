@@ -8,6 +8,7 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 | 2 | 대본·내용 script | the words/rules/questions/spec list | type table |
 | 3 | 연출·콘티 storyboard | numbered frame sheet | `scripts/storyboard.py spec.json --html out.html` |
 | 4 | 제작 build | the first working file | skill build + report which checks passed, failed or could not run |
+| 4+ | 고명 garnish (optional, last touch of build) | the same file, dressed: backdrops / illustrations / motion words where they help reading | `shared/design/garnish.py env` -> Codex: a consistent picture set (`plan` prints the optional command, `finish` compresses + manifest); Claude only: `svg_backdrop()` / CC0 packs / preset E motion (`motion_e.js`). Skip on dense screens; no text, logos or faces in pictures; never required |
 | 5 | 수정 fix | the changed file, 2 tweak offers | `vague-fix.md`; max 2 loops |
 | 6 | 배포 deliver = 활용·전달 (teachers: 수업 활용) | 꾸러미: files for the use, how to open them on THIS PC, 2-3 use ideas, privacy, 출처 | `classroom-use.md`; `scripts/deliver.py FILE --use tv\|tablet\|print\|lms\|home\|archive` (general: screen\|share\|sns\|drive) |
 

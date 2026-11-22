@@ -13,7 +13,7 @@
 | 타이머, 뽑기, 모둠 나누기, 대진표, 점수판 | 🧰 수업 도구 | `skills/teacher-class-tools` ✅ (spec → `build_tool.py`, 오프라인 HTML 1개, 가족·동호회도) |
 | 프로그램, 앱, 웹페이지, 도우미·챗봇, 계산기, 시뮬레이션, 연습장 | 🖥️ 웹 앱 | `skills/teacher-studio` ✅ (`references/webapp.md`: spec → `scripts/build_webapp.py` + `check_webapp.py`, 오프라인 HTML 1개, 프로젝터 모드, 「AI」는 솔직하게) |
 | 엑셀·CSV·설문·점수·가계부 분석, 그래프 | 📊 자료 분석 | `skills/teacher-data` ✅ (AI가 원본을 읽지 않고 스크립트가 집계 → 쉬운 그래프 보고서, 이름 가림·숫자 대조) |
-| 수업 슬라이드, 발표 자료(웹·PPT), 연수 자료, 홍보 PPT, 기관 보고 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 12 스타일 × 장 23종 × 배치 변형 × 용도 4(수업·홍보·기관 보고·개인), 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
+| 수업 슬라이드, 발표 자료(웹·PPT), 연수 자료, 홍보 PPT, 기관 보고 | 🖥 슬라이드 | `skills/teacher-slides` ✅ (spec → `build slides`: 13 스타일(프리셋 E 「잉크 포스터」 포함) × 장 23종 × 배치 변형 × 용도 4(수업·홍보·기관 보고·개인), 점검·접촉 시트·닮음 검사 / 옛 lesson-deck 스킨 3개는 최하 우선순위) |
 | 과목 소개 영상, 수업 시작 화면, 오프닝, 글자 움직이기 | ✨ 모션·타이포·영상 | `skills/teacher-motion` ✅ (subject-intro 3 · lesson-opening 2) |
 | 학습지, 활동지, 형성평가지(인쇄) | 📝 학습지 | `skills/teacher-worksheet` (예정) 📋 |
 | 공문, 가정통신문, 안내문, 계획서, 결과보고서 (한글·워드·PDF), 양식 채우기, 한글 파일 고치기, PDF 합치기·나누기 | 📄 문서 | `skills/teacher-docs` ✅ (spec → `docs.py make` HWPX·DOCX·PDF, 공문 형식 자동(1. 가. 1) …·끝·붙임·날짜), `fill`·`patch`로 원본 서식 유지, 점검기 `doc_check.py`) |
@@ -60,6 +60,7 @@
 | `shared/design/` | 디자인 생성기 `design.py` + 팔레트 15 + 글자 크기표 (게임·발표·포스터·초대장·인쇄·웹) | `design.py --use present --mood 고급스럽게` → 색·글꼴·글자 크기 한 세트 |
 | `shared/design/system.py` · `DESIGN-RULES.md` · `ai_look.py` | 글자 크기 단계 · 자간 · 8pt 여백 · 이름 있는 배치 틀 · 색 밝기 사다리(OKLCH) · 장식 7가지 · 움직임 값 / 규칙 27개 / 「밤티 검사」(빛 번짐·형광·속 빈 글자·그라데이션·강조색 수·여백·장식 겹) | `ai_look.py --html 결과.html` → 전문 디자이너 기준 5/5 |
 | `shared/design/color_from.py` · `color_check.py` · `oklch.py` | 내 로고·사진·PPT/POTX·워드·한글(HWPX)·사이트 CSS에서 색 뽑기 → 디자인 값(글자 대비 4.5, 밝기만 조정) / 색약(적·녹·청황) 점검 WARN / OKLCH 변환·조화색·같은 간격 명암 | `color_from.py logo.png --out pal.json` → spec `design.palette_from`. 점검기가 자동으로 WARN. 가이드 `skills/teacher-studio/references/user-colors.md` |
+| `shared/design/preset_e.py` · `motion_e.js` · `garnish.py` | 프리셋 E 「잉크 포스터」(2026-11-23 연수 덱의 색·격자·글자 크기·카드 6가지·움직임 값, 밝은 판까지 대비 점검) / 움직임 낱말(큰 글자 · 펜 · 단계 알약 · 낱말 밝히기 · 주홍 점 · HUD 틀 · 끌어다 놓기 커서 · 시연 커서, 클릭으로, 움직임 줄이기 = 끝 모습) / 고명: 환경 따라 그림 바탕(Codex 있으면 같은 화풍 그림 + 명령, 없으면 코드로 그린 바탕), 글 많은 장은 생략 | 슬라이드 `"design": {"style": "ink-poster"}`, `"garnish"`, 장마다 `"pen"` `"pills"` `"backdrop"` |
 | `shared/design/meaning.py` | 뜻이 있는 색: 「초록불」「빨간불」「청팀·백팀」「금·은·동」처럼 낱말이 색 이름이면 그 색으로 칠함(순서대로 돌려 쓰는 색보다 먼저). 옆 칸은 비슷한 색을 피함 | 슬라이드(PPT·웹) 비교 칸·목록·카드, 게임 분류 통, 점수판·모둠 카드가 자동으로 물어봄 (`color_of` · `assign` · 화면용 `js()`) |
 | `shared/vendor/` | Motion · canvas-confetti · Chart.js · KaTeX · Lucide · Phaser · anime.js · axe-core(점검기 전용) | `inline.py`로 쓴 것만 파일에 넣기 (`manifest.json`에 버전·라이선스) |
 | `shared/fonts/` | TS Sans(Pretendard) · Noto Sans/Serif KR 기본 글자 모음 + `embed.py` | 페이지에 쓰는 글자만 잘라 WOFF2로 파일 안에 넣기 |
