@@ -363,8 +363,13 @@ def main() -> int:
     slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
     if "__DEMO_VIDEO__" in slides:   # 시연 예비 영상: 크니까 덱에 넣지 않고 옆 파일로 이어요 (deck-v3-src/demo/pumui.mp4)
         dv = HERE / "demo" / "pumui.mp4"
-        slides = slides.replace("__DEMO_VIDEO__", '<video src="deck-v3-src/demo/pumui.mp4" controls preload="none" playsinline></video>' if dv.exists() else '<div class="frame ph"><svg class="ic"><use href="#video"/></svg>녹화 영상 들어갈 자리 (deck-v3-src/demo/pumui.mp4)</div>')
-        print("  demo video", "linked" if dv.exists() else "placeholder")
+        if dv.exists():
+            slides = slides.replace("__DEMO_VIDEO__", '<video src="deck-v3-src/demo/pumui.mp4" controls preload="none" playsinline></video>')
+        else:   # 영상이 없으면(라이브 시연만) 예비 영상 클릭과 빈 자리를 통째로 빼요
+            slides = re.sub(r'\s*<div class="e-backup"[^>]*>.*?__DEMO_VIDEO__</div>', "", slides, count=1, flags=re.S)
+            slides = slides.replace('<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="2"', '<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="1"', 1)
+            slides = slides.replace("(시연은 3분 30초 안에 · 길어지면 녹화 영상으로)", "(시연은 3분 30초 안에 · 라이브 시연만)", 1)
+        print("  demo video", "linked" if dv.exists() else "omitted (live demo only)")
     if "__ECMP_" in slides:
         slides = ecmp_fill(slides)
         slides = gal_fill(slides)
