@@ -243,6 +243,7 @@ def main() -> int:
     ap.add_argument("--foot", default="AI에게 무기를 주면 · 박진영")
     ap.add_argument("--illust-src", default="", help="그림 폴더(예: 임시 폴더의 illust-gpt)를 줄여서 illust/에 넣고 만들어요")
     ap.add_argument("--agenda", default="", help="쉼표로 구분한 구간 이름 (비우면 본 덱 기본값)")
+    ap.add_argument("--skin", default="", choices=["", "e"], help="e = 샘플 E 층(skin-e.css + motion-e.js: 1 · 7 · 14장). 예: --skin e --out docs/training/deck-e-sample.html")
     a = ap.parse_args()
     three_p = Path(a.three)
     if three_p.exists():
@@ -256,10 +257,12 @@ def main() -> int:
     three = three.decode("utf-8")
     anime = (REPO / "shared/vendor/animejs/anime-4.5.0.umd.min.js").read_text(encoding="utf-8")
     css = (HERE / "deck.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion.css").read_text(encoding="utf-8") + "\n" + (HERE / "motion2.css").read_text(encoding="utf-8") + "\n" + (HERE / "focus.css").read_text(encoding="utf-8") + "\n" + (HERE / "skin-d.css").read_text(encoding="utf-8")
-    slides = Path(a.slides).read_text(encoding="utf-8")
+    if a.skin == "e":   # 샘플 E 층은 맨 뒤에 (본 덱에는 안 들어가요)
+        css += "\n" + (HERE / "skin-e.css").read_text(encoding="utf-8")
+    slides =Path(a.slides).read_text(encoding="utf-8")
     js = (HERE / "deck.js").read_text(encoding="utf-8")
     js = js.replace("/*__FOOT__*/'AI에게 무기를 주면 · 박진영'", json.dumps(a.foot, ensure_ascii=False))
-    js = js.replace("/*__MOTION__*/", (HERE / "motion.js").read_text(encoding="utf-8") + (HERE / "motion2.js").read_text(encoding="utf-8"), 1)
+    js = js.replace("/*__MOTION__*/", (HERE / "motion.js").read_text(encoding="utf-8") + (HERE / "motion2.js").read_text(encoding="utf-8") + ((HERE / "motion-e.js").read_text(encoding="utf-8") if a.skin == "e" else ""), 1)
     if a.agenda.strip():   # 다른 덱: 구간 이름을 바꿔요 ("-" 하나면 빈 목록)
         names = [x.strip() for x in a.agenda.split(",") if x.strip() and x.strip() != "-"]
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)

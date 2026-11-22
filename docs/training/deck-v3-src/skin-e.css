@@ -1,0 +1,66 @@
+/* =====================================================================
+   샘플 E (build.py --skin e 일 때만 skin-d.css 뒤에 붙어요): 1 · 7 · 14장에만 걸려요 (.slide.e)
+   큰 글자 장면 · 펜 주석(파랑 · 빨강 펜) · 단계 알약 · 낱말 밝히기 · HUD 틀. 바탕 · 주황 하나 · 청록(하네스)은 스킨 D 그대로
+   ===================================================================== */
+:root{--e-red:#ff6b62;--e-blue:#6ea8ff;--e-tick:rgba(238,241,245,.16)}
+html.light{--e-red:#d63b33;--e-blue:#2a63d6;--e-tick:rgba(22,26,32,.18)}
+
+/* 큰 글자 장면 */
+.e .ebig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;visibility:hidden;pointer-events:none;padding-bottom:20px}
+.e .ebig .ek{font-family:var(--mono);font-size:26px;letter-spacing:.04em;color:var(--d-mute);margin-bottom:30px}
+.e .ebig .eh{margin:0;font-size:184px;font-weight:800;letter-spacing:-.055em;line-height:1.04;text-align:center;color:var(--d-ink);text-wrap:balance}
+.e .ebig .eh em{font-style:normal;color:var(--d-acc)}
+.floor.e .ebig .eh{font-size:160px}
+.e .eslot{display:inline-block;width:.15em;height:.15em;margin-left:.05em}
+.e .edot{position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--d-acc);z-index:6;opacity:0;pointer-events:none}
+.e .eline{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:var(--d-acc);z-index:4;opacity:0;transform-origin:50% 50%;pointer-events:none}
+.e .ebase{position:absolute;left:0;top:0;height:2px;background:var(--d-mute);z-index:3;opacity:0;transform-origin:0 50%;pointer-events:none}
+
+/* 바탕 흐름: 큰 글자 뒤의 카드 · 장면은 흐리고 옅게 (걷힐 때 0.22초, motion-e.js eBgLift) */
+.e .e-bg{opacity:.16!important;filter:blur(6px)!important}
+html.reduced .e .eev .w{transition:none!important}
+
+/* 큰 글자 단계(e0)에서 숨길 것 */
+.cover.e.e0>.hd,.cover.e.e0 .m-rule,.cover.e.e0 .tag,.cover.e.e0 .who{visibility:hidden}
+.cover.e h1{position:relative;z-index:5}
+.cover.v3.e .m-rule{background:var(--d-acc)}   /* 큰 제목 밑 주황 선이 이 줄이 돼요 (이어받기) */
+.hx.e.e0 .hd.hm{visibility:hidden}
+.floor.e.e0>.hd,.floor.e.e0 .epills{visibility:hidden}
+
+/* 펜 주석 */
+.e .epen{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:7;pointer-events:none;overflow:visible}
+.e .epen .pn{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.e .epen .red{stroke:var(--e-red)}
+.e .epen .blue{stroke:var(--e-blue)}
+.e .enote{position:absolute;z-index:7;font-size:36px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;transform:rotate(-3deg);transform-origin:0 100%;visibility:hidden;pointer-events:none}
+.e .enote.red{color:var(--e-red)}
+.e .enote.blue{color:var(--e-blue)}
+.hx.e:not(.map) .epen,.hx.e:not(.map) .enote{visibility:hidden!important}
+
+/* 단계 알약 (위 줄 가운데) */
+.e .epills{position:absolute;top:46px;left:646px;width:628px;display:flex;gap:14px;z-index:7;pointer-events:none}
+.e .epills .sg{position:relative;flex:1;display:flex;flex-direction:column;gap:6px}
+.e .epills .sg:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:3px;background:var(--d-line2)}
+.e .epills .sg i{position:relative;display:block;height:5px;border-radius:3px;background:var(--d-sub);transform-origin:0 50%;transform:scaleX(0)}
+.e .epills .sg.cur i{background:var(--d-acc)}
+.e .epills .sg b{font-family:var(--mono);font-weight:400;font-size:20px;line-height:1.1;color:var(--d-mute);white-space:nowrap}
+.e .epills .sg.cur b{color:var(--d-ink)}
+
+/* 14장 자리: 막대를 위로 당기고, 결론 · 근거 줄을 아래에 */
+.floor.v3.e .levels{top:262px;height:452px}
+.floor.v3.e .capline{top:738px;bottom:auto}
+.e .eev{position:absolute;left:128px;right:128px;top:884px;margin:0;font-family:var(--mono);font-size:26px;line-height:1.5;color:var(--d-sub);z-index:3;visibility:hidden}
+.e .eev .w{opacity:.28;transition:opacity .16s ease-out,color .16s ease-out}
+.e .eev .w.lit{opacity:1;color:var(--d-ink)}
+.e .eev .w.n.lit{color:var(--d-acc)}
+
+/* HUD 틀: 네 모서리 괄호 + 아래 눈금자 + 지금 장 눈금(주황) */
+.e .ehud{position:absolute;inset:0;z-index:6;pointer-events:none}
+.e .ehud .c{position:absolute;width:30px;height:30px;border:0 solid var(--d-line2)}
+.e .ehud .tl{left:26px;top:26px;border-left-width:2px;border-top-width:2px}
+.e .ehud .tr{right:26px;top:26px;border-right-width:2px;border-top-width:2px}
+.e .ehud .bl{left:26px;bottom:26px;border-left-width:2px;border-bottom-width:2px}
+.e .ehud .br{right:26px;bottom:26px;border-right-width:2px;border-bottom-width:2px}
+.e .ehud .rl{position:absolute;left:96px;right:96px;bottom:14px;height:9px;
+  background:linear-gradient(90deg,var(--e-tick) 1px,transparent 1px) 0 100%/24px 5px repeat-x,linear-gradient(90deg,var(--e-tick) 1px,transparent 1px) 0 100%/192px 9px repeat-x}
+.e .ehud .ph{position:absolute;bottom:0;width:3px;height:16px;margin-left:-1px;border-radius:2px;background:var(--d-acc)}
