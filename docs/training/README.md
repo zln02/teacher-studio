@@ -5,7 +5,7 @@
 | **메인 연수 덱 (E)** | [deck-e.html](deck-e.html) **20장 · 60분** | 왜(1~4) → 하네스란(5~7) → 그림책(8) → 채팅 vs Cowork · Codex 비교(9~12) → 언제 무엇을(13) · 브라우저 시연(14) · 큰 하네스 + 작은 하네스(15) → 실습(16~19) → 마무리(20). 순서는 [plan-v2.md](plan-v2.md) 「deck-e 순서」. 소스 `deck-v3-src/slides-e.html` + `skin-e.css` + `motion-e.js` (`py deck-v3-src/build.py --skin e --slides docs/training/deck-v3-src/slides-e.html --out docs/training/deck-e.html`) |
 | 예비 연수 덱 (v3) | [deck-v3.html](deck-v3.html) **21장** | E가 안 열릴 때. 8장부터 장 번호가 E보다 하나 작아요. 소스 [deck-v3-src/](deck-v3-src/) (`py deck-v3-src/build.py`) |
 | 예비 덱 | [deck-v2.html](deck-v2.html) | 예전 37장 통합본 그대로 (AI 커닝 포함). 메인 덱이 안 열릴 때만 |
-| **AI 커닝 (따로)** | [ai-cheating/](ai-cheating/) | 따로 하는 자리용 16장 덱 · 대본 · 근거 조사 · 범위 규칙 |
+| **AI 커닝 (따로)** | [ai-cheating/](ai-cheating/) | 따로 하는 자리용 9장 덱(E 모양 · 11분 · 흐름 → 흔적 → 선생님이 기술로 할 수 있는 예방 5가지) · 대본 · 근거 조사 · 범위 규칙 |
 | 진행 계획 · 시간표 | [plan-v2.md](plan-v2.md) | 60분 시간표, 비유 표, 준비 상태 |
 | 모둠 메뉴판 | [menu-card.md](menu-card.md) | 일상 · 업무 · 수업 예시 (예시일 뿐) |
 | 종이 안내지 | [handout/](handout/) | A4 2쪽 |
