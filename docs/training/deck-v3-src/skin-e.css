@@ -554,3 +554,8 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .ecmp.v3 .e-side .frame{width:auto;height:auto;aspect-ratio:auto;box-shadow:none;display:block}
 .ecmp.v3 .e-side{min-width:0}
 .gal4.v3 .e-gi{background-position:center top}
+.gal4.v3 .e-gi{position:relative;overflow:hidden}
+.gal4.v3 .e-gi>i{position:absolute;inset:0;background-size:cover;background-position:center top;transition:opacity .45s ease}
+.gal4.v3 .e-gi>i.s2{opacity:0}
+.gal4.v3.e-s2 .e-gi>i.s2{opacity:1}
+@media (prefers-reduced-motion:reduce){.gal4.v3 .e-gi>i{transition:none}}

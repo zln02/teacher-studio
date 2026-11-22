@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import re
 import sys
@@ -84,6 +85,43 @@ def compare_slides() -> str:
 
 ECMP = HERE / "compare-e"   # deck-e v4 진짜 비교 3장: compare-e/<case>/ 에 bare.* · harness.* (또는 compare.png 한 장) + facts.json
 
+
+
+SHOWCASE = HERE / "showcase-e"   # 다른 사람이 채워요: showcase-e/<작품>/shot1.png · shot2.png · (title.txt). 여기서는 읽기만.
+
+
+def gal_fill(slides: str) -> str:
+    """10장 「이런 것도 만들어요」: showcase-e에 작품이 있으면 그걸로 2×2 (클릭 1 = shot2로 바뀜). 없으면 slides의 예비 칸 그대로."""
+    import base64, io as _io, re as _re
+    from PIL import Image
+    if not SHOWCASE.exists():
+        return slides
+    def find(d, stem):
+        for ext in ("png", "jpg", "jpeg", "webp"):
+            if (d / f"{stem}.{ext}").exists():
+                return d / f"{stem}.{ext}"
+        return None
+    def uri(p):
+        im = Image.open(p).convert("RGB"); im.thumbnail((1280, 720))
+        b = _io.BytesIO(); im.save(b, "JPEG", quality=90, optimize=True)
+        return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
+    pieces = [d for d in sorted(SHOWCASE.iterdir()) if d.is_dir() and find(d, "shot1")][:4]
+    if not pieces:
+        return slides
+    figs, two = [], False
+    for d in pieces:
+        s1, s2 = find(d, "shot1"), find(d, "shot2")
+        tt = (d / "title.txt").read_text(encoding="utf-8").strip() if (d / "title.txt").exists() else d.name
+        lay = f'<i style="background-image:url({uri(s1)})"></i>'
+        if s2:
+            two = True
+            lay += f'<i class="s2" style="background-image:url({uri(s2)})"></i>'
+        figs.append(f'<figure><div class="e-gi">{lay}</div><figcaption>{html.escape(tt)}</figcaption></figure>')
+    block = '  <div class="e-gal">' + "".join(figs) + '</div>'
+    slides = _re.sub(r"<!--GAL-->.*?<!--/GAL-->", lambda m: block, slides, count=1, flags=_re.S)
+    if two:
+        slides = slides.replace('data-fx="eGal" data-steps="0"', 'data-fx="eGal" data-steps="1"', 1)
+    return slides
 
 def ecmp_fill(slides: str) -> str:
     """__ECMP_<case>_(ASK|bare|harness|CHIPS|NOTE)__ 채우기. 그림이 없으면 「결과 화면 들어갈 자리」."""
@@ -329,6 +367,7 @@ def main() -> int:
         print("  demo video", "linked" if dv.exists() else "placeholder")
     if "__ECMP_" in slides:
         slides = ecmp_fill(slides)
+        slides = gal_fill(slides)
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]

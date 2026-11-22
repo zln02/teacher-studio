@@ -997,3 +997,12 @@
     enter: function (s, st) { eHudIn(s, 0); FX.v3gen.enter(s, st); cmpFrame(s, Math.min(st, 1), false); },
     step: function (s, st, dir) { FX.v3gen.step(s, st, dir); cmpFrame(s, Math.min(st, 1), dir !== -1); }
   };
+
+/* 10장 이런 것도 만들어요: 클릭 1 = 네 칸이 두 번째 화면으로 */
+(function () {
+  function galSet(s, st) { if (st >= 1) s.classList.add('e-s2'); else s.classList.remove('e-s2'); }
+  FX.eGal = {
+    enter: function (s, st) { eHudIn(s, 0); FX.v3gen.enter(s, 0); galSet(s, st); },
+    step: function (s, st) { galSet(s, st); }
+  };
+})();
