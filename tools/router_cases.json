@@ -105,7 +105,7 @@
    "request": "알아서 퀴즈 하나 만들어 줘",
    "route": "game",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 2,
    "must_not": [
     "privacy_note"
    ],
@@ -422,7 +422,7 @@
    "request": "느낌 있게 수업 시작 영상 알아서 해 줘",
    "route": "motion",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 1,
    "must_not": [],
    "tags": [
     "skip-all"
@@ -451,7 +451,7 @@
    "request": "발표자료 알아서 바로 만들어 줘",
    "route": "slides",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 1,
    "must_not": [],
    "pipeline": {
     "checkpoint": "none"
@@ -648,7 +648,7 @@
    "request": "광합성 시뮬레이션 웹페이지 알아서 만들어",
    "route": "webapp",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 2,
    "must_not": [
     "refuses",
     "asks_student_info",
@@ -757,7 +757,7 @@
    "request": "환율 계산기 만들어줘 그냥 해줘",
    "route": "webapp",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 2,
    "must_not": [
     "refuses",
     "asks_student_info",
@@ -1044,7 +1044,7 @@
    "request": "알아서 수업용 퀴즈 하나 만들어 줘",
    "route": "game",
    "direction": false,
-   "max_questions": 0,
+   "max_questions": 1,
    "must_not": [
     "privacy_note"
    ],

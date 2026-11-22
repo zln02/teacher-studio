@@ -156,7 +156,7 @@ class LeanRecipes(unittest.TestCase):
 
     def test_router_is_three_first_match_lists(self):
         sk = (SK / "teacher-studio" / "SKILL.md").read_text(encoding="utf-8")
-        for needle in ("## Decision 1", "## Decision 2", "## Decision 3", "FIRST line that matches", "no question mark"):
+        for needle in ("## Decision 1", "## Decision 2", "## Decision 3", "FIRST line that matches", "quick_ask"):
             self.assertIn(needle, sk)
 
 

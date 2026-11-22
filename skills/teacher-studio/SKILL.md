@@ -1,6 +1,6 @@
 ---
 name: teacher-studio
-description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, PPT·파워포인트, 영상, 보고서, 안내문·PDF. Use it first, even when told 「알아서」「묻지 말고」 (that skips questions, not this skill). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
+description: Entry point for ANY request to make, build or create something, for teachers and anyone - 프로그램, 앱, 웹페이지, 사이트, 도구, 도우미, 챗봇, 계산기, 시뮬레이션, 퀴즈, 게임, 발표자료, PPT·파워포인트, 영상, 보고서, 안내문·PDF. Use it first, even when told 「알아서」「묻지 말고」 (then ask only 1-2 essentials). Routes to games, slides, videos, class tools, data, interactive web apps, planning or legal checks; greets first-time users.
 license: Apache-2.0
 ---
 
@@ -45,7 +45,7 @@ Run scripts by the short command name: `py` on Windows (no `py`: `python`), `pyt
 ## Decision 3 · HOW does the first reply end? (first line that matches)
 | # | The message | Do | Questions |
 |---|---|---|---|
-| 1 | has 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere (any route, even if the rest is vague), or route = bare | `none` = no stop at all: run straight through to the finished file in this reply. One line of assumptions, the result, then 2 tweaks written as statements (「글자 크기나 분위기는 말씀만 하시면 바꿔요」). No options, no pitches, no 콘티 stop, no 「이대로 쓸까요?」. It skips the questions, not the tools: still the skill's script and checker | 0: your reply contains no question mark |
+| 1 | has 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere (any route, even if the rest is vague), or route = bare | `none`: ask only who watches / where it is used if not said (`direction.py` `quick_ask`, one message, 추천 each; no 기획·콘티·프롬프트), then straight to the finished file. One line of assumptions, the result, then 2 tweaks written as statements (「글자 크기나 분위기는 말씀만 하시면 바꿔요」). No options, pitches, 콘티 stop or 「이대로 쓸까요?」. It skips the questions, not the tools: still the skill's script and checker | <= 2 essentials (one message), else 0 |
 | 2 | changes a file that already exists (「글씨 크게」「색 바꿔」) | `build`: change it, show it, 2 tweaks | 0 |
 | 3 | send / share / post / publish | `deliver`: show the privacy check first, build nothing | 1 |
 | 4 | one-screen tool (timer, picker, team maker, scoreboard, bracket) | `none`: build, show | 0 |

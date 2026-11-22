@@ -4,7 +4,8 @@ Goal: the user chooses, they do not have to invent. Show options first, ask last
 Inspired by "grill-me" (mattpocock/skills, MIT), rewritten and shrunk for non-coders.
 
 ## Rules
-1. **Clear request, or 「알아서」/「바로」/「그냥 해 줘」: do not ask. Build.** State assumptions in one line: 「바로 만들게요. (<가정>으로 했어요)」
+1. **Clear request: do not ask. Build.** State assumptions in one line: 「바로 만들게요. (<가정>으로 했어요)」
+1a. **「알아서」/「바로」/「묻지 말고」/「그냥 해 줘」**: ask only the 1-2 essential questions the request left open (누가 보나요? / 어디에 쓰시나요?: `direction.py` `quick_questions`, `quick_ask` is the message), in ONE short message, each with 추천 (「네」 = all recommended), then make it with no other stop. The request already says who and where (「중2 수업 도입용」「교직원 회의용」) -> no question at all. A one-line ask is enough: the harness works out the rest itself so the user does not need fix-up rounds. Never name the steps to the user (no 기획 · 콘티 · 프롬프트).
 2. **Vague request: options first.** Three one-line directions with one marked 추천, a mood preview when the environment can show it, only then questions (`direction-step.md`).
 3. **One round in total, at most 5 questions** (spec: fewer is better). The first-run prefs question (school level, subject, device) is part of that same round and is asked only if it cannot be inferred. Never ask twice.
 4. **Never ask what you can infer or look up**: device and level (`~/.teacher-studio/prefs.json`), grade and subject from wording ("초3 구구단"), OS, file type, size. Never ask about tools, formats or code.

@@ -6,7 +6,8 @@ Idea sources (own wording): ask with recommended answers and "facts you can find
 Run: `python3 <skill>/scripts/direction.py "<request>" [--html FILE --open]` (Windows: `py`). It prints JSON: `inferred`, `coverage` (5 decisions), `vague`, `mode`, `pitch_slots`, `cards`, `text_fallback`. Use its structure; write the wording yourself.
 
 ## Quick mode (check first)
-- 「알아서」「바로」「그냥 해 줘」 or `mode = build_now`: no pitches, no questions. Say one line: 「바로 만들게요. (<assumptions>으로 했어요)」 and build. Assumptions = `assumptions` list.
+- `mode = build_now`: no pitches, no questions. Say one line: 「바로 만들게요. (<assumptions>으로 했어요)」 and build. Assumptions = `assumptions` list.
+- 「알아서」「바로」「묻지 말고」 with `mode = ask_then_build`: send `quick_ask` as it is (1-2 questions, each with 추천), wait for the answer (「네」 = the recommendations), then build straight through. No pitches, no mood cards, no other stop.
 
 ## Steps (vague requests)
 1. **Know first.** Read `inferred` (subject, grade, device from the request, prefs and env). Never ask what is already there. Facts you can look up (a file the user attached, today's date) you look up.

@@ -116,7 +116,8 @@ class RouterTests(unittest.TestCase):
     def test_skill_routes_web_apps_and_keeps_tools_on_quick_requests(self):
         body = (TS / "SKILL.md").read_text(encoding="utf-8")
         self.assertIn("references/webapp.md", body)
-        self.assertIn("no stop at all", body)
+        self.assertIn("quick_ask", body)   # 「알아서」: at most the 1-2 essential questions, then straight to the file
+        self.assertIn("It skips the questions, not the tools", body)
         self.assertNotIn("mobile apps, websites", body)
         self.assertTrue((TS / "references" / "webapp.md").exists())
 

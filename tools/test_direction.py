@@ -55,12 +55,28 @@ class DirectionTests(unittest.TestCase):
             self.assertTrue(d["vague"], req)
             self.assertEqual((d["mode"], d["question_budget"]), ("direction", 5), req)
 
-    def test_quick_mode_skips_everything(self):
+    def test_quick_mode_asks_only_the_essentials(self):
+        # owner rule (2026-11-22): 「알아서」 still asks the 1-2 questions that change everything (who watches / where it is used),
+        # in ONE short message with a recommendation each, unless the request already answers them; no pitches, no other stops
         for req in ("알아서 퀴즈 만들어", "바로 발표자료 만들어 줘", "느낌 있게 수업 시작 영상 알아서 해 줘"):
             d = direction.build(req, {})
             self.assertTrue(d["quick"], req)
-            self.assertEqual((d["mode"], d["question_budget"]), ("build_now", 0), req)
+            self.assertEqual(d["mode"], "ask_then_build", req)
+            self.assertTrue(1 <= d["question_budget"] <= 2, req)
+            self.assertEqual(len(d["quick_questions"]), d["question_budget"])
+            self.assertTrue({q["key"] for q in d["quick_questions"]} <= {"audience", "purpose"})
+            for q in d["quick_questions"]:
+                self.assertIn(q["recommended"], q["options"])
             self.assertTrue(d["assumptions"])
+            for w in ("기획", "콘티", "프롬프트"):
+                self.assertNotIn(w, d["quick_ask"])
+            self.assertIn("추천", d["quick_ask"])
+
+    def test_quick_mode_builds_now_when_the_request_answers_them(self):
+        for req in ("중2 학생들 수업 도입용 광합성 퀴즈 알아서 만들어",
+                    "나는 중학교 선생님인데 오늘 수업에 쓸 AI 코딩 도우미 만들어줘! 묻지 말고 알아서 만들어"):
+            d = direction.build(req, {})
+            self.assertEqual((d["mode"], d["question_budget"], d["quick_ask"]), ("build_now", 0, ""), req)
 
     def test_plan_requests_route_to_coplan(self):
         d = direction.build("내 유튜브 채널 기획 같이 해 줘", PREFS)

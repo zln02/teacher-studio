@@ -59,7 +59,7 @@ FILLER = ["느낌 있게", "느낌있게", "뭔가", "좀", "멋지게", "예쁘
 VAGUE_MOOD = ["느낌", "분위기", "멋지", "예쁘", "세련", "좋게", "재밌", "재미있"]
 MOODS = ["귀엽", "귀여", "차분", "신나", "신남", "발랄", "고급", "미니멀", "깔끔", "심플", "따뜻", "긴장", "네온", "레트로", "파스텔", "칠판", "자연", "화려"]
 PURPOSE = ["복습", "도입", "수업 시작", "시험", "정리", "연수", "행사", "홍보", "상담", "첫 시간", "총회", "발표", "소개", "오리엔테이션", "대회", "송년", "졸업", "축하"]
-AUDIENCE = ["학부모", "학생", "친구", "동료", "선생님", "가족", "아이들", "어르신", "신입", "고객", "회원"]
+AUDIENCE = ["학부모", "학생", "친구", "동료", "선생님", "가족", "아이들", "어르신", "신입", "고객", "회원", "교직원", "직원", "손님"]
 DEVICE_WORDS = {"board": ["칠판", "TV", "tv", "전자칠판", "빔"], "phone": ["폰", "핸드폰", "휴대폰", "스마트폰", "휴대전화", "모바일", "스마트 기기"],
                 "tablet": ["태블릿", "패드", "아이패드", "갤럭시탭"], "pc": ["개인 PC", "노트북"]}
 PHONE_NOT = re.compile(r"(헤드|이어|마이크|스피커|블루투스|전화기|공중전화)\s*폰|폰트|폰티")  # headphone, earphone, microphone, font (폰트) ... are not a phone
@@ -321,6 +321,37 @@ def pitch_slots() -> list[dict]:
             ]
 
 
+# 「알아서」「묻지 말고」: a one-line ask is enough, but who watches it and where it is used change everything that follows.
+# So ask ONLY these (the ones the request did not answer), in ONE short message with a recommended answer each, then make it.
+ESSENTIAL = (("audience", "누가 보나요?"), ("purpose", "어디에 쓰시나요?"))
+
+
+USE_SAID = re.compile(r"(수업|회의|보고|행사|연수|모임|여행|발표|조회|총회|상담|설명회)\s*(에|용|때|시간|에서)|쓸\s|쓰려고|쓸 거")
+
+
+def essential_questions(cov: list[dict], request: str = "") -> list[dict]:
+    """At most two questions for a 「알아서」 request: who watches / where it is used, only when the request left them open."""
+    by = {c["key"]: c for c in cov}
+    out = []
+    for key, q in ESSENTIAL:
+        c = by.get(key)
+        if key == "purpose" and USE_SAID.search(request or ""):   # 「수업에 쓸」「회의용」 already says where it is used
+            continue
+        if c and c["status"] == "open":
+            out.append({"key": key, "question": q, "options": c["options"], "recommended": c["recommended"]})
+    return out[:2]
+
+
+def quick_ask(qs: list[dict]) -> str:
+    """The one short message (plain words: no 기획 · 콘티 · 프롬프트). '' when nothing needs asking."""
+    if not qs:
+        return ""
+    nums = "①②"
+    parts = [f"{nums[i]} {q['question']} (추천: {q['recommended']})" for i, q in enumerate(qs)]
+    head = "바로 만들게요. 하나만 알려 주세요: " if len(qs) == 1 else "바로 만들게요. 두 가지만 알려 주세요: "
+    return head + " ".join(parts) + " 「네」라고 하시면 추천대로 만들어요."
+
+
 def text_fallback(cs: list[dict]) -> str:
     return "\n".join("%s. %s: %s (글꼴 %s, 배경 %s, 강조 %s)" % (c["id"], c["name"], c["feel"], c["font"], c["colors"]["bg1"], c["colors"]["primary"]) for c in cs)
 
@@ -434,11 +465,14 @@ def build(request: str, prefs: dict | None = None, seed: int = 0, palette: dict 
     vague = is_vague(request, facts, cov)
     cs = cards(request, facts, seed, palette)
     route = "co-plan" if facts["kind"] == "plan" else ("make" if facts["kind"] else "unknown")
+    essentials = essential_questions(cov, request) if facts["quick"] else []
+    mode = ("ask_then_build" if essentials else "build_now") if facts["quick"] else ("build_now" if not vague else "direction")
     return {
         "request": request, "inferred": facts, "route_hint": route, "vague": vague, "quick": facts["quick"], "domain": domain(request, facts)[0],
-        "mode": "build_now" if (facts["quick"] or not vague) else "direction",
+        "mode": mode,
         "coverage": cov, "open": [c["key"] for c in cov if c["status"] == "open"],
-        "question_budget": 0 if (facts["quick"] or not vague) else 5,
+        "question_budget": len(essentials) if facts["quick"] else (0 if not vague else 5),
+        "quick_questions": essentials, "quick_ask": quick_ask(essentials),
         "ask_prefs_in_same_round": not prefs,
         "own_palette": bool(palette), "pitch_slots": pitch_slots(), "cards": cs, "text_fallback": text_fallback(cs),
         "assumptions": ["%s: %s" % (c["label"], c["recommended"]) for c in cov if c["status"] == "open"],

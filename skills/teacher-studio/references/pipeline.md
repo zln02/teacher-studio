@@ -17,7 +17,7 @@ Every making job (deck, game, video, tool, report, document, web/app, plan) walk
 |---|---|---|---|---|
 | 1 | send / share / post / publish | `deliver`: confirm outward action after the privacy check | build | 1 |
 | 2 | the user asks to review a storyboard first | `storyboard`: show the draft and wait | | <= 1 |
-| 3 | clear request, a small tool, or 「알아서」「바로」「그냥 해 줘」 | `none`: make and check the result this turn | merge plan, script and storyboard as needed | 0 |
+| 3 | clear request, a small tool, or 「알아서」「바로」「그냥 해 줘」「묻지 말고」 | `none`: make and check the result (「알아서」: first the 1-2 essential questions it left open, one short message, `direction.py` `quick_ask`) | merge plan, script and storyboard as needed | 0 (「알아서」: <= 2, only who watches / where it is used) |
 | 4 | vague and the choice would change the outcome substantially | `plan`: up to three pitches with a recommendation | | up to 5 in one round |
 
 For clear games, videos, decks and reports, draft a storyboard internally when helpful. Plan or research work can merge the stages into an outline and checked draft. Changes to an existing file jump to stage 5.
