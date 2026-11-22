@@ -70,6 +70,7 @@ DRESS = {
     "minimal-premium": dict(r=2, pat="none", fx="rule", btn="line", serif=False, w=700, tr=-0.04),
     "chalk-paper": dict(r=10, pat="chalk", fx="chalk", btn="note", serif=False, w=700, tr=-0.02),
     "nature-calm": dict(r=16, pat="bands", fx="under", btn="pill", serif=False, w=700, tr=-0.035),
+    "ink-poster": dict(r=12, pat="none", fx="rule", btn="line", serif=False, w=800, tr=-0.055),
     "own-palette": dict(r=12, pat="none", fx="plain", btn="pill", serif=False, w=760, tr=-0.035),
     "studio-clean": dict(r=12, pat="none", fx="plain", btn="pill", serif=False, w=760, tr=-0.035),
 }

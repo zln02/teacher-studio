@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Shared style taxonomy (games AND slides): 12 styles, each with its own composition language (grid, type, ornament, backdrop: not a palette swap). Lives in shared/design; scripts/style_auto.py (game) re-exports it.
+"""Shared style taxonomy (games AND slides): 13 styles, each with its own composition language (grid, type, ornament, backdrop: not a palette swap). Lives in shared/design; scripts/style_auto.py (game) re-exports it.
 
 A WORLD (theme_auto.py: space, sea, fairy ... = props, character, signature drawing) is orthogonal to a STYLE (this file = how it is staged:
 palette, background generator, layout, button/card/scoreboard/title treatments, transitions). Same world x different style = different look.
@@ -18,6 +18,8 @@ palette, background generator, layout, button/card/scoreboard/title treatments, 
   minimal-premium   에디토리얼       cool off-white (not cream), ink, one ochre accent, hairlines, asymmetric grid, no props
   chalk-paper       칠판             board green, chalk yellow, dashed chalk frames
   nature-calm       자연             sage paper, forest + wheat, flat tonal bands, editorial stack
+  ink-poster        잉크 포스터      preset E (preset_e.py): ink #121214, paper type, ONE vermilion accent, cobalt for the tool side; 12-col swiss grid,
+                                     flat hairline cards, HUD corners, fast blur-in motion (motion_e.js)
 Each style also names its grid, type treatment, radius and its two allowed ornaments (shared/design/system.py, DESIGN-RULES.md).
 Usage: python3 styles.py --words "우주 미니멀" --seed 3
 """
@@ -110,7 +112,16 @@ STYLES: dict[str, dict] = {
         "pal": {"bg1": "#ecf6ea", "bg2": "#e0ebdd", "text": "#181c17", "card": "#f4fdf2", "cardText": "#181c17", "cardBorder": "#b6c3b3", "primary": "#296a3b", "btnText": "#f1fef3", "accent": "#c69449", "good": "#005c75", "bad": "#cb4a2a"},
         "layout": {"stack": 4, "split": 3, "poster": 2}, "choice": {"pill": 3, "tile": 3}, "card": {"round": 3, "default": 3}, "score": {"banner": 3, "sticker": 2}, "title": {"underline": 4, "default": 2},
         "transition": {"fade": 5, "iris": 1}, "props": True, "css": "nature"},
+    # 잉크 포스터 = preset E (the 2026-11-23 training deck). Ink ground, paper type, ONE vermilion accent, cobalt only for "with the tool".
+    # Swiss 12-col grid, heavy tight headlines, mono kickers, flat 1.5px hairline cards (radius 12), HUD corners. Tokens: preset_e.py.
+    "ink-poster": {"name": "잉크 포스터", "keys": ["잉크", "주홍", "스위스", "모션 그래픽", "모션그래픽", "키노트", "E 스타일", "잉크 포스터"], "dark": True, "bg": "minimal", "pattern": "none", "font": "TS Sans", "music": "tension", "motion": "normal",
+        "grid": "swiss", "type": {"w": 800, "tr": -0.055, "label": "mono"}, "orn": ["hud", "rule"], "rad": 12,
+        "pal": {"bg1": "#121214", "bg2": "#161618", "text": "#F0EDE6", "card": "#1a1a1d", "cardText": "#F0EDE6", "cardBorder": "#2b2b30", "primary": "#E4502F", "btnText": "#121214", "accent": "#6F74FF", "good": "#D8E46C", "bad": "#E4502F"},
+        "layout": {"poster": 4, "split": 4, "news": 1, "stack": 1}, "choice": {"tile": 5, "pill": 1}, "card": {"default": 5}, "score": {"banner": 4, "led": 1}, "title": {"underline": 4, "default": 2},
+        "transition": {"fade": 6}, "props": False, "css": "ink"},
 }
+# styles a seeded pick may land on without being asked (ink-poster is chosen by purpose / words / design.style, see deck_style.PURPOSE)
+SEEDED = [k for k in STYLES if k != "ink-poster"]
 # which styles suit which world when the words do not name a style (weights; 1 = possible, 4 = natural fit)
 WORLD_STYLE = {
     "space": {"neon-cyber": 4, "glass-3d": 4, "retro-pixel": 3, "minimal-premium": 3, "pop-colorful": 2, "anime-cartoon": 2, "tv-gameshow": 1},
@@ -123,7 +134,7 @@ WORLD_STYLE = {
     "hanok": {"minimal-premium": 3, "chalk-paper": 3, "gold-luxury": 2, "nature-calm": 2, "retro-pixel": 1},
     "sports": {"pop-colorful": 4, "tv-gameshow": 4, "anime-cartoon": 4, "festival-party": 2, "retro-pixel": 2},
     "science": {"glass-3d": 3, "neon-cyber": 3, "minimal-premium": 3, "chalk-paper": 3, "retro-pixel": 2, "pop-colorful": 2},
-    "generic": {k: 1 for k in STYLES},
+    "generic": {k: 1 for k in SEEDED},
 }
 
 

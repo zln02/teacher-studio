@@ -166,6 +166,13 @@ body[data-style=pixel] .title{letter-spacing:.02em;text-shadow:.05em .05em 0 #00
 body[data-style=minimal] .card,body[data-style=minimal] .ts-tile,body[data-style=minimal] .choice,body[data-style=minimal] .ts-bin{border-width:2px!important;box-shadow:none!important;border-radius:2px!important}
 body[data-style=minimal] .title{font-weight:700;letter-spacing:-.04em}
 body[data-style=minimal] .btn{box-shadow:none!important;border-radius:2px}
+/* 잉크 포스터 (preset E): flat hairline cards r12, heavy tight title, mono labels, HUD corners on the page */
+body[data-style=ink] .card,body[data-style=ink] .ts-tile,body[data-style=ink] .choice,body[data-style=ink] .ts-bin{border:1.5px solid var(--cardBorder)!important;border-radius:12px!important;box-shadow:none!important;background-image:none!important}
+body[data-style=ink] .ts-q{border-left:6px solid var(--primary)!important}
+body[data-style=ink] .title{font-weight:800;letter-spacing:-.055em}
+body[data-style=ink] .ts-meta,body[data-style=ink] .team .tname{font-family:"D2Coding","Consolas","TS Sans",monospace;letter-spacing:.04em}
+body[data-style=ink] .btn{box-shadow:none!important;border-radius:12px}
+body[data-style=ink]:after{content:"";position:fixed;inset:18px;pointer-events:none;z-index:1;background:linear-gradient(var(--cardBorder),var(--cardBorder)) 0 0/28px 2px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 0 0/2px 28px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 100% 0/28px 2px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 100% 0/2px 28px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 0 100%/28px 2px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 0 100%/2px 28px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 100% 100%/28px 2px no-repeat,linear-gradient(var(--cardBorder),var(--cardBorder)) 100% 100%/2px 28px no-repeat}
 /* 칠판: dashed chalk frames */
 body[data-style=chalk] .card,body[data-style=chalk] .ts-tile,body[data-style=chalk] .choice,body[data-style=chalk] .ts-bin{border:3px dashed rgba(233,243,238,.8)!important;border-radius:14px;box-shadow:none!important;background-image:none!important}
 /* 자연: quiet 2px line, soft corners, no shadow */

@@ -105,6 +105,7 @@ GRIDS = {
     "split":     {"cols": 12, "margin": 96, "gutter": 32, "zones": {"left": (1, 6), "right": (7, 6)}, "align": "left", "note": "two equal halves"},
     "bento":     {"cols": 12, "margin": 96, "gutter": 24, "zones": {"a": (1, 5), "b": (6, 4), "c": (10, 3)}, "align": "left", "note": "unequal tiles, one hero tile"},
     "stack":     {"cols": 12, "margin": 96, "gutter": 32, "zones": {"main": (2, 10)}, "align": "left", "note": "rows under one headline"},
+    "swiss":     {"cols": 12, "margin": 128, "gutter": 32, "zones": {"text": (1, 6), "picture": (7, 6)}, "align": "left", "note": "preset E: 12 columns, 128 margins, text left 6 / picture right 6, big type spans"},
     "web":       {"cols": 12, "margin": 24, "gutter": 24, "max": 1200, "zones": {"main": (1, 8), "side": (9, 4)}, "align": "left", "note": "responsive page"},
     "print-a4":  {"cols": 6, "margin": "20mm", "gutter": "5mm", "zones": {"main": (1, 6)}, "align": "left", "note": "A4 portrait, 6 columns"},
 }
@@ -185,6 +186,7 @@ ORNAMENTS = {
     "corner":  "a quarter-circle or square block bleeding off one corner (flat, one tone)",
     "numeral": "an oversized filled numeral at 8-10% of the text colour (never an outline)",
     "grain":   "a dot grid or paper grain at <= 8% (texture only, never a picture)",
+    "hud":     "four 30px corner brackets + a tick ruler along the bottom with the slide's place on it (hairline, <= 16% text colour; preset E)",
 }
 
 # ------------------------------------------------------------------ CSS -------------------------------------------------------------------

@@ -44,8 +44,10 @@ and the checks stay silent (`palette_from`, `--template`, `data-user-design`).
 24. Durations: instant 90 · fast 160 · base 240 · slow 420 · scene 700 ms. Eases: `standard` (.2,0,0,1) · `enter` (.16,1,.3,1) · `exit` (.4,0,1,1). Stagger 60ms.
 25. One thing moves per beat. Enter = fade + 12 to 24px of travel. Exit is faster than enter. Backdrops do not animate.
 26. `prefers-reduced-motion`: no travel, only fades.
+26a. Two registers: calm (documents, reports, games' menus: rules 24-26) and **motion graphics** (talks, openings, videos: preset E below). Motion graphics may use the syllable drop, pen draw-on and cursor scenes, but still: one accent moves per beat, nothing moves while it must be read, and the presenter's click starts every beat.
+26b. Motion graphics are script tweens, not CSS transitions (a recorder that freezes the clock catches a transition half way). Big photos or filtered layers that move get their own compositing layer (`will-change: transform`).
 
-## 6. The 12 styles are structures
+## 6. The 13 styles are structures
 27. A style = grid + type treatment + radius + two ornaments + backdrop, then a palette. Two styles must differ in at least three of those five, not only in colour.
 
 | id | name | grid | type | radius | ornaments | backdrop |
@@ -62,6 +64,15 @@ and the checks stay silent (`palette_from`, `--template`, `data-user-design`).
 | minimal-premium | 에디토리얼 | editorial | 700, tracked labels | 2 | rule, kicker | minimal |
 | chalk-paper | 칠판 | stack | 700 | 14 | frame, rule | chalk |
 | nature-calm | 자연 | editorial | 700 | 20 | rule, corner | bands |
+| ink-poster | 잉크 포스터 (preset E) | swiss | 800 tight, mono labels | 12 | hud, rule | hud |
+
+### Preset E (「잉크 포스터」, `preset_e.py` + `motion_e.js`)
+- Palette (from the reference video): ink `#121214` · paper `#F0EDE6` · vermilion `#E4502F` (the ONE accent) · cobalt `#3338F0` (on ink as text: `#6F74FF`) for "with the tool" and pen notes · grey `#8E8E92` · lime `#D8E46C` for a correct mark only. Every text pair is checked in dark and light (`preset_e.py --check`); vermilion on paper is large text only (3.3:1).
+- Grid: 12 columns, 128px margins, 32px gutter; text left six, picture right six; big type may span. Type: big 176 · h1 84 · h2 62 · card 46 · body 34 · detail 30 · kicker/label 28 (nothing under the 28px slide floor). Weight 800 max, big type tracking -0.055em.
+- Six cards, all flat (1.5px hairline, radius 12, no shadow): note · step (mono accent number) · ask (one accent caret) · pair (hairline down the middle, the tool side in cobalt) · node (outline icon + label) · window (an app frame: the real screen first).
+- Motion tokens: xs 120 · s 200 · m 260 · l 420 ms, gap 60, syllable stagger 45, word 70. Fast in, blur only while moving, hold still. Back / print / reduced motion = final state.
+- Layer prefix: every class is `e-` so older page CSS (`.hl` `.chip` `.pn`) cannot leak in. Recolouring one slide means setting the `--e-*` values on that slide (custom properties resolve where they are declared).
+- Garnish (`garnish.py`): backdrops by role (story / tool / calm), one base prompt, light from the upper right, left 55 % dark, a soft scrim from the text side; no text, logos or faces; skipped on dense slides. One soft accent light is the only glow this preset allows, and only inside a backdrop picture.
 
 The retired looks (neon grid floor, bokeh, glass blobs, stage light beams, bunting + confetti) keep their ids so old specs still build; they are drawn the new way.
 
