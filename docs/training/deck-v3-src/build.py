@@ -94,8 +94,8 @@ def ecmp_fill(slides: str) -> str:
 
     def img(p, alt):
         im = Image.open(p).convert("RGB")
-        im.thumbnail((1600, 1000))
-        buf = io.BytesIO(); im.save(buf, "JPEG", quality=84, optimize=True)
+        im.thumbnail((1800, 1100))
+        buf = io.BytesIO(); im.save(buf, "JPEG", quality=90, optimize=True)
         return '<div class="frame"><img alt="%s" src="data:image/jpeg;base64,%s"></div>' % (alt, base64.b64encode(buf.getvalue()).decode())
 
     ph = '<div class="frame ph"><svg class="ic"><use href="#image"/></svg>결과 화면 들어갈 자리</div>'
@@ -110,6 +110,9 @@ def ecmp_fill(slides: str) -> str:
                     return d / (stem + "." + ext)
             return None
         bare, harn, comp = find("chat") or find("bare"), find("cowork") or find("harness"), find("compare")
+        f1, f2 = find("cowork-1"), find("cowork-2")
+        if f1 and f2:   # 작업 모드 쪽: 같은 결과물의 두 장면 (클릭으로 넘겨요)
+            harn = harn or f1
         if bare and harn:
             b, h = img(bare, "채팅 결과 화면"), img(harn, "Cowork · Codex 결과 화면")
         elif harn:
@@ -124,7 +127,8 @@ def ecmp_fill(slides: str) -> str:
             chips = ["물어본 것 · 들어갈 자리", "고칠 일 · 들어갈 자리", "걸린 시간 · 들어갈 자리"]
         slides = (slides.replace("__ECMP_%s_ASK__" % case, "「%s」" % H.escape(ask.strip("「」")))
                   .replace("__ECMP_%s_bare__" % case, b).replace("__ECMP_%s_harness__" % case, h)
-                  .replace("__ECMP_%s_chat__" % case, b).replace("__ECMP_%s_cowork__" % case, h)
+                  .replace("__ECMP_%s_chat__" % case, b)
+                  .replace("__ECMP_%s_cowork__" % case, ('<div class="e-frames">' + img(f1, "작업 모드 결과 화면 1").replace('class="frame"', 'class="frame e-f1"') + img(f2, "작업 모드 결과 화면 2").replace('class="frame"', 'class="frame e-f2"') + '<span class="e-dots"><i></i><i></i></span></div>') if (f1 and f2) else h)
                   .replace("__ECMP_%s_title__" % case, img(find("title"), "실제로 나온 결과물 예시") if find("title") else "")
                   .replace("__ECMP_%s_CHIPS__" % case, "".join("<span>%s</span>" % H.escape(c) for c in chips[:3]))
                   .replace("__ECMP_%s_NOTE__" % case, H.escape(f.get("note", ""))))

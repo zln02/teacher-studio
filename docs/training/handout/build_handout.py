@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Printed handout for 「AI에게 무기를 주면」 (2026-11-23) · deck-e v5: one A4 page, how to open Claude Cowork / ChatGPT Codex.
+"""Printed handout for 「AI에게 무기를 주면」 (2026-11-23) · deck-e v5: A4 front/back: 시작하기 (ChatGPT Work · Claude Cowork) + 무엇을 하려면 어떤 요금제.
 
   py build_handout.py          -> handout.html, handout.pdf, handout-preview.png (+ handout.hwpx via docs.py)
 
@@ -58,24 +58,44 @@ def shot_uri() -> str:
 def build_html() -> str:
     """deck-e v5: 한 쪽 · Claude Cowork / ChatGPT Codex 들어가는 법만 (교사 스튜디오 설치 안내는 뺐어요)."""
     head = (f'<div class="meta">교사 연수 &nbsp;·&nbsp; 2026. 11. 23.(월) 14:00 &nbsp;·&nbsp; 60분 &nbsp;·&nbsp; AI교육코디네이터 박진영</div>')
-    steps = "".join([
-        step(1, '앱 열기', "컴퓨터용 <b>ChatGPT 앱</b>"),
-        step(2, '위쪽 「Chat | Work」에서 「Work」 누르기', "「ChatGPT로 Work 시작」 칸이 보이면 준비 끝 &nbsp;(아래 그림 ①)"),
-        step(3, '한 줄로 부탁', "",
-             '<div class="say">예) 「물품 구입 안내문 만들어 줘」</div>'
-             f'<div class="att">+ 있으면 <b>「파일」</b>(아래 그림 ②)로 <b>우리 학교 양식</b>을 같이 붙여요 &nbsp;·&nbsp; 규칙 한 줄(예: 학생 이름은 넣지 않기)</div>'),
-        step(4, '받아서 확인', "사실 · 숫자 / 남의 개인정보 / 저작권 &nbsp;·&nbsp; 고칠 곳은 <b>「여기 고쳐 줘」</b> 한 줄"),
-    ])
     qr = deck_qr.svg(SITE)
-    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">ChatGPT 「Work」(작업 모드) 시작 안내지</div>'
-          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>작업 모드(Work)</b></div></div>'
-          f'<h2>이렇게 시작해요</h2><div class="steps">{steps}</div><div class="shot"><img alt="ChatGPT 앱 Work 화면" src="{shot_uri()}"></div>'
+    gpt = ('<div class="col"><div class="col-h">ChatGPT</div><ol class="ol">'
+           '<li><b>컴퓨터용 ChatGPT 앱</b> 열기</li>'
+           '<li>위쪽 <b>「Chat | Work」</b>에서 <b>Work</b> 누르기</li>'
+           '<li><b>한 줄로 부탁</b> · 있으면 <b>「파일」</b>로 우리 학교 양식을 같이 붙여요</li></ol>'
+           f'<div class="shot"><img alt="ChatGPT 앱 Work 화면" src="{shot_uri()}"></div></div>')
+    cl = ('<div class="col"><div class="col-h">Claude</div><ol class="ol">'
+          '<li><b>컴퓨터용 Claude 앱</b> 열기</li>'
+          '<li><b>작업 모드(Cowork)</b>로 들어가기</li>'
+          '<li><b>폴더 · 파일을 고르고</b> 한 줄로 부탁</li></ol>'
+          '<div class="say">예) 「물품 구입 안내문 만들어 줘」</div>'
+          '<div class="fine">메뉴 이름은 앱 · 요금제마다 달라요</div>'
+          '<div class="chk"><b>받아서 확인</b><br>사실 · 숫자 / 남의 개인정보 / 저작권<br>고칠 곳은 「여기 고쳐 줘」 한 줄</div></div>')
+    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면 · 시작하기</h1>'
+          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>작업 모드</b></div></div>'
+          f'<div class="cols">{gpt}{cl}</div>'
           f'<div class="warn">⚠ <b>남의 개인정보는 넣지 않아요</b>&nbsp; (학생 · 학부모 · 교직원 · 가족 누구 것이든)</div>'
-          f'<div class="fine">컴퓨터용 ChatGPT 앱의 Work는 모든 요금제에서 · 내 폴더 파일까지 읽어요 (공식 안내 기준 2026-11) &nbsp;·&nbsp; 메뉴 이름은 앱 · 요금제마다 달라요</div>'
-          f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">오늘 연수 내용 ·<br>막혔을 때는 사이트에</div>'
+          f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">오늘 연수 내용 · 막혔을 때는 사이트에</div>'
           f'<div class="st-url">{e(SITE)}</div><div class="st-s">휴대폰 카메라로 QR을 비추면 열려요</div></div></div>'
           f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 여러분께</b></footer></section>')
-    p2 = ""
+    rows = [
+        ('묻고 답하기 · 짧은 글', '<b>무료로 충분</b> (채팅)', '필요 없음'),
+        ('파일 만들기<br><span class="real">한글 · PPT · 게임 · 웹페이지 (작업 모드)</span>',
+         '<b>ChatGPT</b>: 컴퓨터용 앱 Work는 무료 요금제도 들어가 볼 수 있지만 <b>사용량이 적어요</b><br><span class="real">공식 안내: 데스크톱 Work는 모든 요금제</span>',
+         '<b>Claude</b>: 작업 모드(Cowork)는 <b>유료 요금제부터</b> (Pro 이상)<br><b>ChatGPT</b>: 유료면 더 많이'),
+        ('오래 · 많이 맡기기<br><span class="real">영상 · 큰 작업</span>', '어려워요', '<b>유료</b> (사용량 많은 요금제)'),
+        ('아이모두<br><span class="real">교육청 플랫폼</span>', '학교에서 안전하게 쓰는 채팅 · 수업용', '<b>오늘 같은 작업 모드는 아이모두에서는 안 돼요</b>'),
+    ]
+    trs = "".join(f'<tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>' for a, b, c in rows)
+    p2 = (f'<section class="page">{head}<h1>무엇을 하려면 어떤 요금제?</h1>'
+          f'<div class="sub">2026년 11월 기준 · 가격 · 이름은 자주 바뀌니 공식 페이지에서 확인</div>'
+          f'<table class="plan"><thead><tr><th>하고 싶은 것</th><th>무료</th><th>유료</th></tr></thead><tbody>{trs}</tbody></table>'
+          f'<h2>유료 요금제 · 한 달 (미국 기준 대략)</h2>'
+          f'<div class="price"><div><b>ChatGPT</b> Plus 약 $20 <span class="real">(Go 약 $8 · 지역마다 다름)</span></div>'
+          f'<div><b>Claude</b> Pro 약 $20 <span class="real">(Max $100~)</span></div></div>'
+          f'<div class="bottom">무료로 맛보기는 돼요. 제대로 맡기려면 유료가 필요해요 — 그래도 한 달에 커피 몇 잔 값으로 문서 · 게임 · 자료 시간을 줄일 수 있어요</div>'
+          f'<div class="src">출처: chatgpt.com/pricing · claude.com/pricing · learn.chatgpt.com (Work 시작하기) · 2026년 11월 확인</div>'
+          f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 여러분께</b></footer></section>')
 
     css = f"""
 @page{{size:A4;margin:0}}
@@ -146,6 +166,21 @@ h2 small{{font-size:11pt;font-weight:600}}
 .st-s{{font-size:11pt;color:#333;margin-top:1mm}}
 footer{{margin-top:2.5mm;border-top:1.2pt solid {INK};padding-top:2.5mm;display:flex;justify-content:center;align-items:baseline;font-size:13pt}}
 footer span{{font-size:11pt;color:#333}}
+.cols{{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:4mm;flex:1}}
+.col{{border:1.4pt solid {LINE};border-radius:3mm;padding:3mm 4mm;display:flex;flex-direction:column}}
+.col-h{{font-size:19pt;font-weight:900;border-bottom:1.4pt solid {INK};padding-bottom:1.5mm;margin-bottom:2mm}}
+.ol{{margin:0;padding-left:6mm;font-size:13.5pt;line-height:1.45}}
+.ol li{{margin:1.6mm 0}}
+.col .shot img{{width:100%}}
+.chk{{margin-top:auto;border:1.2pt solid {INK};border-radius:2mm;padding:2mm 3mm;font-size:12pt}}
+table.plan{{width:100%;border-collapse:collapse;margin-top:4mm;font-size:12.5pt;line-height:1.4}}
+.plan th,.plan td{{border:1pt solid {INK};padding:2.5mm 3mm;vertical-align:top;text-align:left}}
+.plan thead th{{background:{INK};color:#fff;font-size:13.5pt}}
+.plan tbody th{{width:30%;font-weight:900;background:{SOFT}}}
+.price{{display:grid;grid-template-columns:1fr 1fr;gap:3mm;font-size:14pt}}
+.price div{{border:1.2pt solid {LINE};border-radius:2mm;padding:2.5mm 3.5mm}}
+.bottom{{margin-top:5mm;border:2.4pt solid {INK};border-radius:3mm;padding:3.5mm 5mm;font-size:14.5pt;font-weight:700}}
+.src{{margin-top:auto;font-size:9pt;color:#444}}
 @media screen{{body{{background:#d9dde3}} .page{{background:#fff;margin:8mm auto;box-shadow:0 2px 10px rgba(0,0,0,.18)}}}}
 """
     page = (f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
@@ -194,6 +229,7 @@ def main() -> None:
     docs = ROOT / "skills/teacher-docs/scripts/docs.py"
     subprocess.run([sys.executable, str(docs), "make", "--spec", str(HERE / "handout.spec.json"), "--out", str(HERE / "handout.hwpx")],
                    check=True, env=env)
+    print("hwpx page break:", patch_hwpx_page_break(HERE / "handout.hwpx", "무엇을 하려면"))
 
 
 if __name__ == "__main__":

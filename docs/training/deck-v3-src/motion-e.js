@@ -275,10 +275,11 @@
   function rvSet(s, st) {
     var R = rvParts(s);
     eDropSet(R.h, true); show(R.sub, true);
-    [R.trunk, R.bl, R.br].concat(R.brs).forEach(function (p) { p.style.strokeDasharray = 1; p.style.strokeDashoffset = (p === R.trunk || st >= 1) ? 0 : 1; });
-    R.boxes.forEach(function (b) { rvBoxSet(b, st >= 1); });
+    [R.trunk, R.bl, R.br].concat(R.brs).forEach(function (p) { p.style.strokeDasharray = 1; p.style.strokeDashoffset = (p === R.trunk || st >= 2) ? 0 : 1; });
+    R.boxes.forEach(function (b) { rvBoxSet(b, st >= 2); });
+    var H = q(s, '.e-horse'); H.classList.toggle('e-hbig', st === 1); show(H, st >= 1); H.style.transform = ''; H.style.filter = ''; qa(H, 'p, .e-hph').forEach(function (e) { show(e, true); e.style.transform = ''; e.style.filter = ''; });
     [R.mq, R.gv, R.dist, R.run].forEach(function (e) { e.style.opacity = 0; });
-    curPrep(R.cur); R.cur.style.opacity = st >= 1 ? 1 : 0; curPress(R.cur, false); curAt(R.cur, 1700, 470);
+    curPrep(R.cur); R.cur.style.opacity = st >= 2 ? 1 : 0; curPress(R.cur, false); curAt(R.cur, 1700, 470);
     var sc = q(s, ':scope > .e-scene'); if (sc) sc.style.transform = '';
   }
   FX.eReveal = {
@@ -295,7 +296,24 @@
     step: function (s, st, dir) {
       MO.stop();
       if (dir === -1 || REDUCED) { eInst(function () { FX.eReveal.enter(s, st); }); return; }
-      rvSet(s, 0);
+      var H = q(s, '.e-horse');
+      if (st === 1) {   // 말 사진이 크게 (탁 · 흐림 꼬리)
+        rvSet(s, 1); H.style.opacity = 0;
+        eIn(H, 40, { dy: 40, s: 0.94, blur: 10, dur: 260 });
+        return;
+      }
+      // 클릭 2: 큰 사진 → 왼쪽 위로 쏙 (FLIP) · 그다음 다섯 칸
+      rvSet(s, 1);
+      var ph = q(H, '.e-hph'), a = ph.getBoundingClientRect();
+      rvSet(s, 0); H.classList.remove('e-hbig'); show(H, true);
+      var b = ph.getBoundingClientRect(), k = b.width / a.width;
+      var dx = a.left - b.left, dy = a.top - b.top, zs = a.width / b.width, stg = document.getElementById('stage').getBoundingClientRect().width / 1920;
+      ph.style.transformOrigin = '0 0'; var cap = q(H, 'p'); cap.style.opacity = 0;
+      MO.tw(300, 0, 'inout', function (e, t) {
+        ph.style.transform = e >= 1 ? '' : 'translate(' + (dx / stg * (1 - e)).toFixed(1) + 'px,' + (dy / stg * (1 - e)).toFixed(1) + 'px) scale(' + lerp(zs, 1, e).toFixed(4) + ')';
+        ph.style.filter = e >= 1 ? '' : 'blur(' + (3 * Math.sin(Math.PI * t)).toFixed(2) + 'px)';
+      });
+      eIn(cap, 300, { dy: 10, blur: 4 });
       var R = rvParts(s), C = R.cur, SP = 640;
       R.boxes.forEach(function (b) { rvBoxSet(b, false); });
       curAt(C, 1880, 1040); C.style.opacity = 0;
@@ -304,7 +322,7 @@
       var sc = q(s, ':scope > .e-scene');
       if (sc) MO.tw(3800, 0, 'out', function (e) { sc.style.transform = e >= 1 ? '' : 'translateX(' + (-18 * Math.sin(Math.PI * e)).toFixed(1) + 'px) scale(1.02)'; });
       R.boxes.forEach(function (b, i) {
-        var T = 80 + i * SP, x = b.offsetLeft, y = RV.y0, w = RV.w, h = RV.h, nm = q(b, 'b');
+        var T = 420 + i * SP, x = b.offsetLeft, y = RV.y0, w = RV.w, h = RV.h, nm = q(b, 'b');
         // ① 커서가 왼쪽 위 모서리로
         curGo(C, x, y, T, 180);
         tw2(1, T + 180, 'linear', function () {}, function () { curPress(C, true); });
@@ -332,7 +350,7 @@
         eIn(q(b, 'p'), T + 560, { dy: 12, blur: 4 });
       });
       // 다 그린 뒤: 커서는 오른쪽 아래로 비켜 서고, 주홍 점이 끈을 한 번 달려요 (줄기 → 왼쪽 끝 → 오른쪽 끝)
-      var Tend = 80 + R.boxes.length * SP;
+      var Tend = 420 + R.boxes.length * SP;
       curGo(C, 1700, 470, Tend, 240);
       var pts = [[960, 450], [960, 585], [248, 585], [1672, 585]], L = [135, 712, 1424], tot = L[0] + L[1] + L[2];
       tw2(700, Tend + 80, 'inout', function (e) {
@@ -963,4 +981,19 @@
       show(o, true); ps.forEach(function (p) { p.style.opacity = 0; });
       eIn(ps[0], 380, { dy: 30, blur: 10, dur: 240 }); eIn(ps[1], 560, { dy: 16 });
     }
+  };
+
+  /* ============ 10~12 비교: 작업 모드 결과 두 장면 (클릭 1에 넘겨요 · 점 표시) ============ */
+  function cmpFrame(s, k, anim) {
+    var F = qa(s, '.e-frames .frame'), D = qa(s, '.e-frames .e-dots i');
+    F.forEach(function (f, i) { f.style.transform = ''; f.style.filter = ''; if (!anim) show(f, i === k); });
+    D.forEach(function (d, i) { d.classList.toggle('on', i === k); });
+    if (!anim || REDUCED || !F[k]) { F.forEach(function (f, i) { show(f, i === k); }); return; }
+    var o = F[1 - k], n = F[k];
+    MO.tw(ET.out, 0, 'out', function (e) { if (o) o.style.opacity = 1 - e; });
+    eIn(n, 80, { dx: 40, dy: 0, blur: 8 });
+  }
+  FX.eCmp = {
+    enter: function (s, st) { eHudIn(s, 0); FX.v3gen.enter(s, st); cmpFrame(s, Math.min(st, 1), false); },
+    step: function (s, st, dir) { FX.v3gen.step(s, st, dir); cmpFrame(s, Math.min(st, 1), dir !== -1); }
   };
