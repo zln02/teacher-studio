@@ -286,3 +286,68 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .pour.v3>.hd .kicker{text-align:center}
 .pour.v3 .e-bubs .nt{width:max-content;max-width:600px}
 .pour.v3>.hd .kicker{justify-content:center}
+
+/* ---- 5 하네스 (2판): 큰 글자 + 줄기 · 「개발자」 커서가 그린 다섯 칸 (2배 · 아이콘 96 · 이름 48 · 설명 두 줄 30) ---- */
+.reveal.v3 .e-rv{top:110px}
+.reveal.v3 .e-rvh{font-size:240px}
+.reveal.v3 .e-rvs{margin-top:18px;font-size:26px}
+.reveal.v3 .e-hub-rv{display:none}
+.reveal.v3 .e-rv2{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:3;pointer-events:none}
+.reveal.v3 .e-rv2 .e-strap{fill:none;stroke:var(--d-acc);stroke-width:2.5;stroke-dasharray:1}
+.reveal.v3 .e-box{position:absolute;top:640px;width:316px;height:300px;box-sizing:border-box;padding:26px 24px 20px;border:2px solid var(--d-line2);border-radius:12px;background:var(--d-bg);
+  display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px}
+.reveal.v3 .e-bi{color:var(--d-cool);height:96px;display:grid;place-items:center}
+.reveal.v3 .e-bi .ic{width:96px;height:96px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.reveal.v3 .e-box b{font-size:48px;font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--d-ink);white-space:nowrap}
+.reveal.v3 .e-box p{margin:2px 0 0;font-size:30px;font-weight:600;line-height:1.3;letter-spacing:-.02em;color:var(--d-sub)}
+.reveal.v3 .e-box p span{color:var(--d-cool);font-size:26px}
+.reveal.v3 .e-rv2 .e-marq{position:absolute;border:1.5px dashed var(--d-cool);background:var(--d-coolbg);opacity:0;border-radius:4px}
+.reveal.v3 .e-rv2 .e-gd{position:absolute;width:1.5px;background:var(--d-acc);opacity:0}
+.reveal.v3 .e-rv2 .e-dist{position:absolute;opacity:0;font-family:var(--mono);font-size:20px;color:#fff;background:var(--d-acc);border-radius:4px;padding:1px 6px}
+.reveal.v3 .e-rv2 .e-run{position:absolute;width:12px;height:12px;border-radius:50%;background:var(--d-acc);opacity:0}
+.reveal.v3 .e-box{top:620px;width:332px;height:290px;padding:24px 14px 18px}
+.reveal.v3 .e-box p{font-size:30px}
+.reveal.v3 .e-box p span{font-size:30px}
+
+/* ---- 14 그림책: 장면 알약 · 장면 이름 · 선생님 부탁 카드 · 로봇 말풍선 ---- */
+.storyc.v3 .e-pills4{left:560px;width:800px}
+.storyc.v3 .e-scn{position:absolute;left:96px;top:118px;z-index:6;padding:10px 20px;border-radius:12px;background:var(--d-bg);border:1.5px solid var(--d-acc)}
+.storyc.v3 .e-scn b{font-size:32px;font-weight:800;letter-spacing:-.02em;color:var(--d-ink)}
+.storyc.v3 .ub,.storyc.v3 .ub.bad,.storyc.v3 .ub.ok{left:96px;right:auto;top:208px;max-width:660px;font-size:40px;font-weight:700;line-height:1.3;background:var(--d-surf)!important;color:var(--d-ink)!important;
+  border:1.5px solid var(--d-line2);border-radius:12px;padding:48px 30px 22px;box-shadow:none!important}
+.storyc.v3 .ub:before{content:"// 선생님의 부탁";position:absolute;left:30px;top:12px;font-family:var(--mono);font-size:20px;font-weight:400;color:var(--d-mute)}
+.storyc.v3 .ub:after{content:"";display:inline-block;width:3px;height:1em;background:var(--d-acc);margin-left:6px;vertical-align:-.12em}
+.storyc.v3 .e-rb{position:absolute;left:1130px;top:250px;z-index:6;max-width:520px;padding:16px 32px 20px;border-radius:40px;background:var(--d-ink);color:var(--d-bg);opacity:0;transform-origin:0% 100%}
+.storyc.v3 .e-rb:after{content:"";position:absolute;left:26px;bottom:-18px;width:30px;height:22px;background:var(--d-ink);clip-path:polygon(0 0,100% 0,0 100%)}
+.storyc.v3 .e-rbw{display:block;font-family:var(--mono);font-size:20px;color:var(--d-acc)}
+.storyc.v3 .e-rb b{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1.2;white-space:nowrap}
+.storyc.v3 .kcap{bottom:126px}
+.storyc.v3 .storytag{z-index:6}
+
+/* ---- 17 우리가 쓸 식당: 진짜 앱 이름 ---- */
+.lab.v3 .e-apps{margin:0 0 28px;font-size:42px;font-weight:800;letter-spacing:-.03em;color:var(--d-sub)}
+.lab.v3 .e-apps b{color:var(--d-ink)}
+.lab.v3 .e-apps small{display:block;margin-top:8px;font-size:28px;font-weight:600;color:var(--d-cool)}
+.lab.v3 .pick{margin-top:0}
+.lab.v3 .pick .card{padding:40px 54px 40px}
+
+/* ---- 8 (2판): 도구 넷 + 학교 예시 · 「이 밖에도」 한 줄 · 큰 결론 ---- */
+.e-kit .e-tool[data-g="1"]{top:330px}
+.e-kit .e-tool[data-g="2"]{top:560px}
+.e-kit .e-tool{width:560px}
+.e-kit .e-tool.e-l{left:150px}
+.e-kit .e-tool.e-r{left:1210px}
+.e-kit .e-tx small{white-space:normal;font-size:30px;line-height:1.3;color:var(--d-sub);max-width:420px}
+.e-kit .e-more{position:absolute;left:128px;right:128px;top:792px;margin:0;text-align:center;font-size:30px;font-weight:600;color:var(--d-sub);opacity:0}
+.kitchen1.v3 .hxpunch{top:878px;text-align:left}
+.kitchen1.v3 .hxpunch .p1{font-size:48px;font-weight:800;letter-spacing:-.03em}
+.kitchen1.v3 .hxpunch .p2{font-size:30px}
+/* ---- 14: 부탁 카드 이름표 · 장면 아래 한 줄 ---- */
+.storyc.v3 .ub:before{content:"// " attr(data-lab)}
+.storyc.v3 .e-scn small{display:block;font-size:24px;font-weight:600;color:var(--d-sub);margin-top:4px}
+/* ---- 22: 연수 사이트 QR · 어디에 있는지 ---- */
+.tips3.v3 .qr p b{display:block;font-size:30px;color:var(--d-ink)}
+.tips3.v3 .qr p{font-size:24px;margin-top:14px}
+.tips3.v3 .e-where{list-style:none;margin:14px 0 0;padding:0;text-align:left;display:flex;flex-direction:column;gap:6px}
+.tips3.v3 .e-where li{font-size:24px;font-weight:600;color:var(--d-ink);padding:6px 12px;border:1.5px solid var(--d-line2);border-radius:8px}
+.tips3.v3 .e-where li span{font-family:var(--mono);font-weight:400;color:var(--d-acc)}

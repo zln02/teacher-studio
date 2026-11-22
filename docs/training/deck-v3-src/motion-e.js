@@ -259,19 +259,88 @@
       eIn(w.n, t0 + 200, { dy: 0, s: 0.9, blur: 8 });
     });
   }
-  /* 5 하네스: 큰 글자(음절 떨어지기) → 한 줄(하네스 끈)이 그려지며 다섯 부품이 줄 끝에 붙어요 · 클릭 없음 */
+  /* 5 하네스: 큰 글자(음절 떨어지기) → 줄기가 아래로 · 클릭 1에 「개발자」 커서가 다섯 칸을 하나씩 끌어 그려요
+     (모서리에서 모서리로 끌기 → 맞춤선 · 「24」 간격 → 놓으면 칸 · 끈이 그 칸까지 · 아이콘 톡 · 이름 쳐짐 · 설명 두 줄) → 주홍 점이 끈을 한 번 달리고 → 가만히 */
+  var RV = { y0: 620, h: 290, w: 332 };
+  function rvParts(s) {
+    var B = q(s, '.e-rv2');
+    return { B: B, h: q(s, '.e-rvh'), sub: q(s, '.e-rvs'), trunk: q(B, '.e-trunk'), bl: q(B, '.e-barl'), br: q(B, '.e-barr'), brs: qa(B, '.e-br'), boxes: qa(B, '.e-box'),
+      mq: q(B, '.e-marq'), gv: q(B, '.e-gv'), dist: q(B, '.e-dist'), run: q(B, '.e-run'), cur: q(B, '.e-cur') };
+  }
+  function rvBoxSet(b, on) {
+    show(b, on); b.style.filter = ''; b.style.transform = '';
+    [q(b, '.e-bi'), q(b, 'b'), q(b, 'p')].forEach(function (e) { show(e, on); e.style.filter = ''; });
+    var nm = q(b, 'b'); if (nm.__full) nm.textContent = nm.__full;
+  }
+  function rvSet(s, st) {
+    var R = rvParts(s);
+    eDropSet(R.h, true); show(R.sub, true);
+    [R.trunk, R.bl, R.br].concat(R.brs).forEach(function (p) { p.style.strokeDasharray = 1; p.style.strokeDashoffset = (p === R.trunk || st >= 1) ? 0 : 1; });
+    R.boxes.forEach(function (b) { rvBoxSet(b, st >= 1); });
+    [R.mq, R.gv, R.dist, R.run].forEach(function (e) { e.style.opacity = 0; });
+    curPrep(R.cur); R.cur.style.opacity = st >= 1 ? 1 : 0; curPress(R.cur, false); curAt(R.cur, 1700, 470);
+    var sc = q(s, ':scope > .e-scene'); if (sc) sc.style.transform = '';
+  }
   FX.eReveal = {
-    enter: function (s) {
+    enter: function (s, st) {
       eHudIn(s, 0);
-      var h = q(s, '.e-rvh'), sub = q(s, '.e-rvs'), hub = q(s, '.e-hub-rv'), strap = q(hub, '.e-strap'), nodes = qa(hub, '.e-node');
-      nodes.forEach(function (n) { n.style.left = (+n.getAttribute('data-x') - n.offsetWidth / 2) + 'px'; n.style.top = (+n.getAttribute('data-y') - n.offsetHeight / 2) + 'px'; });
-      strap.style.strokeDasharray = 1;
-      if (V3DIR < 0 || REDUCED) { eDropSet(h, true); show(sub, true); strap.style.strokeDashoffset = 0; nodes.forEach(function (n) { show(n, true); n.style.filter = ''; }); return; }
-      eDropSet(h, false); sub.style.opacity = 0; strap.style.strokeDashoffset = 1; nodes.forEach(function (n) { n.style.opacity = 0; });
-      eDrop(h, 120);
-      eIn(sub, 420, { dy: 12, blur: 4 });
-      MO.tw(520, 560, 'inout', function (e) { strap.style.strokeDashoffset = (1 - e).toFixed(4); });
-      nodes.forEach(function (n, i) { eIn(n, 760 + i * 60, { dy: 24, s: 0.92, blur: 8 }); });
+      rvSet(s, st || 0);
+      if (V3DIR < 0 || REDUCED || st > 0) return;
+      var R = rvParts(s);
+      eDropSet(R.h, false); R.sub.style.opacity = 0; R.trunk.style.strokeDashoffset = 1;
+      eDrop(R.h, 120);
+      eIn(R.sub, 420, { dy: 12, blur: 4 });
+      MO.tw(260, 620, 'inout', function (e) { R.trunk.style.strokeDashoffset = (1 - e).toFixed(4); });
+    },
+    step: function (s, st, dir) {
+      MO.stop();
+      if (dir === -1 || REDUCED) { eInst(function () { FX.eReveal.enter(s, st); }); return; }
+      rvSet(s, 0);
+      var R = rvParts(s), C = R.cur, SP = 640;
+      R.boxes.forEach(function (b) { rvBoxSet(b, false); });
+      curAt(C, 1880, 1040); C.style.opacity = 0;
+      MO.tw(120, 0, 'out', function (e) { C.style.opacity = e; });
+      // 바탕이 아주 조금 흘러요 (멈춘 뒤엔 가만히)
+      var sc = q(s, ':scope > .e-scene');
+      if (sc) MO.tw(3800, 0, 'out', function (e) { sc.style.transform = e >= 1 ? '' : 'translateX(' + (-18 * Math.sin(Math.PI * e)).toFixed(1) + 'px) scale(1.02)'; });
+      R.boxes.forEach(function (b, i) {
+        var T = 80 + i * SP, x = b.offsetLeft, y = RV.y0, w = RV.w, h = RV.h, nm = q(b, 'b');
+        // ① 커서가 왼쪽 위 모서리로
+        curGo(C, x, y, T, 180);
+        tw2(1, T + 180, 'linear', function () {}, function () { curPress(C, true); });
+        // ② 모서리에서 모서리로 끌기: 점선 영역이 커져요 · 끝에 맞춤선과 「24」
+        tw2(220, T + 200, 'out', function (e) {
+          R.mq.style.opacity = 1; bdItem(R.mq, { x: x, y: y, w: Math.max(2, w * e), h: Math.max(2, h * e) });
+          C.style.transform = 'translate(' + (x + w * e).toFixed(1) + 'px,' + (y + h * e).toFixed(1) + 'px)';
+          if (e > 0.85) {
+            R.gv.style.opacity = 1; R.gv.style.left = (x + w) + 'px'; R.gv.style.top = (y - 30) + 'px'; R.gv.style.height = (h + 60) + 'px';
+            if (i > 0) { R.dist.style.opacity = 1; R.dist.style.left = (x - 24) + 'px'; R.dist.style.top = (y + h / 2 - 14) + 'px'; }
+          }
+        }, function () { C.__p = { x: x + w, y: y + h }; });
+        // ③ 놓으면 칸이 돼요 (살짝 자리 잡기) · 끈이 이 칸까지
+        tw2(1, T + 430, 'linear', function () {}, function () { curPress(C, false); R.mq.style.opacity = 0; R.gv.style.opacity = 0; R.dist.style.opacity = 0; });
+        b.style.opacity = 0;
+        tw2(160, T + 430, 'out', function (e) { b.style.opacity = 1; b.style.transform = e >= 1 ? '' : 'scale(' + lerp(1.03, 1, e).toFixed(4) + ')'; });
+        if (i === 0) tw2(200, T + 400, 'inout', function (e) { R.bl.style.strokeDashoffset = (1 - e).toFixed(4); });
+        if (i === 3) tw2(120, T + 400, 'inout', function (e) { R.br.style.strokeDashoffset = (1 - e * 0.5).toFixed(4); });
+        if (i === 4) tw2(120, T + 400, 'inout', function (e) { R.br.style.strokeDashoffset = (0.5 - e * 0.5).toFixed(4); });
+        tw2(140, T + 470, 'out', function (e) { R.brs[i].style.strokeDashoffset = (1 - e).toFixed(4); });
+        // ④ 아이콘 톡 → 이름 쳐짐 → 설명 두 줄
+        [q(b, '.e-bi'), nm, q(b, 'p')].forEach(function (e) { e.style.opacity = 0; });
+        MO.stamp(q(b, '.e-bi'), T + 470, { s: 1.5 });
+        tw2(1, T + 520, 'linear', function () {}, function () { MO.type(nm, 0); });
+        eIn(q(b, 'p'), T + 560, { dy: 12, blur: 4 });
+      });
+      // 다 그린 뒤: 커서는 오른쪽 아래로 비켜 서고, 주홍 점이 끈을 한 번 달려요 (줄기 → 왼쪽 끝 → 오른쪽 끝)
+      var Tend = 80 + R.boxes.length * SP;
+      curGo(C, 1700, 470, Tend, 240);
+      var pts = [[960, 450], [960, 585], [248, 585], [1672, 585]], L = [135, 712, 1424], tot = L[0] + L[1] + L[2];
+      tw2(700, Tend + 80, 'inout', function (e) {
+        var d = e * tot, k = 0; while (k < 2 && d > L[k]) { d -= L[k]; k++; }
+        var a = pts[k === 2 ? 2 : k], bb = pts[k + 1], f = Math.min(1, d / L[k]);
+        if (k === 2) a = [248, 585];
+        R.run.style.opacity = e >= 1 ? 0 : 1; R.run.style.left = (lerp(a[0], bb[0], f) - 6).toFixed(1) + 'px'; R.run.style.top = (lerp(a[1], bb[1], f) - 6).toFixed(1) + 'px';
+      });
     }
   };
   /* 21 같이 쓰려고: 표지와 짝 · 글자는 v3made 그대로, 오른쪽 허브가 그려져요 */
@@ -420,30 +489,23 @@
       return p;
     });
   }
-  function kitPens(s) {
-    var G = kitGeo(s), svg = ePen(G.K), T = qa(G.K, '.e-tool'), t7 = T[6], t8 = T[7], a = eoff(t7, s), b = eoff(t8, s);
-    var ring = eStroke(svg, eLoop(G.cx, G.cy - 10, G.w / 2 + 64, G.h / 2 + 4, 41), 'acc', 'ring');
-    var ny = G.y + G.h + 52, n = eNoteAt(G.K, 'part', '식당마다 달라요', 'red', G.cx - 128, ny);   // 고리 아래로 비켜서
-    var ay = a.y + 64, by = b.y + 64;
-    var ar = eStroke(svg, eWob([[G.cx - 140, ny + 26], [G.cx - 220, ny + 22], [a.x + t7.offsetWidth + 20, ay]], 5, 3) + ' ' + eHead(a.x + t7.offsetWidth + 20, ay, Math.PI + 0.25, 18) + ' ' +
-      eWob([[G.cx + 140, ny + 26], [G.cx + 220, ny + 22], [b.x - 20, by]], 5, 5) + ' ' + eHead(b.x - 20, by, -0.25, 18), 'red', 'partar');
-    return { ring: ring, n: n, ar: ar };
+  function kitPens(s) {   // 고리(하네스) 하나
+    var G = kitGeo(s), svg = ePen(G.K);
+    return { ring: eStroke(svg, eLoop(G.cx, G.cy - 10, G.w / 2 + 64, G.h / 2 + 4, 41), 'acc', 'ring') };
   }
+  // 단계: 0 주방 + 요리사 · 1 찾아보기 · 파일 읽기 · 2 스킬 · 그림 만들기 · 3 「이 밖에도」 한 줄 · 4 고리 + 큰 결론
   function kitSet(s, g) {
     var G = kitGeo(s), K = G.K, L = kitLines(s), P = kitPens(s);
     show(q(K, '.e-kp'), true); show(G.ch, true); G.ch.style.filter = '';
     qa(K, '.e-tool').forEach(function (t, i) {
       var on = +t.getAttribute('data-g') <= g; show(t, on); t.style.filter = '';
       L[i].style.strokeDashoffset = on ? 0 : 1; L[i].style.opacity = on ? 1 : 0;
-      var cy = q(t, '.e-cy'); if (cy) { cy.textContent = cy.getAttribute('data-names').split('|').join(' · '); cy.style.transform = ''; cy.style.opacity = 1; }
-      var ch = q(t, '.e-chip:not(.e-cy)'); if (ch) { ch.style.opacity = 1; ch.style.transform = ''; }
     });
-    q(K, '.e-kcap').style.display = g >= 5 ? 'none' : '';
-    qa(K, '.e-kcap p').forEach(function (p) { show(p, +p.getAttribute('data-c') === g); });
-    P.ring.style.strokeDashoffset = g >= 5 ? 0 : 1;
-    P.n.style.visibility = g >= 4 ? 'visible' : 'hidden'; P.n.style.clipPath = ''; P.n.style.opacity = 1;
-    P.ar.style.strokeDashoffset = g >= 4 ? 0 : 1;
-    var pu = q(s, '.hxpunch'); show(pu, g >= 5); show(q(pu, '.p1'), true); show(q(pu, '.p2'), true); MO.kinSet(q(pu, '.m-kin'), g >= 5);
+    var mo = q(K, '.e-more'); show(mo, g >= 3); mo.style.filter = '';
+    q(K, '.e-kcap').style.display = g >= 4 ? 'none' : '';
+    qa(K, '.e-kcap p').forEach(function (p) { show(p, g < 4); });
+    P.ring.style.strokeDashoffset = g >= 4 ? 0 : 1;
+    var pu = q(s, '.hxpunch'); show(pu, g >= 4); show(q(pu, '.p1'), true); show(q(pu, '.p2'), true); MO.kinSet(q(pu, '.m-kin'), g >= 4);
   }
   FX.eKitchen = {
     enter: function (s, st) {
@@ -462,30 +524,17 @@
       v3hd(s, 0, true);
       kitSet(s, st - 1);
       var G = kitGeo(s), K = G.K, tl = qa(K, '.e-tool'), L = kitLines(s), g = st;
-      var old = q(K, '.e-kcap p[data-c="' + (g - 1) + '"]');
-      if (old) MO.tw(ET.out, 0, 'out', function (e) { old.style.opacity = 1 - e; old.style.transform = 'translateY(' + (-20 * e).toFixed(1) + 'px)'; if (e >= 1) { old.style.opacity = 0; old.style.transform = ''; } });
-      if (g <= 4) {
-        var nu = q(K, '.e-kcap p[data-c="' + g + '"]');
+      if (g <= 2) {   // 도구 두 개: 요리사 쪽에서 튀어나와 자리(흐림 꼬리) + 선
         tl.forEach(function (t, i) {
           if (+t.getAttribute('data-g') !== g) return;
           var o = eoff(t, s), dx = G.cx - (o.x + t.offsetWidth / 2), dy = G.cy - (o.y + 60), j = i % 2;
           t.style.opacity = 0;
-          eIn(t, 40 + j * 70, { dx: dx * 0.3, dy: dy * 0.3, s: 0.9, blur: 10, dur: 230 });
-          if (!t.classList.contains('e-part')) { L[i].style.opacity = 1; L[i].style.strokeDashoffset = 1; MO.draw(L[i], 20 + j * 70, 200, 'snap'); }
-          else { L[i].style.opacity = 0; (function (p) { MO.tw(200, 60 + j * 70, 'out', function (e) { p.style.opacity = e; }); })(L[i]); }
-          var chip = q(t, '.e-chip');
-          if (chip && !chip.classList.contains('e-cy')) { chip.style.opacity = 0; MO.stamp(chip, 330 + j * 70, { s: 1.5 }); }
-          if (chip && chip.classList.contains('e-cy')) {   // 이름이 한 번 돌아가며 바뀌고(한 이름 0.3초) → 세 이름이 한 줄로 멈춰요
-            var names = chip.getAttribute('data-names').split('|'), at0 = 320 + j * 140;
-            chip.style.opacity = 0;
-            names.forEach(function (nm, ni) { MO.tw(150, at0 + ni * 300, 'snap', function (e) { chip.textContent = nm; chip.style.opacity = 1; chip.style.transform = e >= 1 ? '' : 'perspective(400px) rotateX(' + (80 * (1 - e)).toFixed(1) + 'deg)'; }); });
-            MO.tw(180, at0 + names.length * 300, 'snap', function (e) { chip.textContent = names.join(' · '); chip.style.transform = e >= 1 ? '' : 'perspective(400px) rotateX(' + (80 * (1 - e)).toFixed(1) + 'deg)'; });
-          }
+          eIn(t, 40 + j * 90, { dx: dx * 0.3, dy: dy * 0.3, s: 0.9, blur: 10, dur: 230 });
+          L[i].style.opacity = 1; L[i].style.strokeDashoffset = 1; MO.draw(L[i], 20 + j * 90, 200, 'snap');
         });
-        if (nu) eIn(nu, 200, { dy: 20 });
-        if (g === 4) { var P = kitPens(s); P.ar.style.strokeDashoffset = 1; P.n.style.visibility = 'hidden'; eWrite(P.n, 380, 280); eDraw(P.ar, 520, 260); }
         return;
       }
+      if (g === 3) { var mo = q(K, '.e-more'); mo.style.opacity = 0; eIn(mo, 40, { dy: 16, blur: 6 }); return; }
       MO.tw(1, ET.out, 'linear', function () {}, function () { q(K, '.e-kcap').style.display = 'none'; });
       var P2 = kitPens(s); P2.ring.style.strokeDashoffset = 1; eDraw(P2.ring, 40, 360);
       MO.gather(tl, G.cx, G.cy, 200, { dur: 360, pull: 0.08, turn: 0.05 });
@@ -508,7 +557,7 @@
     var R = flGeo(s), svg = ePen(s), x = R.hx + 46, y0 = R.ly - 8, y1 = R.hy + 10;
     var p = eStroke(svg, eWob([[x, y0], [x + 2, (y0 + y1) / 2], [x, y1]], 5, 21) + ' ' + eHead(x, y1, -Math.PI / 2, 22) + ' ' + eHead(x, y0, Math.PI / 2, 22), 'red', 'gap');
     var ny = (y0 + y1) / 2 - 34, nx = R.hx - 48;
-    var n = eNoteAt(s, 'gap', '출발점이 이만큼 달라요', 'red', nx, ny, 'r');
+    var n = eNoteAt(s, 'gap', '못 나와도 이만큼은 나와요', 'red', nx, ny, 'r');
     var l = eStroke(svg, eWob([[nx - 4, ny + 56], [nx + 18, ny + 62], [x - 12, (y0 + y1) / 2 + 6]], 4, 5), 'red', 'gapl');
     return { p: p, n: n, l: l };
   }
@@ -520,7 +569,7 @@
       else f.style.transform = on ? 'scaleX(1)' : 'scaleX(0)';
     });
   }
-  function flEv(s, on) { qa(s, '.e-ev .e-w').forEach(function (w) { w.classList.toggle('e-lit', on); }); }
+  function flEv(s, on) { if (!q(s, '.e-ev')) return; qa(s, '.e-ev .e-w').forEach(function (w) { w.classList.toggle('e-lit', on); }); }
   function flBase(s) { var b = q(s, ':scope > .e-base'); if (!b) b = emk('i', 'e-base', '', s); return b; }
   function flSet(s, st) {
     s.classList.toggle('e-0', st === 0);
@@ -529,7 +578,7 @@
     base.style.left = R.lx + 'px'; base.style.top = R.floor + 'px'; base.style.width = (R.hx + R.hw - R.lx) + 'px'; base.style.transform = '';
     q(s, '.lv.lo .bar').style.transform = '';
     flPills(s, st); flPens(s); ePenSet(s, st >= 2);
-    ev.style.visibility = st >= 3 ? 'visible' : 'hidden'; show(ev, true); flEv(s, st >= 3);
+    if (ev) { ev.style.visibility = st >= 3 ? 'visible' : 'hidden'; show(ev, true); flEv(s, st >= 3); }
     var hd = q(s, ':scope > .hd'); [q(hd, 'h2'), q(hd, '.kicker')].forEach(function (e) { show(e, true); e.style.filter = ''; });
     qa(s, '[data-k], .lv .lb, .lv .ft, .lv .bar, .e-pills').forEach(function (e) { e.style.filter = ''; });
     show(q(s, '.e-pills'), true);
@@ -574,11 +623,10 @@
         eIn(q(hi, '.lb'), 160, { dy: 24 }); eIn(q(hi, '.ft'), 220, { dy: 14 });
         eDraw(P.p, 230, 260); eWrite(P.n, 330, 300); eDraw(P.l, 520, 160);
       } else if (st === 3) {
-        var cap = q(s, '.capline'), ev = q(s, '.e-ev'), W = qa(ev, '.e-w');
+        var cap = q(s, '.capline'), ev = q(s, '.e-ev'), W = ev ? qa(ev, '.e-w') : [];
         eIn(cap, 0, { dy: 30, blur: 8 });
-        ev.style.visibility = 'visible'; flEv(s, false);
-        eIn(ev, 120, { dy: 10, blur: 3 });
-        W.forEach(function (w, i) { MO.tw(1, 320 + i * 70, 'linear', function () {}, function () { w.classList.add('e-lit'); }); });
+        if (ev) { ev.style.visibility = 'visible'; flEv(s, false); eIn(ev, 120, { dy: 10, blur: 3 });
+          W.forEach(function (w, i) { MO.tw(1, 320 + i * 70, 'linear', function () {}, function () { w.classList.add('e-lit'); }); }); }
       }
     }
   };
@@ -821,5 +869,51 @@
       var bs = qa(s, '.e-bubs .nt');
       bs.forEach(function (bb) { bb.style.opacity = 0; });
       bs.forEach(function (bb, i) { pourPop(bb, 360 + i * 220, i); });
+    }
+  };
+
+  /* ============ 14 김치볶음밥 그림책 (3D 로봇 그대로): 위 알약 = 장면 1~4 · 왼쪽 위 = 장면 이름 · 왼쪽 카드 = 선생님의 부탁(쳐짐) · 오른쪽 = 로봇 말풍선(띠용) ============ */
+  var STORY_SCN = ['장면 1 · 그냥 AI: 맨손으로 시작', '장면 2 · 레시피 받음', '장면 3 · 도구 · 재료 받음', '장면 4 · 하네스 완성'];
+  var STORY_SUB = ['요리사 = ChatGPT · Gemini · Claude 같은 AI', '같은 AI에 레시피 · 도구를 챙겨 주면'];
+  function storyGroup(st) { return st <= 3 ? 1 : st === 4 ? 2 : st === 5 ? 3 : 4; }
+  function storySet(s, st) {
+    var g = storyGroup(st);
+    qa(s, '.e-pills4 .e-sg').forEach(function (e, i) { var f = q(e, 'i'); e.classList.toggle('e-cur', i === g - 1); e.classList.toggle('e-done', i < g); f.style.transform = i < g ? 'scaleX(1)' : 'scaleX(0)'; });
+    var sc = q(s, '.e-scn'), b = q(sc, 'b'); b.textContent = STORY_SCN[g - 1]; q(sc, 'small').textContent = STORY_SUB[g > 1 ? 1 : 0]; show(sc, true); sc.__g = g;
+    qa(s, '.e-rb').forEach(function (e) { show(e, +e.getAttribute('data-c') === st); e.style.filter = ''; });
+    qa(s, '.ub').forEach(function (u) { if (u.__full) u.textContent = u.__full; });
+  }
+  function storyPlay(s, st, first) {
+    var g = storyGroup(st), sc = q(s, '.e-scn');
+    if (first || sc.__g !== g) {   // 장면이 바뀔 때만: 알약 채우기 · 이름 바꾸기
+      var f = q(s, '.e-pills4 .e-sg:nth-child(' + g + ') i');
+      if (f && !REDUCED) MO.tw(ET.inn + 60, 80, 'snap', function (e) { f.style.transform = 'scaleX(' + e.toFixed(4) + ')'; });
+      if (!first) eIn(sc, 60, { dx: -24, dy: 0, blur: 6 });
+    }
+    var u = q(s, '.ub[data-c="' + st + '"]');   // 선생님의 부탁: 카드가 튀어나오고 글자가 쳐져요
+    if (u) { MO.type(u, +u.getAttribute('data-at') || 0); if (!REDUCED) u.style.opacity = 0; }
+    var rb = q(s, '.e-rb[data-c="' + st + '"]');
+    if (rb) { rb.style.opacity = 0; pourPop(rb, +rb.getAttribute('data-at') || 0, st); }
+  }
+  FX.eStory = {
+    enter: function (s, st) {
+      eHudIn(s, 0);
+      FX.v3story.enter(s, st);
+      storySet(s, st);
+      if (V3DIR < 0 || st > 0 || REDUCED) return;
+      qa(s, '.e-rb').forEach(function (e) { show(e, false); });
+      storyPlay(s, st, true);
+    },
+    step: function (s, st, dir) {
+      FX.v3story.step(s, st, dir);
+      if (dir === -1 || REDUCED) { storySet(s, st); return; }
+      var prevG = q(s, '.e-scn').__g;
+      storySet(s, st - 1);
+      qa(s, '.e-rb').forEach(function (e) { show(e, false); });
+      var sc = q(s, '.e-scn'); sc.__g = prevG;
+      var g = storyGroup(st);
+      if (g !== prevG) { q(sc, 'b').textContent = STORY_SCN[g - 1]; q(sc, 'small').textContent = STORY_SUB[g > 1 ? 1 : 0]; qa(s, '.e-pills4 .e-sg').forEach(function (e, i) { e.classList.toggle('e-cur', i === g - 1); e.classList.toggle('e-done', i < g); }); }
+      storyPlay(s, st, false);
+      sc.__g = g;
     }
   };

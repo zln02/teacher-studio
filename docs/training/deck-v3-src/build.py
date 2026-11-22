@@ -27,6 +27,7 @@ sys.path.insert(0, str(REPO / "skills" / "teacher-slides" / "scripts"))
 
 THREE_SHA = "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
 SITE = "https://github.com/zln02/teacher-studio"
+NOAN_S2 = "https://zln02.github.io/noan-ai/training/s2.html"   # deck-e 22장 QR: 노안중 AI교육 포털 · 2회차 연수 쪽 (하네스란? · 설치 한 줄 · 부탁 모음 · 막히면)
 THREE_HEAD = "<script>/* three.js r128 · MIT License · Copyright (c) 2010-2021 three.js authors */\n"
 COMPARE_DIR = HERE.parent / "compare"
 BARE_DIR = V2 / "compare-bare"
@@ -267,7 +268,7 @@ def main() -> int:
         names = [x.strip() for x in a.agenda.split(",") if x.strip() and x.strip() != "-"]
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
-    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
