@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 박진영 (zln02)
-"""Printed handout for 「AI에게 무기를 주면」 (2026-11-23).
+"""Printed handout for 「AI에게 무기를 주면」 (2026-11-23) · deck-e v5: one A4 page, how to open Claude Cowork / ChatGPT Codex.
 
-  py build_handout.py          -> handout.html, handout.pdf, handout-preview.png (+ handout.hwpx via docs.py, page 2 break patched)
+  py build_handout.py          -> handout.html, handout.pdf, handout-preview.png (+ handout.hwpx via docs.py)
 
 Uses the harness itself: house tokens (shared/design, use=print, large), shell icons (Tabler), qrcodegen QR via
 teacher-slides/deck_qr.py, Noto Sans KR subset embedding, teacher-docs pdf_tools (A4 print + PNG) and docs.py (HWPX + gate).
@@ -50,62 +50,27 @@ def step(n: int, title: str, detail: str, extra: str = "") -> str:
             f'<div class="sdetail">{detail}</div>{extra}</div></div>')
 
 
-EXAMPLES = [   # 예시일 뿐 · 일상 → 업무 → 수업 (deck-e 18장 · deck-v3 19장과 같은 순서)
-    ("plane", "일상 · 가족 여행 일정표", "다음 달 가족 여행 2박 3일 일정표, 기획부터 같이 해 줘."),
-    ("users", "일상 · 모임 안내문", "동호회 정기 모임 안내문, 기획부터 같이 해 줘."),
-    ("mail", "업무 · 안내문·공문 (한글)", "체험학습 안내문을 한글 파일로, 기획부터 같이 해 줘."),
-    ("calculator", "업무 · 엑셀 → 보고서", "이 엑셀을 한눈에 보는 보고서로. 이름은 빼고."),
-    ("device-gamepad-2", "수업 · 게임", "중2 과학 「빛의 반사」 복습 퀴즈 게임, 기획부터 같이 해 줘."),
-    ("stopwatch", "수업 · 수업 도구", "발표 순서 뽑기 + 3분 타이머. 교실 TV에서 크게 보이게."),
-]
-
-TIPS = [   # deck-v3 13장 끝 · 19장 미션 판 · 21장과 같은 이름 (deck-e는 네 단계: 8장 끝 · 18장 · 19장)
-    ("주문서 쓰기", "누구에게 · 어디에 · 어떤 느낌 · 어떤 재료"),
-    ("기획 같이 하기", "AI가 묻고 내가 고르기 · 「기획부터 같이 해 줘」"),
-    ("만들고 한 번 고치기", "「여기만 고쳐 줘」 한 번 더"),
-    ("확인하기", "사실·숫자 / 남의 개인정보(학생·학부모·교직원·가족 등) / 저작권"),
-    ("공유하기", "폰으로 보내고 같이 쓰기"),
-]
-
-MAP = [("chef-hat", "AI", "요리사"), ("building-store", "AI를 만드는 회사", "식당"), ("tools-kitchen-2", "AI 앱", "그 식당의 주방"),
-       ("book", "하네스", "레시피·밀키트·주방도구·시식·위생 규칙"), ("receipt", "내 부탁(프롬프트)", "주문서")]
-
-
 def build_html() -> str:
+    """deck-e v5: 한 쪽 · Claude Cowork / ChatGPT Codex 들어가는 법만 (교사 스튜디오 설치 안내는 뺐어요)."""
     head = (f'<div class="meta">교사 연수 &nbsp;·&nbsp; 2026. 11. 23.(월) 14:00 &nbsp;·&nbsp; 60분 &nbsp;·&nbsp; AI교육코디네이터 박진영</div>')
-
-    # ---------------------------------------------------------------- page 1: follow along
-    harness = (f'<div class="harness"><div class="hx-text"><b>하네스</b> = AI 요리사에게 <b>도구</b>와 <b>레시피</b>를 주는 것</div>'
-               f'<div class="hx-pic" aria-hidden="true">'
-               f'<span class="chip">{ic("flame", 20)}도구</span><span class="op">+</span>'
-               f'<span class="chip">{ic("book", 20)}레시피</span><span class="op">=</span>'
-               f'<span class="chip strong">{ic("egg", 20)}김치볶음밥</span></div></div>')
-    amap = '<div class="amap">' + "".join(f'<div class="am"><div class="am-r">{e(r)}</div><div class="am-a">{ic(n, 18)}<b>{e(v)}</b></div></div>' for n, r, v in MAP) + '</div>'
     steps = "".join([
-        step(1, "우리가 쓸 식당", "모둠 노트북에 하네스를 <b>미리 채워 두었어요</b> &nbsp;<span class='real'>(식당 ① Claude 앱 / 식당 ② ChatGPT 앱)</span>"),
-        step(2, "파일을 만드는 「주방」 열기", "앱을 열고 <b>Cowork</b> 탭 &nbsp;<span class='real'>(식당 ② 개인 계정은 Codex 앱)</span>"),
-        step(3, "한 줄로 확인", "", '<div class="say">「교사 스튜디오 시작」 → 「무엇을 만들까요?」가 뜨면 성공</div>'),
-        step(4, "모둠 미션: 오늘 진짜 필요한 것 하나", "일상이든 업무든 수업이든. 처음엔 내 일상 것부터 해 봐도 돼요",
-             '<div class="prompt">① 주문서 쓰기 → ② 기획 같이 하기 → ③ 만들고 한 번 고치기 → ④ 확인하기 → ⑤ 공유하기</div>'),
+        step(1, '앱 열기', "컴퓨터용 <b>Claude 앱</b> 또는 <b>ChatGPT 앱</b>"),
+        step(2, '채팅 말고, 파일을 만드는 쪽 열기', "Claude: <b>「Cowork」 탭</b> &nbsp;·&nbsp; ChatGPT: <b>「Codex」</b>"),
+        step(3, '한 줄로 부탁', "",
+             '<div class="say">예) 「물품 구입 안내문 만들어 줘」</div>'
+             f'<div class="att">+ 있으면 <b>우리 학교 양식 파일</b>을 같이 붙여요 &nbsp;·&nbsp; 규칙 한 줄(예: 학생 이름은 넣지 않기)</div>'),
+        step(4, '받아서 확인', "사실 · 숫자 / 남의 개인정보 / 저작권 &nbsp;·&nbsp; 고칠 곳은 <b>「여기 고쳐 줘」</b> 한 줄"),
     ])
-    planb = (f'<div class="planb"><div class="pb-h">{ic("home", 22)} 집에서 설치하기</div>'
-             f'<ol><li>Cowork 탭(또는 Codex 앱)에서 <b>{REPO}</b> + 「내가 준 링크에 하네스 세팅해 줘」</li>'
-             f'<li>안 되면: <b>dist</b> 폴더에서 zip 받기 → 식당 ① <b>Customize → Skills</b>에 올리기</li>'
-             f'<li>코드 실행 켜기: <b>Settings → Capabilities</b></li></ol></div>')
-    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">따라 하기 안내지 &nbsp;·&nbsp; 1쪽 따라 하기 / 2쪽 가져가기</div>'
-          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">「바로 만들어」 말고, <b>「기획부터 같이 해 줘」</b></div></div>'
-          f'{amap}<h2>오늘 실습 (보기 · 미션)</h2><div class="steps">{steps}</div>{planb}</section>')
-
-    # ---------------------------------------------------------------- page 2: take home
-    tips = "".join(f'<li><span class="tn">{i + 1}</span><b>{a}</b><span class="td">{b}</span></li>' for i, (a, b) in enumerate(TIPS))
-    cards = "".join(f'<div class="card"><div class="c-h">{ic(n, 22)}<b>{e(t)}</b></div><div class="c-q">「{e(q)}」</div></div>'
-                    for n, t, q in EXAMPLES)
     qr = deck_qr.svg(SITE)
-    p2 = (f'<section class="page">{head}<h2 class="first">가져가실 다섯 단계</h2><ol class="tips">{tips}</ol>'
-          f'<div class="nextstep"><b>다음 한 걸음</b> 오늘 저녁, 내 일상 하나부터 써 보기 → 2주 안에 업무나 수업에도 한 번 · 사이트에 한 줄 남기기</div><h2>이렇게 써 보세요 <small>(예시일 뿐)</small></h2><div class="cards">{cards}</div>'
-          f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">연수 내용과 쓰는 법은<br>사이트에 있어요</div>'
+    p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면</h1><div class="sub">Claude Cowork · ChatGPT Codex 시작 안내지</div>'
+          f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>Cowork · Codex</b></div></div>'
+          f'<h2>이렇게 시작해요</h2><div class="steps">{steps}</div>'
+          f'<div class="warn">⚠ <b>남의 개인정보는 넣지 않아요</b>&nbsp; (학생 · 학부모 · 교직원 · 가족 누구 것이든)</div>'
+          f'<div class="fine">Cowork · Codex는 대부분 <b>유료 요금제</b>예요 &nbsp;·&nbsp; 메뉴 이름은 앱 · 요금제마다 달라요</div>'
+          f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">오늘 연수 내용 ·<br>막혔을 때는 사이트에</div>'
           f'<div class="st-url">{e(SITE)}</div><div class="st-s">휴대폰 카메라로 QR을 비추면 열려요</div></div></div>'
           f'<footer><b>AI가 만들어도, 마지막 확인과 책임은 여러분께</b></footer></section>')
+    p2 = ""
 
     css = f"""
 @page{{size:A4;margin:0}}
@@ -130,7 +95,7 @@ h2.first{{margin-top:5mm}}
 .chip{{display:inline-flex;align-items:center;gap:1mm;font-size:11pt;font-weight:700;border:1pt solid {INK};border-radius:5mm;padding:.6mm 2.4mm;background:#fff}}
 .chip.strong{{background:{INK};color:#fff}}
 .op{{font-weight:900;font-size:13pt}}
-.steps{{display:flex;flex-direction:column;gap:2.2mm}}
+.steps{{display:flex;flex-direction:column;gap:3mm}}
 .amap{{display:grid;grid-template-columns:repeat(5,1fr);gap:1.6mm;margin-top:3mm}}
 .am{{border:.8pt solid {LINE};border-radius:2mm;padding:1.6mm 2mm}}
 .am-r{{font-size:9.5pt;color:#444}}
@@ -139,14 +104,17 @@ h2.first{{margin-top:5mm}}
 .nextstep{{margin-top:3mm;border:1.4pt solid {INK};border-radius:2mm;padding:2.2mm 3.5mm;font-size:11.5pt}}
 .nextstep b{{margin-right:2mm}}
 h2 small{{font-size:11pt;font-weight:600}}
-.step{{display:flex;gap:3.5mm;align-items:flex-start;border:1pt solid {LINE};border-radius:3mm;padding:2mm 3.5mm}}
-.num{{flex:0 0 10mm;height:10mm;border-radius:50%;background:{INK};color:#fff;font-size:21pt;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}}
+.step{{display:flex;gap:4mm;align-items:flex-start;border:1.2pt solid {LINE};border-radius:3mm;padding:2.8mm 4.5mm}}
+.num{{flex:0 0 12mm;height:12mm;border-radius:50%;background:{INK};color:#fff;font-size:21pt;font-weight:900;display:flex;align-items:center;justify-content:center;line-height:1}}
 .sbody{{flex:1}}
-.stitle{{font-size:14.5pt;font-weight:900;line-height:1.25}}
-.sdetail{{font-size:11.5pt;margin-top:.8mm}}
+.stitle{{font-size:19pt;font-weight:900;line-height:1.25;display:flex;align-items:center;gap:2mm}}
+.sdetail{{font-size:14pt;margin-top:1mm}}
+.att{{font-size:13pt;margin-top:1.5mm}}
+.warn{{margin-top:3.5mm;font-size:14.5pt;border:2pt solid {INK};border-radius:3mm;padding:2.5mm 4.5mm}}
+.fine{{margin-top:2.5mm;font-size:12.5pt;color:#333}}
 .tag{{font-size:10.5pt;font-weight:700;border:1pt solid {INK};border-radius:1.2mm;padding:0 1.6mm;vertical-align:2px}}
 .code{{display:inline-block;margin-top:1.5mm;font-size:16pt;font-weight:800;letter-spacing:.01em;border:1.6pt solid {INK};border-radius:1.8mm;padding:.8mm 3mm;background:{SOFT}}}
-.say{{font-size:12.5pt;font-weight:700;margin-top:1.5mm}}
+.say{{font-size:16pt;font-weight:800;margin-top:1.5mm;border:1.4pt dashed {INK};border-radius:2mm;padding:1.5mm 3mm;display:inline-block}}
 .prompt{{margin-top:1.5mm;font-size:11.5pt;font-weight:600;border:1.6pt dashed {INK};border-radius:2.5mm;padding:2.5mm 3.5mm;background:{SOFT};line-height:1.5}}
 .planb{{margin-top:3mm;border:1.6pt dashed {INK};border-radius:3mm;padding:2.2mm 4mm}}
 .pb-h{{font-size:15pt;font-weight:900;display:flex;align-items:center;gap:2mm}}
@@ -219,7 +187,6 @@ def main() -> None:
     docs = ROOT / "skills/teacher-docs/scripts/docs.py"
     subprocess.run([sys.executable, str(docs), "make", "--spec", str(HERE / "handout.spec.json"), "--out", str(HERE / "handout.hwpx")],
                    check=True, env=env)
-    print("hwpx page break:", patch_hwpx_page_break(HERE / "handout.hwpx", "가져가실 다섯 단계"))
 
 
 if __name__ == "__main__":

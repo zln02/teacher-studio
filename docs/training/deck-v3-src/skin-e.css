@@ -487,3 +487,22 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .mission4.duo3.v3 .menu li{font-size:30px}
 .mission4.duo3.v3 .e-pace p{margin:0 0 10px;font-size:28px;font-weight:600;line-height:1.35;color:var(--d-sub)}
 .mission4.duo3.v3 .e-pace p b{color:var(--d-acc)}
+
+/* ---- 브라우저 시연 ---- */
+.demo1.v3 .e-steps3{position:absolute;left:128px;right:128px;top:270px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.demo1.v3 .e-st{padding:26px 30px;display:grid;grid-template-columns:72px 1fr;column-gap:18px;align-items:center}
+.demo1.v3 .e-st .e-n{grid-column:1 / -1;font-family:var(--mono);font-size:30px;color:var(--d-acc)}
+.demo1.v3 .e-st .ic{grid-row:2 / 4;width:72px;height:72px;fill:none;stroke:var(--d-cool);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.demo1.v3 .e-st h3{margin:0;font-size:44px;font-weight:800;letter-spacing:-.03em}
+.demo1.v3 .e-st p{margin:4px 0 0;font-size:28px;line-height:1.3;color:var(--d-sub)}
+.demo1.v3 .e-st p b{color:var(--d-acc)}
+.demo1.v3 .e-ask2{position:absolute;left:128px;right:128px;top:560px;font-size:32px;font-weight:600;line-height:1.45;padding:22px 30px}
+.demo1.v3 .e-rules{position:absolute;left:128px;right:128px;top:800px;margin:0;display:flex;flex-direction:column;gap:8px;font-size:28px;font-weight:600;color:var(--d-sub)}
+.demo1.v3 .e-rules span{display:flex;align-items:center;gap:10px}
+.demo1.v3 .e-rules .ic{width:30px;height:30px;fill:none;stroke:var(--e-red);stroke-width:2}
+.demo1.v3 .e-rules span:first-child{color:var(--d-ink);font-weight:800}
+.demo1.v3 .e-backup{position:absolute;left:128px;right:128px;top:250px;bottom:110px;z-index:7;padding:20px;border-radius:12px;border:1.5px solid var(--d-line2);background:var(--d-bg);display:flex;flex-direction:column;gap:12px}
+.demo1.v3 .e-backup .e-tag{font-family:var(--mono);font-size:24px;color:var(--d-acc)}
+.demo1.v3 .e-backup video,.demo1.v3 .e-backup .frame{flex:1;min-height:0;width:100%;border-radius:8px;background:#000;object-fit:contain}
+.demo1.v3 .e-backup .frame.ph{display:grid;place-items:center;align-content:center;gap:12px;font-size:30px;color:var(--d-mute);background:var(--d-surf)}
+.demo1.v3 .e-backup{z-index:9}

@@ -319,6 +319,10 @@ def main() -> int:
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    if "__DEMO_VIDEO__" in slides:   # 시연 예비 영상: 크니까 덱에 넣지 않고 옆 파일로 이어요 (deck-v3-src/demo/pumui.mp4)
+        dv = HERE / "demo" / "pumui.mp4"
+        slides = slides.replace("__DEMO_VIDEO__", '<video src="deck-v3-src/demo/pumui.mp4" controls preload="none" playsinline></video>' if dv.exists() else '<div class="frame ph"><svg class="ic"><use href="#video"/></svg>녹화 영상 들어갈 자리 (deck-v3-src/demo/pumui.mp4)</div>')
+        print("  demo video", "linked" if dv.exists() else "placeholder")
     if "__ECMP_" in slides:
         slides = ecmp_fill(slides)
     for bad in ("?.", "??"):
