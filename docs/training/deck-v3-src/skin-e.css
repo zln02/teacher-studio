@@ -480,3 +480,10 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .e-app .e-also b{color:var(--d-ink)}
 .use3.v3>.hd h2{font-size:58px;max-width:none}
 .use3.v3 .e-bigh{top:256px}
+.ecmp.v3 .e-chips{flex-direction:column;align-items:flex-start;gap:8px;top:832px}
+.ecmp.v3 .e-chips span{font-size:26px}
+.ecmp.v3 .e-chips span b{font-family:var(--mono);font-weight:400;font-size:20px;color:var(--d-acc);margin-right:12px}
+.ecmp.v3 .e-chips.e-hero span:first-child{border-color:var(--d-acc);font-size:28px}
+.mission4.duo3.v3 .menu li{font-size:30px}
+.mission4.duo3.v3 .e-pace p{margin:0 0 10px;font-size:28px;font-weight:600;line-height:1.35;color:var(--d-sub)}
+.mission4.duo3.v3 .e-pace p b{color:var(--d-acc)}
