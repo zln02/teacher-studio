@@ -352,6 +352,78 @@ _POLITE = re.compile(r"(?:습니다|니다|어요|아요|해요|예요|이에요
 _EX_SRC = re.compile(r"가상|예시|임의|샘플|허구|지어낸")  # an example marker inside a source / footnote line
 
 
+def dspec_quiz_set(it: dict) -> list:
+    import deck_spec
+    return deck_spec.quiz_set(it)
+
+
+_FRAME_ROLES = ("objectives", "recap")
+
+
+def frame_notes(spec: dict, slides: list) -> list[str]:
+    """A lesson deck spends its pages on ideas first: cover, goals, check questions, answers, recap and closing (the frame) must not
+    outnumber the slides that teach in a deck of ten or fewer pages. There the frame folds into neighbours instead of pushing a sub-topic out."""
+    types = [x.get("type") for x in slides]
+    total = len(slides) + (1 if "quiz" in types else 0)  # + the 「확인 문제 정답」 page the .pptx adds
+    try:
+        total = max(total, int(spec.get("target_slides") or 0))
+    except (TypeError, ValueError):
+        pass
+    content = sum(1 for x in slides if x.get("type") not in ("title", "closing", "section", "quiz", "toc") and x.get("_role") not in _FRAME_ROLES)
+    if 0 < total <= 10 and content * 2 < total:  # a longer deck has room for its frame; a short one loses a sub-topic to it
+        return [f"수업용: 내용 장이 {content}장뿐이에요 ({total}장 중, 정답 장 포함) -> 가르치는 장이 절반은 넘게: 학습 목표는 표지 \"subtitle\" 한 줄로, "
+                "정리는 마무리 \"sub\"로, 확인 문제 2~3개는 한 장에 (\"questions\": [...]) 모으고, 비운 자리에 단원의 빠진 내용을 넣기"]
+    return []
+
+
+def _words(t) -> list:
+    return [w for w in re.findall(r"[가-힣A-Za-z0-9]+", str(t or "").replace("**", "")) if len(w) >= 2]
+
+
+def drawing_notes(i: int, shapes: list, siblings: list | None = None) -> list[str]:
+    """Two soft checks on a drawing (a `diagram` slide or a panel's diagram block):
+    bare shapes - three or more separate filled outlines with nothing inside them and no lines between them (a row of plain
+    triangles / circles / squares standing for real things: signs, signals, tools), so the drawing shows a shape, not the thing;
+    repeated words - the cards beside the drawing say again what its labels already say (the same words twice, nothing added)."""
+    out = []
+    sh = [x for x in shapes or [] if isinstance(x, dict)]
+    import deck_diagram as dg
+    kinds = [dg.kind_of(x) for x in sh]
+    if not any(k in ("line", "dash", "arrow", "dasharrow") for k in kinds) and "icon" not in kinds:
+        def box(x):
+            k = dg.kind_of(x)
+            f = dg._f
+            if k == "rect":
+                return f(x.get("x")), f(x.get("y")), f(x.get("x")) + f(x.get("w")), f(x.get("y")) + f(x.get("h"))
+            if k == "circle":
+                rx, ry = dg.radii(x)
+                return f(x.get("cx")) - rx, f(x.get("cy")) - ry, f(x.get("cx")) + rx, f(x.get("cy")) + ry
+            if k == "poly" and isinstance(x.get("points"), list) and x["points"]:
+                xs = [f(p[0]) for p in x["points"] if isinstance(p, (list, tuple)) and len(p) == 2]
+                ys = [f(p[1]) for p in x["points"] if isinstance(p, (list, tuple)) and len(p) == 2]
+                return (min(xs), min(ys), max(xs), max(ys)) if xs and ys else None
+            return None
+        figs = [(j, box(x)) for j, x in enumerate(sh) if kinds[j] in ("rect", "circle", "poly") and x.get("fill") != "none" and box(x)]
+
+        def inside(b, c):
+            cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+            return c[0] <= cx <= c[2] and c[1] <= cy <= c[3]
+        top = [(j, b) for j, b in figs if not any(j2 != j and inside(b, b2) and (b2[2] - b2[0]) * (b2[3] - b2[1]) > (b[2] - b[0]) * (b[3] - b[1]) for j2, b2 in figs)]
+        bare = [j for j, b in top if not any(j2 != j and inside(b2, b) for j2, b2 in figs)]
+        if len(bare) >= 3:
+            out.append(f"slide {i}: 그림 {len(bare)}개가 속이 빈 맨 도형이에요 -> 실제 물건(표지·기구·동식물·기호)을 나타낸다면 알아보게 그리기: "
+                       "실제 모양과 테두리·색, 안의 그림(kind \"icon\": person-standing, bike, baby, car ...). 다 그리기 어려우면 개수를 줄이고 제대로")
+    if siblings:
+        labels = [x.get("text") for x in sh if x.get("text")]
+        texts = [" ".join([str(c.get("title") or "")] + [str(m) for m in (c.get("items") or [])] + [str(c.get("text") or "")]) if isinstance(c, dict) else str(c)
+                 for c in siblings]
+        dup = [l_ for l_ in labels if _words(l_) and any(all(w in t for w in _words(l_)) for t in texts)]
+        if len(dup) >= 2:
+            out.append(f"slide {i}: 그림의 이름표({', '.join(str(d) for d in dup[:3])})를 옆 칸이 다시 말해요 -> 같은 말은 한 번만: "
+                       "옆 칸에는 그림이 보여 주지 못하는 것(까닭, 예외, 예, 헷갈리는 것)을")
+    return out
+
+
 def lint(spec: dict) -> tuple[list[str], list[str]]:
     """(errors, warnings) for the context's conventions. Errors stop the build like other spec errors (fix list)."""
     ctx = context_of(spec)
@@ -439,11 +511,28 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
                                  "(\"🐶 멍멍: 강아지가 짖어요\", 보기 \"⭐ 반짝반짝\", 단계 제목 \"✂️ 오리기\"): 빌드가 글에서 떼어 낱말 옆에 크게 그려요. 제목에는 쓰지 않기")
                 if not any(x.get("type") == "title" and (x.get("pic") or x.get("shapes")) for x in slides):
                     warns.append("저학년 수업: 표지에 그림이 없어요 -> 표지에 \"pic\": \"🌧️\" (주제를 보여 주는 이모지 하나) 또는 \"shapes\"로 직접 그리기")
-        if not any(x.get("_role") == "objectives" for x in slides) and not spec.get("objectives"):
-            warns.append("수업용: 학습 목표 장이 없어요 -> spec \"objectives\": [...] (표지 다음에 자동으로 들어가요)")
+        warns += frame_notes(spec, slides)
+        for i, it in enumerate(slides, 1):
+            if it.get("type") == "diagram":
+                warns += drawing_notes(i, it.get("shapes") or [])
+            elif it.get("type") == "panel":
+                bl = [b for b in it.get("blocks") or [] if isinstance(b, dict)]
+                sib = [m for b in bl if b.get("kind") in ("cards", "list") for m in (b.get("items") or [])]
+                for b in bl:
+                    if b.get("kind") == "diagram":
+                        warns += drawing_notes(i, b.get("shapes") or [], sib)
+        try:
+            want_ = int(spec.get("target_slides") or 0)
+        except (TypeError, ValueError):
+            want_ = 0
+        short = 0 < (want_ or len(slides) + (1 if "quiz" in types else 0)) <= 8  # a short lesson deck: the frame folds into the content slides
+        cover_goal = any(x.get("type") == "title" and (x.get("subtitle") or x.get("objectives")) for x in slides)
+        if not any(x.get("_role") == "objectives" for x in slides) and not spec.get("objectives") and not (short and cover_goal):
+            warns.append("수업용: 학습 목표 장이 없어요 -> spec \"objectives\": [...] (표지 다음에 자동으로 들어가요; 8장 이하면 표지 \"subtitle\"에 목표 한 줄로도 돼요)")
         if not ({"quiz", "timer"} & set(types)) and not any(x.get("_role") == "activity" for x in slides):
             warns.append("수업용: 퀴즈나 활동 장이 없어요 -> {\"type\":\"quiz\"} 또는 {\"type\":\"activity\"} 한 장")
-        if not any(x.get("_role") == "recap" for x in slides) and not spec.get("recap"):
+        closing_recap = any(x.get("type") == "closing" and (x.get("sub") or x.get("next")) for x in slides)
+        if not any(x.get("_role") == "recap" for x in slides) and not spec.get("recap") and not (short and closing_recap):
             warns.append("수업용: 정리 장이 없어요 -> spec \"recap\": [...] (마무리 앞에 자동으로 들어가요)")
         for i, it in enumerate(slides, 1):
             if it.get("type") == "bullets" and len(it.get("items") or []) > 4:
@@ -451,11 +540,11 @@ def lint(spec: dict) -> tuple[list[str], list[str]]:
             if it.get("type") == "quiz" and not str(it.get("explain") or "").strip():
                 warns.append(f"slide {i}: 확인 문제에 풀이가 없어요 -> \"explain\": \"한 줄 풀이\" (PPT의 정답 장에 함께 나와요)")
         if len(slides) >= 8:
-            n_quiz = types.count("quiz")
+            n_quiz = sum(len(dspec_quiz_set(x)) for x in slides if x.get("type") == "quiz")
             n_act = sum(1 for x in slides if x.get("_role") == "activity") + types.count("timer")
             if n_quiz < 2:
                 warns.append(f"수업용: 확인 문제가 {n_quiz}개예요 -> 개념 묶음마다 하나씩, 2개 이상 ({{\"type\":\"quiz\",\"answer\":0,\"explain\":\"...\"}})")
-            if not n_act:
+            if not n_act and not short:
                 warns.append("수업용: 활동 장이 없어요 -> {\"type\":\"activity\",\"minutes\":5,\"steps\":[...]} 한 장 (준비물은 note에)")
             if not ({"diagram", "image", "compare", "table", "chart", "steps", "timeline", "illustration", "panel"} & set(types)):
                 warns.append("수업용: 그림·표가 하나도 없어요 -> 교과서에 그림이 있는 개념은 {\"type\":\"diagram\"}으로 그리기 (광선, 순환, 구조)")

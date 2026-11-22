@@ -1,0 +1,33 @@
+{
+ "judge": "opus",
+ "task": "safety-sign-ppt",
+ "run": 2,
+ "pass_": 2,
+ "mapping": {
+  "A": "claude-bare",
+  "B": "claude-harness"
+ },
+ "result": {
+  "A": {
+   "content": 4,
+   "design": 4,
+   "readability": 5,
+   "fit": 5,
+   "note": "There are 10 slides. The flow is clear: lesson goals, then signs found around school (classroom, hallway, stairs, playground), then what each color promises (red, yellow, blue, green, one slide each), then a quiz and a closing promise. The colors and their meanings are accurate, and the examples fit what first graders see at school. The sign icons look the same on every slide and the text is large, so it is very easy for 1st graders to read. The quiz slide gives no answers, and the lesson does not cover what sign shapes mean, so it is a little shallow. The design is simple and consistent: light blue background with color-coded cards and banners. It can be used in class as it is."
+  },
+  "B": {
+   "content": 4,
+   "design": 4,
+   "readability": 3,
+   "fit": 4,
+   "note": "There are 10 slides. It covers more than A: color meanings, what each shape means (circle, triangle, square), the red circle versus the blue circle, safety rules, a 10-minute school sign-finding activity, a quiz, and a separate answer slide. That makes it a well-rounded lesson. The warm cream-and-orange theme looks tidy. However, several slides have small text: the color-meaning cards, the quiz choices, the answer explanations, and the summary list. Some icons are small and unclear, such as the footprint and emoji-style icons. The amount of text and the abstract ideas (for example, the slash on a sign) can be hard for 1st graders to read and understand."
+  },
+  "ranking": [
+   "A",
+   "B"
+  ]
+ },
+ "cost": 0.2409114,
+ "secs": 28,
+ "raw": "{\"A\":{\"content\":4,\"design\":4,\"readability\":5,\"fit\":5,\"note\":\"There are 10 slides. The flow is clear: lesson goals, then signs found around school (classroom, hallway, stairs, playground), then what each color promises (red, yellow, blue, green, one slide each), then a quiz and a closing promise. The colors and their meanings are accurate, and the examples fit what first graders see at school. The sign icons look the same on every slide and the text is large, so it is very easy for 1st graders to read. The quiz slide gives no answers, and the lesson does not cover what sign shapes mean, so it is a little shallow. The design is simple and consistent: light blue background with color-coded cards and banners. It can be used in class as it is.\"},\"B\":{\"content\":4,\"design\":4,\"readability\":3,\"fit\":4,\"note\":\"There are 10 slides. It covers more than A: color meanings, what each shape means (circle, triangle, square), the red circle versus the blue circle, safety rules, a 10-minute school sign-finding activity, a quiz, and a separate answer slide. That makes it a well-rounded lesson. The warm cream-and-orange theme looks tidy. However, several slides have small text: the color-meaning cards, the quiz choices, the answer explanations, and the summary list. Some icons are small and unclear, such as the footprint and emoji-style icons. The amount of text and the abstract ideas (for example, the slash on a sign) can be hard for 1st graders to read and understand.\"},\"ranking\":[\"A\",\"B\"]}"
+}

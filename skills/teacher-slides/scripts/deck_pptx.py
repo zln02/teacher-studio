@@ -688,10 +688,11 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
             card(s, cx0, cy0, cw_, ch_)
         u = cw_ / 100.0
         fz = min(1.0, max(0.86 if ctx_name == "class" else 0.78, cw_ / 7.6))  # a small canvas (inside a panel) gets smaller labels, never tiny ones
-        lo_ = 14.0
+        lo_ = MINPT
+        up_ = 1.2 if aud else 1.0  # children and older readers read a drawing's words from the back too: they start larger, like the rest of the slide
         for n_, sh_ in enumerate(it["shapes"]):
             kd = dg.kind_of(sh_)
-            col = dg.legible(dg.color(sh_.get("color"), C, "ct" if kd in ("label", "line", "dash") else "pr"), it["shapes"], n_, C)
+            col = dg.legible(dg.color(sh_.get("color"), C, "ct" if kd in ("label", "line", "dash", "icon") else "pr"), it["shapes"], n_, C)
             if kd in ("line", "dash", "arrow", "dasharrow"):
                 cn = line(s, cx0 + float(sh_["x1"]) * u, cy0 + float(sh_["y1"]) * u, cx0 + float(sh_["x2"]) * u, cy0 + float(sh_["y2"]) * u,
                           col, max(2.0, float(sh_.get("w", 4)) * 0.75), "arrow" in kd, "dash" in kd)
@@ -709,7 +710,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 g_.name = "diagram"
                 if sh_.get("text"):
                     tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
-                    tbox(s, bx[0], bx[1], bx[2], bx[3], plain(sh_["text"]), max(lo_, 17 * fz), tc_, True, "c", "m", emc=tc_, shape=g_)
+                    tbox(s, bx[0], bx[1], bx[2], bx[3], plain(sh_["text"]), max(lo_, 17 * fz * up_), tc_, True, "c", "m", emc=tc_, shape=g_)
             elif kd == "poly":
                 pts = [(cx0 + float(p_[0]) * u, cy0 + float(p_[1]) * u) for p_ in sh_["points"]]
                 fb_ = s.shapes.build_freeform(I(pts[0][0]), I(pts[0][1]))
@@ -731,7 +732,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 if sh_.get("text"):
                     tc_ = dg.ink_on(fill_) if fill_ else C["ct"]
                     mx_, my_ = sum(p[0] for p in pts) / len(pts), sum(p[1] for p in pts) / len(pts)
-                    tbox(s, mx_ - 1.1, my_ - 0.28, 2.2, 0.56, plain(sh_["text"]), max(lo_, 17 * fz), tc_, True, "c", "m", emc=tc_).name = "diagram label"
+                    tbox(s, mx_ - 1.1, my_ - 0.28, 2.2, 0.56, plain(sh_["text"]), max(lo_, 17 * fz * up_), tc_, True, "c", "m", emc=tc_).name = "diagram label"
             elif kd == "arc":
                 acx, acy, ar, a0, a1 = dg.arc_points(sh_)
                 ar *= u
@@ -750,8 +751,13 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 g_.line.width = Pt(2.5)
                 g_.shadow.inherit = False
                 g_.name = "diagram"
+            elif kd == "icon":
+                sz_ = dg.icon_size(sh_) * u
+                g_ = icon(s, dg.icon_name(sh_), cx0 + float(sh_["x"]) * u - sz_ / 2, cy0 + float(sh_["y"]) * u - sz_ / 2, sz_, col)
+                if g_ is not None:
+                    g_.name = "diagram icon"
             elif kd == "label":
-                fs_ = max(lo_, {"s": 15, "m": 19, "l": 25}.get(str(sh_.get("size", "m")), 19) * fz)
+                fs_ = max(lo_, {"s": 15, "m": 19, "l": 25}.get(str(sh_.get("size", "m")), 19) * fz * up_)
                 al_ = str(sh_.get("align", "c"))[:1]
                 al_ = al_ if al_ in ("l", "c", "r") else "c"
                 wd_ = max(1.2 * fz, pfit.width_em(plain(sh_["text"])) * fs_ / 72 + 0.45)
@@ -1336,6 +1342,38 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                 tbox(s, 0.8, 2.5, 7.0, 3.2, it["text"], 26, C["mu"])
             nm = (it.get("pic") if dspec.is_pic(it.get("pic")) else None) or dicons.name(it.get("motif")) or dicons.name(it.get("_icon_word")) or dicons.pick(plain(it["title"])) or DEF_ICON
             ring(s, 10.4, 3.9, 4.0, nm)
+        elif t == "quiz" and len(dspec.quiz_set(it)) > 1:  # two or three check questions on one slide (a short deck): one row each
+            qs_ = dspec.quiz_set(it)
+            head(s, it, plain(it.get("title") or "확인 문제"))
+            nq = len(qs_)
+            gap = 0.2
+            rh = (5.0 - gap * (nq - 1)) / nq
+            for i, q in enumerate(qs_):
+                y = 1.85 + i * (rh + gap)
+                tcard(s, 0.8, y, 11.7, rh, i)
+                badge(s, 1.0, y + 0.18, 0.62, tone(i), i + 1)
+                tbox(s, 1.8, y + 0.08, 10.5, rh * 0.42, plain(q["q"]), 26 + (2 if aud else 0), C["ct"], True, anchor="m", emc=C["emcc"])
+                chs = q["choices"]
+                cwid = (10.5 - 0.2 * (len(chs) - 1)) / len(chs)
+                chh = rh * 0.5 - 0.1
+                qp_ = q.get("pics") or []
+                for j, x_ in enumerate(chs):
+                    cx = 1.8 + j * (cwid + 0.2)
+                    cy = y + rh * 0.47
+                    rect(s, cx, cy, cwid, chh, tint(tone(i), 0.10), line=tint(tone(i), 0.45), lw=1.5).name = "choice"
+                    dd = min(0.5, chh - 0.16)
+                    badge(s, cx + 0.12, cy + chh / 2 - dd / 2, dd, tone(i), "ABCD"[j])
+                    px_ = 0.0
+                    if j < len(qp_) and dspec.is_pic(qp_[j]):
+                        px_ = min(0.62, chh - 0.12)
+                        emoji(s, qp_[j], cx + 0.12 + dd + 0.08, cy + chh / 2 - px_ / 2, px_)
+                        px_ += 0.04
+                    tx_ = cx + 0.12 + dd + 0.14 + px_
+                    tbox(s, tx_, cy, cx + cwid - tx_ - 0.08, chh, plain(x_), 22 + (2 if aud else 0), C["ct"], anchor="m", emc=C["emcc"])
+                ans = int(q.get("answer", 0))
+                quizzes.append((len(quizzes) + 1, q))
+                notes.append(f"{i + 1}. 정답: {'ABCD'[ans]}. {plain(chs[ans])}" + (f" - {plain(q['explain'])}" if q.get("explain") else ""))
+            notes.append("(뒤쪽 「확인 문제 정답」 장에 모아 두었어요)")
         elif t == "quiz":
             ch = it["choices"]
             ans = int(it.get("answer", 0))
@@ -1461,7 +1499,7 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                     yy = y0_ + i * (rh_ + 0.2)
                     card(s, px_, yy, pw_, rh_)
                     rect(s, px_, yy, 0.12, rh_, tone(i), round_=False).name = "accent"
-                    tbox(s, px_ + 0.25, yy, pw_ - 0.35, rh_, x_, 21, C["ct"], anchor="m", emc=C["emcc"])
+                    tbox(s, px_ + 0.25, yy, pw_ - 0.35, rh_, x_, 24 if aud else 21, C["ct"], anchor="m", emc=C["emcc"])
             if it.get("caption"):
                 tbox(s, 0.8, cy0 + ch_ + 0.08, 11.7, 0.5, it["caption"], 17, C["mu"], align="c")
         elif t == "panel":
@@ -1535,6 +1573,38 @@ def build_pptx(spec: dict, base: Path, out: Path, seed: int | None = None, overr
                variants=variants, tones=TONES, audience=aud,
                font_note=f"글꼴 {fdisp}/{fbody}이(가) PC에 없으면 PowerPoint가 비슷한 글꼴로 바꿔 보여요. 글꼴 파일은 shared/fonts에 있어요.")
     return rep
+
+
+def small_text(path, below: float = 22.0, share: float = 0.4) -> list:
+    """Slides of a young-room deck whose words are mostly smaller than a child reads from the back row (aim 24pt, flag under 22pt):
+    [(slide number, share of its words under `below` pt)]. Kickers (top strip), and numbers or letters on badges are not counted."""
+    from pptx import Presentation
+    from pptx.util import Emu
+
+    def shapes(group):
+        for sh in group:
+            if sh.shape_type == 6:
+                yield from shapes(sh.shapes)
+            else:
+                yield sh
+    out = []
+    for n, sl in enumerate(Presentation(str(path)).slides, 1):
+        tot = small = 0
+        for sh in shapes(sl.shapes):
+            if not sh.has_text_frame or (sh.top is not None and Emu(sh.top).inches < 0.62):
+                continue
+            for para in sh.text_frame.paragraphs:
+                for r in para.runs:
+                    t = r.text.strip()
+                    if len(t) < 2 or t.isdigit():
+                        continue
+                    sz = r.font.size.pt if r.font.size else None
+                    tot += len(t)
+                    if sz and sz < below:
+                        small += len(t)
+        if tot and small >= 20 and small / tot >= share:
+            out.append((n, round(small / tot, 2)))
+    return out
 
 
 def main() -> int:

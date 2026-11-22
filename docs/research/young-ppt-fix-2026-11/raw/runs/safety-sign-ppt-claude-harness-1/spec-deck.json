@@ -1,0 +1,13 @@
+{"purpose":"수업","context":"class","audience":"초등학교 1학년","mood":"따뜻하게","subject":"안전한 생활","target_slides":10,
+"title":"학교에서 만나는 안전 표지와 색깔",
+"slides":[
+{"type":"title","title":"학교에서 만나는\n안전 표지와 색깔","subtitle":"표지의 색깔을 보고 약속을 알아요","meta":"1학년 안전한 생활","pic":"🚦","note":"도입: 학교 오는 길에 본 표지가 있는지 물어봅니다."},
+{"type":"bullets","title":"학교 곳곳에 표지가 있어요","items":["🏃 복도: 뛰지 마요 표지","🚪 계단 옆: 비상구 표지","⚠️ 젖은 바닥: 미끄러움 조심 표지","🔥 소화기 옆: 불이 나면 쓰는 곳 표지"],"takeaway":"표지는 그림으로 알려 주는 안전 약속이에요","note":"우리 학교에서 본 표지를 발표해 보게 합니다."},
+{"type":"panel","title":"색깔마다 뜻이 달라요","blocks":[{"kind":"cards","numbered":false,"items":[{"title":"빨강","items":["멈춰요, 하면 안 돼요","뛰지 마요"]},{"title":"노랑","items":["조심해요","미끄러워요"]},{"title":"초록","items":["안전해요, 이쪽이에요","비상구"]},{"title":"파랑","items":["꼭 해야 해요","손 씻기"]}]}],"takeaway":"색깔만 봐도 무슨 뜻인지 알 수 있어요"},
+{"type":"diagram","title":"빨강 표지: 뛰지 마요","shapes":[{"kind":"circle","cx":30,"cy":30,"r":24,"fill":"bad"},{"kind":"circle","cx":30,"cy":30,"r":18,"fill":"#ffffff"},{"kind":"icon","name":"person-standing","x":30,"y":30,"size":22,"color":"tx"},{"kind":"line","x1":14,"y1":46,"x2":46,"y2":14,"color":"bad","w":3},{"kind":"label","x":30,"y":57,"text":"뛰지 마요","color":"tx","size":"l","align":"center"}],"points":["동그라미에 빨간 줄은 하면 안 된다는 뜻이에요","복도와 계단에서는 천천히 걸어요"],"caption":"금지 표지"},
+{"type":"diagram","title":"노랑 표지: 조심해요","shapes":[{"kind":"poly","points":[[30,6],[56,52],[4,52]],"fill":"sun","color":"tx"},{"kind":"icon","name":"triangle-alert","x":30,"y":38,"size":20,"color":"tx"},{"kind":"label","x":30,"y":57,"text":"조심해요","color":"tx","size":"l","align":"center"}],"points":["노란 삼각형은 위험할 수 있으니 조심하라는 뜻이에요","바닥이 젖었으면 천천히 걸어요"],"caption":"주의 표지"},
+{"type":"diagram","title":"초록 표지: 안전한 곳이에요","shapes":[{"kind":"rect","x":6,"y":10,"w":48,"h":40,"fill":"#0f8a3c"},{"kind":"icon","name":"door-open","x":30,"y":30,"size":26,"color":"#ffffff"},{"kind":"label","x":30,"y":57,"text":"비상구","color":"tx","size":"l","align":"center"}],"points":["초록색 비상구는 불이 났을 때 나가는 문이에요","표지를 따라 선생님과 함께 나가요"],"caption":"비상구 표지"},
+{"type":"steps","title":"표지를 만나면 이렇게 해요","steps":[{"title":"🛑 멈춰요","text":"가던 걸음을 멈춰요"},{"title":"👀 보아요","text":"그림과 색깔을 봐요"},{"title":"💭 생각해요","text":"무슨 뜻인지 떠올려요"},{"title":"✅ 지켜요","text":"약속대로 행동해요"}]},
+{"type":"quiz","title":"확인 문제","questions":[{"q":"조심하라는 뜻의 표지 색깔은?","choices":["🟡 노랑","🟢 초록","🔴 빨강"],"answer":0,"explain":"노란 삼각형은 조심하라는 뜻이에요."},{"q":"복도에서 뛰지 마요 표지의 색깔은?","choices":["🔵 파랑","🔴 빨강","🟡 노랑"],"answer":1,"explain":"빨강은 하면 안 된다는 뜻이에요."},{"q":"불이 났을 때 나가는 비상구 색깔은?","choices":["🟢 초록","🔴 빨강","🟡 노랑"],"answer":0,"explain":"초록은 안전한 곳을 알려 줘요."}]},
+{"type":"closing","title":"오늘 배운 것","sub":"빨강은 멈춰요, 노랑은 조심해요, 초록은 안전해요","next":["우리 반에서 표지 찾아보기","복도에서는 천천히 걷기"]}
+]}

@@ -11,7 +11,8 @@
                {"kind":"circle","cx":20,"cy":20,"r":6,"fill":"ac","text":"광원"},
                {"kind":"label","x":22,"y":20,"text":"입사 광선","color":"ac","size":"m","align":"l"}]}
                {"kind":"poly","points":[[30,50],[50,15],[70,50]],"fill":"ac"}                # any closed outline (3-12 corners)
-kinds: line, dash, arrow, dasharrow, rect, circle (rx, ry instead of r = an oval), poly, arc, label.  colours: pr ac tx mu good bad line water sky sun (or #rrggbb).
+               {"kind":"icon","name":"person-standing","x":50,"y":30,"size":14,"color":"white"} # a pictogram (Lucide name or Korean word) centred on x, y
+kinds: line, dash, arrow, dasharrow, rect, circle (rx, ry instead of r = an oval), poly, arc, label, icon.  colours: pr ac tx mu good bad line water sky sun (or #rrggbb).
 The same list draws the web slide (inline SVG) and the .pptx (real lines, arrows, shapes and text boxes).
 """
 from __future__ import annotations
@@ -21,10 +22,12 @@ import re
 
 from deck_kit import esc, plain
 
-KINDS = ("line", "dash", "arrow", "dasharrow", "rect", "circle", "arc", "label", "poly")
-ALIAS = {"text": "label", "box": "rect", "oval": "circle", "ellipse": "circle", "polygon": "poly", "triangle": "poly", "shape": "poly", "dashed": "dash", "ray": "arrow", "dashedarrow": "dasharrow", "dash-arrow": "dasharrow"}
+KINDS = ("line", "dash", "arrow", "dasharrow", "rect", "circle", "arc", "label", "poly", "icon")
+ALIAS = {"text": "label", "box": "rect", "oval": "circle", "ellipse": "circle", "polygon": "poly", "triangle": "poly", "shape": "poly", "dashed": "dash", "ray": "arrow", "dashedarrow": "dasharrow", "dash-arrow": "dasharrow",
+         "pictogram": "icon", "symbol": "icon", "glyph": "icon"}
 FIXED = {"water": "#bfe3f2", "sky": "#eaf4fb", "sun": "#f5b301", "white": "#ffffff", "black": "#111111", "glass": "#d7ecf5"}
 SIZES = {"s": 0.8, "m": 1.0, "l": 1.35}
+ICON_SIZES = {"s": 8.0, "m": 12.0, "l": 18.0}  # an icon's box (canvas units) when size is a word
 CW_, CH_ = 100.0, 60.0
 
 
@@ -33,6 +36,19 @@ def _f(v, d=0.0):
         return float(v)
     except (TypeError, ValueError):
         return d
+
+
+def icon_name(sh: dict) -> str | None:
+    """The Lucide name of an `icon` shape (a Lucide name or a Korean word), or None when the set has no such picture."""
+    import deck_icons
+    return deck_icons.name(sh.get("name") or sh.get("icon") or sh.get("text"))
+
+
+def icon_size(sh: dict) -> float:
+    """Side of an icon's square box in canvas units (2-40)."""
+    v = sh.get("size", "m")
+    n = ICON_SIZES.get(v) if isinstance(v, str) else None
+    return max(2.0, min(40.0, n if n is not None else _f(v, 12.0)))
 
 
 def kind_of(sh: dict) -> str:
@@ -51,7 +67,12 @@ def check(i: int, it: dict) -> list[str]:
             e.append(f"slide {i} diagram.shapes[{j}]: kind '{sh.get('kind') if isinstance(sh, dict) else sh}' -> one of {', '.join(KINDS)}")
             continue
         need = {"line": ("x1", "y1", "x2", "y2"), "dash": ("x1", "y1", "x2", "y2"), "arrow": ("x1", "y1", "x2", "y2"), "dasharrow": ("x1", "y1", "x2", "y2"),
-                "rect": ("x", "y", "w", "h"), "circle": ("cx", "cy", "r"), "arc": ("cx", "cy", "r", "from", "to"), "label": ("x", "y", "text"), "poly": ("points",)}[k]
+                "rect": ("x", "y", "w", "h"), "circle": ("cx", "cy", "r"), "arc": ("cx", "cy", "r", "from", "to"), "label": ("x", "y", "text"), "poly": ("points",),
+                "icon": ("x", "y")}[k]
+        if k == "icon" and not icon_name(sh):
+            e.append(f"slide {i} diagram.shapes[{j}] icon: '{sh.get('name') or sh.get('icon') or ''}' is not in the icon set -> a Lucide name "
+                     "(person-standing, bike, baby, car, bus, footprints, hand, school ...) or a Korean word (자전거, 자동차)")
+            continue
         if k == "circle" and sh.get("r") is None and sh.get("rx") is not None and sh.get("ry") is not None:
             need = ("cx", "cy")
         if k == "poly":
@@ -128,7 +149,7 @@ def svg(it: dict, colors: dict, w: int, h: int, floor: int = 28, uid: str = "d")
     shapes_ = it.get("shapes") or []
     for n, sh in enumerate(shapes_):
         kd = kind_of(sh)
-        col = color(sh.get("color"), colors, "ct" if kd in ("label", "line", "dash") else "pr")
+        col = color(sh.get("color"), colors, "ct" if kd in ("label", "line", "dash", "icon") else "pr")
         col = legible(col, shapes_, n, colors)
         lw = max(3.0, _f(sh.get("w"), 4.0) * 1.4)
         if kd in ("line", "dash", "arrow", "dasharrow"):
@@ -168,6 +189,15 @@ def svg(it: dict, colors: dict, w: int, h: int, floor: int = 28, uid: str = "d")
             p1 = (cx * k + r * k * math.cos(math.radians(e_)), cy * k + r * k * math.sin(math.radians(e_)))
             big = 1 if (e_ - s) % 360 > 180 else 0
             out.append(f'<path d="M{p0[0]:.1f} {p0[1]:.1f} A{r * k:.1f} {r * k:.1f} 0 {big} 1 {p1[0]:.1f} {p1[1]:.1f}" fill="none" stroke="{col}" stroke-width="{lw:.1f}"/>')
+        elif kd == "icon":
+            import deck_icons
+            nm, sz = icon_name(sh), icon_size(sh) * k
+            parts = deck_icons.outline(nm) if nm else []
+            if parts:
+                d_all = [("".join(c[0] + " ".join(f"{v:.2f}" for v in c[1:]) for c in cm), fl) for fl, cm in parts]
+                out.append(f'<g transform="translate({_f(sh.get("x")) * k - sz / 2:.1f},{_f(sh.get("y")) * k - sz / 2:.1f}) scale({sz / 24:.4f})" '
+                           f'stroke="{col}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+                           + "".join(f'<path d="{d_}" fill="{col if fl else "none"}"/>' for d_, fl in d_all) + "</g>")
         elif kd == "label":
             size = int(base * SIZES.get(str(sh.get("size", "m")), 1.0))
             size = max(size, floor)
@@ -218,7 +248,7 @@ def legible(col: str, shapes: list, idx: int, colors: dict) -> str:
     """The shape's colour, or black/white when it would vanish on what lies under it (yellow ray on light water ...)."""
     sh = shapes[idx]
     kd = kind_of(sh)
-    if kd == "label":
+    if kd in ("label", "icon"):
         pts = [(_f(sh.get("x")), _f(sh.get("y")))]
     elif kd == "arc":
         cx, cy, r, s, e_ = arc_points(sh)

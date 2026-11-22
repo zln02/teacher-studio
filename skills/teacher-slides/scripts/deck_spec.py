@@ -109,6 +109,9 @@ def lift_pics(spec: dict) -> dict:
         it = json.loads(json.dumps(it))
         lst(it, "items")
         lst(it, "choices")
+        for q in it.get("questions") or []:
+            if isinstance(q, dict):
+                lst(q, "choices")
         for side in ("a", "b"):
             if isinstance(it.get(side), dict):
                 lst(it[side], "items")
@@ -140,6 +143,9 @@ def pics_inline(spec: dict) -> dict:
         for st in it.get("steps") or []:
             if isinstance(st, dict) and is_pic(st.get("pic")):
                 st["title"] = f"{st['pic']} {st.get('title', '')}".strip()
+        for q in it.get("questions") or []:
+            if isinstance(q, dict) and isinstance(q.get("choices"), list) and isinstance(q.get("pics"), list):
+                q["choices"] = [(f"{q['pics'][i]} {x}" if i < len(q["pics"]) and is_pic(q["pics"][i]) and isinstance(x, str) else x) for i, x in enumerate(q["choices"])]
     return spec
 
 
@@ -264,10 +270,40 @@ def check_extra(i: int, it: dict) -> list[str]:
     return e
 
 
+def quiz_set(it: dict) -> list:
+    """The questions of a quiz slide: [it] for one question, or its 2-3 `questions` (a short deck checks several on one slide)."""
+    qs = it.get("questions")
+    if isinstance(qs, list) and qs and all(isinstance(q, dict) for q in qs):
+        return qs
+    return [it]
+
+
 def check_slide(i: int, it: dict, warns: list[str], caps: dict | None = None) -> list[str]:
     e: list[str] = []
     t = it["type"]
     caps = caps or {}
+    if t == "quiz" and it.get("questions") is not None:  # several check questions on one slide: the first one also fills q / choices / answer
+        qs = it["questions"]
+        if not isinstance(qs, list) or not 2 <= len(qs) <= 3 or not all(isinstance(q, dict) and q.get("q") and isinstance(q.get("choices"), list) for q in qs):
+            return [f"slide {i} quiz.questions: 2-3 questions [{{\"q\":..,\"choices\":[..],\"answer\":0,\"explain\":..}}] (one question -> q / choices / answer)"]
+        for n_, q in enumerate(qs, 1):
+            if not 2 <= len(q["choices"]) <= 4:
+                e.append(f"slide {i} quiz.questions[{n_}]: choices 2-4")
+            if not isinstance(q.get("answer", 0), int) or not 0 <= q.get("answer", 0) < len(q["choices"]):
+                e.append(f"slide {i} quiz.questions[{n_}].answer must be a 0-based index into its choices")
+            if len(plain(str(q["q"]))) > 50:
+                e.append(f"slide {i} quiz.questions[{n_}].q: {len(plain(str(q['q'])))} chars > 50 -> shorter (several questions share the slide)")
+            for c in q["choices"]:
+                if len(plain(str(c))) > 24:
+                    e.append(f"slide {i} quiz.questions[{n_}].choices: '{plain(str(c))[:10]}...' > 24 chars")
+            if len(plain(str(q.get("explain") or ""))) > 80:
+                e.append(f"slide {i} quiz.questions[{n_}].explain: <= 80 chars")
+        if e:
+            return e
+        it.setdefault("title", "확인 문제")
+        it["q"], it["choices"], it["answer"] = qs[0]["q"], qs[0]["choices"], qs[0].get("answer", 0)
+        if qs[0].get("explain"):
+            it["explain"] = qs[0]["explain"]
     need = {"title": ["title"], "section": ["title"], "statement": ["text"], "bullets": ["title", "items"], "compare": ["title", "a", "b"], "steps": ["title", "steps"],
             "bignumber": ["value"], "bignumbers": ["items"], "quote": ["text"], "illustration": ["title"], "quiz": ["q", "choices"], "timeline": ["title", "events"],
             "chart": ["title", "labels", "series"], "math": ["tex"], "timer": [], "qr": ["url"], "image": ["file"], "video": ["file"], "closing": ["title"],

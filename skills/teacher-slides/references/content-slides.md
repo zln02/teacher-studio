@@ -29,6 +29,8 @@ The slide lists in `context-recipes.md` and the files in `spec-examples/` show w
 - Outline comes from `content-lesson.md` steps 3-9: objectives → evidence → 오개념 → rhythm. Every 5-7 minutes of input is followed by a `quiz` or `activity` slide.
 - The 도입 slide poses something students cannot yet answer; the same thing is answered on a 정리 slide.
 - One new idea per slide. A `diagram` needs labels that name parts in textbook terms, and a caption that says what to notice.
+- A drawing of a real thing (표지, 실험 기구, 동식물, 지도 기호) must be recognisable as that thing: its real outline, colours, border and the mark inside it. A bare shape with a word in it teaches the shape, not the thing; draw fewer, fully. Boxes beside a drawing add what it cannot show (까닭, 예외, 헷갈리는 짝), not its labels again.
+- Short is the sentence, not the lesson: for young children every line is short, and the distinctions the unit teaches (두 가지가 비슷해 보이지만 뜻이 다른 것, 누구를 위한 규칙인지, 예외) still each get their place. In a short deck the frame shrinks first (목표는 표지 한 줄, 정리는 마무리, 확인 문제 여러 개는 한 장).
 - `quiz`: `answer` + `explain` (「왜」) always; options follow `../teacher-game/references/content-items.md`.
 - `activity`: product, minutes, materials, what early finishers do. 수준별 tasks sit side by side on one slide with neutral labels.
 - `objectives`: 1-3, student words, checkable verbs. 「~할 수 있다」 is correct here.

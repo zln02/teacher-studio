@@ -1,0 +1,30 @@
+{"context":"class","purpose":"수업","audience":"초등학교 2학년","mood":"따뜻하게","subject":"안전한 생활","target_slides":8,
+"title":"신호등 색깔과 교통안전 표지판",
+"slides":[
+{"type":"title","title":"신호등 색깔과\n교통안전 표지판","subtitle":"오늘의 목표: 신호등 색깔의 뜻을 알고, 표지판을 보고 안전하게 길을 건너요","meta":"2학년 안전한 생활"},
+{"type":"panel","title":"신호등 색깔은 무슨 뜻일까요?","blocks":[
+ {"kind":"diagram","shapes":[{"kind":"rect","x":38,"y":2,"w":24,"h":56,"fill":"tx"},{"kind":"circle","cx":50,"cy":14,"r":8,"fill":"#d32f2f"},{"kind":"circle","cx":50,"cy":30,"r":8,"fill":"#fbc02d"},{"kind":"circle","cx":50,"cy":46,"r":8,"fill":"#2e9e4f"},{"kind":"label","x":82,"y":15,"text":"멈춰요","size":"m"},{"kind":"label","x":82,"y":31,"text":"조심해요","size":"m"},{"kind":"label","x":82,"y":47,"text":"건너요","size":"m"}]},
+ {"kind":"cards","numbered":false,"items":[
+  {"title":"빨간불","items":["멈춰요","차가 와요, 기다려요"]},
+  {"title":"노란불","items":["조심해요","건너지 말고 기다려요"]},
+  {"title":"초록불","items":["건너요","좌우를 살피고 건너요"]}]}],
+ "takeaway":"빨강은 멈춤, 노랑은 조심, 초록은 건너기예요."},
+{"type":"steps","title":"횡단보도는 이렇게 건너요","steps":[
+ {"title":"멈춰서요","text":"길 끝에서 한 걸음 뒤에 서요"},
+ {"title":"살펴봐요","text":"초록불인지, 차가 멈췄는지 봐요"},
+ {"title":"손 들고 건너요","text":"오른손을 들고 걸어서 건너요"},
+ {"title":"끝까지 걸어요","text":"뛰지 않고 끝까지 건너요"}]},
+{"type":"panel","title":"교통안전 표지판은 약속의 그림이에요","blocks":[
+ {"kind":"diagram","shapes":[{"kind":"rect","x":30,"y":4,"w":40,"h":40,"fill":"#1565c0"},{"kind":"icon","name":"person-standing","x":50,"y":24,"size":28,"color":"#ffffff"},{"kind":"label","x":50,"y":54,"text":"횡단보도","align":"center","size":"m"}]},
+ {"kind":"cards","numbered":false,"items":[
+  {"title":"횡단보도","items":["여기서 길을 건너요","파란 네모 표지판"]},
+  {"title":"어린이 보호","items":["어린이가 많은 곳","차는 천천히 가요"]},
+  {"title":"정지","items":["차가 꼭 멈춰요","빨간 표지판"]}]}],
+ "takeaway":"표지판의 모양과 색깔을 보면 뜻을 알 수 있어요."},
+{"type":"compare","title":"이럴 때는 어떻게 할까요?","a":{"label":"초록불이 켜졌어요","items":["좌우를 먼저 살펴요","차가 멈춘 것을 확인해요","손을 들고 건너요"]},"b":{"label":"초록불이 깜빡여요","items":["새로 건너지 않아요","다음 초록불을 기다려요","이미 건너고 있으면 서둘러 걸어요"]},"takeaway":"초록불이어도 꼭 살피고 건너요."},
+{"type":"quiz","title":"확인 문제","questions":[
+ {"q":"빨간불일 때는 어떻게 할까요?","choices":["멈춰서 기다려요","빨리 뛰어가요","그냥 건너요"],"answer":0,"explain":"빨간불은 멈추라는 뜻이에요."},
+ {"q":"초록불이 켜지면 가장 먼저 무엇을 할까요?","choices":["바로 달려가요","좌우를 살펴요","눈을 감아요"],"answer":1,"explain":"차가 멈췄는지 살피고 건너요."},
+ {"q":"횡단보도 표지판은 무엇을 알려 줄까요?","choices":["여기서 길을 건너요","차가 멈춰요","여기서 놀아요"],"answer":0,"explain":"횡단보도는 길을 건너는 곳이에요."}]},
+{"type":"closing","title":"오늘 배운 것을 기억해요","sub":"빨강은 멈춤, 노랑은 조심, 초록은 살피고 건너기. 표지판의 그림은 안전 약속이에요.","next":["신호등 색깔 말하기","우리 동네 표지판 찾아보기"]}
+]}
