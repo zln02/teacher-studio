@@ -351,3 +351,83 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .tips3.v3 .e-where{list-style:none;margin:14px 0 0;padding:0;text-align:left;display:flex;flex-direction:column;gap:6px}
 .tips3.v3 .e-where li{font-size:24px;font-weight:600;color:var(--d-ink);padding:6px 12px;border:1.5px solid var(--d-line2);border-radius:8px}
 .tips3.v3 .e-where li span{font-family:var(--mono);font-weight:400;color:var(--d-acc)}
+
+/* ================= v4 (20장) ================= */
+/* 5 왜 들쭉날쭉 */
+.why5.v3 .e-names{position:absolute;left:128px;right:128px;top:268px;margin:0;font-size:40px;font-weight:700;color:var(--d-sub);letter-spacing:-.02em}
+.why5.v3 .e-names b{color:var(--d-ink)}
+.why5.v3 .e-two{position:absolute;left:128px;right:128px;top:360px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.why5.v3 .e-two .card{padding:34px 40px;display:grid;grid-template-columns:96px 1fr;column-gap:24px;row-gap:6px;align-items:center}
+.why5.v3 .e-two .e-tag{grid-column:1 / -1;font-family:var(--mono);font-size:22px;color:var(--d-mute)}
+.why5.v3 .e-two .e-c2 .e-tag{color:var(--d-cool)}
+.why5.v3 .e-two .e-ico{grid-row:2 / 4;font-size:84px;color:var(--d-mute);display:grid;place-items:center}
+.why5.v3 .e-two .e-c2 .e-ico{color:var(--d-cool)}
+.why5.v3 .e-two .ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.why5.v3 .e-two h3{margin:0;font-size:52px;font-weight:800;letter-spacing:-.03em}
+.why5.v3 .e-two p{margin:0;font-size:34px;line-height:1.35;color:var(--d-sub)}
+.why5.v3 .e-two p b{color:var(--d-ink)}
+.why5.v3 .e-c2{border-color:var(--d-cool)!important}
+.why5.v3 .e-take{left:128px;right:128px;top:700px;bottom:auto;max-width:none;font-size:56px}
+.why5.v3 .e-take small{display:block;margin-top:12px;font-size:30px;font-weight:600;color:var(--d-sub)}
+.why5.v3 .e-big .e-h{font-size:150px}
+/* 6 하네스: 정의 · 유래 · 무기 */
+.reveal.v3 .e-def{margin:22px auto 0;font-size:34px;font-weight:700;letter-spacing:-.02em;color:var(--d-ink)}
+.reveal.v3 .e-horse{position:absolute;left:96px;top:110px;width:300px;z-index:3}
+.reveal.v3 .e-horse img{width:300px;height:170px;object-fit:cover;border-radius:12px;border:1.5px solid var(--d-line2);display:block;filter:saturate(.7)}
+.reveal.v3 .e-horse p{margin:10px 0 0;font-size:22px;line-height:1.35;color:var(--d-sub)}
+.reveal.v3 .e-horse p b{font-family:var(--mono);font-weight:400;color:var(--d-acc);margin-right:6px}
+.reveal.v3 .e-mugi{position:absolute;right:110px;top:150px;margin:0;z-index:3;font-size:36px;font-weight:700;color:var(--e-red);transform:rotate(-3deg)}
+/* 9 그림책 끝: 무기 한 줄 */
+.storyc.v3 .punch .e-mugi2{margin:0;font-size:36px;font-weight:700;color:var(--e-red);transform:rotate(-2deg)}
+/* 12~14 진짜 비교 */
+.ecmp.v3 .e-ask{position:absolute;left:128px;right:128px;top:262px;font-size:36px;font-weight:600;padding:18px 26px}
+.ecmp.v3 .e-pair{position:absolute;left:128px;right:128px;top:360px;height:500px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.ecmp.v3 .e-side{position:relative;display:flex;flex-direction:column;gap:10px;min-height:0}
+.ecmp.v3 .e-side .e-tag{font-family:var(--mono);font-size:24px;color:var(--d-mute)}
+.ecmp.v3 .e-side.e-h .e-tag{color:var(--d-cool)}
+.ecmp.v3 .e-side .frame{flex:1;min-height:0;border-radius:12px;border:1.5px solid var(--d-line2);overflow:hidden;background:var(--d-surf)}
+.ecmp.v3 .e-side.e-h .frame{border-color:var(--d-cool)}
+.ecmp.v3 .e-side .frame img{width:100%;height:100%;object-fit:contain;display:block}
+.ecmp.v3 .e-side .frame.ph{display:grid;place-items:center;align-content:center;gap:12px;font-size:30px;color:var(--d-mute)}
+.ecmp.v3 .e-side .frame.ph .ic{width:64px;height:64px;fill:none;stroke:currentColor;stroke-width:1.6}
+.ecmp.v3 .e-side:only-child,.ecmp.v3 .e-side:first-child:has(+ .e-side:empty){grid-column:1 / -1}
+.ecmp.v3 .e-chips{position:absolute;left:128px;right:128px;top:884px;display:flex;gap:16px;flex-wrap:wrap}
+.ecmp.v3 .e-chips span{font-size:30px;font-weight:700;padding:8px 20px;border-radius:12px;border:1.5px solid var(--d-cool);color:var(--d-ink);background:var(--d-bg)}
+/* 15 준비해 둔 하네스 */
+.use3.v3 .e-cols{position:absolute;left:128px;right:128px;top:300px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.use3.v3 .e-cols .card{padding:30px 34px;display:flex;flex-direction:column;gap:12px}
+.use3.v3 .e-cols .e-tag{font-family:var(--mono);font-size:24px;color:var(--d-acc)}
+.use3.v3 .e-cols h3{margin:0;font-size:46px;font-weight:800;letter-spacing:-.03em}
+.use3.v3 .e-cols ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.use3.v3 .e-cols li{display:flex;align-items:center;gap:14px;font-size:34px;font-weight:700}
+.use3.v3 .e-cols li .ic{width:40px;height:40px;flex:none;fill:none;stroke:var(--d-cool);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.use3.v3 .e-cols .e-ex{margin:6px 0 0;font-size:28px;font-weight:600;color:var(--d-sub);border-top:1.5px solid var(--d-line);padding-top:12px}
+.use3.v3 .e-def2{position:absolute;left:128px;right:128px;top:800px;margin:0;font-size:30px;font-weight:600;color:var(--d-sub)}
+.use3.v3 .e-def2 b{color:var(--d-acc)}
+.use3.v3 .e-spot{top:96px;right:110px;width:380px;height:214px;bottom:auto;mix-blend-mode:lighten}
+.use3.v3>.hd h2{max-width:1260px}
+/* 19 미션 */
+.mission4.duo3.v3 .board{opacity:1;top:270px}
+.mission4.v3 .e-warn{position:absolute;right:128px;top:150px;margin:0;z-index:4;display:flex;align-items:center;gap:10px;font-size:32px;font-weight:800;color:var(--e-red)}
+.mission4.v3 .e-warn .ic{width:36px;height:36px;fill:none;stroke:currentColor;stroke-width:2}
+.mission4.duo3.v3 .order{font-size:48px}
+.mission4.duo3.v3 .order small{display:block;margin:6px 0 0;font-size:30px}
+.mission4.duo3.v3 .seqbar{margin-top:20px}
+.mission4.duo3.v3 .seg em{font-size:34px}
+.mission4.duo3.v3 .seg small{font-size:24px}
+.mission4.duo3.v3 .menu{top:340px}
+.mission4.duo3.v3 .board .timer{top:330px}
+.mission4.duo3.v3 .wait{font-size:30px;color:var(--d-ink)}
+/* 20 마무리: 정의 한 줄 */
+.tips3.v3 .e-def3{position:absolute;left:128px;right:560px;top:110px;margin:0;font-size:28px;font-weight:600;color:var(--d-sub);z-index:3}
+.tips3.v3 .e-def3 b{color:var(--d-ink)}
+.tips3.v3 .tips{top:200px}
+.use3.v3 .e-spot{top:auto;bottom:110px;right:128px;width:380px;height:214px}
+.use3.v3 .e-def2{right:560px}
+.tips3.v3 .qr{width:300px}
+.tips3.v3 .next{top:872px;font-size:24px;width:380px}
+.lab.v3 .pick .card{padding:30px 50px 30px}
+.lab.v3 .pick h3{font-size:64px}
+.tips3.v3 .next{top:790px}
+.tips3.v3 .e-def3{top:168px}
+.tips3.v3 .tips{top:226px}

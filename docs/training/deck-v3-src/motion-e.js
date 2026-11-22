@@ -692,7 +692,7 @@
   }
   function bdShot(s) {   // 10장의 하네스 AI 결과 화면을 그대로 써요 (지어낸 화면 없음)
     var im = q(s, '.e-shot');
-    if (!im.getAttribute('src')) { var src = stage.querySelector('.cmp .shot.h .frame img'); if (src) im.src = src.src; }
+    if (!im.getAttribute('src')) { var src = q(s, '.e-src img') || stage.querySelector('.cmp .shot.h .frame img'); if (src) im.src = src.src; }
     return im;
   }
   var BDCUR = { chef: [BD.W - 160, BD.H - 40], tool: [BD.W - 70, 150], recipe: [BD.W - 40, BD.H + 20], check: [BD.W - 20, -10] };
@@ -916,4 +916,30 @@
       storyPlay(s, st, false);
       sc.__g = g;
     }
+  };
+
+
+  /* ============ v4 순서: 구간 이름 · 위 줄 코드 (이 덱만) ============ */
+  AGENDA = ['여는 말', '하네스', '어떻게 달라지나', '진짜 비교', '쓰는 법', '실습', '마무리'];
+  SECT = ['INTRO', 'HARNESS', 'HOW', 'PROOF', 'USE', 'HANDS-ON', 'WRAP-UP'];
+
+  /* ============ 19 모둠 미션 (v4): 판은 처음부터 · 클릭 1~4에 지금 단계 표시 (칸은 마우스로도) ============ */
+  FX.eMission = {
+    mark: function (s, st, anim) {
+      var cur = st - 1;
+      qa(s, '.seg').forEach(function (g, i) { g.classList.toggle('cur', i === cur); g.classList.toggle('done', i < cur); });
+      if (anim && cur >= 0) MO.stamp(qa(s, '.seg')[cur], 0, { s: 1.12 });
+    },
+    enter: function (s, st) {
+      eHudIn(s, 0);
+      qa(s, '.seg').forEach(function (g, i) { g.onclick = function (e) { e.stopPropagation(); go(slides.indexOf(s), i + 1, 1); }; });
+      var inst = V3DIR < 0 || st > 0 || REDUCED;
+      v3hd(s, 60, inst);
+      var parts = qa(s, '.e-warn, .board .order, .board .seg, .board .mc, .board .timer, .board .wait');
+      parts.forEach(function (e) { show(e, true); e.style.filter = ''; });
+      FX.eMission.mark(s, st, false);
+      if (inst) return;
+      parts.forEach(function (e, i) { e.style.opacity = 0; eIn(e, 200 + i * 45, { dy: 18, blur: 6 }); });
+    },
+    step: function (s, st, dir) { MO.stop(); FX.eMission.mark(s, st, dir !== -1 && !REDUCED); }
   };

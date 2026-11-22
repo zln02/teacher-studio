@@ -82,6 +82,52 @@ def compare_slides() -> str:
     return "\n".join(out)
 
 
+ECMP = HERE / "compare-e"   # deck-e v4 진짜 비교 3장: compare-e/<case>/ 에 bare.* · harness.* (또는 compare.png 한 장) + facts.json
+
+
+def ecmp_fill(slides: str) -> str:
+    """__ECMP_<case>_(ASK|bare|harness|CHIPS|NOTE)__ 채우기. 그림이 없으면 「결과 화면 들어갈 자리」."""
+    import base64
+    import html as H
+    import io
+    from PIL import Image
+
+    def img(p, alt):
+        im = Image.open(p).convert("RGB")
+        im.thumbnail((1600, 1000))
+        buf = io.BytesIO(); im.save(buf, "JPEG", quality=84, optimize=True)
+        return '<div class="frame"><img alt="%s" src="data:image/jpeg;base64,%s"></div>' % (alt, base64.b64encode(buf.getvalue()).decode())
+
+    ph = '<div class="frame ph"><svg class="ic"><use href="#image"/></svg>결과 화면 들어갈 자리</div>'
+    for case in ("daily", "work", "class"):
+        d = ECMP / case
+        f = {}
+        if (d / "facts.json").exists():
+            f = json.loads((d / "facts.json").read_text(encoding="utf-8"))
+        def find(stem):
+            for ext in ("png", "jpg", "jpeg", "webp"):
+                if (d / (stem + "." + ext)).exists():
+                    return d / (stem + "." + ext)
+            return None
+        bare, harn, comp = find("bare"), find("harness"), find("compare")
+        if bare and harn:
+            b, h = img(bare, "그냥 AI 결과 화면"), img(harn, "하네스 AI 결과 화면")
+        elif comp:
+            b, h = img(comp, "그냥 AI와 하네스 AI 결과 화면"), ""
+        else:
+            b, h = ph, ph
+        ask = f.get("prompt") or f.get("ask") or "(부탁 한 줄 · 결과가 오면 채워요)"
+        chips = f.get("chips") or [x for x in (("물어본 것 · " + str(f["asked"])) if f.get("asked") else "", ("고칠 일 · " + str(f["fixes"])) if f.get("fixes") else "", ("걸린 시간 · " + str(f["time"])) if f.get("time") else "") if x]
+        if not chips:
+            chips = ["물어본 것 · 들어갈 자리", "고칠 일 · 들어갈 자리", "걸린 시간 · 들어갈 자리"]
+        slides = (slides.replace("__ECMP_%s_ASK__" % case, "「%s」" % H.escape(ask.strip("「」")))
+                  .replace("__ECMP_%s_bare__" % case, b).replace("__ECMP_%s_harness__" % case, h)
+                  .replace("__ECMP_%s_CHIPS__" % case, "".join("<span>%s</span>" % H.escape(c) for c in chips[:3]))
+                  .replace("__ECMP_%s_NOTE__" % case, H.escape(f.get("note", ""))))
+        print("  e-compare", case, "images" if (bare or comp) else "placeholder", "facts" if f else "no facts")
+    return slides
+
+
 def icons(html: str, js: str = "") -> str:
     sprite = (REPO / "shared/vendor/lucide/lucide-1.75.0-sprite.svg").read_text(encoding="utf-8")
     want = set(re.findall(r'href="#([a-z0-9-]+)"', html))
@@ -269,6 +315,8 @@ def main() -> int:
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    if "__ECMP_" in slides:
+        slides = ecmp_fill(slides)
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]
