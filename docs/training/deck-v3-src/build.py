@@ -243,7 +243,7 @@ def main() -> int:
     ap.add_argument("--foot", default="AI에게 무기를 주면 · 박진영")
     ap.add_argument("--illust-src", default="", help="그림 폴더(예: 임시 폴더의 illust-gpt)를 줄여서 illust/에 넣고 만들어요")
     ap.add_argument("--agenda", default="", help="쉼표로 구분한 구간 이름 (비우면 본 덱 기본값)")
-    ap.add_argument("--skin", default="", choices=["", "e"], help="e = 샘플 E 층(skin-e.css + motion-e.js: 1 · 7 · 14장). 예: --skin e --out docs/training/deck-e-sample.html")
+    ap.add_argument("--skin", default="", choices=["", "e"], help="e = E 층(skin-e.css + motion-e.js). 장 파일은 --slides docs/training/deck-v3-src/slides-e.html, 예: --out docs/training/deck-e.html")
     a = ap.parse_args()
     three_p = Path(a.three)
     if three_p.exists():

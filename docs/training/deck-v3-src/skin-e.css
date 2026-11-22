@@ -1,129 +1,152 @@
 /* =====================================================================
-   샘플 E (build.py --skin e 일 때만 skin-d.css 뒤에 붙어요): 1 · 7 · 14장에만 걸려요 (.slide.e)
-   큰 글자 장면 · 펜 주석(파랑 · 빨강 펜) · 단계 알약 · 낱말 밝히기 · HUD 틀. 바탕 · 주황 하나 · 청록(하네스)은 스킨 D 그대로
+   스킨 E (build.py --skin e 일 때만 skin-d.css 뒤에 붙어요 · 장 파일 slides-e.html)
+   모든 E 부품은 e- 로 시작해요 (옛 CSS의 .hl · .chip · .pn 등과 안 부딪히게)
+   큰 글자 장면 · 펜 주석(파랑 · 빨강) · 단계 알약 · 낱말 밝히기 · HUD 틀 · 7 앱 화면 · 8 주방
+   바탕 석판 · 주황 하나 · 청록(하네스)은 스킨 D 그대로
    ===================================================================== */
 :root{--e-red:#ff6b62;--e-blue:#6ea8ff;--e-tick:rgba(238,241,245,.16);--e-kshade:rgba(22,26,32,.82)}
 html.light{--e-red:#d63b33;--e-blue:#2a63d6;--e-tick:rgba(22,26,32,.18);--e-kshade:rgba(244,245,247,.86)}
 
-/* 큰 글자 장면 */
-.e .ebig{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:5;visibility:hidden;pointer-events:none;padding-bottom:20px}
-.e .ebig .ek{font-family:var(--mono);font-size:26px;letter-spacing:.04em;color:var(--d-mute);margin-bottom:30px}
-.e .ebig .eh{margin:0;font-size:184px;font-weight:800;letter-spacing:-.055em;line-height:1.04;text-align:center;color:var(--d-ink);text-wrap:balance}
-.e .ebig .eh em{font-style:normal;color:var(--d-acc)}
-.floor.e .ebig .eh{font-size:160px}
-.e .eslot{display:inline-block;width:.15em;height:.15em;margin-left:.05em}
-.e .edot{position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--d-acc);z-index:6;opacity:0;pointer-events:none}
-.e .eline{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:var(--d-acc);z-index:4;opacity:0;transform-origin:50% 50%;pointer-events:none}
-.e .ebase{position:absolute;left:0;top:0;height:2px;background:var(--d-mute);z-index:3;opacity:0;transform-origin:0 50%;pointer-events:none}
+/* ---- 큰 글자 장면 ---- */
+.v3 .e-big{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:8;visibility:hidden;pointer-events:none;padding-bottom:20px}
+.v3 .e-big .e-k{font-family:var(--mono);font-size:26px;letter-spacing:.04em;color:var(--d-mute);margin-bottom:30px}
+.v3 .e-big .e-h{margin:0;font-size:176px;font-weight:800;letter-spacing:-.055em;line-height:1.04;text-align:center;color:var(--d-ink)}
+.v3 .e-big .e-h em{font-style:normal;color:var(--d-acc)}
+.pour.v3 .e-big .e-h,.floor.v3 .e-big .e-h,.who.v3 .e-big .e-h{font-size:156px}
+.v3 .e-slot{display:inline-block;width:.15em;height:.15em;margin-left:.05em}
+.v3 .e-dot{position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--d-acc);z-index:9;opacity:0;pointer-events:none}
+.v3 .e-line{position:absolute;left:0;top:0;height:6px;border-radius:3px;background:var(--d-acc);z-index:4;opacity:0;transform-origin:50% 50%;pointer-events:none}
+.v3 .e-base{position:absolute;left:0;top:0;height:2px;background:var(--d-mute);z-index:3;opacity:0;transform-origin:0 50%;pointer-events:none}
+/* 큰 글자 단계(e-0): 머리글은 숨기고, 나머지는 흐리고 옅게 (뒤에 깔린 장의 첫 모습) */
+.slide.v3.e-0>.hd{visibility:hidden}
+.slide.v3.e-0>:not(.e-big):not(.e-dot):not(.e-line):not(.e-hud):not(.dtop):not(.foot):not(.note):not(.hd):not(.gl):not(.labels):not(.hero){opacity:.14!important;filter:blur(6px)!important}
+.cover.v3.e-0 .m-rule,.cover.v3.e-0 .tag,.cover.v3.e-0 .who{visibility:hidden}
+.cover.v3 h1{position:relative;z-index:5}
+.cover.v3 .m-rule{background:var(--d-acc)}   /* 큰 제목 밑 주황 선이 이 줄이 돼요 */
+.floor.v3.e-0 .e-pills{visibility:hidden}
+.v3 .e-bg{opacity:.16!important;filter:blur(6px)!important}
 
-/* 바탕 흐름: 큰 글자 뒤의 카드 · 장면은 흐리고 옅게 (걷힐 때 0.22초, motion-e.js eBgLift) */
-.e .e-bg{opacity:.16!important;filter:blur(6px)!important}
-html.reduced .e .eev .w{transition:none!important}
+/* ---- 펜 주석 ---- */
+.v3 .e-pen{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:7;pointer-events:none;overflow:visible}
+.v3 .e-pen .e-pn{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
+.v3 .e-pen .e-red{stroke:var(--e-red)}
+.v3 .e-pen .e-blue{stroke:var(--e-blue)}
+.v3 .e-pen .e-acc{stroke:var(--d-acc);stroke-width:5}
+.v3 .e-note{position:absolute;z-index:7;font-size:36px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;transform:rotate(-3deg);transform-origin:0 100%;visibility:hidden;pointer-events:none}
+.v3 .e-note.e-red{color:var(--e-red)}
+.v3 .e-note.e-blue{color:var(--e-blue)}
 
-/* 큰 글자 단계(e0)에서 숨길 것 */
-.cover.e.e0>.hd,.cover.e.e0 .m-rule,.cover.e.e0 .tag,.cover.e.e0 .who{visibility:hidden}
-.cover.e h1{position:relative;z-index:5}
-.cover.v3.e .m-rule{background:var(--d-acc)}   /* 큰 제목 밑 주황 선이 이 줄이 돼요 (이어받기) */
-.hx.e.e0 .hd.hm{visibility:hidden}
-.floor.e.e0>.hd,.floor.e.e0 .epills{visibility:hidden}
+/* ---- 단계 알약 (위 줄 가운데) ---- */
+.v3 .e-pills{position:absolute;top:46px;left:646px;width:628px;display:flex;gap:14px;z-index:7;pointer-events:none}
+.v3 .e-pills .e-sg{position:relative;flex:1;display:flex;flex-direction:column;gap:6px}
+.v3 .e-pills .e-sg:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:3px;background:var(--d-line2)}
+.v3 .e-pills .e-sg i{position:relative;display:block;height:5px;border-radius:3px;background:var(--d-sub);transform-origin:0 50%;transform:scaleX(0)}
+.v3 .e-pills .e-sg.e-cur i{background:var(--d-acc)}
+.v3 .e-pills .e-sg b{font-family:var(--mono);font-weight:400;font-size:20px;line-height:1.1;color:var(--d-mute);white-space:nowrap}
+.v3 .e-pills .e-sg.e-cur b{color:var(--d-ink)}
 
-/* 펜 주석 */
-.e .epen{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:7;pointer-events:none;overflow:visible}
-.e .epen .pn{fill:none;stroke-width:4.5;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
-.e .epen .red{stroke:var(--e-red)}
-.e .epen .blue{stroke:var(--e-blue)}
-.e .enote{position:absolute;z-index:7;font-size:36px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;transform:rotate(-3deg);transform-origin:0 100%;visibility:hidden;pointer-events:none}
-.e .enote.red{color:var(--e-red)}
-.e .enote.blue{color:var(--e-blue)}
-.e .epen .acc{stroke:var(--d-acc);stroke-width:5}
+/* ---- 15 바닥: 막대를 위로, 결론 · 근거 줄을 아래에 ---- */
+.floor.v3 .levels{top:262px;height:452px}
+.floor.v3 .capline{top:738px;bottom:auto}
+.v3 .e-ev{position:absolute;left:128px;right:128px;top:884px;margin:0;font-family:var(--mono);font-size:26px;line-height:1.5;color:var(--d-sub);z-index:3;visibility:hidden}
+.v3 .e-ev .e-w{opacity:.28;transition:opacity .16s ease-out,color .16s ease-out}
+.v3 .e-ev .e-w.e-lit{opacity:1;color:var(--d-ink)}
+.v3 .e-ev .e-w.e-n.e-lit{color:var(--d-acc)}
+html.reduced .v3 .e-ev .e-w{transition:none}
 
-/* 단계 알약 (위 줄 가운데) */
-.e .epills{position:absolute;top:46px;left:646px;width:628px;display:flex;gap:14px;z-index:7;pointer-events:none}
-.e .epills .sg{position:relative;flex:1;display:flex;flex-direction:column;gap:6px}
-.e .epills .sg:before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:3px;background:var(--d-line2)}
-.e .epills .sg i{position:relative;display:block;height:5px;border-radius:3px;background:var(--d-sub);transform-origin:0 50%;transform:scaleX(0)}
-.e .epills .sg.cur i{background:var(--d-acc)}
-.e .epills .sg b{font-family:var(--mono);font-weight:400;font-size:20px;line-height:1.1;color:var(--d-mute);white-space:nowrap}
-.e .epills .sg.cur b{color:var(--d-ink)}
-
-/* 14장 자리: 막대를 위로 당기고, 결론 · 근거 줄을 아래에 */
-.floor.v3.e .levels{top:262px;height:452px}
-.floor.v3.e .capline{top:738px;bottom:auto}
-.e .eev{position:absolute;left:128px;right:128px;top:884px;margin:0;font-family:var(--mono);font-size:26px;line-height:1.5;color:var(--d-sub);z-index:3;visibility:hidden}
-.e .eev .w{opacity:.28;transition:opacity .16s ease-out,color .16s ease-out}
-.e .eev .w.lit{opacity:1;color:var(--d-ink)}
-.e .eev .w.n.lit{color:var(--d-acc)}
-
-/* HUD 틀: 네 모서리 괄호 + 아래 눈금자 + 지금 장 눈금(주황) */
-.e .ehud{position:absolute;inset:0;z-index:6;pointer-events:none}
-.e .ehud .c{position:absolute;width:30px;height:30px;border:0 solid var(--d-line2)}
-.e .ehud .tl{left:26px;top:26px;border-left-width:2px;border-top-width:2px}
-.e .ehud .tr{right:26px;top:26px;border-right-width:2px;border-top-width:2px}
-.e .ehud .bl{left:26px;bottom:26px;border-left-width:2px;border-bottom-width:2px}
-.e .ehud .br{right:26px;bottom:26px;border-right-width:2px;border-bottom-width:2px}
-.e .ehud .rl{position:absolute;left:96px;right:96px;bottom:14px;height:9px;
+/* ---- HUD 틀 (모든 장) ---- */
+.v3 .e-hud{position:absolute;inset:0;z-index:6;pointer-events:none}
+.v3 .e-hud .e-c{position:absolute;width:30px;height:30px;border:0 solid var(--d-line2)}
+.v3 .e-hud .e-c1{left:26px;top:26px;border-left-width:2px;border-top-width:2px}
+.v3 .e-hud .e-c2{right:26px;top:26px;border-right-width:2px;border-top-width:2px}
+.v3 .e-hud .e-c3{left:26px;bottom:26px;border-left-width:2px;border-bottom-width:2px}
+.v3 .e-hud .e-c4{right:26px;bottom:26px;border-right-width:2px;border-bottom-width:2px}
+.v3 .e-hud .e-rl{position:absolute;left:96px;right:96px;bottom:14px;height:9px;
   background:linear-gradient(90deg,var(--e-tick) 1px,transparent 1px) 0 100%/24px 5px repeat-x,linear-gradient(90deg,var(--e-tick) 1px,transparent 1px) 0 100%/192px 9px repeat-x}
-.e .ehud .ph{position:absolute;bottom:0;width:3px;height:16px;margin-left:-1px;border-radius:2px;background:var(--d-acc)}
+.v3 .e-hud .e-ph{position:absolute;bottom:0;width:3px;height:16px;margin-left:-1px;border-radius:2px;background:var(--d-acc)}
 
-/* 7장 (샘플 E 2판): 비유 지도 · 식당 판 셋 대신 → [AI 앱 흉내 화면 + 펜 동그라미 + 큰 카드] → [주방 하나 + 큰 요리사 + 큰 도구 아이콘] */
-.hx.e .amap,.hx.e .hxgrid,.hx.e .hxcap,.hx.e .hxtm{display:none!important}
-.hx.e .hxpunch{top:882px}
-.e .e7a,.e .e7b{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:4;pointer-events:none}
-.e7a .ic,.e7b .ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.e7a .ewin{position:absolute;left:128px;top:286px;width:900px;height:600px;background:var(--d-surf);border:1.5px solid var(--d-line2);border-radius:14px;box-shadow:var(--c-shadow);overflow:hidden}
-.ewin .wtb{height:58px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1.5px solid var(--d-line);background:var(--d-surf2)}
-.ewin .wtb>i{width:14px;height:14px;border-radius:50%;background:var(--d-line2)}
-.ewin .wtb .wlg{margin-left:16px;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:var(--d-bg2);border:1.5px solid var(--d-line2);color:var(--d-sub);font-size:26px}
-.ewin .wtb b{font-size:26px;font-weight:700;color:var(--d-sub)}
-.ewin .wbd{position:absolute;left:0;right:0;top:58px;bottom:0;display:flex}
-.ewin .wchat{position:relative;flex:1;padding:26px 28px}
-.ewin .wside{width:230px;border-left:1.5px solid var(--d-line);background:var(--d-bg2);padding:22px 16px;display:flex;flex-direction:column;gap:14px}
-.ewin .wside b{font-size:24px;color:var(--d-mute);font-weight:700}
-.ewin .wside span{display:flex;align-items:center;gap:10px;font-size:26px;color:var(--d-ink);padding:10px 12px;border:1.5px solid var(--d-line2);border-radius:10px;background:var(--d-surf)}
-.ewin .wside .ic{font-size:26px;color:var(--d-cool)}
-.ewin .wu{margin:0 0 0 auto;width:fit-content;padding:14px 20px;border-radius:18px 18px 4px 18px;background:var(--d-accbg);border:1.5px solid rgba(255,138,61,.4);font-size:28px;color:var(--d-ink)}
-.ewin .wa{display:flex;gap:14px;margin-top:26px;width:fit-content}
-.ewin .wav{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--d-surf2);border:1.5px solid var(--d-line2);color:var(--d-cool);font-size:30px}
-.ewin .wbb{width:500px;padding:16px 20px;border-radius:4px 18px 18px 18px;background:var(--d-surf2);border:1.5px solid var(--d-line2)}
-.ewin .wbb .wt{display:block;margin:0 0 12px;font-size:28px;color:var(--d-ink)}
-.ewin .wbb i{display:block;height:14px;border-radius:7px;background:var(--d-line2);margin-top:10px}
-.ewin .wbb i.wsh{width:60%}
-.ewin .wint{position:absolute;left:28px;right:28px;bottom:26px;height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-radius:16px;border:1.5px solid var(--d-line2);background:var(--d-bg2);font-size:28px;color:var(--d-ink)}
-.ewin .wint .ic{font-size:32px;color:var(--d-acc)}
-.e7a .ewin.whl,.e7a .whl .wbb,.e7a .wint.whl,.e7a .wlg.whl,.e7a .wside.whl{border-color:var(--d-acc)!important}
-.e7a .ecard{position:absolute;left:1092px;top:290px;width:700px;opacity:0}
-.ecard .tg{font-family:var(--mono);font-size:22px;color:var(--d-mute);border:1.5px solid var(--d-line2);border-radius:6px;padding:2px 10px;white-space:nowrap}
-.ecard .rl{display:flex;align-items:center;gap:16px}
-.ecard .rl b{font-size:46px;font-weight:700;color:var(--d-sub);letter-spacing:-.03em}
-.ecard .ar{display:block;width:40px;height:70px;margin:12px 0 12px 70px;overflow:visible}
-.ecard .ar path{fill:none;stroke:var(--d-acc);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1}
-.ecard .row{display:flex;align-items:center;gap:32px}
-.ecard .pic{width:260px;height:210px;flex:none;border-radius:14px;border:1.5px solid var(--d-line2);background-color:var(--d-surf);background-position:center;background-size:cover;overflow:hidden;display:grid;place-items:center}
-.ecard .pic.chef img{width:200px;height:auto}
-.ecard .pic.svg{font-size:132px;color:var(--d-acc)}
-.ecard .pic.svg .ic{stroke-width:1.5}
-.ecard .pic.tools{grid-template-columns:1fr 1fr;gap:4px 18px;padding:18px 40px;font-size:68px;color:var(--d-cool)}
-.ecard .pic.tools .ic{stroke-width:1.7}
-.ecard .nm .tg{display:inline-block;margin-bottom:12px}
-.ecard .nm b{display:block;font-size:84px;font-weight:800;letter-spacing:-.045em;line-height:1.05;color:var(--d-ink)}
-.ecard[data-i="4"] .nm b{font-size:64px}
-.ecard .se{margin:26px 0 0;font-size:34px;font-weight:600;color:var(--d-ink);letter-spacing:-.02em}
-.e7b .kp{position:absolute;left:128px;top:280px;width:1664px;height:580px;border-radius:16px;border:1.5px solid var(--d-line);background-color:var(--d-surf);background-position:center;background-size:cover}
-.e7b .kl{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
-.e7b .kln{fill:none;stroke:var(--d-line2);stroke-width:2.5}
-.e7b .kln.part{stroke-dasharray:9 9}
-.e7b .chef{position:absolute;left:830px;top:312px;width:260px;height:440px}
-.e7b .chef .h{position:absolute;left:0;top:0;width:260px;z-index:2}
-.e7b .chef .t{position:absolute;left:8px;top:222px;width:244px}
-.e7b .tl{position:absolute;width:500px;display:flex;gap:22px;align-items:flex-start}
-.e7b .tl.l{left:150px}
-.e7b .tl.r{left:1262px}
-.e7b .tl .ci{width:104px;height:104px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--d-surf2);border:2.5px solid var(--d-cool);color:var(--d-cool);font-size:54px}
-.e7b .tl.part .ci{border-style:dashed;border-color:var(--d-mute);color:var(--d-sub)}
-.e7b .tx b{display:block;font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--d-ink);white-space:nowrap}
-.e7b .tx small{display:block;font-size:27px;color:var(--d-sub);margin-top:2px;white-space:nowrap}
-.e7b .chip{display:inline-block;margin-top:6px;font-style:normal;font-size:22px;font-family:var(--mono);color:var(--d-acc);border:1.5px solid var(--d-acc);border-radius:999px;padding:1px 12px;white-space:nowrap}
-.e7b .kcap{position:absolute;left:128px;right:128px;top:884px}
-.e7b .kcap p{position:absolute;left:0;top:0;margin:0;font-size:40px;font-weight:700;letter-spacing:-.03em;color:var(--d-ink);white-space:nowrap;opacity:0}
-.e7b .kcap p b{color:var(--d-acc)}
-.ecard .pic.il[data-il="kitchen-backdrop"]{background-size:260% auto;background-position:78% 72%}
+/* ---- 7 AI 앱 화면 짚기 ---- */
+.v3 .e-app,.v3 .e-kit{position:absolute;left:0;top:0;width:1920px;height:1080px;z-index:4;pointer-events:none}
+.e-app .ic,.e-kit .ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.e-app .e-win{position:absolute;left:128px;top:286px;width:900px;height:600px;background:var(--d-surf);border:1.5px solid var(--d-line2);border-radius:14px;box-shadow:var(--c-shadow);overflow:hidden}
+.e-win .e-wtb{height:58px;display:flex;align-items:center;gap:10px;padding:0 20px;border-bottom:1.5px solid var(--d-line);background:var(--d-surf2)}
+.e-win .e-wtb>i{width:14px;height:14px;border-radius:50%;background:var(--d-line2)}
+.e-win .e-wlg{margin-left:16px;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;background:var(--d-bg2);border:1.5px solid var(--d-line2);color:var(--d-sub);font-size:26px}
+.e-win .e-wtb b{font-size:26px;font-weight:700;color:var(--d-sub)}
+.e-win .e-wbd{position:absolute;left:0;right:0;top:58px;bottom:0;display:flex}
+.e-win .e-wchat{position:relative;flex:1;padding:26px 28px}
+.e-win .e-wside{width:230px;border-left:1.5px solid var(--d-line);background:var(--d-bg2);padding:22px 16px;display:flex;flex-direction:column;gap:14px}
+.e-win .e-wside b{font-size:24px;color:var(--d-mute);font-weight:700}
+.e-win .e-wside span{display:flex;align-items:center;gap:10px;font-size:26px;color:var(--d-ink);padding:10px 12px;border:1.5px solid var(--d-line2);border-radius:10px;background:var(--d-surf)}
+.e-win .e-wside .ic{font-size:26px;color:var(--d-cool)}
+.e-win .e-wu{margin:0 0 0 auto;width:fit-content;padding:14px 20px;border-radius:18px 18px 4px 18px;background:var(--d-accbg);border:1.5px solid rgba(255,138,61,.4);font-size:28px;color:var(--d-ink)}
+.e-win .e-wa{display:flex;gap:14px;margin-top:26px;width:fit-content}
+.e-win .e-wav{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--d-surf2);border:1.5px solid var(--d-line2);color:var(--d-cool);font-size:30px}
+.e-win .e-wbb{width:500px;padding:16px 20px;border-radius:4px 18px 18px 18px;background:var(--d-surf2);border:1.5px solid var(--d-line2)}
+.e-win .e-wt{display:block;margin:0 0 12px;font-size:28px;color:var(--d-ink)}
+.e-win .e-wbb i{display:block;height:14px;border-radius:7px;background:var(--d-line2);margin-top:10px}
+.e-win .e-wbb i.e-wsh{width:60%}
+.e-win .e-wint{position:absolute;left:28px;right:28px;bottom:26px;height:76px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;border-radius:16px;border:1.5px solid var(--d-line2);background:var(--d-bg2);font-size:28px;color:var(--d-ink)}
+.e-win .e-wint .ic{font-size:32px;color:var(--d-acc)}
+.e-app .e-win.e-hl,.e-app .e-hl .e-wbb,.e-app .e-wint.e-hl,.e-app .e-wlg.e-hl,.e-app .e-wside.e-hl{border-color:var(--d-acc)!important}
+.e-app .e-card{position:absolute;left:1092px;top:290px;width:700px;opacity:0}
+.e-card .e-tg{font-family:var(--mono);font-size:22px;color:var(--d-mute);border:1.5px solid var(--d-line2);border-radius:6px;padding:2px 10px;white-space:nowrap}
+.e-card .e-cr{display:flex;align-items:center;gap:16px}
+.e-card .e-cr b{font-size:46px;font-weight:700;color:var(--d-sub);letter-spacing:-.03em}
+.e-card .e-ar{display:block;width:40px;height:70px;margin:12px 0 12px 70px;overflow:visible}
+.e-card .e-ar path{fill:none;stroke:var(--d-acc);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1}
+.e-card .e-row{display:flex;align-items:center;gap:32px}
+.e-card .e-pic{width:260px;height:210px;flex:none;border-radius:14px;border:1.5px solid var(--d-line2);background-color:var(--d-surf);background-position:center;background-size:cover;overflow:hidden;display:grid;place-items:center}
+.e-card .e-pic[data-il="kitchen-backdrop"]{background-size:260% auto;background-position:78% 72%}
+.e-card .e-chefpic img{width:200px;height:auto}
+.e-card .e-svgpic{font-size:132px;color:var(--d-acc)}
+.e-card .e-svgpic .ic{stroke-width:1.5}
+.e-card .e-toolpic{grid-template-columns:1fr 1fr;gap:4px 18px;padding:18px 40px;font-size:68px;color:var(--d-cool)}
+.e-card .e-toolpic .ic{stroke-width:1.7}
+.e-card .e-nm .e-tg{display:inline-block;margin-bottom:12px}
+.e-card .e-nm b{display:block;font-size:84px;font-weight:800;letter-spacing:-.045em;line-height:1.05;color:var(--d-ink)}
+.e-card.e-long .e-nm b{font-size:64px}
+.e-card .e-se{margin:26px 0 0;font-size:34px;font-weight:600;color:var(--d-ink);letter-spacing:-.02em}
+
+/* ---- 8 주방 하나 ---- */
+.e-kit .e-kp{position:absolute;left:128px;top:280px;width:1664px;height:580px;border-radius:16px;border:1.5px solid var(--d-line);background-color:var(--d-surf);background-position:center;background-size:cover}
+.e-kit .e-kl{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible}
+.e-kit .e-kln{fill:none;stroke:var(--d-line2);stroke-width:2.5}
+.e-kit .e-kln.e-part{stroke-dasharray:9 9}
+.e-kit .e-chef{position:absolute;left:830px;top:306px;width:260px;height:440px}
+.e-kit .e-ch{position:absolute;left:0;top:0;width:260px;z-index:2}
+.e-kit .e-ct{position:absolute;left:8px;top:222px;width:244px}
+.e-kit .e-tool{position:absolute;width:500px;display:flex;gap:22px;align-items:flex-start}
+.e-kit .e-tool.e-l{left:150px}
+.e-kit .e-tool.e-r{left:1262px}
+.e-kit .e-tool[data-g="1"]{top:302px}
+.e-kit .e-tool[data-g="2"]{top:442px}
+.e-kit .e-tool[data-g="3"]{top:582px}
+.e-kit .e-tool[data-g="4"]{top:722px}
+.e-kit .e-ci{width:104px;height:104px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--d-surf2);border:2.5px solid var(--d-cool);color:var(--d-cool);font-size:54px}
+.e-kit .e-part .e-ci{border-style:dashed;border-color:var(--d-mute);color:var(--d-sub)}
+.e-kit .e-tx b{display:block;font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1.15;color:var(--d-ink);white-space:nowrap}
+.e-kit .e-tx small{display:block;font-size:27px;color:var(--d-sub);margin-top:2px;white-space:nowrap}
+.e-kit .e-chip{display:inline-block;margin-top:6px;font-style:normal;font-size:22px;font-family:var(--mono);color:var(--d-acc);border:1.5px solid var(--d-acc);border-radius:999px;padding:1px 12px;white-space:nowrap}
+.e-kit .e-kcap{position:absolute;left:128px;right:128px;top:884px}
+.e-kit .e-kcap p{position:absolute;left:0;top:0;margin:0;font-size:40px;font-weight:700;letter-spacing:-.03em;color:var(--d-ink);white-space:nowrap;opacity:0}
+.e-kit .e-kcap p b{color:var(--d-acc)}
+.kitchen1.v3 .hxpunch{top:880px;opacity:0;z-index:5}
+.kitchen1.v3 .hxpunch .p1{font-size:40px}
+.kitchen1.v3 .hxpunch .p2{font-size:34px;color:var(--d-sub)}
+.kitchen1.v3 .hxpunch p b,.kitchen1.v3 .hxpunch .p2 em{color:var(--d-acc)}
+
+/* ---- 읽기 쉽게 (큰 글자 · 큰 아이콘 · 빈 곳 줄이기) ---- */
+.pour.v3 .feed{top:330px;gap:32px}
+.pour.v3 .nt{height:250px;padding:30px 34px}
+.pour.v3 .nt b{font-size:46px;line-height:1.2}
+.pour.v3 .nt .src{font-size:26px}
+.pour.v3 .nt .src .ic{width:40px;height:40px}
+.who.v3 .flow2{width:1664px;top:290px;grid-template-columns:1fr 200px 1fr}
+.who.v3 .flow2 .arr{width:200px}
+.who.v3 .flow2 .card{padding:44px 48px;gap:16px}
+.who.v3 .flow2 .bd{width:120px;height:120px;font-size:62px;border-radius:24px}
+.who.v3 .flow2 h3{font-size:62px}
+.who.v3 .flow2 p{font-size:38px}
+.who.v3 .eqbar span{font-size:36px}
+.kitchen1.v3 .hxpunch p{color:var(--d-ink)}

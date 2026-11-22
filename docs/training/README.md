@@ -2,7 +2,8 @@
 
 | 무엇 | 파일 | 메모 |
 |---|---|---|
-| **메인 연수 덱** | [deck-v3.html](deck-v3.html) **21장** | 하네스 이야기만. 모션 그래픽 · 따뜻한 색. 소스 [deck-v3-src/](deck-v3-src/) (`py deck-v3-src/build.py`) |
+| **메인 연수 덱 (E)** | [deck-e.html](deck-e.html) **22장** | 같은 이야기 · 큰 글자 장면 · 펜 메모 · 그림 위주. 7장 = AI 앱 화면 짚기, 8장 = 주방 하나(v3의 7장을 둘로). 소스 `deck-v3-src/slides-e.html` + `skin-e.css` + `motion-e.js` (`py deck-v3-src/build.py --skin e --slides docs/training/deck-v3-src/slides-e.html --out docs/training/deck-e.html`) |
+| 예비 연수 덱 (v3) | [deck-v3.html](deck-v3.html) **21장** | E가 안 열릴 때. 8장부터 장 번호가 E보다 하나 작아요. 소스 [deck-v3-src/](deck-v3-src/) (`py deck-v3-src/build.py`) |
 | 예비 덱 | [deck-v2.html](deck-v2.html) | 예전 37장 통합본 그대로 (AI 커닝 포함). 메인 덱이 안 열릴 때만 |
 | **AI 커닝 (따로)** | [ai-cheating/](ai-cheating/) | 따로 하는 자리용 16장 덱 · 대본 · 근거 조사 · 범위 규칙 |
 | 진행 계획 · 시간표 | [plan-v2.md](plan-v2.md) | 60분 시간표, 비유 표, 준비 상태 |

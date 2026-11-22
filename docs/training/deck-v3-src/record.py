@@ -334,9 +334,12 @@ def main() -> int:
     ap.add_argument("--beats", default="", help="frame:label,... -> motion-beats.png from an existing frames dir")
     ap.add_argument("--query", default="", help='주소 뒤에 붙일 것, 예: "?robot=puppet"')
     ap.add_argument("--name", default="", help="미리보기 파일 이름 앞부분 (기본: preview-slidesA-B)")
+    ap.add_argument("--deck", default="", help="다른 덱 파일 (예: docs/training/deck-e.html)")
     a = ap.parse_args()
-    global QUERY
+    global QUERY, DECK
     QUERY = a.query
+    if a.deck:
+        DECK = Path(a.deck).resolve()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     if a.beats:
