@@ -59,21 +59,20 @@ def build_html() -> str:
     """deck-e v5: 한 쪽 · Claude Cowork / ChatGPT Codex 들어가는 법만 (교사 스튜디오 설치 안내는 뺐어요)."""
     head = (f'<div class="meta">교사 연수 &nbsp;·&nbsp; 2026. 11. 23.(월) 14:00 &nbsp;·&nbsp; 60분 &nbsp;·&nbsp; AI교육코디네이터 박진영</div>')
     qr = deck_qr.svg(SITE)
-    gpt = ('<div class="col"><div class="col-h">ChatGPT</div><ol class="ol">'
-           '<li><b>컴퓨터용 ChatGPT 앱</b> 열기</li>'
-           '<li>위쪽 <b>「Chat | Work」</b>에서 <b>Work</b> 누르기</li>'
-           '<li><b>한 줄로 부탁</b> · 있으면 <b>「파일」</b>로 우리 학교 양식을 같이 붙여요</li></ol>'
-           f'<div class="shot"><img alt="ChatGPT 앱 Work 화면" src="{shot_uri()}"></div></div>')
-    cl = ('<div class="col"><div class="col-h">Claude</div><ol class="ol">'
-          '<li><b>컴퓨터용 Claude 앱</b> 열기</li>'
-          '<li><b>작업 모드(Cowork)</b>로 들어가기</li>'
-          '<li><b>폴더 · 파일을 고르고</b> 한 줄로 부탁</li></ol>'
-          '<div class="say">예) 「물품 구입 안내문 만들어 줘」</div>'
-          '<div class="fine">메뉴 이름은 앱 · 요금제마다 달라요</div>'
-          '<div class="chk"><b>받아서 확인</b><br>사실 · 숫자 / 남의 개인정보 / 저작권<br>고칠 곳은 「여기 고쳐 줘」 한 줄</div></div>')
+    def simg(n):
+        import base64
+        return "data:image/png;base64," + base64.b64encode((HERE / "steps" / f"step{n}.png").read_bytes()).decode()
+    caps = [("① 위쪽 「Chat | Work」에서 <b>Work</b>", "컴퓨터용 ChatGPT 앱을 열고 위쪽에서 골라요"),
+            ("② <b>「파일」</b>로 양식 붙이기", "있으면 우리 학교 양식 한 장 · 규칙 한 줄(예: 학생 이름은 넣지 않기)"),
+            ("③ <b>한 줄로 부탁</b> → 보내기", "예) 「물품 구입 안내문 한글 파일로 만들어 줘」"),
+            ("④ <b>결과 예</b>: 한글 파일 한 장", "받아서 확인 · 사실 · 숫자 / 남의 개인정보 / 저작권 · 고칠 곳은 「여기 고쳐 줘」")]
+    grid = "".join(f'<figure class="stp"><img alt="단계 {i + 1}" src="{simg(i + 1)}"><figcaption><b class="c1">{c1}</b><span>{c2}</span></figcaption></figure>'
+                   for i, (c1, c2) in enumerate(caps))
+    steps_html = (f'<h2>ChatGPT 「Work」 이렇게 해요 <small>(실제 화면 · 컴퓨터용 앱)</small></h2><div class="sgrid">{grid}</div>'
+                  '<div class="claude"><b>Claude도 비슷해요</b>: 작업 모드(Cowork)에서 폴더 · 파일을 고르고 한 줄로 부탁 <span class="real">· 메뉴 이름은 앱 · 요금제마다 달라요</span></div>')
     p1 = (f'<section class="page">{head}<h1>AI에게 무기를 주면 · 시작하기</h1>'
           f'<div class="motto"><div class="m-l">오늘의 한 줄</div><div class="m-t">물어볼 땐 <b>채팅</b>, 맡길 땐 <b>작업 모드</b></div></div>'
-          f'<div class="cols">{gpt}{cl}</div>'
+          f'{steps_html}'
           f'<div class="warn">⚠ <b>남의 개인정보는 넣지 않아요</b>&nbsp; (학생 · 학부모 · 교직원 · 가족 누구 것이든)</div>'
           f'<div class="site"><div class="qr">{qr}</div><div class="site-t"><div class="st-big">오늘 연수 내용 · 막혔을 때는 사이트에</div>'
           f'<div class="st-url">{e(SITE)}</div><div class="st-s">휴대폰 카메라로 QR을 비추면 열려요</div></div></div>'
@@ -181,6 +180,14 @@ table.plan{{width:100%;border-collapse:collapse;margin-top:4mm;font-size:12.5pt;
 .price div{{border:1.2pt solid {LINE};border-radius:2mm;padding:2.5mm 3.5mm}}
 .bottom{{margin-top:5mm;border:2.4pt solid {INK};border-radius:3mm;padding:3.5mm 5mm;font-size:14.5pt;font-weight:700}}
 .src{{margin-top:auto;font-size:9pt;color:#444}}
+.sgrid{{display:grid;grid-template-columns:1fr 1fr;gap:3mm 4mm}}
+.stp{{margin:0}}
+.stp img{{width:100%;display:block;border-radius:2mm;border:1pt solid {LINE}}}
+.stp figcaption{{margin-top:1.2mm;line-height:1.35}}
+.stp .c1{{display:block;font-size:14pt;font-weight:500}}
+.stp .c1 b{{font-weight:900}}
+.stp span{{display:block;font-size:11pt;color:#222}}
+.claude{{margin-top:3mm;border:1.2pt dashed {INK};border-radius:2.5mm;padding:2mm 4mm;font-size:12.5pt}}
 @media screen{{body{{background:#d9dde3}} .page{{background:#fff;margin:8mm auto;box-shadow:0 2px 10px rgba(0,0,0,.18)}}}}
 """
     page = (f"<!doctype html><html lang='ko'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
