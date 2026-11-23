@@ -598,3 +598,17 @@ html.light .v3 .e-spot{mix-blend-mode:normal;border-radius:12px;-webkit-mask-ima
 .asks6.v3 .e-free b{color:var(--e-red)}
 .asks6.v3 .e-free{top:96px;font-size:34px;max-width:none;white-space:nowrap}
 .v3 .e-shot2{opacity:0}
+.reveal.v3 .e-box b{font-size:40px;white-space:normal;line-height:1.15}
+/* ---- v6 4장: 들쭉날쭉한 이유 세 가지 ---- */
+.why5.v3 .e-three{position:absolute;left:128px;right:128px;top:290px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.why5.v3 .e-three .card{padding:30px 32px;display:flex;flex-direction:column;gap:12px;min-height:360px}
+.why5.v3 .e-three .e-n{font-size:40px;font-weight:800;color:var(--e-red)}
+.why5.v3 .e-three .e-ico{font-size:72px;color:var(--d-mute);line-height:1}
+.why5.v3 .e-three .e-c3 .e-ico{color:var(--d-cool)}
+.why5.v3 .e-three .ic{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.why5.v3 .e-three h3{margin:0;font-size:46px;font-weight:800;letter-spacing:-.03em}
+.why5.v3 .e-three p{margin:0;font-size:32px;line-height:1.4;color:var(--d-sub)}
+.why5.v3 .e-three p b{color:var(--d-ink)}
+.why5.v3 .e-three small{font-size:26px;color:var(--d-cool);font-weight:600}
+.why5.v3 .e-three .e-c3{border-color:var(--d-cool)!important}
+.why5.v3 .e-take{top:730px;font-size:50px}
