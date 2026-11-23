@@ -1011,3 +1011,9 @@
     step: function (s, st) { galSet(s, st); }
   };
 })();
+
+/* v7 6장: 큰 글자 없이 앱 화면부터 · 클릭 1 요리사 · 클릭 2 하네스 */
+FX.eApp2 = {
+  enter: function (s, st) { FX.eApp.enter(s, st + 1); },
+  step: function (s, st, dir) { FX.eApp.step(s, st + 1, dir); }
+};

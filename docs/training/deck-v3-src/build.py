@@ -381,6 +381,10 @@ def main() -> int:
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
     slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    for _i in (1, 2, 3):   # 실습 장: 안내지 단계 그림 (handout/steps · 실제 Work 화면에 커서를 그린 것)
+        _f = HERE.parent / "handout" / "steps" / f"step{_i}.png"
+        if _f.exists():
+            slides = slides.replace(f"__HSTEP{_i}__", data_uri(_f))
     if "__DEMO_VIDEO__" in slides:   # 시연 예비 영상: 크니까 덱에 넣지 않고 옆 파일로 이어요 (deck-v3-src/demo/pumui.mp4)
         dv = HERE / "demo" / "pumui.mp4"
         if dv.exists():
