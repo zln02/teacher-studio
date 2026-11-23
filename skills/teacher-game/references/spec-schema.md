@@ -21,7 +21,7 @@ AI는 **짧은 spec JSON 하나**만 쓴다(내용 + 방식 + 디자인 방향).
 | `device` | `board` | 학생 태블릿이면 `tablet`(팀 선택 숨김), 폰이면 `phone`. **`phone` + `quiz`(OX 포함)는 세로 화면용 배치가 따로 있어요**(글자 16px 이상, 버튼 44px 이상, 돌리지 않음). 다른 방식은 세로로 들면 「폰을 가로로 돌려 주세요」 안내가 떠요. 점검기가 390×844·844×390 두 화면을 직접 재서 못 읽으면 FAIL |
 | `online` | false | **기본은 인터넷 없이 열리는 파일**(Google 글꼴·CDN 주소 없음, 점검기가 바깥 주소를 FAIL로 막아요). 정말 필요할 때만 true |
 | `back` · `head_meta` | 없음 | `back:{"href":"../index.html","label":"사이트로 돌아가기"}`(선생님 메뉴 맨 아래에 줄 하나, 사이트 안 상대 주소만) · `head_meta:[{"name":"robots","content":"noindex"}]`(robots·description·theme-color·author) |
-| `teams` | 0 | 모둠전이면 2~4 (survival은 2~4 권장) |
+| `teams` | 0 | 모둠전이면 2~6 (한국 교실의 6모둠까지; 색·아이콘·이름 6개) |
 | `rounds` / `timer` | 전부 / 없음 | 수업 시작 5분 → 문제 5~6개. 칠판 팀전은 timer 20~30 |
 | `design.subject/grade/mood` | 과목·학년·분위기 | 분위기: 긴장감·신남·차분·따뜻함·밝음 (「따뜻하게」「고급스럽게」 같은 말도 알아들어요) |
 | `design.palette_from` | 없음 | 선생님 로고·양식 색(`shared/design/color_from.py`가 만든 JSON 경로, 또는 `"saved"`. 파일 여러 개 가능: `color_from.py app.css premium.css tokens.css`; 사이트의 `--ok`·`--danger`·`--ink` 같은 이름 있는 색은 그대로 따르고 포인트는 장식용 `accentDeco`로 원색을 지켜요). 있으면 테마 색 대신 이 색을 쓰고 글자 대비 4.5는 밝기만 조정해 지켜요. 점검기는 정답·오답 색이 색약에서 비슷하면 WARN (모양·글자도 같이 쓰기) |

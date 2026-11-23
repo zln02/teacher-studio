@@ -89,9 +89,9 @@ def validate(spec: dict) -> list[str]:
             if miss:
                 errs.append(f"bins: items에 쓰인 통 이름이 bins에 없어요 → {sorted(map(str, miss))}")
     if mech == "survival" and spec.get("teams", 0) == 1:
-        errs.append("teams: 서바이벌은 0(혼자) 또는 2~4팀")
-    if spec.get("teams", 0) not in (0, 2, 3, 4):
-        errs.append("teams: 0(개인) 또는 2~4")
+        errs.append("teams: 서바이벌은 0(혼자) 또는 2~6팀")
+    if spec.get("teams", 0) not in (0, 2, 3, 4, 5, 6):   # Korean classrooms often have 6 모둠 (engine: 6 colours, icons, names)
+        errs.append("teams: 0(개인) 또는 2~6")
     libs = spec.get("libs", [])
     if not isinstance(libs, list) or any(x not in LIBS for x in libs):
         errs.append(f"libs: 쓸 수 있는 부품만 → {', '.join(LIBS)} (예: [\"confetti\"])")

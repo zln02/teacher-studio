@@ -80,5 +80,60 @@ class DocsKeepContent(unittest.TestCase):
         self.assertIn("비상구 유도등 점등", txt)
 
 
+GAME_SPEC = {"title": "빛의 반사 퀴즈", "mechanic": "quiz", "device": "board", "teams": 6, "timer": 25,
+             "items": [{"q": f"문제 {i}번: 입사각과 반사각은?", "choices": ["같다", "다르다", "반대", "없다"], "answer": 0, "exp": "반사 법칙이에요"} for i in range(6)]}
+
+
+class GameTeamsAndDecor(unittest.TestCase):
+    def test_two_to_six_teams(self):
+        import specs
+        for n in (0, 2, 3, 4, 5, 6):
+            self.assertEqual([e for e in specs.validate({**GAME_SPEC, "teams": n}) if e.startswith("teams")], [], n)
+        for n in (1, 7):
+            self.assertTrue([e for e in specs.validate({**GAME_SPEC, "teams": n}) if e.startswith("teams")], n)
+        eng = (ROOT / "skills" / "teacher-game" / "assets" / "engine.html").read_text(encoding="utf-8")
+        self.assertIn("opts = [0, 2, 3, 4, 5, 6]", eng)
+        self.assertIn(".team:first-child:nth-last-child(n+5)", eng)            # 5-6 teams fit one row
+        self.assertIn('"enum": [0, 2, 3, 4, 5, 6]', (ROOT / "skills" / "teacher-game" / "references" / "spec.schema.json").read_text(encoding="utf-8"))
+
+    def test_decorations_yield_and_the_gate_fails_overlaps(self):
+        g = ROOT / "skills" / "teacher-game"
+        auto = (g / "assets" / "themes" / "auto.js").read_text(encoding="utf-8")
+        self.assertIn("hitsBusy(", auto)                 # a prop that would touch words is not drawn
+        self.assertIn("clipBusy(ctx, busyRects(t))", auto)  # the signature drawing is clipped out of the word boxes
+        self.assertIn("window.__tsDecoRects", auto)
+        self.assertIn("ts-yield", (g / "assets" / "components" / "core.js").read_text(encoding="utf-8"))  # host / signs / bubble step back
+        chk = (g / "scripts" / "check_game.py").read_text(encoding="utf-8")
+        self.assertIn("pg.evaluate(DECO_JS)", chk)
+        self.assertIn('out.append(("FAIL" if dv else "PASS", "decorations', chk)
+        self.assertIn("TS_GAME_RETRY", (g / "scripts" / "build.py").read_text(encoding="utf-8"))   # our own look is swapped when it overlaps
+
+
+class AskFirst(unittest.TestCase):
+    def build(self, req):
+        import direction
+        return direction.build(req, {})
+
+    def test_the_comparison_requests_now_ask_the_facts_only_the_user_knows(self):
+        d = self.build("다음 주 교직원 대상 시설 안전 점검 일정 안내문 한글 파일로 만들어 줘")
+        self.assertEqual(d["mode"], "ask_then_build")
+        self.assertIn("date", [q["key"] for q in d["quick_questions"]])
+        d = self.build("중2 과학 빛의 반사·굴절 복습 퀴즈 게임 만들어 줘. TV에 띄워서 모둠 대항")
+        self.assertEqual([q["key"] for q in d["quick_questions"]][:1], ["teams"])
+        self.assertEqual(d["quick_questions"][0]["recommended"], "6모둠")
+        d = self.build("가족 제주 여행 3박 4일 일정표 웹페이지 만들어 줘. 부모님이랑 초등학생 아이 둘")
+        self.assertIn("date", [q["key"] for q in d["quick_questions"]])       # 「3박 4일」 is a length, not a date
+        for d in (self.build("알아서 퀴즈 하나 만들어 줘"), self.build("모둠 대항 퀴즈 알아서 만들어 줘")):
+            self.assertLessEqual(d["question_budget"], 2)
+            self.assertTrue(d["quick_ask"].startswith("바로 만들게요"))
+            for w in ("기획", "콘티", "프롬프트"):
+                self.assertNotIn(w, d["quick_ask"])
+
+    def test_said_facts_are_not_asked_again(self):
+        for req in ("12월 3일 6모둠 대항 빛 퀴즈 게임, 중2 수업 도입용", "중2 과학 빛과 파동 방탈출, 칠판용"):
+            d = self.build(req)
+            self.assertEqual(d["question_budget"], 0, req)
+
+
 if __name__ == "__main__":
     unittest.main()

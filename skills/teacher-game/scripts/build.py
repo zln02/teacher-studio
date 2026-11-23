@@ -21,6 +21,7 @@ import copy
 import json
 import random
 import re
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -306,6 +307,7 @@ def main() -> int:
     except ImportError:
         is_fixture = False
     d0 = spec.setdefault("design", {})
+    seed_free = a.seed is None and "seed" not in d0   # our pick, not the user's: a look that fails the overlap checks may be swapped
     if a.seed is not None:
         d0["seed"] = a.seed
     elif "seed" not in d0:  # variety by default: a fresh combination every build; the seed is printed and stored in the page
@@ -374,6 +376,21 @@ def main() -> int:
         return 0
     r = subprocess.run([sys.executable, str(HERE / "check_game.py"), str(a.out)], capture_output=True, text=True, encoding="utf-8", errors="replace")
     lines = r.stdout.strip().splitlines()
+    overlap = [ln for ln in lines if ln.startswith("FAIL") and ("top bar parts" in ln or "decorations" in ln)]
+    if overlap and seed_free and not os.environ.get("TS_GAME_RETRY"):  # choose a layout that passes: try the next looks ourselves
+        print("NOTE 장식·위쪽 표시가 글자와 겹쳐서 다른 배치로 다시 만들어요: " + overlap[0][:120])
+        for k in range(1, 4):
+            nxt = (int(d0["seed"]) * 7 + k * 7919) % 99991 + 1
+            env = dict(os.environ, TS_GAME_RETRY="1")
+            args = [sys.executable, str(HERE / "build.py"), "--spec", str(a.spec), "--out", str(a.out), "--seed", str(nxt)] + (["--yes"] if getattr(a, "yes", False) else [])
+            if a.review is not None:
+                args += ["--review"] + ([a.review] if a.review else [])
+            rr = subprocess.run(args, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env)
+            if rr.returncode in (0, 2):
+                print(rr.stdout.strip())
+                print(f"(다른 배치 design.seed={nxt}로 겹침 없이 만들었어요)")
+                return rr.returncode
+        print("NOTE 다른 배치 3개도 겹쳐요: 처음 결과를 그대로 보여 드려요 (글을 줄이거나 design.layout을 정해 주세요)")
     if a.verbose:
         print("\n".join(lines))
     else:  # short by default: the lines to act on + the verdict

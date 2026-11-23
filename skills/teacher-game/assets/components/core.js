@@ -230,7 +230,27 @@ H.applyTheme = function(){
   var sp = NG.hud.setProgress;
   NG.hud.setProgress = function(p){ S.progress = p; return sp.apply(NG.hud, arguments); };
   var last = "";
+  var yieldT = 0;
+  function yieldDeco(){   // the host, studio signs and the speech bubble step back (fade out) while they would sit on words
+    var deco = document.querySelectorAll("#ts-deco .ts-host, #ts-deco .tv-sign, #ts-bubble"), words = document.querySelectorAll("#scene .card, #scene .choice, #scene .title, #scene .subtitle, #scene [data-fit], #scene .btn, #scene .ts-chip, #scene .qs-chip, #hud .scoreboard .team, #hud .combo");
+    for (var i = 0; i < deco.length; i++){
+      var e = deco[i]; e.classList.remove("ts-yield"); var a = e.getBoundingClientRect(), hit = false;
+      if (a.width < 2 || a.height < 2) continue;
+      for (var j = 0; j < words.length && !hit; j++){
+        var w = words[j], b = w.getBoundingClientRect(), c = getComputedStyle(w);
+        if (b.width < 2 || c.visibility === "hidden" || c.display === "none" || parseFloat(c.opacity) < 0.2 || e.contains(w) || w.contains(e)) continue;
+        hit = a.left < b.right - 4 && b.left < a.right - 4 && a.top < b.bottom - 4 && b.top < a.bottom - 4;
+      }
+      if (hit) e.classList.add("ts-yield");
+    }
+  }
+  try {   // also at once when the scene changes (an answer card appears): the gate and the class never see a frame of overlap
+    var scn = document.getElementById("scene"), yq = false;
+    if (scn && window.MutationObserver) new MutationObserver(function(){ if (yq) return; yq = true; Promise.resolve().then(function(){ yq = false; yieldDeco(); }); }).observe(scn, {childList: true, subtree: true, attributes: true, attributeFilter: ["class", "style"]});
+  } catch (e) {}
+  if (!document.getElementById("ts-yield-css")){ var ys = document.createElement("style"); ys.id = "ts-yield-css"; ys.textContent = ".ts-yield{opacity:0!important;visibility:hidden!important}"; document.head.appendChild(ys); }
   NG.onUpdate(function(dt){
+    yieldT += dt; if (yieldT > 0.25){ yieldT = 0; yieldDeco(); }
     H.updatePodiums();
     S.cheer = Math.max(0, S.cheer - dt * 0.42); S.miss = Math.max(0, S.miss - dt * 0.5);
     var sn = NG.sceneName || "";

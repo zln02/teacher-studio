@@ -140,15 +140,40 @@ COMP.themes.auto = (function(){
   }
   var SLOTS = [[40, 170, 150], [28, 410, 120], [60, 620, 140], [1780, 190, 150], [1765, 450, 130], [1778, 720, 140], [1785, 920, 120]];
 
+  /* decorations never sit on text: the boxes that hold words (cards, choices, title, top bar) are measured a few times a second;
+     a prop that would touch one is not drawn, the signature drawing is clipped out of them; what was drawn is exposed for the gate */
+  var BUSY = { t: -9, rects: [] };
+  function busyRects(t){
+    if (t - BUSY.t < 0.4 && t >= BUSY.t) return BUSY.rects;
+    BUSY.t = t;
+    var st = document.getElementById("stage"), sr = st ? st.getBoundingClientRect() : null, out = [];
+    if (!sr || !sr.width) return (BUSY.rects = out);
+    var k = 1920 / sr.width, els = document.querySelectorAll("#scene .card, #scene .choice, #scene .title, #scene .subtitle, #scene [data-fit], #scene .btn, #scene .ts-chip, #scene .qs-chip, #hud .scoreboard .team, #hud .timer, #hud .timer-num, #hud .combo, #hud .icon-btn");
+    for (var i = 0; i < els.length; i++){
+      var r = els[i].getBoundingClientRect(), cs = getComputedStyle(els[i]);
+      if (r.width < 4 || r.height < 4 || cs.visibility === "hidden" || cs.display === "none" || parseFloat(cs.opacity) < 0.2) continue;
+      out.push([(r.left - sr.left) * k - 24, (r.top - sr.top) * k - 24, r.width * k + 48, r.height * k + 48]);
+    }
+    return (BUSY.rects = out);
+  }
+  function hitsBusy(x, y, w, h, R){ for (var i = 0; i < R.length; i++){ var b = R[i]; if (x < b[0] + b[2] && b[0] < x + w && y < b[1] + b[3] && b[1] < y + h) return true; } return false; }
+  function clipBusy(ctx, R){   // everything but the text boxes (outer clockwise, holes counter-clockwise: nonzero keeps overlaps out)
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(1920, 0); ctx.lineTo(1920, 1080); ctx.lineTo(0, 1080); ctx.closePath();
+    for (var i = 0; i < R.length; i++){ var b = R[i]; ctx.moveTo(b[0], b[1]); ctx.lineTo(b[0], b[1] + b[3]); ctx.lineTo(b[0] + b[2], b[1] + b[3]); ctx.lineTo(b[0] + b[2], b[1]); ctx.closePath(); }
+    ctx.clip();
+  }
   function drawProps(ctx, t, TK){
-    var C = colors(TK), glow = C.accent;
+    var C = colors(TK), glow = C.accent, R = busyRects(t), drawn = [];
     A.props.forEach(function(n, i){
       var im = imgs[n], sl = SLOTS[i % SLOTS.length]; if (!im) return;
       var bob = Math.sin(t * 0.9 + i * 1.3) * 14, sz = sl[2] * (1 + S.cheer * 0.18), x = sl[0] + 10, y = sl[1] + bob;
+      if (hitsBusy(x - 4, sl[1] - 18, sz * 1.18 + 8, sz * 1.18 + 36, R)) return;   // it would touch words: leave this slot empty
+      drawn.push([x, y, sz, sz]);
       var g = ctx.createRadialGradient(x + sz / 2, y + sz / 2, 4, x + sz / 2, y + sz / 2, sz * 0.8); g.addColorStop(0, rgba(glow, 0.28 + S.cheer * 0.3)); g.addColorStop(1, rgba(glow, 0));
       ctx.fillStyle = g; ctx.fillRect(x - sz * 0.4, y - sz * 0.4, sz * 1.8, sz * 1.8);
       ctx.save(); ctx.translate(x + sz / 2, y + sz / 2); ctx.rotate(Math.sin(t * 0.6 + i) * 0.12); ctx.globalAlpha = 0.92; ctx.drawImage(im, -sz / 2, -sz / 2, sz, sz); ctx.restore();
     });
+    window.__tsDecoRects = drawn;
   }
 
   function dyn(ctx, t, dt, TK){
@@ -216,6 +241,10 @@ COMP.themes.auto = (function(){
 
   /* signature element: one request-specific picture (A.sig), drawn procedurally, large and partly hidden behind the cards */
   function drawSig(ctx, t, TK){
+    if (!A.sig) return;
+    ctx.save(); clipBusy(ctx, busyRects(t)); drawSig0(ctx, t, TK); ctx.restore();
+  }
+  function drawSig0(ctx, t, TK){
     var C = colors(TK), g, i, k = A.sig;
     if (!k) return;
     ctx.save();

@@ -86,6 +86,11 @@ body{font-family:var(--font-body);color:var(--text);user-select:none;-webkit-use
 .team .dot{width:54px;height:54px;border-radius:50%;margin-right:14px;display:flex;align-items:center;justify-content:center;font-size:34px}
 .team .tname{font-size:32px;font-weight:900;margin-right:16px}
 .team .tscore{font-family:var(--font-display);font-size:52px;min-width:70px;text-align:right}
+/* 5-6 teams (6 모둠) fit one row on the 1920 stage */
+.team:first-child:nth-last-child(n+5),.team:first-child:nth-last-child(n+5)~.team{padding:8px 16px 8px 8px;margin-right:10px}
+.team:first-child:nth-last-child(n+5) .dot,.team:first-child:nth-last-child(n+5)~.team .dot{width:44px;height:44px;font-size:28px;margin-right:8px}
+.team:first-child:nth-last-child(n+5) .tname,.team:first-child:nth-last-child(n+5)~.team .tname{font-size:28px;margin-right:10px}
+.team:first-child:nth-last-child(n+5) .tscore,.team:first-child:nth-last-child(n+5)~.team .tscore{font-size:42px;min-width:52px}
 .timer{position:absolute;left:50%;top:104px;transform:translateX(-50%);width:900px;height:20px;border-radius:999px;background:rgba(0,0,0,.35);overflow:hidden}
 .timer>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--good),var(--primary));border-radius:999px;transform-origin:0 50%}
 .timer.warn>i{background:var(--bad);animation:blink .5s steps(2) infinite}
@@ -851,7 +856,7 @@ NG.scene("title", function(el){
   var G = window.GAME; NG.state.phase = "title"; HUD.show = false; HUD.render(); Timer.stop();
   var chars = Array.prototype.map.call(String(G.title), function(c, i){ return c === " " ? " " : '<span class="ch" style="animation-delay:' + (i * 0.05) + 's">' + U.esc(c) + "</span>"; }).join("");
   el.innerHTML = '<div class="title shine">' + chars + '</div><div class="subtitle enter" style="animation-delay:.4s">' + U.esc(G.subtitle || "") + '</div><div class="row enter" id="t-teams" style="animation-delay:.6s"></div><button class="btn pulse enter" id="t-start" style="animation-delay:.8s">▶ 시작!</button>';
-  var teams = G.teams || 0, opts = [0, 2, 3, 4], box = el.querySelector("#t-teams");
+  var teams = G.teams || 0, opts = [0, 2, 3, 4, 5, 6], box = el.querySelector("#t-teams");
   if (G.teamChoice !== false){
     opts.forEach(function(n){ var b = U.h("button", {class:"btn small " + (n === teams ? "" : "secondary")}, n === 0 ? "개인" : n + "팀"); NG.button(b, function(){ teams = n; Array.prototype.forEach.call(box.children, function(c){ c.classList.add("secondary"); }); b.classList.remove("secondary"); FX.pop(b); }); box.appendChild(b); });
   }

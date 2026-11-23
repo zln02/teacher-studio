@@ -9,7 +9,7 @@
   "mechanic": {"enum": ["quiz", "survival", "escape", "match", "bingo", "board", "sort"]},
   "use": {"enum": ["class", "personal"], "default": "class", "description": "class = big board-readable type + teacher defaults; personal = normal type floor, same tools"},
   "device": {"enum": ["board", "tablet", "phone"], "default": "board"},
-  "teams": {"enum": [0, 2, 3, 4], "default": 0, "description": "0 = solo / whole class cooperating"},
+  "teams": {"enum": [0, 2, 3, 4, 5, 6], "default": 0, "description": "0 = solo / whole class cooperating; 2-6 teams (6 모둠)"},
   "rounds": {"type": "integer", "minimum": 1, "description": "use only the first N (shuffled) items"},
   "timer": {"type": "integer", "minimum": 0, "description": "seconds per question (quiz, survival); 0 = none"},
   "shuffle": {"type": "boolean", "default": true},
