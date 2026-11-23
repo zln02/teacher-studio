@@ -39,8 +39,23 @@ try:
     import embed  # shared/fonts/embed.py
 except ImportError:
     embed = None
+def _own_inline():
+    """This skill's own shared/vendor/inline.py, even when another skill's copy (with a different library
+    list) was imported first in the same process."""
+    import importlib.util
+    f = SHARED / "vendor" / "inline.py"
+    if not f.is_file():
+        return None
+    spec = importlib.util.spec_from_file_location("slides_vendor_inline", str(f))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
 try:
-    import inline  # shared/vendor/inline.py
+    inline = _own_inline()
+    if inline is None:
+        import inline  # shared/vendor/inline.py
 except ImportError:
     inline = None
 try:

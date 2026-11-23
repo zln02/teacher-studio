@@ -227,9 +227,8 @@ def main() -> int:
         if a.no_check:
             print(f"PARTIAL {a.out} (checks disabled)")
             return 0
-        import tempfile
         codes = []
-        with tempfile.TemporaryDirectory(dir=str(Path(a.out).resolve().parent)) as td:
+        with _workdir().temp_dir("tabs", near=Path(a.out).resolve().parent) as td:
             for i, (lab, h) in enumerate(inner):
                 f = Path(td) / f"tab{i + 1}.html"
                 f.write_text(h, encoding="utf-8")
@@ -258,6 +257,18 @@ def main() -> int:
     status = {0: "READY", 2: "PARTIAL"}.get(result, "NOT READY")
     print(f"{status} {Path(a.out).resolve()}")
     return result
+
+
+def _workdir():
+    """shared/tools/workdir.py (temp folders that survive security boxes)."""
+    here = Path(__file__).resolve().parent
+    for d in (here, here.parent / "shared" / "tools", here.parent / "tools", here.parents[2] / "shared" / "tools"):
+        if (d / "workdir.py").is_file():
+            if str(d) not in sys.path:
+                sys.path.append(str(d))
+            import workdir
+            return workdir
+    raise RuntimeError("shared/tools/workdir.py not found")
 
 
 def _no_browser_guard() -> bool:
