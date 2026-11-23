@@ -1,4 +1,4 @@
-<!-- AI 커닝, 미리 막기 (스킨 E · 9장 · 따로 하는 11분) — build: py docs/training/ai-cheating/deck-src/build.py
+<!-- AI 커닝, 미리 막기 (스킨 E · 8장 · 따로 하는 8분 · 쉬운 말 · 외부 검토 반영) — build: py docs/training/ai-cheating/deck-src/build.py
      범위 규칙: 기기 · 제품 이름, 숨기는 요령, 연결 · 설정 방법, 들키지 않는 요령, 부정행위 순서는 쓰지 않아요. 흐름은 다섯 걸음으로만, 추상적으로. -->
 <style>
 /* ---- AI 커닝 덱 전용 (ac- 앞붙이 · 스킨 E 토큰만 써요) ---- */
@@ -144,8 +144,8 @@
 .ac-mark path{animation:acDraw .6s .45s cubic-bezier(.65,0,.35,1) both}
 .ac-mark .e-red{stroke:var(--e-red)}.ac-mark .e-blue{stroke:var(--e-blue)}
 .ac-wb{padding:22px 24px 26px;display:flex;flex-direction:column;gap:12px}
-.ac-wb .ac-st{font-family:var(--mono);font-size:26px;color:var(--d-acc)}
-.ac-wb h3{font-size:34px!important;line-height:1.2}
+.ac-wb .ac-st{font-size:24px;line-height:1.35;color:var(--d-mute)}
+.ac-wb h3{font-size:36px!important;line-height:1.25}
 .ac-wb p{font-size:28px!important;color:var(--d-ink)!important;font-weight:600;animation:acRise .4s .9s both}
 .ac-wb p:before{content:"흔적";display:block;font-family:var(--mono);font-size:20px;font-weight:400;color:var(--e-blue);margin-bottom:4px}
 .ac-ways.v3 .ac-law{top:880px}
@@ -235,144 +235,134 @@
 .ac-mini{display:inline-grid;grid-template-columns:repeat(5,22px);gap:4px;vertical-align:middle;margin-right:8px}
 .ac-mini i{height:16px;border-radius:3px;background:var(--d-surf2)}
 .ac-mini i.h{background:var(--d-acc)}
+/* v4: 2 한 문장 · 4 이렇게 해요 */
+.ac-one{position:absolute;left:128px;right:128px;top:330px;display:flex;gap:40px;align-items:center;padding:56px 60px;border-radius:16px;border:1.5px solid var(--d-line);background:var(--d-surf)}
+.ac-one .ic{flex:none;width:110px;height:110px;fill:none;stroke:var(--d-acc);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ac-one p{margin:0;font-size:56px;font-weight:700;line-height:1.3;letter-spacing:-.03em;color:var(--d-ink)}
+.ac-one p b{color:var(--d-acc)}
+.ac-do{position:absolute;left:128px;right:128px;top:300px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.ac-do .card{display:flex;flex-direction:column;gap:28px;padding:44px 36px;min-height:440px}
+.ac-do .ac-ic{width:96px;height:96px;animation:acPop .5s both}
+.ac-do h3{font-size:44px!important;line-height:1.28;animation:acRise .4s .2s both}
+.ac-do4.v3 .ac-law{top:800px}
+.ac-five2 .ac-why{font-size:26px!important}
+.ac-v4 .ac-no{font-size:26px!important;left:92px!important;top:108px!important}
 </style>
 
 <!-- 1 표지 -->
-<section class="slide cover v3" data-ac-sect="00 · INTRO" data-e-bg="B" data-fx="eCover" data-steps="1" data-agenda="0">
-  <div class="e-hub e-hub-a"><svg class="e-wires" viewBox="0 0 760 700" aria-hidden="true"></svg><div class="e-node e-core" data-x="380" data-y="350"><svg class="ic"><use href="#file-text"/></svg><b>시험지</b></div><div class="e-node" data-x="380" data-y="95"><svg class="ic"><use href="#scan"/></svg><b><i class="ac-c">1</i> 옮기기</b></div><div class="e-node" data-x="622" data-y="271"><svg class="ic"><use href="#send"/></svg><b><i class="ac-c">2</i> 나가기</b></div><div class="e-node" data-x="530" data-y="556"><svg class="ic"><use href="#bot"/></svg><b><i class="ac-c">3</i> AI가 풀기</b></div><div class="e-node" data-x="230" data-y="556"><svg class="ic"><use href="#undo-2"/></svg><b><i class="ac-c">4</i> 돌아오기</b></div><div class="e-node" data-x="138" data-y="271"><svg class="ic"><use href="#pen-line"/></svg><b><i class="ac-c">5</i> 옮겨 적기</b></div></div>
-  <div class="hd"><div class="kicker m-k">따로 하는 이야기 · 11분 · 시험</div></div>
+<section class="slide cover v3" data-ac-sect="00 · 시작" data-e-bg="B" data-fx="eCover" data-steps="1" data-agenda="0">
+  <div class="e-hub e-hub-a"><svg class="e-wires" viewBox="0 0 760 700" aria-hidden="true"></svg><div class="e-node e-core" data-x="380" data-y="350"><svg class="ic"><use href="#file-text"/></svg><b>시험지</b></div><div class="e-node" data-x="380" data-y="95"><svg class="ic"><use href="#scan"/></svg><b><i class="ac-c">1</i> 찍어요</b></div><div class="e-node" data-x="622" data-y="271"><svg class="ic"><use href="#send"/></svg><b><i class="ac-c">2</i> 보내요</b></div><div class="e-node" data-x="530" data-y="556"><svg class="ic"><use href="#bot"/></svg><b><i class="ac-c">3</i> AI 풀기</b></div><div class="e-node" data-x="230" data-y="556"><svg class="ic"><use href="#undo-2"/></svg><b><i class="ac-c">4</i> 돌아와요</b></div><div class="e-node" data-x="138" data-y="271"><svg class="ic"><use href="#pen-line"/></svg><b><i class="ac-c">5</i> 써요</b></div></div>
+  <div class="hd"><div class="kicker m-k">따로 하는 이야기 · 8분</div></div>
   <div class="hero">
     <h1 class="m-words">AI 커닝, <em>미리</em> 막기</h1>
     <i class="m-rule"></i>
-    <p class="tag m-rise">기기는 달라도, 흐름은 같아요 · 선생님이 기술로 할 수 있는 것</p>
+    <p class="tag m-rise">방법은 달라도, 순서는 같아요</p>
   </div>
   <div class="who m-rise"><b>AI교육코디네이터 박진영</b></div>
-  <aside class="note"><b>[시간표 · 11분]</b> 1 표지 0~0.5 · 2 우리 학교에서도 0.5~1.5 · 3 다섯 걸음 1.5~3 · 4 이런 방식들 → 흔적 3~4.5 · 5 통신은 못 막아요 4.5~5.5 · <b>6 예방 5가지 5.5~8 (가장 중요)</b> · 7 미리 풀려 보기 8~9 (선택 시연 +3분) · 8 이렇게 부탁해요 9~10.5 · 9 한 장으로 다시 10.5~11. 시간이 모자라면 3 → 4 → 6 → 9만 해도 돼요. <b>[0~0.5분]</b> 들어오면 제목만 크게. 클릭 1: 오른쪽에 다섯 걸음이 붙어요. 「하네스 이야기와는 따로, 요즘 걱정하시는 AI 커닝을 10분 남짓 이야기할게요. 어떻게 하는지가 아니라, 선생님 컴퓨터와 AI로 어떻게 미리 막는지예요.」 <b>범위</b>: 기기 · 제품 이름, 숨기는 요령, 연결 · 설정 방법, 들키지 않는 요령은 묻더라도 답하지 않아요 → 「그건 몰라도 막을 수 있어요」로 돌려요. 기기 보관 · 감독 같은 시험 운영 규칙은 학교에서 정해요 (오늘 다루지 않아요).</aside>
+  <aside class="note"><b>[시간표 · 8분]</b> 1 표지 0~0.5 · 2 미리 준비 0.5~1 · 3 순서 1~2.5 · 4 의심이 들 때 2.5~3.5 · <b>5 평가 준비 5가지 3.5~5.5</b> · 6 AI 풀이 참고 5.5~6.5 (선택 시연 +2분) · 7 이렇게 말하면 돼요 6.5~7.5 · 8 한 장으로 7.5~8. 모자라면 3 → 5 → 8만. [0~0.5분] 「하네스 이야기와 따로, AI 커닝 예방 이야기를 8분만 할게요. 어떻게 하는지가 아니라, 평가 준비를 어떻게 하는지예요.」 클릭 1: 오른쪽에 다섯 단계가 붙어요. 「찍고, 보내고, AI가 풀고, 돌아오고, 써요.」 <b>안전선</b>: 기기 · 제품 이름, 숨기는 법, 연결하는 법, 안 들키는 법은 질문이 나와도 말하지 않아요 → 「그건 몰라도 준비할 수 있어요」.</aside>
 </section>
 
-<!-- 2 요즘 걱정 -->
-<section class="slide ac-worry v3" data-ac-sect="00 · INTRO" data-e-bg="C" data-fx="eBig" data-e-inner="v3gen" data-steps="3" data-agenda="0">
-  <div class="hd"><div class="kicker m-k">요즘 걱정</div><h2 class="m-wipe">시험장 AI 커닝, <em>남의 일</em>이 아니에요</h2></div>
-  <div class="ac-news">
-    <div class="card" data-k="1" data-m="snap"><span class="ac-d">2026.5</span><h3>공인 어학 시험장에서 적발</h3><p>몸에 지닌 AI 기기로 부정행위 · <b>성적 무효</b></p></div>
-    <div class="card" data-k="1" data-m="snap" data-at="90"><span class="ac-d">2026.10</span><h3>대학 시험장에서도 잇따라</h3><p>대학 시험 · 논술 시험장 적발 보도</p></div>
-    <div class="card" data-k="1" data-m="snap" data-at="180"><span class="ac-d">2026.11.9</span><h3>교육부 집계</h3><p>내신 <b>4건</b> · 대학별고사 <b>3건</b></p></div>
-    <div class="card" data-k="1" data-m="snap" data-at="270"><span class="ac-d">2026.11</span><h3>수능도 바뀌었어요</h3><p>전자기기 <b>반입 금지 명시</b> · 감독 점검 강화</p></div>
-  </div>
-  <p class="ac-take" data-k="2" data-m="snap">누구를 의심하자는 게 아니에요. <b>미리 해 두면</b> 되는 일이에요<small>오늘은 선생님 컴퓨터 · AI로 할 수 있는 것만 · 시험 운영 규칙은 학교에서 정해요</small></p>
-  <p class="ac-src">출처: 언론 보도 · 정책브리핑(2026.11) — 자세한 근거는 ai-cheating-research.md</p>
-  <div class="e-big"><div class="e-k">// 요즘 걱정</div><p class="e-h">우리 학교에서도<br><em>일어날 수</em> 있어요<i class="e-slot"></i></p></div>
-  <aside class="note">[0.5~1.5분] 들어오면 큰 글자만. 「뉴스 보셨죠? 우리 학교에서도 일어날 수 있어요.」 클릭 1: 「올해 5월 어학 시험장에서 몸에 지닌 AI 기기로 부정행위가 적발돼 성적이 무효가 됐고, 10월에는 대학 시험장에서도 잇따라 보도됐어요. 11월 9일 교육부 집계로 내신 4건, 대학별고사 3건이에요. 수능도 전자기기 반입 금지를 분명히 적고 점검을 늘렸어요.」 클릭 2: 「누구를 의심하자는 게 아니에요. 미리 해 두면 되는 일이에요. 기기 보관이나 감독 같은 시험 운영은 학교에서 정하니까, 오늘은 선생님이 컴퓨터와 AI로 할 수 있는 것만요.」 (숫자 · 날짜는 ai-cheating-research.md 기준 · 발표 직전 다시 확인. 기기 이름은 말하지 않아요.)</aside>
+<!-- 2 요즘 걱정 (숫자 · 날짜 없이 일반 문장만) -->
+<section class="slide ac-worry v3" data-ac-sect="00 · 시작" data-e-bg="C" data-fx="eBig" data-e-inner="v3gen" data-steps="3" data-agenda="0">
+  <div class="hd"><div class="kicker m-k">요즘 걱정</div><h2 class="m-wipe">시험장 AI 부정행위, <em>미리 준비</em>해요</h2></div>
+  <div class="ac-one" data-k="1" data-m="snap"><svg class="ic"><use href="#newspaper"/></svg><p>시험장에서 AI 기기를 이용한<br>부정행위가 <b>보도되고 있어요</b></p></div>
+  <p class="ac-take" data-k="2" data-m="snap">의심하자는 게 아니에요. <b>평가 준비</b>를 함께 점검해요<small>오늘은 선생님이 컴퓨터로 할 수 있는 것 중심으로</small></p>
+  <div class="e-big"><div class="e-k">// 요즘 걱정</div><p class="e-h">우리 학교도<br><em>미리</em> 준비해요<i class="e-slot"></i></p></div>
+  <aside class="note">[0.5~1분] 큰 글자: 「우리 학교도 미리 준비해요.」 클릭 1: 「요즘 시험장에서 AI 기기를 이용한 부정행위가 보도되고 있어요.」 클릭 2: 「누구를 의심하자는 게 아니에요. 평가 준비를 함께 점검하자는 거예요.」 (구체적 숫자 · 날짜는 말하지 않아요.)</aside>
 </section>
 
 <!-- 3 다섯 걸음: 움직이는 지도 (교실 안 · 교실 밖) -->
-<section class="slide ac-flow5 v3" data-ac-sect="01 · FLOW" data-e-bg="B" data-fx="eBig" data-e-inner="v3gen" data-steps="7" data-agenda="1">
-  <div class="hd"><div class="kicker m-k">기기는 달라도</div><h2 class="m-wipe">어떤 방법이든 <em>다섯 걸음</em>을 지나요</h2></div>
+<section class="slide ac-flow5 v3" data-ac-sect="01 · 순서" data-e-bg="B" data-fx="eBig" data-e-inner="v3gen" data-steps="7" data-agenda="1">
+  <div class="hd"><div class="kicker m-k">하는 순서</div><h2 class="m-wipe">방법은 달라도 <em>순서는 같아요</em></h2></div>
   <div class="ac-map">
     <div class="ac-zone ac-zin"><span>교실 안</span></div>
-    <div class="ac-zone ac-zout"><span>교실 밖</span></div>
+    <div class="ac-zone ac-zout"><span>교실 밖 · 보내고 받기</span></div>
     <i class="ac-wall"></i>
-    <div class="ac-g ac-g1" data-b="1" data-replay><div class="ac-node" style="left:100px;top:90px"><span class="ac-badge">1</span><svg class="ic"><use href="#file-text"/></svg><b>문제가 기기로</b></div></div>
-    <div class="ac-g" data-b="2" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M320 150 H720"/></svg><i class="ac-dot" style="offset-path:path('M320 150 H720')"></i><div class="ac-node" style="left:720px;top:90px"><span class="ac-badge">2</span><svg class="ic"><use href="#send"/></svg><b>밖으로</b></div></div>
-    <div class="ac-g" data-b="3" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M940 150 C1150 150 1300 160 1300 200"/></svg><i class="ac-dot" style="offset-path:path('M940 150 C1150 150 1300 160 1300 200')"></i><div class="ac-ai"><span class="ac-badge">3</span><i class="ac-ring"></i><i class="ac-ring r2"></i><svg class="ic"><use href="#bot"/></svg><b>AI가 풀기</b></div></div>
+    <div class="ac-g ac-g1" data-b="1" data-replay><div class="ac-node" style="left:100px;top:90px"><span class="ac-badge">1</span><svg class="ic"><use href="#file-text"/></svg><b>문제를 찍어요</b></div></div>
+    <div class="ac-g" data-b="2" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M320 150 H720"/></svg><i class="ac-dot" style="offset-path:path('M320 150 H720')"></i><div class="ac-node" style="left:720px;top:90px"><span class="ac-badge">2</span><svg class="ic"><use href="#send"/></svg><b>밖으로 보내요</b></div></div>
+    <div class="ac-g" data-b="3" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M940 150 C1150 150 1300 160 1300 200"/></svg><i class="ac-dot" style="offset-path:path('M940 150 C1150 150 1300 160 1300 200')"></i><div class="ac-ai"><span class="ac-badge">3</span><i class="ac-ring"></i><i class="ac-ring r2"></i><svg class="ic"><use href="#bot"/></svg><b>AI가 풀어요</b></div></div>
     <div class="ac-g" data-b="4" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M1300 400 C1300 450 1120 450 940 450"/></svg><i class="ac-dot" style="offset-path:path('M1300 400 C1300 450 1120 450 940 450')"></i><div class="ac-node" style="left:720px;top:390px"><span class="ac-badge">4</span><svg class="ic"><use href="#undo-2"/></svg><b>답이 돌아와요</b></div></div>
-    <div class="ac-g" data-b="5" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M720 450 H320"/></svg><i class="ac-dot" style="offset-path:path('M720 450 H320')"></i><div class="ac-node" style="left:100px;top:390px"><span class="ac-badge">5</span><svg class="ic"><use href="#pen-line"/></svg><b>시험지에 옮겨요</b></div><svg class="ac-write" viewBox="0 0 200 30"><path pathLength="1" d="M4 18 C20 4 30 28 46 16 S72 6 84 18 S110 26 122 12 S150 8 160 20 S186 22 196 10"/></svg></div>
-    <div class="ac-g" data-b="6" data-replay><div class="ac-stampz ac-s-out"><svg class="ic"><use href="#ban"/></svg>학교가 못 막아요</div><div class="ac-stampz ac-s-in"><svg class="ic"><use href="#eye"/></svg>선생님 눈앞</div></div>
+    <div class="ac-g" data-b="5" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M720 450 H320"/></svg><i class="ac-dot" style="offset-path:path('M720 450 H320')"></i><div class="ac-node" style="left:100px;top:390px"><span class="ac-badge">5</span><svg class="ic"><use href="#pen-line"/></svg><b>시험지에 써요</b></div><svg class="ac-write" viewBox="0 0 200 30"><path pathLength="1" d="M4 18 C20 4 30 28 46 16 S72 6 84 18 S110 26 122 12 S150 8 160 20 S186 22 196 10"/></svg></div>
+    <div class="ac-g" data-b="6" data-replay><div class="ac-stampz ac-s-in"><svg class="ic"><use href="#clipboard-check"/></svg>평가 준비 · 감독</div></div>
   </div>
-  <p class="ac-take" data-b="6">기기 이름은 몰라도 돼요 · <b>다섯 걸음</b>만</p>
-  <div class="e-big"><div class="e-k">// 기기는 달라도</div><p class="e-h">흐름은<br><em>같아요</em><i class="e-slot"></i></p></div>
-  <aside class="note">[1.5~3분] 들어오면 「흐름은 같아요」만 크게. 「기기는 계속 새로 나와요. 그런데 어떤 방법이든 지나가는 걸음은 똑같아요.」 클릭 1~5 (한 클릭에 한 걸음 · 종이가 선을 따라 움직여요): 「① 문제가 기기로 옮겨져요. ② 교실 벽 밖으로 나가요. ③ 밖에서 AI가 풀어요, 몇 초면 돼요. ④ 답이 다시 교실 안으로 돌아와요. ⑤ 결국 시험지에 손으로 옮겨 적어요.」 클릭 6 (도장): 「줄무늬 쪽, 교실 밖은 학교가 못 막아요. 그런데 파란 쪽, ①과 ⑤ 그리고 돌아온 ④는 선생님 눈앞에서 일어나요. 기기 이름은 몰라도 돼요. 다섯 걸음만 기억하세요.」 (어떻게 옮기는지 · 어떻게 숨기는지는 말하지 않아요. 질문이 나오면 「그건 몰라도 막을 수 있어요」.)</aside>
+  <p class="ac-take" data-b="6">앞뒤는 교실 안 · <b>평가 준비와 감독</b>을 함께 챙겨요</p>
+  <div class="e-big"><div class="e-k">// 방법은 달라도</div><p class="e-h">순서는<br><em>같아요</em><i class="e-slot"></i></p></div>
+  <aside class="note">[1~2.5분] 큰 글자: 「방법은 바뀌어도 순서는 같아요.」 클릭 1~5 (종이가 선을 따라가요): 「문제를 찍어요. 밖으로 보내요. AI가 풀어요. 답이 돌아와요. 시험지에 써요.」 클릭 6: 「가운데는 교실 밖이에요. 앞뒤는 교실 안이니까, 평가 준비와 감독을 함께 챙기면 돼요.」 (어떻게 찍는지 · 보내는지는 말하지 않아요.)</aside>
 </section>
 
-<!-- 4 이런 방식들 → 흔적 (그림 · 펜 표시 · 갈래 이름만. 기기 · 숨기는 곳 · 연결 방법은 그리지도 쓰지도 않아요) -->
-<section class="slide ac-ways v3" data-ac-sect="01 · FLOW" data-e-bg="B" data-fx="v3gen" data-steps="6" data-agenda="1">
-  <div class="hd"><div class="kicker m-k">원리 → 흔적</div><h2 class="m-wipe">이런 방식들이 있어요 → <em>이럴 때</em> 의심해요</h2></div>
-  <div class="ac-ways5">
-    <div class="card" data-b="1" data-replay><div class="ac-pic"><img src="__AC_w1__" alt="문제지를 같은 자세로 오래 들고 있는 사람 그림"><svg class="ac-mark" viewBox="0 0 400 300" preserveAspectRatio="none">__MARK_w1__</svg></div><div class="ac-wb"><span class="ac-st"><i class="ac-c">1</i> 찍어서 옮기기</span><h3>작은 카메라로 찍는 방식</h3><p>같은 자세로 오래 · 옷매무새를 자꾸 고침</p></div></div>
-    <div class="card" data-b="2" data-replay><div class="ac-pic"><img src="__AC_w2__" alt="귀 옆에 손을 대고 멈칫하는 사람 그림"><svg class="ac-mark" viewBox="0 0 400 300" preserveAspectRatio="none">__MARK_w2__</svg></div><div class="ac-wb"><span class="ac-st"><i class="ac-c">4</i> 듣기</span><h3>귀로 답을 듣는 방식</h3><p>귀를 자주 만지고 멈칫</p></div></div>
-    <div class="card" data-b="3" data-replay><div class="ac-pic"><img src="__AC_w3__" alt="손목 쪽을 내려다보는 사람 그림"><svg class="ac-mark" viewBox="0 0 400 300" preserveAspectRatio="none">__MARK_w3__</svg></div><div class="ac-wb"><span class="ac-st"><i class="ac-c">4</i> 보기</span><h3>손목 · 작은 화면 보기</h3><p>손목 · 소매를 자주 봄</p></div></div>
-    <div class="card" data-b="4" data-replay><div class="ac-pic"><img src="__AC_w4__" alt="빈 의자와 시험지 그림"><svg class="ac-mark" viewBox="0 0 400 300" preserveAspectRatio="none">__MARK_w4__</svg></div><div class="ac-wb"><span class="ac-st"><i class="ac-c">1</i> · <i class="ac-c">4</i> 자리 비움</span><h3>자리 비운 사이 휴대폰</h3><p>돌아와서 갑자기 채워진 답</p></div></div>
-    <div class="card" data-b="5" data-replay><div class="ac-pic"><img src="__AC_w5__" alt="여러 책상 시험지에 같은 자리 표시가 있는 그림"><svg class="ac-mark" viewBox="0 0 400 300" preserveAspectRatio="none">__MARK_w5__</svg></div><div class="ac-wb"><span class="ac-st"><i class="ac-c">2</i> · <i class="ac-c">3</i> · <i class="ac-c">4</i> 밖에서</span><h3>밖에서 풀어 알려 주기</h3><p>여럿이 같은 오답 · 같은 표현</p></div></div>
+<!-- 4 의심이 들 때: 이렇게 해요 (행동 → 방식 연결 카드는 뺐어요) -->
+<section class="slide ac-do4 v3" data-ac-sect="02 · 의심이 들 때" data-e-bg="B" data-fx="v3gen" data-steps="4" data-agenda="1">
+  <div class="hd"><div class="kicker m-k">의심이 들 때</div><h2 class="m-wipe">이렇게 <em>해요</em></h2></div>
+  <div class="ac-do">
+    <div class="card" data-b="1" data-replay><svg class="ac-ic"><use href="#megaphone"/></svg><h3>허용 물품 · 감독 규칙은 미리 알리고 똑같이</h3></div>
+    <div class="card" data-b="2" data-replay><svg class="ac-ic"><use href="#notebook-pen"/></svg><h3>본 사실만 기록해요</h3></div>
+    <div class="card" data-b="3" data-replay><svg class="ac-ic"><use href="#user-x"/></svg><h3>공개적으로 지목하지 않아요</h3></div>
+    <div class="card" data-b="4" data-replay><svg class="ac-ic"><use href="#list-checks"/></svg><h3>학교 절차로 확인해요</h3></div>
   </div>
-  <p class="ac-law" data-b="6"><svg class="ic"><use href="#shield-check"/></svg><span>흔적은 <b>「의심의 근거」일 뿐 증거가 아니에요</b> · 판단과 처리는 학교 절차대로</span></p>
-  <aside class="note">[3~4.5분] 「어떻게들 하는지 갈래만 알아 두시면, 새 방식이 나와도 알아보실 수 있어요. 이름이나 방법은 몰라도 돼요. 다섯 걸음 중 어디냐, 교실에서 무엇이 보이냐만요.」 클릭 1 (①): 「작은 카메라로 문제를 찍는 방식이 있어요. 같은 자세로 문제지를 오래 들고 있거나, 옷매무새를 자꾸 고쳐요.」 클릭 2 (④): 「귀로 답을 듣는 방식. 귀를 자주 만지고, 고개를 기울이고 멈칫해요. 답 쓰는 박자가 들쭉날쭉하기도 해요.」 클릭 3 (④): 「손목이나 작은 화면으로 답을 보는 방식. 손목이나 소매를 자주 봐요.」 클릭 4 (①④): 「자리를 비운 사이 휴대폰을 쓰는 방식. 돌아와서 갑자기 답이 채워져요.」 클릭 5 (②③④): 「밖의 사람이 AI로 풀어 신호로 알려 주는 방식. 여러 학생이 같은 오답, 같은 표현을 쓰거나, 풀이 과정 없이 정답만 있어요.」 클릭 6: 「다만 이건 의심의 근거일 뿐 증거가 아니에요. 버릇일 수도 있어요. 다른 학생 앞에서 지목하지 말고, 본 것만 적고, 판단과 처리는 학교 절차대로요.」 (그림은 자세만 그린 것 · 기기 · 제품 이름, 어디에 숨기는지, 어떻게 연결하는지, 들키지 않는 법은 질문이 나와도 답하지 않아요 → 「그건 몰라도 알아볼 수 있어요」.)</aside>
-</section>
-
-<!-- 5 통신은 못 막아요: 벽 그림 -->
-<section class="slide ac-mid v3" data-ac-sect="02 · LIMIT" data-e-bg="C" data-fx="v3gen" data-steps="3" data-agenda="1">
-  <div class="hd"><div class="kicker m-k"><i class="ac-c">2</i> · <i class="ac-c">3</i> 통신</div><h2 class="m-wipe">통신은 학교가 <em>막을 수 없어요</em></h2></div>
-  <div class="ac-comm">
-    <div class="ac-side ac-left"><span>교실 안 · 선생님 쪽</span><div class="ac-tile ac-t1"><svg class="ic"><use href="#file-text"/></svg><b>문항</b></div><div class="ac-tile ac-t2"><svg class="ic"><use href="#files"/></svg><b>문제지</b></div></div>
-    <div class="ac-side ac-right ac-dim"><span>교실 밖</span><div class="ac-tile ac-t2"><svg class="ic"><use href="#send"/></svg><b>전달</b></div><div class="ac-tile ac-t1"><svg class="ic"><use href="#bot"/></svg><b>AI</b></div></div>
-    <div class="ac-brick"></div>
-    <div class="ac-tower"><svg class="ic"><use href="#radio-tower"/></svg></div>
-    <div class="ac-g" data-b="1" data-replay><svg class="ac-ban" viewBox="0 0 180 180"><circle cx="90" cy="90" r="80"/><line x1="34" y1="34" x2="146" y2="146"/></svg><p class="ac-banl">전파 차단 장비<small>학교가 임의로 못 써요 (전파법)</small></p></div>
-    <div class="ac-g" data-b="2" data-replay><div class="ac-lit"><div class="ac-tile ac-t1"><svg class="ic"><use href="#file-text"/></svg><b>문항</b></div><div class="ac-tile ac-t2"><svg class="ic"><use href="#files"/></svg><b>문제지</b></div><p class="ac-hand">이 둘은 선생님 손에</p></div></div>
-  </div>
-  <p class="ac-take" data-b="3">통신은 못 끊어도, <b>문항과 문제지</b>는 선생님 손에<small>시험 운영 규칙(기기 보관 · 감독 등)은 학교에서 정해요</small></p>
-  <aside class="note">[4.5~5.5분] 「솔직하게 말씀드릴게요. 가운데, 통신은 학교가 막을 수 없어요.」 클릭 1 (벽에 금지 도장): 「전파를 끊는 장비는 학교가 임의로 쓸 수 없어요. 전파법에서 정한 경우가 아니면 안 돼요. 기기를 찾아내는 기술도 선생님이 알 필요 없어요.」 클릭 2 (왼쪽이 켜져요): 「대신 이 둘, 문항과 문제지는 선생님 손에 있어요.」 클릭 3: 「기기 보관이나 감독 같은 시험 운영 규칙은 학교에서 정하니까, 오늘은 선생님이 컴퓨터와 AI로 할 수 있는 것만 볼게요.」 (전파법은 「학교가 임의로 쓸 수 없다」까지만. 조문 번호 · 처벌 숫자는 원문 대조 전이라 말하지 않아요 → ai-cheating-research.md.)</aside>
+  <p class="ac-law"><svg class="ic"><use href="#shield-check"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <aside class="note">[2.5~3.5분] 「혹시 의심이 들 때는 이렇게 해요.」 클릭 1: 「허용 물품과 감독 규칙은 시험 전에 미리 알리고, 모두에게 똑같이 적용해요.」 클릭 2: 「본 사실만 기록해요. 짐작은 적지 않아요.」 클릭 3: 「다른 학생 앞에서 지목하지 않아요.」 클릭 4: 「확인은 학교 절차대로 해요.」 「기기 보관과 감독은 학교 시험 운영 규칙을 따르면 돼요.」</aside>
 </section>
 
 <!-- 6 예방 5가지 (가운데 장) -->
-<section class="slide ac-tips v3 e-paper" data-ac-sect="03 · PREVENT" data-fx="v3gen" data-steps="6" data-agenda="2">
-  <div class="hd"><div class="kicker m-k">내 컴퓨터 · AI로</div><h2 class="m-wipe">선생님이 기술로 할 수 있는 <em>예방 5가지</em></h2></div>
+<section class="slide ac-tips v3 e-paper" data-ac-sect="03 · 할 수 있는 것" data-fx="v3gen" data-steps="6" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">내 컴퓨터로</div><h2 class="m-wipe">평가 준비, <em>이렇게 도와요</em></h2></div>
   <div class="ac-five2">
-    <div class="card" data-b="1" data-replay><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag"><i class="ac-c">3</i> 막기</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><svg class="ac-sk" viewBox="0 0 80 80"><path pathLength="1" d="M6 74 L74 6"/></svg><span class="ac-fix">고쳐요</span></div><h3>AI에 먼저 풀려 보기</h3><p class="ac-why"><small>줄어드는 것</small>AI가 바로 푸는 문항</p></div>
-    <div class="card" data-b="2" data-replay><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag"><i class="ac-c">3</i> 막기</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>우리 반 실험 · 활동</small></div><h3>우리 수업 맥락 넣기</h3><p class="ac-why"><small>줄어드는 것</small>AI가 알 수 있는 답</p></div>
-    <div class="card" data-b="3" data-replay><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag"><i class="ac-c">5</i> 막기</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A · B형 섞기</h3><p class="ac-why"><small>줄어드는 것</small>밖에서 온 답이 맞을 일</p></div>
-    <div class="card" data-b="4" data-replay><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">유출 막기</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">No.12</span></div><h3>번호 · 워터마크</h3><p class="ac-why"><small>줄어드는 것</small>문제 유출</p></div>
-    <div class="card" data-b="5" data-replay><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">다시 보기</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>시험 뒤 답안 패턴</h3><p class="ac-why"><small>줄어드는 것</small>놓치는 이상 신호</p></div>
+    <div class="card" data-b="1" data-replay><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><span class="ac-fix">참고만</span></div><h3>AI 풀이도 참고해 점검하기</h3><p class="ac-why"><small>그러면</small>목표 · 난이도를 다시 봐요</p></div>
+    <div class="card" data-b="2" data-replay><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>기록표 · 자료 제시</small></div><h3>자료를 주고 과정 묻기</h3><p class="ac-why"><small>그러면</small>근거와 과정을 설명하게 해요</p></div>
+    <div class="card" data-b="3" data-replay><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A형 B형 (순서만)</h3><p class="ac-why"><small>그러면</small>옮기기 어렵게 · 정답은 직접 확인</p></div>
+    <div class="card" data-b="4" data-replay><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">배부</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">A · 3쪽</span></div><h3>쪽 번호 · 형 표시</h3><p class="ac-why"><small>그러면</small>배부 · 누락을 확인해요</p></div>
+    <div class="card" data-b="5" data-replay><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">시험 뒤</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>같은 오답 살펴보기</h3><p class="ac-why"><small>그러면</small>흔한 오개념일 수도 · 겹침만으로 판단 안 해요</p></div>
   </div>
-  <p class="ac-law" data-b="6"><svg class="ic"><use href="#scale"/></svg><span>통신은 <b>학교가 막을 수 없어요</b>(전파법) · 시험 운영 규칙(기기 보관 · 감독 등)은 학교에서 정해요</span></p>
-  <aside class="note">[5.5~8분 · 오늘의 가운데 장] 「이제 가장 중요한 장이에요. 선생님 컴퓨터와 AI로 내일부터 할 수 있는 다섯 가지예요.」 클릭 1 (로봇이 ✓ → 줄 긋고 고침): 「하나, 시험 전에 내 문항을 AI에 먼저 풀려 보세요. 바로 맞히는 문항은 고쳐요.」 클릭 2 (퍼즐 조각): 「둘, 우리 수업 맥락을 넣어요. 우리 반이 한 실험, 활동, 자료를 바탕으로 한 문항은 AI가 알 수 없어요.」 클릭 3 (A · B가 자리를 바꿔요): 「셋, A · B형을 AI로 섞어요. 문항과 보기 순서만 바꿔도 밖에서 온 답은 안 맞아요. 정답표도 같이 바뀌었는지는 꼭 직접 확인하세요.」 클릭 4 (번호 도장): 「넷, 문제지에 장마다 번호나 옅은 워터마크를 넣어요. 유출되면 어느 장인지 알 수 있다는 것만으로도 예방이 돼요.」 클릭 5 (표에서 같은 칸이 빨개져요): 「다섯, 시험 뒤에 답안 패턴을 봐요. 같은 오답, 같은 표현이 겹치면 다시 확인해요. AI에게 표로 정리시킬 땐 학생 이름 대신 번호로요.」 클릭 6: 「통신은 학교가 막을 수 없고, 시험 운영 규칙은 학교에서 정해요. 그 사이에서 선생님이 할 수 있는 건 이 다섯 가지예요.」</aside>
+  <p class="ac-law" data-b="6"><svg class="ic"><use href="#scale"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <aside class="note">[3.5~5.5분 · 가장 중요한 장] 「선생님이 컴퓨터로 평가 준비를 도울 수 있는 다섯 가지예요. 모두 보조책이에요.」 클릭 1: 「AI 풀이도 참고해서 문항을 점검해요. AI가 맞힌다고 나쁜 문항은 아니에요. 목표와 난이도를 다시 보는 데 써요.」 클릭 2: 「필요한 기록표나 자료를 주고, 근거와 과정을 설명하게 해요.」 클릭 3: 「A형 B형은 문항과 배점은 같게, 순서만 바꿔요. 그대로 옮기기 어렵게 하는 보조책이고, 정답은 꼭 직접 확인해요.」 클릭 4: 「쪽 번호와 A · B형 표시를 넣으면 배부하고 걷을 때 빠진 게 없는지 확인하기 쉬워요.」 클릭 5: 「시험 뒤에 같은 오답이 많이 겹치면 살펴봐요. 흔한 오개념일 수도 있어요. 겹침만으로 판단하지 않아요.」 클릭 6: 「기기 보관과 감독은 학교 시험 운영 규칙을 따르면 돼요.」</aside>
 </section>
 
-<!-- 7 미리 풀려 보기 · 수업 맥락: 대화 말풍선 -->
-<section class="slide ac-try v3" data-ac-sect="03 · PREVENT" data-e-bg="B" data-fx="v3gen" data-steps="3" data-agenda="2">
-  <div class="hd"><div class="kicker m-k">예방 1 · 2</div><h2 class="m-wipe">AI가 <em>바로 맞히는</em> 문항은 고쳐요</h2></div>
+<!-- 7 AI 풀이 참고 · 자료 주고 과정 묻기: 말풍선 -->
+<section class="slide ac-try v3" data-ac-sect="03 · 할 수 있는 것" data-e-bg="B" data-fx="v3gen" data-steps="3" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">1 · 2번</div><h2 class="m-wipe">AI 풀이도 <em>참고해</em> 점검해요</h2></div>
   <div class="ac-chats">
-    <div class="ac-chat" data-b="1" data-replay><span class="ac-tag">흔한 문항 (지어낸 예시)</span>
+    <div class="ac-chat" data-b="1" data-replay><span class="ac-tag">흔한 문제 (지어낸 예시)</span>
       <div class="ac-me"><span class="l">「광합성에 필요한 세 가지를</span><span class="l l2">쓰시오.」</span></div>
       <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-bad"><svg class="ic"><use href="#circle-check"/></svg>몇 초 만에 정답</span></div></div></div>
-    <div class="ac-chat ac-ctx" data-b="2" data-replay><span class="ac-tag">우리 수업 맥락 문항 (지어낸 예시)</span>
-      <div class="ac-me"><span class="l">「지난주 우리 반 실험에서 2모둠</span><span class="l l2">콩나물만 노랗게 자란 까닭을,</span><span class="l l3">그날 기록표의 조건으로 쓰시오.」</span></div>
-      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#circle-x"/></svg>그날 기록은 몰라요</span></div></div></div>
+    <div class="ac-chat ac-ctx" data-b="2" data-replay><span class="ac-tag">자료를 주고 과정 묻기 (지어낸 예시)</span>
+      <div class="ac-me"><span class="l">「아래 기록표를 보고, 2모둠</span><span class="l l2">콩나물만 노랗게 자란 까닭을</span><span class="l l3">근거를 들어 설명하시오.」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#user-check"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#clipboard-check"/></svg>근거 · 과정을 봐요</span></div></div></div>
   </div>
-  <p class="ac-take" data-b="3">만들고 나서 <b>한 번 넣어 보기</b><small>실제 시험 문항은 학교에서 허용한 도구로만 · 넣는 것 자체가 유출이 되지 않게</small></p>
-  <aside class="note">[8~9분] 클릭 1 (문항이 쳐지고 → 로봇 점 세 개 → 답): 「이런 흔한 문항은 AI가 몇 초 만에 맞혀요. 교과서에 다 있으니까요.」 클릭 2: 「그런데 우리 반이 지난주에 한 실험, 그날 기록표를 바탕으로 물으면 AI는 그날을 몰라요. 수업에 온 학생만 풀 수 있어요.」 클릭 3: 「문항을 만들고 나서 한 번 넣어 보세요. 다만 실제 시험 문항은 학교에서 허용한 도구로만 넣으세요. 넣는 것 자체가 유출이 될 수 있어요.」 <b>(선택 시연 · 3분)</b> 지어낸 예시 문항만 써요 (실제 시험 문항 금지). ChatGPT 채팅에 왼쪽 문항을 붙여 넣어 → 바로 답이 나오는 걸 보여 주고, 오른쪽 문항을 붙여 넣어 → 「기록표가 없으면 알 수 없다」거나 일반적인 답만 나오는 걸 보여 줘요. 답이 그럴듯하게 나와도 「우리 반 기록과 맞는지는 AI가 모르죠」로 정리. 인터넷이 안 되면 말로만.</aside>
+  <p class="ac-take" data-b="3">AI가 맞힌다고 <b>나쁜 문항은 아니에요</b><small>목표 · 난이도 · 설명 요구를 다시 보는 데 써요 · 오늘은 지어낸 예시로만</small></p>
+  <aside class="note">[5.5~6.5분] 클릭 1: 「이런 흔한 문제는 AI가 몇 초 만에 맞혀요. 그렇다고 나쁜 문항은 아니에요.」 클릭 2: 「대신 필요한 기록표나 자료를 주고, 근거와 과정을 설명하게 하면 학생이 어떻게 생각했는지 볼 수 있어요.」 클릭 3: 「AI 풀이는 문항의 목표와 난이도를 다시 보는 참고로만 써요.」 <b>(선택 시연 · 2분)</b> 지어낸 예시 문제만 써요. 채팅 창에 왼쪽 문제를 붙여 넣어 바로 답이 나오는 걸 보여 주고, 「그래서 이 문항이 무엇을 보려는지 다시 생각해 봐요」로 정리. 실제 시험 문제는 넣지 않아요.</aside>
 </section>
 
-<!-- 8 섞기 · 번호 · 답안 패턴: 부탁 말풍선 -->
-<section class="slide ac-help v3" data-ac-sect="03 · PREVENT" data-e-bg="C" data-fx="v3gen" data-steps="4" data-agenda="2">
-  <div class="hd"><div class="kicker m-k">예방 3 · 4 · 5</div><h2 class="m-wipe">AI에게 <em>이렇게</em> 부탁해요</h2></div>
+<!-- 8 A · B형 · 쪽 번호 · 같은 오답: 부탁 말풍선 (가상 자료로만) -->
+<section class="slide ac-help v3" data-ac-sect="03 · 할 수 있는 것" data-e-bg="C" data-fx="v3gen" data-steps="4" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">3 · 4 · 5번</div><h2 class="m-wipe">AI한테 <em>이렇게</em> 말하면 돼요</h2></div>
   <div class="ac-chats ac-chats3">
-    <div class="ac-chat" data-b="1" data-replay><h3><svg class="ic"><use href="#shuffle"/></svg>A · B형</h3>
-      <div class="ac-me"><span class="l">「문항 · 보기 순서를 섞어</span><span class="l l2">B형을 만들고 정답표도</span><span class="l l3">같이 바꿔 줘」</span></div>
-      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#files"/></svg>B형 · 정답표</span></div></div></div>
-    <div class="ac-chat" data-b="2" data-replay><h3><svg class="ic"><use href="#hash"/></svg>번호 · 워터마크</h3>
-      <div class="ac-me"><span class="l">「각 장 아래에 1부터 30까지</span><span class="l l2">번호를 옅게 넣어 줘」</span></div>
-      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#hash"/></svg>No.1 ~ No.30</span></div></div></div>
-    <div class="ac-chat" data-b="3" data-replay><h3><svg class="ic"><use href="#table"/></svg>답안 패턴</h3>
-      <div class="ac-me"><span class="l">「번호별 답을 표로 정리하고,</span><span class="l l2">같은 오답이 겹치는</span><span class="l l3">번호를 찾아 줘」</span></div>
+    <div class="ac-chat" data-b="1" data-replay><h3><svg class="ic"><use href="#shuffle"/></svg>A형 B형</h3>
+      <div class="ac-me"><span class="l">「문항과 배점은 그대로 두고</span><span class="l l2">순서만 바꾼 B형과</span><span class="l l3">정답 대응표를 만들어 줘」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#files"/></svg>B형 · 정답 대응표</span></div></div></div>
+    <div class="ac-chat" data-b="2" data-replay><h3><svg class="ic"><use href="#hash"/></svg>쪽 번호 · 형 표시</h3>
+      <div class="ac-me"><span class="l">「모든 쪽 아래에 쪽 번호와</span><span class="l l2">A형 · B형 표시를 넣어 줘」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#hash"/></svg>A형 1 ~ 4쪽</span></div></div></div>
+    <div class="ac-chat" data-b="3" data-replay><h3><svg class="ic"><use href="#table"/></svg>같은 오답 정리</h3>
+      <div class="ac-me"><span class="l">「가상 학생별 · 문항별 답을</span><span class="l l2">표로 정리하고, 많이 나온</span><span class="l l3">오답을 묶어 줘」</span></div>
       <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><span class="ac-mini"><i></i><i></i><i class="h"></i><i></i><i></i><i></i><i></i><i class="h"></i><i></i><i></i></span>3번 · 8번</span></div></div></div>
   </div>
-  <p class="ac-take" data-b="4">정답표는 <b>직접 확인</b> · 학생 이름 대신 <b>번호</b> · 겹침은 증거가 아니에요</p>
-  <aside class="note">[9~10.5분] 「나머지 셋은 AI에게 이렇게 부탁하면 돼요. 작업 모드라면 파일로 바로 받아요.」 클릭 1: 「A · B형: 문항 순서와 보기 순서를 섞어 B형을 만들고 정답표도 같이 바꿔 달라고 해요. 정답표는 꼭 직접 맞춰 보세요. AI가 틀릴 수 있어요.」 클릭 2: 「번호 · 워터마크: 각 장 아래에 번호를 옅게 넣어 달라고 해요. 유출되면 어느 장인지 알 수 있어요.」 클릭 3: 「답안 패턴: 번호별 답을 표로 정리하고 같은 오답이 겹치는 번호를 찾아 달라고 해요. 학생 이름은 빼고 번호로요.」 클릭 4: 「겹친다고 부정행위는 아니에요. 같이 공부한 친구라 그럴 수도 있어요. 다시 확인할 신호일 뿐이고, 판단과 처리는 학교 절차대로요.」 (학생 답안은 개인정보 · 학교에서 허용한 도구로. 표 정리는 teacher-data 스킬처럼 원본을 AI가 읽지 않게 하는 방법도 있어요.)</aside>
+  <p class="ac-take" data-b="4">오늘은 <b>가상 문제 · 가상 답안</b>으로만<small>실제 시험 문제와 답안은 학교가 허용한 도구와 처리 기준을 확인한 뒤</small></p>
+  <aside class="note">[6.5~7.5분] 「나머지 셋은 AI한테 이렇게 말하면 돼요.」 클릭 1: 「문항과 배점은 그대로 두고 순서만 바꾼 B형과 정답 대응표를 만들어 줘. 정답은 꼭 직접 확인해요.」 클릭 2: 「모든 쪽 아래에 쪽 번호와 A형 · B형 표시를 넣어 줘. 배부하고 걷을 때 빠진 게 없는지 보기 쉬워요.」 클릭 3: 「가상 학생별 · 문항별 답을 표로 정리하고 많이 나온 오답을 묶어 줘. 흔한 오개념을 찾는 데도 좋아요.」 클릭 4: 「오늘 연습은 가상 문제, 가상 답안으로만 해요. 실제 시험 문제와 답안은 학교가 허용한 도구와 처리 기준을 확인한 뒤에요.」</aside>
 </section>
 
 <!-- 9 한 장으로 다시 (마무리) -->
-<section class="slide ac-tips sum5 v3 e-paper" data-ac-sect="04 · WRAP-UP" data-fx="v3gen" data-steps="0" data-agenda="3">
-  <div class="hd"><div class="kicker m-k">한 장으로 다시</div><h2 class="m-wipe">기기는 달라도, <em>흐름은 같아요</em></h2></div>
+<section class="slide ac-tips sum5 v3 e-paper" data-ac-sect="04 · 정리" data-fx="v3gen" data-steps="0" data-agenda="3">
+  <div class="hd"><div class="kicker m-k">한 장으로 다시</div><h2 class="m-wipe">방법은 달라도, <em>순서는 같아요</em></h2></div>
   <div class="ac-five2">
-    <div class="card"><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag"><i class="ac-c">3</i> 막기</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><svg class="ac-sk" viewBox="0 0 80 80"><path pathLength="1" d="M6 74 L74 6"/></svg><span class="ac-fix">고쳐요</span></div><h3>AI에 먼저 풀려 보기</h3><p class="ac-why"><small>줄어드는 것</small>AI가 바로 푸는 문항</p></div>
-    <div class="card"><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag"><i class="ac-c">3</i> 막기</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>우리 반 실험 · 활동</small></div><h3>우리 수업 맥락 넣기</h3><p class="ac-why"><small>줄어드는 것</small>AI가 알 수 있는 답</p></div>
-    <div class="card"><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag"><i class="ac-c">5</i> 막기</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A · B형 섞기</h3><p class="ac-why"><small>줄어드는 것</small>밖에서 온 답이 맞을 일</p></div>
-    <div class="card"><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">유출 막기</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">No.12</span></div><h3>번호 · 워터마크</h3><p class="ac-why"><small>줄어드는 것</small>문제 유출</p></div>
-    <div class="card"><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">다시 보기</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>시험 뒤 답안 패턴</h3><p class="ac-why"><small>줄어드는 것</small>놓치는 이상 신호</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><span class="ac-fix">참고만</span></div><h3>AI 풀이도 참고해 점검하기</h3><p class="ac-why"><small>그러면</small>목표 · 난이도를 다시 봐요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>기록표 · 자료 제시</small></div><h3>자료를 주고 과정 묻기</h3><p class="ac-why"><small>그러면</small>근거와 과정을 설명하게 해요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A형 B형 (순서만)</h3><p class="ac-why"><small>그러면</small>옮기기 어렵게 · 정답은 직접 확인</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">배부</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">A · 3쪽</span></div><h3>쪽 번호 · 형 표시</h3><p class="ac-why"><small>그러면</small>배부 · 누락을 확인해요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">시험 뒤</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>같은 오답 살펴보기</h3><p class="ac-why"><small>그러면</small>흔한 오개념일 수도 · 겹침만으로 판단 안 해요</p></div>
   </div>
-  <p class="ac-law"><svg class="ic"><use href="#scale"/></svg><span>통신은 <b>학교가 막을 수 없어요</b>(전파법) · 시험 운영 규칙(기기 보관 · 감독 등)은 학교에서 정해요</span></p>
-  <p class="ac-law ac-law2"><svg class="ic"><use href="#shield-check"/></svg><span>실제 문항 · 학생 답안은 <b>학교에서 허용한 도구</b>로 · 이름 대신 번호</span></p>
-  <aside class="note">[10.5~11분] 「한 장으로 다시 볼게요. 이 장은 사진 찍어 가셔도 돼요.」 다섯 가지를 한 줄씩만 다시 읽어요. 「기기는 계속 바뀌어도 흐름은 같아요. 통신은 못 끊어도, 문항과 문제지는 선생님 손에 있어요. 고맙습니다.」</aside>
+  <p class="ac-law"><svg class="ic"><use href="#scale"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <p class="ac-law ac-law2"><svg class="ic"><use href="#shield-check"/></svg><span>오늘은 <b>가상 문제 · 가상 답안</b>으로만 · 같은 오답만으로 판단하지 않아요</span></p>
+  <aside class="note">[7.5~8분] 「한 장으로 다시 볼게요. 사진 찍어 가셔도 돼요.」 다섯 가지를 한 줄씩: 「AI 풀이도 참고해 점검하기, 자료를 주고 과정 묻기, A형 B형은 순서만, 쪽 번호와 형 표시, 같은 오답 살펴보기.」 「기기 보관과 감독은 학교 규칙대로, 평가 준비는 우리가 함께. 고맙습니다.」</aside>
 </section>
 
 <script>/* 위 줄 구간 이름: 엔진의 SECT(메인 덱용) 대신 이 덱의 data-ac-sect를 써요 (엔진이 .dtop을 만든 뒤에 바꿔요) */
