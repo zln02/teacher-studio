@@ -200,12 +200,16 @@ def coverage(request: str, facts: dict) -> list[dict]:
              "options": opts, "recommended": rec} for k, lab, kn, val, q, opts, rec in rows]
 
 
+OUTPUT_WORDS = re.compile(r"웹페이지|페이지|홈페이지|안내문|가정통신문|통신문|공문|기안문|일정표|계획서|보고서|신청서|동의서|한글 파일|hwp|워드|PDF|pdf|계산기|프로그램|앱|도우미|시뮬레이션")
+
+
 def is_vague(request: str, facts: dict, cov: list[dict]) -> bool:
     if facts["quick"]:
         return False
     known = {c["key"] for c in cov if c["status"] == "known"}
     if not facts["kind"]:
-        return True
+        # a named document / page with a topic is clear (「시설 안전 점검 일정 안내문」「제주 여행 일정표 웹페이지」): not a pitch round
+        return not (OUTPUT_WORDS.search(request or "") and len(topic_left(request)) >= 6)
     if facts["kind"] == "plan":
         return len(topic_left(request)) < 4
     if "purpose" not in known:
@@ -327,6 +331,26 @@ ESSENTIAL = (("audience", "누가 보나요?"), ("purpose", "어디에 쓰시나
 
 
 USE_SAID = re.compile(r"(수업|회의|보고|행사|연수|모임|여행|발표|조회|총회|상담|설명회)\s*(에|용|때|시간|에서)|쓸\s|쓰려고|쓸 거")
+
+
+# facts only the user knows that change the result (the fair comparison 2026-11-22: dates, the number of 모둠 were invented or assumed)
+DATE_SAID = re.compile(r"\d{1,2}\s*월\s*\d{0,2}|(?<!박 )(?<!박)\d{1,2}\s*일(?!\s*(?:정|간|차))|\d{4}\s*[.-]\s*\d|오늘|내일|모레|[월화수목금토일]요일|\d{1,2}\s*[./]\s*\d{1,2}")
+NEEDS_DATE = re.compile(r"안내문|가정통신문|통신문|공문|일정|행사|점검|설명회|총회|초대|모집|여행|소풍|체험|대회|발표회")
+TEAMS_WORD = re.compile(r"모둠|팀\s*(?:대항|대결|전)|대항전|대항|대결")
+TEAMS_SAID = re.compile(r"\d+\s*(?:개\s*)?(?:모둠|팀|조)|(?:모둠|팀|조)\s*\d+|[두세네다섯여섯]\s*(?:모둠|팀)|개인전|혼자")
+
+
+def fact_questions(request: str) -> list[dict]:
+    """The one or two facts of THIS request the user knows and we would otherwise invent: the date of a notice / event / trip,
+    the number of 모둠 for a team game. Asked only when the request does not say them."""
+    req = request or ""
+    out = []
+    if TEAMS_WORD.search(req) and not TEAMS_SAID.search(req):
+        out.append({"key": "teams", "question": "모둠이 몇 개인가요?", "options": ["4모둠", "5모둠", "6모둠"], "recommended": "6모둠"})
+    if NEEDS_DATE.search(req) and not DATE_SAID.search(req):
+        out.append({"key": "date", "question": "날짜가 언제인가요?", "options": ["날짜 알려 드릴게요", "아직 몰라요(예시 날짜로)"],
+                    "recommended": "아직 몰라요(예시 날짜로)"})
+    return out
 
 
 def essential_questions(cov: list[dict], request: str = "") -> list[dict]:
@@ -465,13 +489,21 @@ def build(request: str, prefs: dict | None = None, seed: int = 0, palette: dict 
     vague = is_vague(request, facts, cov)
     cs = cards(request, facts, seed, palette)
     route = "co-plan" if facts["kind"] == "plan" else ("make" if facts["kind"] else "unknown")
-    essentials = essential_questions(cov, request) if facts["quick"] else []
-    mode = ("ask_then_build" if essentials else "build_now") if facts["quick"] else ("build_now" if not vague else "direction")
+    # 먼저 묻기: a clear or 「알아서」 request still gets at most two questions in ONE message, the facts only the user knows first
+    # (date, number of 모둠), then who watches / where it is used (「알아서」: both; a clear request: who watches only)
+    if facts["quick"] or not vague:
+        base = essential_questions(cov, request)
+        if not facts["quick"]:
+            base = [q for q in base if q["key"] == "audience"]
+        essentials = (fact_questions(request) + base)[:2]
+    else:
+        essentials = []
+    mode = ("ask_then_build" if essentials else "build_now") if (facts["quick"] or not vague) else "direction"
     return {
         "request": request, "inferred": facts, "route_hint": route, "vague": vague, "quick": facts["quick"], "domain": domain(request, facts)[0],
         "mode": mode,
         "coverage": cov, "open": [c["key"] for c in cov if c["status"] == "open"],
-        "question_budget": len(essentials) if facts["quick"] else (0 if not vague else 5),
+        "question_budget": len(essentials) if (facts["quick"] or not vague) else 5,
         "quick_questions": essentials, "quick_ask": quick_ask(essentials),
         "ask_prefs_in_same_round": not prefs,
         "own_palette": bool(palette), "pitch_slots": pitch_slots(), "cards": cs, "text_fallback": text_fallback(cs),
