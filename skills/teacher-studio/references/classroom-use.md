@@ -6,8 +6,8 @@ Runs at stage 6 (배포) of `pipeline.md`, after the file passed its checker. Na
 - Teacher signals: 수업, 학생, 학급, 반, 교과/과목, 학년, 가정통신문, 학부모, 출구 티켓, or `prefs.py show` has a school level.
 - Otherwise general: office worker, club, family, shop owner, creator. Unsure -> general wording (it reads fine for teachers too).
 
-## 2. One question at the end (one only, with a recommended answer)
-Skip it when the request already says how it will be used (「TV로 띄울 거야」 -> tv) or has 「알아서」「바로」「묻지 말고」 (-> default, no question).
+## 2. The closing menu (ALWAYS, even after 「알아서」; owner rule 2026-11-23)
+First make the recommended way (the use the request said, else by result: deck/game/tool -> TV·화면, 안내문·가정통신문 -> 단톡방·메신저 PDF, data -> 고쳐 쓸 파일; 「알아서」 -> `--use auto`). Then end with the menu `deliver.py` prints (`delivery_menu`): 「✅ 다 만들었어요! 어떻게 받으시겠어요? (추천: …)」 ① TV·화면 ② 단톡방·메신저 ③ 학생 태블릿 ④ 인쇄·PDF ⑤ 고쳐 쓸 파일(한글·PPT) — the recommended one marked 「이미 만들어 뒀어요」. A number -> make that one (`--use tv|share|tablet|print|archive`); ②③ go through the privacy check first. The longer lists below stay for when the user asks for more ways.
 - Teacher: 「어떻게 쓰실 건가요? (추천: 교실 TV로 띄우기)」 1 교실 TV·프로젝터 · 2 학생 태블릿·폰에 나눠 주기 · 3 인쇄 · 4 학급 홈페이지·패들렛·클래스룸에 올리기 · 5 가정에 보내기 · 6 다음에 고칠 원본으로 보관
 - General: 「어떻게 쓰실 건가요? (추천: 화면에 띄우기)」 1 회의실 화면·발표 · 2 카톡·메일로 공유 · 3 인쇄 · 4 SNS·블로그·홈페이지에 올리기 · 5 팀 공유 폴더(드라이브) · 6 보관·나중에 수정
 - 「네」 = the recommended one. 「알아서」 = default without asking: TV/screen + a print PDF (`--use auto`).

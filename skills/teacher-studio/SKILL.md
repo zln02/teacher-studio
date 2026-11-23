@@ -43,6 +43,7 @@ Run scripts by the short command name: `py` on Windows (no `py`: `python`), `pyt
 - Never default to an AI-company house look (cream + terracotta + serif; white + blue-purple gradient + emoji hero). Checkers WARN on it. The user's own palette always wins.
 
 ## Decision 3 · HOW does the first reply end? (first line that matches)
+Simple page or short text, nothing heavy -> light path (`references/light-path.md`).
 | # | The message | Do | Questions |
 |---|---|---|---|
 | 1 | has 「알아서」「바로」「그냥 해 줘」「묻지 말고」 anywhere (any route, even if the rest is vague), or route = bare | `none`: ask only who watches / where it is used if not said (`direction.py` `quick_ask`, one message, 추천 each; no 기획·콘티·프롬프트), then straight to the finished file. One line of assumptions, the result, then 2 tweaks written as statements (「글자 크기나 분위기는 말씀만 하시면 바꿔요」). No options, pitches, 콘티 stop or 「이대로 쓸까요?」. It skips the questions, not the tools: still the skill's script and checker | <= 2 essentials (one message), else 0 |
@@ -55,7 +56,7 @@ Run scripts by the short command name: `py` on Windows (no `py`: `python`), `pyt
 | 8 | clear game, video, 10+ slide deck or report (「중2 과학 빛과 파동 방탈출」「30초 우리 반 소개 영상」) | `storyboard`: no pitches. Show the 콘티 (game: question table + screen flow; video: shot list with seconds; deck: slide list) and STOP there. A game or video is never built in the first reply unless line 1 matched | <= 1 |
 | 9 | anything else clear (web app, short deck, document) | `build`: first working file, then 「이대로 쓸까요, 한 군데만 고칠까요?」 | <= 1 |
 Always ask mid-way, even on 「알아서」: before anything irreversible or outward (send, post, publish, delete), on a legal/privacy issue, when the user's own material is needed, after the checker failed twice. Stages and artifacts: `references/pipeline.md`.
-End of every making job = 활용·전달 단계 (teachers: 「수업 활용」): `references/classroom-use.md` + `scripts/deliver.py FILE --use <use>`. Use already said or implied (「TV로 띄울 거야」「단톡방에 올릴 거야」「태블릿으로 풀게 할 거야」 -> tv/share/tablet files, tablet = HTML (+ QR only for a link the user gives); 「나중에 내가 고칠 거야」 -> archive: editable PPTX/DOCX/HWPX + spec) -> make it, no question; 「알아서」 -> TV/screen + PDF, no question; else ONE use question with 추천 at the very end.
+End of every making job = 활용·전달 (teachers: 「수업 활용」, `references/classroom-use.md`): make the recommended way first (`scripts/deliver.py FILE --use <use>`; said use wins; 「알아서」 -> `--use auto`), then ALWAYS close with its menu 「✅ 다 만들었어요! 어떻게 받으시겠어요? (추천: …)」 ① TV·화면 ② 단톡방·메신저 ③ 학생 태블릿 ④ 인쇄·PDF ⑤ 고쳐 쓸 파일(한글·PPT), privacy first for ②③.
 
 Content quality first: before writing any content read references/content-writing.md and the matching recipe — lesson references/content-lesson.md · promo references/content-promo.md · plan/research references/content-plan.md · web app references/content-webapp.md; pass the expert gate in shared/content/CONTENT-RULES.md.
 

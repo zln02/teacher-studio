@@ -209,6 +209,34 @@ DEFAULT_USE = {"teacher": "tv", "general": "screen"}  # 「알아서」: screen 
 OUTWARD = {"tablet", "lms", "home"}  # base uses that leave this computer -> the privacy check comes first
 
 
+# End-of-job delivery menu (owner rule 2026-11-23): ALWAYS shown, even after 「알아서」. The recommended way is made already;
+# the others are one word away. Sharing ways (②③) keep the privacy check first.
+MENU = [("tv", "TV·화면"), ("share", "단톡방·메신저"), ("tablet", "학생 태블릿"), ("print", "인쇄·PDF"), ("archive", "고쳐 쓸 파일(한글·PPT)")]
+MENU_NUM = "①②③④⑤"
+MENU_USE = {"tv": "tv", "share": "share", "tablet": "tablet", "print": "print", "archive": "archive"}
+
+
+def recommend_use(kind: str, audience: str = "teacher") -> str:
+    """deck / game / tool / video -> TV·화면; 안내문·문서 -> 단톡방·메신저 (a PDF to send); data -> 고쳐 쓸 파일."""
+    return {"doc": "share", "data": "archive"}.get(kind, "tv")
+
+
+def delivery_menu(kind: str, made: str = "", audience: str = "teacher") -> str:
+    """The one closing message: 「✅ 다 만들었어요! 어떻게 받으시겠어요? (추천: …)」 + ① … ⑤, the recommended one marked as made."""
+    rec = made if made in dict(MENU) else recommend_use(kind, audience)
+    if rec in ("screen",):
+        rec = "tv"
+    labels = dict(MENU)
+    items = []
+    for i, (k, lab) in enumerate(MENU):
+        tail = " ← 이미 만들어 뒀어요" if (k == rec and made) else ""
+        if k == "tablet" and audience != "teacher":
+            lab = "휴대폰·태블릿"
+        items.append(f"{MENU_NUM[i]} {lab}{tail}")
+    return (f"✅ 다 만들었어요! 어떻게 받으시겠어요? (추천: {labels[rec]})\n" + "  ".join(items)
+            + "\n번호만 말씀하시면 바로 그 모양으로 드려요. 밖으로 보내는 ②③은 개인정보부터 함께 확인해요.")
+
+
 def audience_of(use: str, audience: str = "auto", prefs: Path | None = None) -> str:
     """teacher | general. Never asked: the use name decides, else saved prefs (school level) say teacher."""
     if audience in ("teacher", "general"):
@@ -583,20 +611,27 @@ def main() -> int:
     ap.add_argument("--spec", type=Path, help="deck spec.json (archive: editable PPTX)")
     ap.add_argument("--yes", action="store_true", help="the user agreed to install a small helper (openpyxl / python-pptx)")
     ap.add_argument("--dry-run", action="store_true", help="say what would be made; make nothing")
+    ap.add_argument("--menu", action="store_true", help="only print the closing delivery menu (the recommended way is made by --use)")
     a = ap.parse_args()
     p = Path(a.file)
     if not p.is_file():
         print("파일을 찾을 수 없어요: %s" % a.file)
         return 1
+    if a.menu:
+        print(delivery_menu(kind_of(p, a.kind), "", audience_of("print", a.audience)))
+        return 0
     if not a.use:
         print(pack(p, a.url, Path(a.qr) if a.qr else None, Path(a.used) if a.used else None, a.since))
+        print(delivery_menu(kind_of(p, a.kind), "", audience_of("print", a.audience)))
         return 0
     use = DEFAULT_USE[audience_of("print", a.audience)] if a.use == "auto" else a.use
     out = use_pack(p, use, a.audience, a.kind, a.grade, a.spec, a.yes, a.dry_run, a.url, Path(a.qr) if a.qr else None)
     if a.use == "auto":  # 「알아서」 = TV/screen + a PDF for printing
         r = make_for_use("print", p, a.spec, a.yes, a.dry_run)
         out += "\n" + "\n".join(["인쇄용 PDF: %s" % f for f in r["made"]] + ["  ! " + n for n in r["notes"]])
+    made = {"screen": "tv", "home": "share", "lms": "share", "sns": "share", "drive": "share"}.get(use, use)
     print(out)
+    print(delivery_menu(kind_of(p, a.kind), made, audience_of(use, a.audience)))
     return 0
 
 
