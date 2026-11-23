@@ -81,8 +81,76 @@ def gov_date(s) -> str:
     return f"{y}. {int(mo)}. {int(d)}."
 
 
+def _txt(v) -> str:
+    """A list / tuple given where one string was expected becomes its lines, never a Python repr such as "['a', 'b']"."""
+    if isinstance(v, (list, tuple)):
+        return "\n".join(_txt(x) for x in v)
+    if isinstance(v, dict):
+        return " ".join(_txt(x) for x in v.values())
+    return "" if v is None else str(v)
+
+
 def P(text, style="body", align="left", indent=0.0, hang="", **kw) -> dict:
-    return {"t": "p", "text": str(text), "style": style, "align": align, "indent": indent, "hang": hang, **kw}
+    return {"t": "p", "text": _txt(text), "style": style, "align": align, "indent": indent, "hang": hang, **kw}
+
+
+# what the builder could not place (model["meta"]["issues"]): the gate FAILs on it instead of shipping a silently shorter file
+_ISSUES: list = []
+SECTION_HEAD = ("h", "heading", "title", "name")
+SECTION_TEXT = ("body", "items", "bullets", "points", "list", "content", "text", "p", "lines")
+SECTION_EXTRA = ("table", "note", "box", "notes")
+NUM_PREFIX = re.compile(r"^\s*(?:\d{1,2}|[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+|[가-하])\s*[.)]\s+")
+
+
+def strip_number(h) -> str:
+    """「1. 일정」 given as a heading: the builder numbers it, so its own number goes (no 「1. 1. 일정」)."""
+    return NUM_PREFIX.sub("", _txt(h), count=1)
+
+
+def _as_table(t) -> dict:
+    if isinstance(t, dict):
+        return {"table": t}
+    rows = [r if isinstance(r, list) else [r] for r in (t or [])]
+    if rows and len(rows) > 1 and all(isinstance(c, str) for c in rows[0]):
+        return {"table": {"columns": rows[0], "rows": rows[1:]}}
+    return {"table": {"rows": rows}}
+
+
+def body_of(d: dict, where: str = "") -> list:
+    """The content of a section (or of the whole spec) whatever key the writer used: body / items / bullets / text / table / note ...
+    Unknown keys are reported (meta.issues), never dropped in silence."""
+    out: list = []
+    for k in SECTION_TEXT:
+        v = d.get(k)
+        if v is None or v == "" or v == []:
+            continue
+        if isinstance(v, str):
+            out.append(v if k in ("body", "items", "bullets", "points", "list", "lines") else {"p": v})
+        elif isinstance(v, list):
+            out.extend(v)
+        elif isinstance(v, dict):
+            out.append(v)
+    if d.get("table") is not None:
+        out.append(_as_table(d["table"]))
+    for k in ("box",):
+        if d.get(k):
+            out.append({"box": d[k] if isinstance(d[k], list) else [d[k]], "label": d.get("label", "요약")})
+    for k in ("note", "notes"):
+        v = d.get(k)
+        for n in (v if isinstance(v, list) else [v] if v else []):
+            out.append({"note": n})
+    known = set(SECTION_HEAD) | set(SECTION_TEXT) | set(SECTION_EXTRA) | {"label", "id", "number", "level"}
+    for k in d:
+        if where and k not in known:
+            _ISSUES.append(f"{where}: 모르는 칸 「{k}」은(는) 문서에 넣지 못했어요 (body · items · table · note 중 하나로)")
+    return out
+
+
+def head_of(d: dict) -> str:
+    for k in SECTION_HEAD:
+        if d.get(k):
+            return strip_number(d[k])
+    return ""
 
 
 # ---------------------------------------------------------------------------------------------------------------- body walk
@@ -147,6 +215,12 @@ def special(e: dict, indent: float = 0.0) -> list:
         return [{"t": "qr", "url": str(e["qr"]), "size_mm": float(e.get("size_mm") or 28), "caption": str(e.get("caption", "")), "align": e.get("align", "center")}]
     if "form" in e:
         return form_blocks(e["form"] if isinstance(e["form"], dict) else {"fields": e["form"]})
+    if any(k in e for k in SECTION_TEXT + ("items",)):   # a nested section-like object: keep its content
+        out = [P(head_of(e), "heading", "left", 0, "", space_before=True)] if head_of(e) else []
+        tmp: list = []
+        _walk(body_of(e), gongmun_mark, 0, tmp, indent)
+        return out + tmp
+    _ISSUES.append("본문 칸 " + ", ".join(f"「{k}」" for k in e) + "을(를) 넣지 못했어요 (p · h · note · table · box 중 하나로)")
     return []
 
 
@@ -200,7 +274,9 @@ def build(spec: dict) -> dict:
             "보고서": "report", "계획서": "report", "결과보고서": "report"}.get(kind, kind)
     kind = {"신청서": "form", "동의서": "form", "회신서": "form", "양식": "form"}.get(kind, kind)
     fn = {"gongmun": _gongmun, "notice": _notice, "guide": _guide, "report": _report, "form": _form}.get(kind, _gongmun)
+    _ISSUES.clear()
     blocks = fn(spec)
+    issues = list(_ISSUES)
     design = spec.get("design") or {}
     try:
         line = float(design.get("line") or 1.6)
@@ -208,7 +284,25 @@ def build(spec: dict) -> dict:
         line = 1.6
     return {"blocks": blocks, "meta": {"kind": kind, "title": str(spec.get("title", "")), "org": str(spec.get("org", "")),
                                        "date": gov_date(spec.get("date", "")), "font": design.get("font", "batang"),
-                                       "scale": scale_of(spec), "line": min(2.2, max(1.2, line))}}
+                                       "scale": scale_of(spec), "line": min(2.2, max(1.2, line)), "issues": issues}}
+
+
+def top_body(spec: dict) -> list:
+    """The whole document's body: "body", or "items" / "text" / "table", or "sections" turned into headed groups (each heading numbered once)."""
+    body = body_of({k: spec[k] for k in SECTION_TEXT + ("table", "notes") if k in spec})
+    for i, sct in enumerate(spec.get("sections") or []):
+        if isinstance(sct, dict):
+            h = head_of(sct)
+            if h:
+                body.append(h)
+                kids = body_of(sct, f"{i + 1}번째 절")
+                if kids:
+                    body.append(kids)
+            else:
+                body.extend(body_of(sct, f"{i + 1}번째 절"))
+        elif isinstance(sct, (str, list)):
+            body.append(sct)
+    return body
 
 
 def _end_mark(blocks: list, after: int | None = None) -> None:
@@ -246,7 +340,7 @@ def _gongmun(spec: dict) -> list:
     b.append(P(f"제목  {spec.get('title', '')}", "label", "left"))
     b.append({"t": "rule"})
     body: list = []
-    _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
+    _walk(top_body(spec), gongmun_mark, 0, body, 0.0)
     b.extend(body)
     att = _attachments(spec.get("attachments") or [])
     if att:
@@ -288,7 +382,7 @@ def _notice(spec: dict) -> list:
         b.append(P(spec["greeting"], "body", "justify"))
         b.append({"t": "space"})
     body: list = []
-    _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
+    _walk(top_body(spec), gongmun_mark, 0, body, 0.0)
     b.extend(body)
     b.extend(example_note(spec))
     b.append({"t": "space"})
@@ -344,7 +438,7 @@ def _form(spec: dict) -> list:
     b.append({"t": "space"})
     b.append({"t": "table", "columns": [], "rows": form_rows(spec.get("fields")), "widths": spec.get("widths") or [0.3, 0.7], "kind": "form", "tall": True})
     body: list = []
-    _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
+    _walk(top_body(spec), gongmun_mark, 0, body, 0.0)
     b.extend(body)
     b.extend(example_note(spec))
     b.append({"t": "space"})
@@ -363,18 +457,22 @@ def _guide(spec: dict) -> list:
         b.append(P(spec["org"], "small", "center"))
     b.append(P(spec.get("title", "안내"), "title", "center"))
     if spec.get("lead"):
-        b.append({"t": "table", "columns": [], "rows": [[spec.get("lead_label", "한눈에")], [str(spec["lead"])]], "widths": None, "kind": "box"})
+        b.append({"t": "table", "columns": [], "rows": [[spec.get("lead_label", "한눈에")], [_txt(spec["lead"])]], "widths": None, "kind": "box"})
     b.append({"t": "space"})
     secs = spec.get("sections")
     if secs:
+        pre: list = []
+        _walk(body_of({k: spec[k] for k in SECTION_TEXT + ("table", "notes") if k in spec}), gongmun_mark, 0, pre, 0.0)
+        b.extend(pre)
         for i, sct in enumerate(secs):
-            b.append(P(f"{i + 1}. {sct.get('h', '')}", "heading", "left", space_before=True))
+            sct = sct if isinstance(sct, dict) else {"body": sct if isinstance(sct, list) else [sct]}
+            b.append(P(f"{i + 1}. {head_of(sct)}", "heading", "left", space_before=True))
             body: list = []
-            _walk(sct.get("body") or [], lambda lv, k: gongmun_mark(lv + 1, k), 0, body, 1.0)
+            _walk(body_of(sct, f"{i + 1}번째 절"), lambda lv, k: gongmun_mark(lv + 1, k), 0, body, 1.0)
             b.extend(body)
     else:
         body = []
-        _walk(spec.get("body") or [], gongmun_mark, 0, body, 0.0)
+        _walk(top_body(spec), gongmun_mark, 0, body, 0.0)
         b.extend(body)
     if spec.get("contact"):
         b.append({"t": "space"})
@@ -398,12 +496,13 @@ def _report(spec: dict) -> list:
     if spec.get("summary"):
         b.append({"t": "space"})
         b.extend(special({"box": spec["summary"], "label": "요약"}))
-    secs = spec.get("sections") or [{"h": "", "body": spec.get("body") or []}]
+    secs = spec.get("sections") or [{"h": "", "body": top_body(spec)}]
     for i, sct in enumerate(secs):
-        if sct.get("h"):
-            b.append(P(f"{ROMAN[i] if i < len(ROMAN) else i + 1}. {sct['h']}", "heading", "left", space_before=True))
+        sct = sct if isinstance(sct, dict) else {"body": sct if isinstance(sct, list) else [sct]}
+        if head_of(sct):
+            b.append(P(f"{ROMAN[i] if i < len(ROMAN) else i + 1}. {head_of(sct)}", "heading", "left", space_before=True))
         body: list = []
-        _walk(sct.get("body") or [], report_mark, 0, body, 0.0, numbered=True)
+        _walk(body_of(sct, f"{i + 1}번째 절" if spec.get("sections") else ""), report_mark, 0, body, 0.0, numbered=True)
         for x in body:  # report marks are symbols: keep them even for a single item
             if x["t"] == "p" and x.get("level") is not None and not x["hang"]:
                 x["hang"] = report_mark(x["level"], 0)
@@ -430,6 +529,46 @@ def plain_lines(model: dict) -> list[str]:
         if t:
             out.extend(t.replace("**", "").split("\n"))
     return out
+
+
+CONTENT_SKIP = {"kind", "file", "template", "font", "mood", "date", "date_line", "sign", "statement", "fields", "widths", "align", "label",
+                "lead_label", "heading", "number", "receiver", "via", "receivers", "sender", "to", "org", "dept", "footer", "attachments",
+                "example_note", "fillins", "design", "reply", "url", "qr", "image", "caption", "kind", "style", "source", "unit"}
+
+
+def content_strings(spec) -> list[str]:
+    """The strings a reader must find in the finished file (titles, section text, items, table cells, notes, the lead box).
+    Labels the builder rewrites (dates, signature lines, form fields, sender) are left out."""
+    out: list[str] = []
+
+    def w(v, key=""):
+        if isinstance(v, str):
+            if key not in CONTENT_SKIP and len(v.strip()) >= 2:
+                out.append(strip_number(v) if key in SECTION_HEAD else v)
+        elif isinstance(v, dict):
+            for k, x in v.items():
+                if k not in CONTENT_SKIP and not str(k).startswith("_"):
+                    w(x, k)
+        elif isinstance(v, list):
+            for x in v:
+                w(x, key)
+    w(spec)
+    return out
+
+
+def _norm(t: str) -> str:
+    return re.sub(r"[\s*·•□○◦\-–—|]+", "", str(t)).lower()
+
+
+def missing_content(spec: dict, lines: list[str]) -> list[str]:
+    """Spec strings that do not appear in the output text (whitespace and bullet marks ignored)."""
+    hay = _norm("".join(lines))
+    miss = []
+    for s_ in content_strings(spec):
+        n = _norm(s_)
+        if len(n) >= 2 and n not in hay and s_ not in miss:
+            miss.append(s_)
+    return miss
 
 
 def walk_strings(spec) -> list[str]:

@@ -166,7 +166,7 @@ def finish(out: Path, kind: str, spec: dict, max_pages=None, min_font=None) -> i
     rp = spec.get("reply")
     res = doc_check.run(out, kind, spec.get("fillins") or [], spec.get("template_blanks") is True,
                         max_pages or spec.get("max_pages") or spec.get("fit_pages"), min_font or spec.get("min_font"),
-                        reply=(True if rp else (False if rp is False else None)))
+                        reply=(True if rp else (False if rp is False else None)), spec=spec)
     try:  # 「예시를 그대로 따라간 것 같아요」: copied sentences, or the same section order with the example's headings
         sys.path.insert(0, str(HERE.parent / "shared" / "tools"))
         import example_likeness

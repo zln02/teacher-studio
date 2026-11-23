@@ -233,6 +233,29 @@ def check_placeholders(lines: list[str], fillins: list) -> list[tuple[str, str]]
 NEEDS_REPLY = re.compile(r"동의|신청|참가\s?(?:여부|희망)|희망\s?(?:여부|조사|자)|회신|제출|납부|참가비|수익자\s?부담")
 
 
+REPR = re.compile(r"\[\s*['\"]|['\"]\s*\]|\{\s*['\"]\w+['\"]\s*:")
+DOUBLE_NUM = re.compile(r"^\s*(\d{1,2}|[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+|[가-하])\.\s+(\d{1,2}|[ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩ]+|[가-하])\.\s")
+
+
+def check_leaks(lines: list[str]) -> list[tuple[str, str]]:
+    """Builder slips a reader would see: a Python list / dict printed as text, a heading numbered twice (「1. 1. 일정」)."""
+    rep = [ln.strip()[:30] for ln in lines if REPR.search(ln)]
+    dbl = [ln.strip()[:30] for ln in lines if DOUBLE_NUM.match(ln)]
+    return [("FAIL", f"목록 기호가 글자로 찍혔어요 {rep[:3]} -> spec에서 그 칸을 글(문자열)이나 목록(body)으로") if rep else ("PASS", "no list/dict printed as text"),
+            ("FAIL", f"번호가 두 번 붙었어요 {dbl[:3]} -> 제목에서 번호를 빼고 쓰기 (번호는 자동)") if dbl else ("PASS", "no double numbering")]
+
+
+def check_content(spec: dict, lines: list[str]) -> list[tuple[str, str]]:
+    """CONTENT PRESERVATION: every fact the spec carries (section text, items, cells, notes, lead) is in the finished file, and nothing
+    the builder could not place was dropped in silence (docmodel meta.issues)."""
+    import docmodel
+    issues = (docmodel.build(spec).get("meta") or {}).get("issues") or []
+    miss = docmodel.missing_content(spec, lines)
+    return [("FAIL", "spec 내용을 넣지 못했어요: " + " / ".join(issues[:4])) if issues else ("PASS", "every spec key was placed"),
+            ("FAIL", f"spec의 내용 {len(miss)}곳이 파일에 없어요: " + " · ".join(f"「{m[:24]}」" for m in miss[:5]) + " -> body · items · table로 다시 쓰고 다시 만들기")
+            if miss else ("PASS", "content preserved: every spec sentence is in the file")]
+
+
 def is_notice(lines: list[str]) -> bool:
     return any("가정통신문" in re.sub(r"\s", "", ln) for ln in lines[:8])
 
@@ -372,7 +395,7 @@ def is_gongmun(lines: list[str]) -> bool:
 
 
 def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages: int | None = None, min_font: float | None = None,
-        reply=None) -> list[tuple[str, str]]:
+        reply=None, spec: dict | None = None) -> list[tuple[str, str]]:
     path = Path(path)
     fills = ph.with_blanks(list(fillins or []), allow_blanks)
     res = []
@@ -388,6 +411,9 @@ def run(path, kind: str = "", fillins=(), allow_blanks: bool = False, max_pages:
         res += check_gongmun(lines, lenient_space=path.suffix.lower() == ".pdf")
     res += check_dates(lines, official)
     res += check_spacing(lines)
+    res += check_leaks(lines)
+    if spec is not None and path.suffix.lower() != ".json":
+        res += check_content(spec, lines)
     res += check_fonts(path)
     if path.suffix.lower() == ".pdf":  # page count (limit), how full each page is, smallest text size
         import doc_look
