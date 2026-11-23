@@ -110,6 +110,10 @@ This product includes third-party components:
    It downloads two models on first setup, each under its own licence (read from the Hugging Face model cards): CLAP laion/larger_clap_general — Apache-2.0;
    AST MIT/ast-finetuned-audioset-10-10-0.4593 — BSD-3-Clause. Used by shared/tools/sound_ears.py to listen to audio and render effects from earshot's own bank.
 
+24. awesome-opus5-5-videos (yihui-dev, MIT License, Copyright (c) 2026 yihui-dev) — github.com/yihui-dev/awesome-opus5-5-videos.
+   Five prompt shapes (by @moritzkremb, @melvynx, @ajith_io, @anabology, @daniel_mac8) were read and ADAPTED, not copied, into
+   skills/teacher-motion/references/motion-prompts.md. License read from the repository LICENSE file (2026-11-23).
+
 Note: fonttools, brotli, python-pptx, imageio-ffmpeg, Playwright and similar tools are installed on first need, on the
 user's own computer, with pip (shared/tools/ensure.py). They are not redistributed here. No ffmpeg binary is bundled.
 

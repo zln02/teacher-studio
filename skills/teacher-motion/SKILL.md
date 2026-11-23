@@ -46,6 +46,7 @@ Content quality first: before writing any content read references/content-motion
 | 「수업 시작할 때 띄울 거」「집중시키는 화면」「카운트다운」「종 치고 띄워 둘 거」「오늘 배울 거 보여 주는 화면」「학습 목표 띄우기」「수업 오프닝」 | `lesson-opening` | bold-pop |
 | 「1교시라 차분하게」「조용히 집중」「아침 분위기」「저학년처럼 부드럽게」 | `lesson-opening` | calm-paper |
 | 「신나게」「확 깨우게」「점심 먹고 졸릴 때」 | `lesson-opening` | bold-pop |
+| 「축제·발표회·체육대회 홍보 영상」「행사 오프닝」「30초 홍보」「모집 영상」 | `event-promo` | festival (그림은 고명 단계: 있으면 `hero`, 없으면 그려 넣음) |
 
 📋 **아직 미사일이 없는 요청** → 아래 「미사일이 없을 때 직접 제작」으로 STAGE에서 바로 만든다(같은 품질 기준).
 | 선생님 말 | 나중 미사일(준비 중) |
@@ -140,6 +141,8 @@ python3 scripts/check_page.py page.html
 | `assets/missiles/<미사일>/skins/*.json` | 스킨 기본 문구·색 전체 목록이 필요할 때 |
 | `assets/missiles/<미사일>/show.js` | 직접 제작 때 수준 기준점·도우미(add/box/fit) 참고 |
 | `references/legal-advisory.md` | 음악·글꼴·사진·초상권 권고 문장 |
+| `references/motion-prompts.md` | 요청 한 줄을 장면표로 바꿀 때 참고하는 구성 5가지 (출처: awesome-opus5-5-videos, MIT, 우리 말로 고쳐 씀) |
+| `assets/missiles/event-promo/README.md` | 행사 오프닝·홍보 30초 (큰 글자 → 그림 → 날짜 → 카드 → 끝 카드, MP4) |
 | `../../shared/tools/sound_ears.py` | after exporting a video with narration/BGM: extract the audio (ffmpeg `-vn`, wav) and run `py sound_ears.py listen audio.wav`; fix by lowering BGM under the voice (BGM about 10-15 dB below narration), keep peaks <= -1 dB, no clipping. Optional ears (earshot) install only after consent; without it the basic check still runs. |
 | `scripts/build_stage.py` · `scripts/check_page.py` · `scripts/render_mp4.py` | 조립 / 점검 / MP4 (`--yes`: 동의 뒤 작은 도구 설치, 시스템 크롬·ffmpeg 먼저) |
 | `shared/` (자동 복사본) | 디자인 `design/design.py --use present --mood 차분`로 색·글꼴 정하기, 부품 `vendor/inline.py`(`build_stage.py --libs chartjs,katex,lucide`), 글꼴 넣기(build가 자동, `--no-fonts`로 끔), 설치 `tools/ensure.py`. 더 화려한 움직임이 꼭 필요하면 GSAP을 공식 CDN에서 보는 순간 불러오는 길만 (저장소에 없음, 기본은 anime.js·CSS. Motion은 2020년 이전 크롬에서 안 돌아가서 `--allow-modern`을 줄 때만 들어가요) |
