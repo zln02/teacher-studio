@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import html
 import json
 import re
 import sys
@@ -27,6 +28,7 @@ sys.path.insert(0, str(REPO / "skills" / "teacher-slides" / "scripts"))
 
 THREE_SHA = "9274bbcec8d96168626c732b5d31c775aa8cfb7eaa0599bec0c175908a2c1ce2"
 SITE = "https://github.com/zln02/teacher-studio"
+NOAN_S2 = "https://zln02.github.io/noan-ai/training/s2.html"   # deck-e 22장 QR: 노안중 AI교육 포털 · 2회차 연수 쪽 (하네스란? · 설치 한 줄 · 부탁 모음 · 막히면)
 THREE_HEAD = "<script>/* three.js r128 · MIT License · Copyright (c) 2010-2021 three.js authors */\n"
 COMPARE_DIR = HERE.parent / "compare"
 BARE_DIR = V2 / "compare-bare"
@@ -79,6 +81,117 @@ def compare_slides() -> str:
   <aside class="note">[8~15분] {note} 화면은 시연 때 실제로 받은 결과예요. 재지 않은 시간·숫자는 말하지 않아요.</aside>
 </section>""")
     return "\n".join(out)
+
+
+ECMP = HERE / "compare-e"   # deck-e v4 진짜 비교 3장: compare-e/<case>/ 에 bare.* · harness.* (또는 compare.png 한 장) + facts.json
+
+
+
+SHOWCASE = HERE / "showcase-e"   # 다른 사람이 채워요: showcase-e/<작품>/shot1.png · shot2.png · (title.txt). 여기서는 읽기만.
+
+
+
+def show1_fill(slides: str) -> str:
+    """9장 커서 장면: showcase-e/1-goldenbell/shot1(+shot2 시상대)을 쓰고, 없으면 예전 비교 그림(__ECMP_class_title__)으로."""
+    if "__SHOW_GB__" not in slides:
+        return slides
+    import base64, io as _io
+    from PIL import Image
+    d = SHOWCASE / "1-goldenbell"
+    def uri(p):
+        im = Image.open(p).convert("RGB"); im.thumbnail((1600, 900))
+        b = _io.BytesIO(); im.save(b, "JPEG", quality=90, optimize=True)
+        return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
+    s1, s2 = d / "shot1.png", d / "shot2.png"
+    if not s1.exists():
+        return slides.replace("__SHOW_GB__", "__ECMP_class_title__")
+    out = f'<img alt="AI + 하네스로 만든 골든벨 퀴즈쇼" src="{uri(s1)}">'
+    if s2.exists():
+        out += f'<img alt="" src="{uri(s2)}">'
+    return slides.replace("__SHOW_GB__", out)
+
+def gal_fill(slides: str) -> str:
+    """10장 「이런 것도 만들어요」: showcase-e에 작품이 있으면 그걸로 2×2 (클릭 1 = shot2로 바뀜). 없으면 slides의 예비 칸 그대로."""
+    import base64, io as _io, re as _re
+    from PIL import Image
+    if not SHOWCASE.exists():
+        return slides
+    def find(d, stem):
+        for ext in ("png", "jpg", "jpeg", "webp"):
+            if (d / f"{stem}.{ext}").exists():
+                return d / f"{stem}.{ext}"
+        return None
+    def uri(p):
+        im = Image.open(p).convert("RGB"); im.thumbnail((1280, 720))
+        b = _io.BytesIO(); im.save(b, "JPEG", quality=90, optimize=True)
+        return "data:image/jpeg;base64," + base64.b64encode(b.getvalue()).decode()
+    pieces = [d for d in sorted(SHOWCASE.iterdir()) if d.is_dir() and find(d, "shot1")][:4]
+    if not pieces:
+        return slides
+    figs, two = [], False
+    for d in pieces:
+        s1, s2 = find(d, "shot1"), find(d, "shot2")
+        tt = (d / "title.txt").read_text(encoding="utf-8").strip() if (d / "title.txt").exists() else d.name
+        lay = f'<i style="background-image:url({uri(s1)})"></i>'
+        if s2:
+            two = True
+            lay += f'<i class="s2" style="background-image:url({uri(s2)})"></i>'
+        figs.append(f'<figure><div class="e-gi">{lay}</div><figcaption>{html.escape(tt)}</figcaption></figure>')
+    block = '  <div class="e-gal">' + "".join(figs) + '</div>'
+    slides = _re.sub(r"<!--GAL-->.*?<!--/GAL-->", lambda m: block, slides, count=1, flags=_re.S)
+    if two:
+        slides = slides.replace('data-fx="eGal" data-steps="0"', 'data-fx="eGal" data-steps="1"', 1)
+    return slides
+
+def ecmp_fill(slides: str) -> str:
+    """__ECMP_<case>_(ASK|bare|harness|CHIPS|NOTE)__ 채우기. 그림이 없으면 「결과 화면 들어갈 자리」."""
+    import base64
+    import html as H
+    import io
+    from PIL import Image
+
+    def img(p, alt):
+        im = Image.open(p).convert("RGB")
+        im.thumbnail((1800, 1100))
+        buf = io.BytesIO(); im.save(buf, "JPEG", quality=90, optimize=True)
+        return '<div class="frame"><img alt="%s" src="data:image/jpeg;base64,%s"></div>' % (alt, base64.b64encode(buf.getvalue()).decode())
+
+    ph = '<div class="frame ph"><svg class="ic"><use href="#image"/></svg>결과 화면 들어갈 자리</div>'
+    for case in ("daily", "work", "class"):
+        d = ECMP / case
+        f = {}
+        if (d / "facts.json").exists():
+            f = json.loads((d / "facts.json").read_text(encoding="utf-8"))
+        def find(stem):
+            for ext in ("png", "jpg", "jpeg", "webp"):
+                if (d / (stem + "." + ext)).exists():
+                    return d / (stem + "." + ext)
+            return None
+        bare, harn, comp = find("chat") or find("bare"), find("cowork") or find("harness"), find("compare")
+        f1, f2 = find("cowork-1"), find("cowork-2")
+        if f1 and f2:   # 작업 모드 쪽: 같은 결과물의 두 장면 (클릭으로 넘겨요)
+            harn = harn or f1
+        if bare and harn:
+            b, h = img(bare, "채팅 결과 화면"), img(harn, "Cowork · Codex 결과 화면")
+        elif harn:
+            b, h = ph.replace("결과 화면 들어갈 자리", "채팅 결과 들어갈 자리"), img(harn, "Cowork · Codex 결과 화면")
+        elif comp:
+            b, h = img(comp, "그냥 AI와 하네스 AI 결과 화면"), ""
+        else:
+            b, h = ph, ph
+        ask = f.get("prompt") or f.get("ask") or "(부탁 한 줄 · 결과가 오면 채워요)"
+        chips = f.get("chips") or [x for x in (("물어본 것 · " + str(f["asked"])) if f.get("asked") else "", ("고칠 일 · " + str(f["fixes"])) if f.get("fixes") else "", ("걸린 시간 · " + str(f["time"])) if f.get("time") else "") if x]
+        if not chips:
+            chips = ["물어본 것 · 들어갈 자리", "고칠 일 · 들어갈 자리", "걸린 시간 · 들어갈 자리"]
+        slides = (slides.replace("__ECMP_%s_ASK__" % case, "「%s」" % H.escape(ask.strip("「」")))
+                  .replace("__ECMP_%s_bare__" % case, b).replace("__ECMP_%s_harness__" % case, h)
+                  .replace("__ECMP_%s_chat__" % case, b)
+                  .replace("__ECMP_%s_cowork__" % case, ('<div class="e-frames">' + img(f1, "작업 모드 결과 화면 1").replace('class="frame"', 'class="frame e-f1"') + img(f2, "작업 모드 결과 화면 2").replace('class="frame"', 'class="frame e-f2"') + '<span class="e-dots"><i></i><i></i></span></div>') if (f1 and f2) else h)
+                  .replace("__ECMP_%s_title__" % case, img(find("title"), "실제로 나온 결과물 예시") if find("title") else "")
+                  .replace("__ECMP_%s_CHIPS__" % case, "".join("<span>%s</span>" % H.escape(c) for c in chips[:3]))
+                  .replace("__ECMP_%s_NOTE__" % case, H.escape(f.get("note", ""))))
+        print("  e-compare", case, "images" if (bare or comp) else "placeholder", "facts" if f else "no facts")
+    return slides
 
 
 def icons(html: str, js: str = "") -> str:
@@ -267,7 +380,24 @@ def main() -> int:
         names = [x.strip() for x in a.agenda.split(",") if x.strip() and x.strip() != "-"]
         js = re.sub(r"/\*__AGENDA__\*/\[[^\]]*\]", lambda m: json.dumps(names, ensure_ascii=False), js, count=1)
     import deck_qr  # read-only use of the slides skill's QR helper (qrcodegen, MIT)
-    slides = slides.replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    slides = slides.replace("__QR_NOAN__", deck_qr.svg(NOAN_S2)).replace("__QR__", deck_qr.svg(SITE)).replace("__COMPARE__", compare_slides()).replace("__ONCE__", shot("game", "harness")).replace("__HORSE__", data_uri(ASSETS / "p_horse.jpg"))
+    for _i in (1, 2, 3):   # 실습 장: 안내지 단계 그림 (handout/steps · 실제 Work 화면에 커서를 그린 것)
+        _f = HERE.parent / "handout" / "steps" / f"step{_i}.png"
+        if _f.exists():
+            slides = slides.replace(f"__HSTEP{_i}__", data_uri(_f))
+    if "__DEMO_VIDEO__" in slides:   # 시연 예비 영상: 크니까 덱에 넣지 않고 옆 파일로 이어요 (deck-v3-src/demo/pumui.mp4)
+        dv = HERE / "demo" / "pumui.mp4"
+        if dv.exists():
+            slides = slides.replace("__DEMO_VIDEO__", '<video src="deck-v3-src/demo/pumui.mp4" controls preload="none" playsinline></video>')
+        else:   # 영상이 없으면(라이브 시연만) 예비 영상 클릭과 빈 자리를 통째로 빼요
+            slides = re.sub(r'\s*<div class="e-backup"[^>]*>.*?__DEMO_VIDEO__</div>', "", slides, count=1, flags=re.S)
+            slides = slides.replace('<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="2"', '<section class="slide demo1 v3" data-e-bg="B" data-fx="eLab" data-steps="1"', 1)
+            slides = slides.replace("(시연은 3분 30초 안에 · 길어지면 녹화 영상으로)", "(시연은 3분 30초 안에 · 라이브 시연만)", 1)
+        print("  demo video", "linked" if dv.exists() else "omitted (live demo only)")
+    if a.skin == "e":
+        slides = show1_fill(slides)
+        slides = ecmp_fill(slides)
+        slides = gal_fill(slides)
     for bad in ("?.", "??"):
         for m in re.finditer(re.escape(bad), js):
             nxt = js[m.end():m.end() + 1]

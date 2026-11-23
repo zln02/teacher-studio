@@ -1,0 +1,385 @@
+<!-- AI 커닝, 미리 막기 (스킨 E · 8장 · 따로 하는 8분 · 쉬운 말 · 외부 검토 반영) — build: py docs/training/ai-cheating/deck-src/build.py
+     범위 규칙: 기기 · 제품 이름, 숨기는 요령, 연결 · 설정 방법, 들키지 않는 요령, 부정행위 순서는 쓰지 않아요. 흐름은 다섯 걸음으로만, 추상적으로. -->
+<style>
+/* ---- AI 커닝 덱 전용 (ac- 앞붙이 · 스킨 E 토큰만 써요) ---- */
+.v3 .ac-take{position:absolute;left:128px;right:128px;bottom:96px;margin:0;font-size:44px;font-weight:700;letter-spacing:-.03em;line-height:1.3;color:var(--d-ink);z-index:4}
+.v3 .ac-take b{color:var(--d-acc)}
+.v3 .ac-take small{display:block;margin-top:10px;font-size:28px;font-weight:500;color:var(--d-mute);letter-spacing:-.01em}
+.v3 .ac-tag{display:block;font-family:var(--mono);font-size:24px;font-weight:400;color:var(--d-mute);letter-spacing:.01em}
+.v3 .ac-ic{width:60px;height:60px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;color:var(--d-acc)}
+.v3 .card h3{margin:0;font-size:42px;line-height:1.2;letter-spacing:-.03em;color:var(--d-ink)}
+.v3 .card p{margin:0;font-size:30px;line-height:1.4;color:var(--d-sub);letter-spacing:-.01em}
+.v3 .card p b{color:var(--d-ink)}
+.v3 .ac-src{position:absolute;left:128px;top:676px;margin:0;font-family:var(--mono);font-size:20px;color:var(--d-mute);z-index:4}
+/* 2 요즘 걱정: 소식 네 장 */
+.ac-news{position:absolute;left:128px;right:128px;top:320px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.ac-news .card{display:flex;flex-direction:column;gap:18px;padding:36px 34px;min-height:330px}
+.ac-news .ac-d{font-family:var(--mono);font-size:30px;color:var(--d-acc)}
+.ac-news h3{font-size:36px}
+/* 3 다섯 걸음 */
+.ac-flow{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none}
+.ac-flow .card{position:absolute;top:330px;width:300px;height:300px;padding:30px 28px;display:flex;flex-direction:column;gap:14px}
+.ac-flow .card .ac-n{font-family:var(--mono);font-size:44px;color:var(--d-acc);line-height:1}
+.ac-flow .card h3{font-size:40px}
+.ac-flow .card p{font-size:28px}
+.ac-flow .ac-out{border-style:dashed!important}
+.ac-flow .ac-out .ac-n{color:var(--d-mute)}
+.ac-flow .ac-ar{position:absolute;top:458px;width:52px;height:44px;fill:none;stroke:var(--d-line2);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.v3 .ac-pn{fill:none;stroke-width:5;stroke-linecap:round;stroke-linejoin:round}
+.v3 .ac-pn.e-blue{stroke:var(--e-blue)}.v3 .ac-pn.e-red{stroke:var(--e-red)}
+.v3 .ac-note{position:absolute;z-index:7;margin:0;font-size:36px;font-weight:700;letter-spacing:-.02em;white-space:nowrap;transform:rotate(-2deg)}
+.v3 .ac-note.e-blue{color:var(--e-blue)}.v3 .ac-note.e-red{color:var(--e-red)}
+/* 4 가운데는 못 막아요 · 둘 */
+.ac-two{position:absolute;left:128px;right:128px;top:320px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.ac-two .card{display:flex;flex-direction:column;gap:20px;padding:40px 44px}
+.ac-two ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:20px}
+.ac-two li{display:flex;gap:18px;align-items:flex-start;font-size:32px;line-height:1.35;color:var(--d-ink);letter-spacing:-.02em}
+.ac-two li .ic{flex:none;width:40px;height:40px;margin-top:2px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-two li small{display:block;font-size:26px;color:var(--d-mute)}
+.ac-two .ac-no .ac-tag,.ac-two .ac-no li .ic{color:var(--e-red)}
+.ac-two .ac-yes{border-color:var(--d-cool)!important}
+.ac-two .ac-yes .ac-tag,.ac-two .ac-yes li .ic{color:var(--d-cool)}
+/* 5 닫을 곳 세 군데 */
+.ac-three{position:absolute;left:128px;right:128px;top:320px;display:grid;grid-template-columns:repeat(3,1fr);gap:36px}
+.ac-three .card{display:flex;flex-direction:column;gap:18px;padding:40px 40px;min-height:400px}
+.ac-three .ac-big{font-family:var(--mono);font-size:84px;line-height:1;color:var(--d-acc)}
+.ac-three .ac-to{margin-top:auto;font-size:28px;font-weight:700;color:var(--d-cool)}
+/* 6 · 11 예방 5가지 */
+.ac-five{position:absolute;left:104px;right:104px;top:300px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+.ac-five .card{display:flex;flex-direction:column;gap:16px;padding:32px 28px;min-height:540px}
+.ac-five .ac-top{display:flex;justify-content:space-between;align-items:baseline}
+.ac-five .ac-num{font-family:var(--mono);font-size:56px;line-height:1;color:var(--d-acc)}
+.ac-five .ac-tag{font-size:22px;color:var(--d-cool)}
+.ac-five h3{font-size:38px;line-height:1.22}
+.ac-five p{font-size:27px}
+.ac-five .ac-why{margin-top:auto;padding-top:14px;border-top:1.5px solid var(--d-line);font-size:26px;color:var(--d-ink);font-weight:600}
+.v3 .ac-law{position:absolute;left:104px;right:104px;top:872px;margin:0;display:flex;gap:16px;align-items:center;font-size:28px;color:var(--d-sub);letter-spacing:-.01em}
+.v3 .ac-law .ic{flex:none;width:34px;height:34px;fill:none;stroke:var(--d-acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.v3 .ac-law b{color:var(--d-ink)}
+.sum5.v3>.hd{top:84px}
+.sum5.v3 .ac-five{top:250px}
+.sum5.v3 .ac-five .card{min-height:520px}
+.sum5.v3 .ac-law{top:810px}
+.sum5.v3 .ac-law2{top:862px}
+/* 6 문항 비교 */
+.ac-pair .card{gap:30px;min-height:500px}
+.ac-pair .ac-q{font-size:38px!important;line-height:1.4!important;font-weight:700;color:var(--d-ink)!important;letter-spacing:-.025em}
+.ac-pair .ac-res{margin-top:auto!important;display:flex;gap:14px;align-items:center;font-size:32px!important;font-weight:700}
+.ac-pair .ac-res .ic{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-pair .ac-no .ac-res{color:var(--e-red)!important}
+.ac-pair .ac-yes .ac-res{color:var(--d-cool)!important}
+/* 7 부탁 세 장 */
+.ac-asks .card{min-height:440px}
+.v3 .ac-say{font-size:30px!important;font-weight:700;color:var(--d-cool)!important;line-height:1.4!important}
+.ac-five .ac-why small{display:block;font-family:var(--mono);font-size:20px;font-weight:400;color:var(--d-mute);margin-bottom:4px}
+/* 4 방식 · 흔적 */
+.ac-trace .card{min-height:560px;gap:14px}
+.ac-trace .ac-st{font-family:var(--mono);font-size:34px;color:var(--d-acc);line-height:1.2}
+.ac-trace .ac-ic{width:48px;height:48px;color:var(--d-mute)}
+.ac-trace h3{font-size:33px;line-height:1.25}
+.ac-trace .ac-tag{margin-top:6px;padding-top:12px;border-top:1.5px solid var(--d-line);font-size:20px;color:var(--d-cool)}
+.ac-trace ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ac-trace li{position:relative;padding-left:24px;font-size:27px;line-height:1.35;color:var(--d-ink);letter-spacing:-.02em}
+.ac-trace li:before{content:"";position:absolute;left:2px;top:14px;width:10px;height:10px;border-radius:50%;background:var(--e-blue)}
+.ac-ways.v3 .ac-law{top:886px}
+.v3 .ac-c{display:inline-flex;align-items:center;justify-content:center;width:1.2em;height:1.2em;border:.09em solid currentColor;border-radius:50%;font-style:normal;font-family:var(--mono);font-size:.78em;line-height:1;vertical-align:.08em;margin:0 .06em}
+.ac-flow .card .ac-n .ac-c,.ac-trace .ac-st .ac-c,.ac-three .ac-big .ac-c{font-size:.8em}
+/* ================= v2: 움직임 · 그림 위주 (글은 줄이고) =================
+   단계마다 data-b + data-replay: 그 단계에 보일 때 CSS 움직임이 처음부터 다시 돌아요. 기본 모양 = 끝 모습 → 움직임 줄이기면 끝 모습 바로 */
+@keyframes acDraw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+@keyframes acPop{0%{transform:scale(.55);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1);opacity:1}}
+@keyframes acRise{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@keyframes acTravel{0%{offset-distance:0%;opacity:0}8%{opacity:1}92%{opacity:1}100%{offset-distance:100%;opacity:0}}
+@keyframes acPulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.9);opacity:0}}
+@keyframes acType{from{clip-path:inset(-10% 100% -10% 0)}to{clip-path:inset(-10% 0 -10% 0)}}
+@keyframes acStamp{0%{transform:scale(1.9) rotate(-6deg);opacity:0}65%{transform:scale(.94) rotate(-6deg);opacity:1}100%{transform:scale(1) rotate(-6deg);opacity:1}}
+@keyframes acGlow{0%{box-shadow:0 0 0 0 rgba(111,116,255,0)}60%{box-shadow:0 0 0 14px rgba(111,116,255,.22)}100%{box-shadow:0 0 0 6px rgba(111,116,255,.16)}}
+@keyframes acLate{0%,99%{opacity:0}100%{opacity:1}}
+@keyframes acGone{0%{opacity:1}99%{opacity:1}100%{opacity:0}}
+@keyframes acBlink{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes acSwapA{0%,25%{transform:none}60%{transform:translate(70px,-26px) rotate(6deg)}100%{transform:translateX(118px)}}
+@keyframes acSwapB{0%,25%{transform:none}60%{transform:translate(-70px,26px) rotate(-6deg)}100%{transform:translateX(-118px)}}
+@keyframes acSlideIn{0%{transform:translate(90px,-40px) rotate(28deg);opacity:0}70%{transform:translate(-4px,2px) rotate(-3deg);opacity:1}100%{transform:none;opacity:1}}
+@keyframes acHi{0%,40%{background:var(--d-bg)}100%{background:var(--d-acc)}}
+.v3 .ac-pn2{fill:none;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.v3 .ac-g *,.v3 .ac-ways5 *,.v3 .ac-comm *,.v3 .ac-viz *,.v3 .ac-chats *,.v3 .ac-anim *{animation:none!important}}
+
+/* 3 다섯 걸음 지도 */
+.ac-map{position:absolute;left:128px;top:276px;width:1664px;height:600px}
+.ac-zone{position:absolute;top:0;height:600px;border-radius:18px}
+.ac-zone>span{position:absolute;left:28px;top:20px;font-family:var(--mono);font-size:26px;color:var(--d-mute)}
+.ac-zin{left:0;width:780px;background:var(--d-coolbg)}
+.ac-zout{left:880px;width:784px;background:repeating-linear-gradient(135deg,rgba(228,80,47,.08) 0 14px,rgba(0,0,0,0) 14px 28px)}
+.ac-zout>span{left:auto;right:28px}
+.ac-wall{position:absolute;left:829px;top:-10px;height:620px;border-left:4px dashed var(--d-line2)}
+.ac-g{position:absolute;inset:0}
+.ac-lines{position:absolute;left:0;top:0;width:1664px;height:600px;overflow:visible}
+.ac-seg{fill:none;stroke:var(--d-acc);stroke-width:5;stroke-linecap:round;stroke-dasharray:1;animation:acDraw .55s cubic-bezier(.65,0,.35,1) both}
+.ac-dot{position:absolute;left:0;top:0;width:30px;height:38px;border-radius:5px;background:var(--d-ink);opacity:0;animation:acTravel .7s cubic-bezier(.65,0,.35,1) both}
+.ac-node{position:absolute;width:220px;height:120px;border:2px solid var(--d-line2);border-radius:14px;background:var(--d-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;animation:acPop .5s .45s both}
+.ac-node .ic{width:46px;height:46px;fill:none;stroke:var(--d-acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-node b{font-size:30px;font-weight:700;letter-spacing:-.02em;color:var(--d-ink);white-space:nowrap}
+.ac-badge{position:absolute;left:-16px;top:-16px;width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:24px;font-weight:700;background:var(--d-acc);color:#121214}
+.ac-g1 .ac-node{animation-delay:0s}
+.ac-ai{position:absolute;left:1200px;top:200px;width:200px;height:200px;border-radius:50%;border:2px solid var(--d-cool);background:var(--d-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;animation:acPop .5s .45s both}
+.ac-ai .ic{width:64px;height:64px;fill:none;stroke:var(--d-cool);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-ai b{font-size:30px;color:var(--d-ink)}
+.ac-ai .ac-badge{left:4px;top:4px;background:var(--d-cool);color:#fff}
+.ac-ring{position:absolute;inset:-2px;border-radius:50%;border:3px solid var(--d-cool);opacity:0;animation:acPulse 1s .8s 3 both}
+.ac-ring.r2{animation-delay:1.3s}
+.ac-write{position:absolute;left:110px;top:520px;width:200px;height:30px;overflow:visible}
+.ac-write path{fill:none;stroke:var(--d-ink);stroke-width:4;stroke-linecap:round;stroke-dasharray:1;animation:acDraw 1s .8s both}
+.ac-stampz{position:absolute;display:flex;gap:14px;align-items:center;padding:14px 26px;border:3px solid currentColor;border-radius:12px;font-size:34px;font-weight:800;letter-spacing:-.02em;background:var(--d-bg);transform:rotate(-6deg);animation:acStamp .45s both}
+.ac-stampz .ic{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ac-s-out{left:1010px;top:470px;color:var(--e-red)}
+.ac-s-in{left:220px;top:250px;color:var(--d-cool);animation-delay:.25s}
+.ac-flow5.v3 .ac-take{bottom:112px;font-size:40px}
+
+/* 4 방식 → 흔적 (그림 카드) */
+.ac-ways5{position:absolute;left:104px;right:104px;top:286px;display:grid;grid-template-columns:repeat(5,1fr);gap:22px}
+.ac-ways5 .card{padding:0!important;overflow:hidden;display:flex;flex-direction:column;min-height:560px}
+.ac-pic{position:relative;height:250px;background:#121214;overflow:hidden}
+.ac-pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;animation:acRise .5s both}
+.ac-mark{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ac-mark path{animation:acDraw .6s .45s cubic-bezier(.65,0,.35,1) both}
+.ac-mark .e-red{stroke:var(--e-red)}.ac-mark .e-blue{stroke:var(--e-blue)}
+.ac-wb{padding:22px 24px 26px;display:flex;flex-direction:column;gap:12px}
+.ac-wb .ac-st{font-size:24px;line-height:1.35;color:var(--d-mute)}
+.ac-wb h3{font-size:36px!important;line-height:1.25}
+.ac-wb p{font-size:28px!important;color:var(--d-ink)!important;font-weight:600;animation:acRise .4s .9s both}
+.ac-wb p:before{content:"흔적";display:block;font-family:var(--mono);font-size:20px;font-weight:400;color:var(--e-blue);margin-bottom:4px}
+.ac-ways.v3 .ac-law{top:880px}
+
+/* 5 통신: 벽 */
+.ac-comm{position:absolute;left:128px;top:290px;width:1664px;height:520px}
+.ac-side{position:absolute;top:0;height:520px;width:620px;border-radius:18px}
+.ac-side>span{position:absolute;left:28px;top:20px;font-family:var(--mono);font-size:26px;color:var(--d-mute)}
+.ac-left{left:0;background:var(--d-coolbg)}
+.ac-right{right:0;background:repeating-linear-gradient(135deg,rgba(228,80,47,.08) 0 14px,rgba(0,0,0,0) 14px 28px)}
+.ac-tile{position:absolute;top:110px;width:250px;height:250px;border:2px solid var(--d-line);border-radius:16px;background:var(--d-surf);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px}
+.ac-tile .ic{width:84px;height:84px;fill:none;stroke:var(--d-sub);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ac-tile b{font-size:40px;color:var(--d-ink)}
+.ac-t1{left:40px}.ac-t2{left:330px}
+.ac-right .ac-t1{left:330px}.ac-right .ac-t2{left:40px}
+.ac-dim{opacity:.5}
+.ac-brick{position:absolute;left:700px;top:-10px;width:264px;height:540px;border-radius:10px;background:repeating-linear-gradient(0deg,var(--d-line2) 0 4px,rgba(0,0,0,0) 4px 60px),repeating-linear-gradient(90deg,var(--d-line2) 0 4px,rgba(0,0,0,0) 4px 88px),var(--d-surf2)}
+.ac-tower{position:absolute;left:762px;top:130px;width:140px;height:140px;border-radius:50%;background:var(--d-bg);display:flex;align-items:center;justify-content:center}
+.ac-tower .ic{width:82px;height:82px;fill:none;stroke:var(--d-sub);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ac-ban{position:absolute;left:742px;top:110px;width:180px;height:180px;transform:rotate(-6deg);animation:acStamp .45s both}
+.ac-ban circle,.ac-ban line{fill:none;stroke:var(--e-red);stroke-width:12}
+.ac-banl{position:absolute;left:652px;top:320px;width:360px;text-align:center;padding:12px 10px;border-radius:12px;background:var(--d-bg);border:2px solid var(--e-red);color:var(--d-ink);font-size:30px;font-weight:800;line-height:1.3;animation:acRise .4s .35s both}
+.ac-banl small{display:block;font-size:24px;font-weight:600;color:var(--e-red)}
+.ac-lit{position:absolute;left:0;top:0;width:620px;height:520px}
+.ac-lit .ac-tile{border-color:var(--d-cool)!important;animation:acGlow .9s both;box-shadow:0 0 0 6px rgba(111,116,255,.16)}
+.ac-lit .ac-tile .ic{stroke:var(--d-cool)}
+.ac-lit .ac-t2{animation-delay:.2s}
+.ac-hand{position:absolute;left:40px;top:396px;width:540px;text-align:center;font-size:34px;font-weight:800;color:var(--d-cool);animation:acRise .4s .5s both}
+
+/* 6 · 9 예방 5가지: 아이콘 움직임 카드 */
+.ac-five2{position:absolute;left:104px;right:104px;top:290px;display:grid;grid-template-columns:repeat(5,1fr);gap:24px}
+.ac-five2 .card{display:flex;flex-direction:column;gap:14px;padding:26px 26px 28px;min-height:520px}
+.ac-five2 .ac-top{display:flex;justify-content:space-between;align-items:baseline}
+.ac-five2 .ac-num{font-family:var(--mono);font-size:50px;line-height:1;color:var(--d-acc)}
+.ac-five2 .ac-tag{font-size:22px;color:var(--d-cool)}
+.ac-viz{position:relative;height:190px;border-radius:12px;background:var(--d-surf2);overflow:hidden}
+.ac-five2 h3{font-size:38px;line-height:1.22}
+.ac-five2 .ac-why{margin-top:auto;padding-top:14px;border-top:1.5px solid var(--d-line);font-size:28px;color:var(--d-ink);font-weight:700}
+.ac-five2 .ac-why small{display:block;font-family:var(--mono);font-size:20px;font-weight:400;color:var(--d-mute);margin-bottom:4px}
+.ac-viz .ic{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-paper{position:absolute;border-radius:8px;background:var(--d-bg);background-image:repeating-linear-gradient(180deg,rgba(0,0,0,0) 0 22px,var(--d-line2) 22px 26px);background-clip:content-box;padding:22px 14px 10px}
+.ac-v1 .ac-paper{left:14px;top:30px;width:92px;height:130px}
+.ac-v1 .ic{position:absolute;left:114px;top:66px;width:52px;height:52px;color:var(--d-cool)}
+.ac-v1 .ac-ok{position:absolute;left:178px;top:28px;font-size:72px;font-weight:800;line-height:1;color:var(--e-red);animation:acPop .4s .5s both}
+.ac-v1 svg.ac-sk{position:absolute;left:174px;top:34px;width:70px;height:70px;overflow:visible}
+.ac-v1 svg.ac-sk path{fill:none;stroke:var(--d-ink);stroke-width:7;stroke-linecap:round;stroke-dasharray:1;animation:acDraw .35s 1.1s both}
+.ac-v1 .ac-fix{position:absolute;left:170px;top:124px;font-size:28px;font-weight:800;color:var(--d-cool);animation:acRise .3s 1.4s both}
+.ac-v2 .ac-pz{position:absolute;top:40px;width:76px;height:76px;border-radius:10px;background:var(--d-bg)}
+.ac-v2 .p1{left:18px}.ac-v2 .p2{left:102px}
+.ac-v2 .p3{left:186px;background:transparent;border:3px dashed var(--d-line2)}
+.ac-v2 .ic{position:absolute;left:186px;top:40px;width:76px;height:76px;color:var(--d-acc);animation:acSlideIn .7s .2s both}
+.ac-v2 small{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-size:24px;color:var(--d-sub);animation:acRise .3s .9s both}
+.ac-v3 .ac-sh{position:absolute;top:30px;width:96px;height:130px;border-radius:8px;background:var(--d-bg);text-align:center;padding-top:8px;font-family:var(--mono);font-size:44px;font-weight:700}
+.ac-v3 .sa{left:30px;color:var(--d-acc);animation:acSwapA 1.1s .3s both}
+.ac-v3 .sb{left:148px;color:var(--d-cool);animation:acSwapB 1.1s .3s both}
+.ac-v3 .ic{position:absolute;left:118px;top:162px;width:24px;height:24px;color:var(--d-mute)}
+.ac-v4 .ac-paper{left:40px;top:22px;width:120px;height:146px}
+.ac-v4 .ac-no{position:absolute;left:118px;top:100px;padding:4px 14px;border:3px solid var(--d-acc);border-radius:8px;font-family:var(--mono);font-size:34px;font-weight:700;color:var(--d-acc);background:var(--d-surf2);transform:rotate(-6deg);animation:acStamp .45s .35s both}
+.ac-v5 .ac-tb{position:absolute;left:20px;top:22px;display:grid;grid-template-columns:repeat(5,38px);grid-auto-rows:26px;gap:6px}
+.ac-v5 .ac-tb i{border-radius:4px;background:var(--d-bg)}
+.ac-v5 .ac-tb i.h{background:var(--d-acc);animation:acHi .6s both}
+.ac-v5 .ac-tb i.h2{animation-delay:.3s}.ac-v5 .ac-tb i.h3{animation-delay:.6s}
+.sum5.v3 .ac-five2{top:240px}
+
+/* 7 · 8 대화 말풍선 */
+.ac-chats{position:absolute;left:128px;right:128px;top:286px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.ac-chat{position:relative;border-radius:16px;border:1.5px solid var(--d-line);background:var(--d-surf);padding:30px 32px;min-height:520px;display:flex;flex-direction:column;gap:30px}
+.ac-chat.ac-ctx{border-color:var(--d-cool)}
+.ac-me{align-self:flex-end;max-width:94%;padding:20px 26px;border-radius:22px 22px 6px 22px;background:var(--d-surf2);font-size:38px;font-weight:600;line-height:1.4;color:var(--d-ink);letter-spacing:-.02em}
+.ac-me .l{display:block;animation:acType .6s steps(14,end) both}
+.ac-me .l2{animation-delay:.6s}.ac-me .l3{animation-delay:1.2s}
+.ac-bot{display:flex;gap:16px;align-items:flex-start}
+.ac-bot>.ic{flex:none;width:68px;height:68px;padding:9px;border-radius:50%;background:var(--d-bg);fill:none;stroke:var(--d-cool);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-ans{position:relative;padding:20px 26px;border-radius:22px 22px 22px 6px;background:var(--d-bg);font-size:38px;font-weight:700;line-height:1.35;min-height:76px;min-width:120px}
+.ac-dots{position:absolute;left:24px;top:30px;display:flex;gap:8px;opacity:0;animation:acGone .9s .9s both}
+.ac-dots i{width:12px;height:12px;border-radius:50%;background:var(--d-mute);animation:acBlink .5s 6}
+.ac-dots i:nth-child(2){animation-delay:.15s}.ac-dots i:nth-child(3){animation-delay:.3s}
+.ac-say2{display:flex;gap:12px;align-items:center;animation:acLate 1.8s both}
+.ac-say2 .ic{flex:none;width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ac-bad{color:var(--e-red)}.ac-good{color:var(--d-cool)}
+.ac-chats3{grid-template-columns:repeat(3,1fr);gap:30px}
+.ac-chats3 .ac-chat{min-height:500px;padding:26px 26px}
+.ac-chats3 .ac-me{font-size:31px;max-width:100%}
+.ac-chats3 h3{display:flex;gap:12px;align-items:center;font-size:36px;margin:0;color:var(--d-ink)}
+.ac-chats3 h3 .ic{width:40px;height:40px;fill:none;stroke:var(--d-acc);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ac-chats3 .ac-ans{font-size:31px}
+.ac-mini{display:inline-grid;grid-template-columns:repeat(5,22px);gap:4px;vertical-align:middle;margin-right:8px}
+.ac-mini i{height:16px;border-radius:3px;background:var(--d-surf2)}
+.ac-mini i.h{background:var(--d-acc)}
+/* v4: 2 한 문장 · 4 이렇게 해요 */
+.ac-one{position:absolute;left:128px;right:128px;top:330px;display:flex;gap:40px;align-items:center;padding:56px 60px;border-radius:16px;border:1.5px solid var(--d-line);background:var(--d-surf)}
+.ac-one .ic{flex:none;width:110px;height:110px;fill:none;stroke:var(--d-acc);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.ac-one p{margin:0;font-size:56px;font-weight:700;line-height:1.3;letter-spacing:-.03em;color:var(--d-ink)}
+.ac-one p b{color:var(--d-acc)}
+.ac-do{position:absolute;left:128px;right:128px;top:300px;display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.ac-do .card{display:flex;flex-direction:column;gap:28px;padding:44px 36px;min-height:440px}
+.ac-do .ac-ic{width:96px;height:96px;animation:acPop .5s both}
+.ac-do h3{font-size:44px!important;line-height:1.28;animation:acRise .4s .2s both}
+.ac-do4.v3 .ac-law{top:800px}
+.ac-five2 .ac-why{font-size:26px!important}
+.ac-v4 .ac-no{font-size:26px!important;left:92px!important;top:108px!important}
+</style>
+
+<!-- 1 표지 -->
+<section class="slide cover v3" data-ac-sect="00 · 시작" data-e-bg="B" data-fx="eCover" data-steps="1" data-agenda="0">
+  <div class="e-hub e-hub-a"><svg class="e-wires" viewBox="0 0 760 700" aria-hidden="true"></svg><div class="e-node e-core" data-x="380" data-y="350"><svg class="ic"><use href="#file-text"/></svg><b>시험지</b></div><div class="e-node" data-x="380" data-y="95"><svg class="ic"><use href="#scan"/></svg><b><i class="ac-c">1</i> 찍어요</b></div><div class="e-node" data-x="622" data-y="271"><svg class="ic"><use href="#send"/></svg><b><i class="ac-c">2</i> 보내요</b></div><div class="e-node" data-x="530" data-y="556"><svg class="ic"><use href="#bot"/></svg><b><i class="ac-c">3</i> AI 풀기</b></div><div class="e-node" data-x="230" data-y="556"><svg class="ic"><use href="#undo-2"/></svg><b><i class="ac-c">4</i> 돌아와요</b></div><div class="e-node" data-x="138" data-y="271"><svg class="ic"><use href="#pen-line"/></svg><b><i class="ac-c">5</i> 써요</b></div></div>
+  <div class="hd"><div class="kicker m-k">따로 하는 이야기 · 8분</div></div>
+  <div class="hero">
+    <h1 class="m-words">AI 커닝, <em>미리</em> 막기</h1>
+    <i class="m-rule"></i>
+    <p class="tag m-rise">방법은 달라도, 순서는 같아요</p>
+  </div>
+  <div class="who m-rise"><b>AI교육코디네이터 박진영</b></div>
+  <aside class="note"><b>[시간표 · 8분]</b> 1 표지 0~0.5 · 2 미리 준비 0.5~1 · 3 순서 1~2.5 · 4 의심이 들 때 2.5~3.5 · <b>5 평가 준비 5가지 3.5~5.5</b> · 6 AI 풀이 참고 5.5~6.5 (선택 시연 +2분) · 7 이렇게 말하면 돼요 6.5~7.5 · 8 한 장으로 7.5~8. 모자라면 3 → 5 → 8만. [0~0.5분] 「하네스 이야기와 따로, AI 커닝 예방 이야기를 8분만 할게요. 어떻게 하는지가 아니라, 평가 준비를 어떻게 하는지예요.」 클릭 1: 오른쪽에 다섯 단계가 붙어요. 「찍고, 보내고, AI가 풀고, 돌아오고, 써요.」 <b>안전선</b>: 기기 · 제품 이름, 숨기는 법, 연결하는 법, 안 들키는 법은 질문이 나와도 말하지 않아요 → 「그건 몰라도 준비할 수 있어요」.</aside>
+</section>
+
+<!-- 2 요즘 걱정 (숫자 · 날짜 없이 일반 문장만) -->
+<section class="slide ac-worry v3" data-ac-sect="00 · 시작" data-e-bg="C" data-fx="eBig" data-e-inner="v3gen" data-steps="3" data-agenda="0">
+  <div class="hd"><div class="kicker m-k">요즘 걱정</div><h2 class="m-wipe">시험장 AI 부정행위, <em>미리 준비</em>해요</h2></div>
+  <div class="ac-one" data-k="1" data-m="snap"><svg class="ic"><use href="#newspaper"/></svg><p>시험장에서 AI 기기를 이용한<br>부정행위가 <b>보도되고 있어요</b></p></div>
+  <p class="ac-take" data-k="2" data-m="snap">의심하자는 게 아니에요. <b>평가 준비</b>를 함께 점검해요<small>오늘은 선생님이 컴퓨터로 할 수 있는 것 중심으로</small></p>
+  <div class="e-big"><div class="e-k">// 요즘 걱정</div><p class="e-h">우리 학교도<br><em>미리</em> 준비해요<i class="e-slot"></i></p></div>
+  <aside class="note">[0.5~1분] 큰 글자: 「우리 학교도 미리 준비해요.」 클릭 1: 「요즘 시험장에서 AI 기기를 이용한 부정행위가 보도되고 있어요.」 클릭 2: 「누구를 의심하자는 게 아니에요. 평가 준비를 함께 점검하자는 거예요.」 (구체적 숫자 · 날짜는 말하지 않아요.)</aside>
+</section>
+
+<!-- 3 다섯 걸음: 움직이는 지도 (교실 안 · 교실 밖) -->
+<section class="slide ac-flow5 v3" data-ac-sect="01 · 순서" data-e-bg="B" data-fx="eBig" data-e-inner="v3gen" data-steps="7" data-agenda="1">
+  <div class="hd"><div class="kicker m-k">하는 순서</div><h2 class="m-wipe">방법은 달라도 <em>순서는 같아요</em></h2></div>
+  <div class="ac-map">
+    <div class="ac-zone ac-zin"><span>교실 안</span></div>
+    <div class="ac-zone ac-zout"><span>교실 밖 · 보내고 받기</span></div>
+    <i class="ac-wall"></i>
+    <div class="ac-g ac-g1" data-b="1" data-replay><div class="ac-node" style="left:100px;top:90px"><span class="ac-badge">1</span><svg class="ic"><use href="#file-text"/></svg><b>문제를 찍어요</b></div></div>
+    <div class="ac-g" data-b="2" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M320 150 H720"/></svg><i class="ac-dot" style="offset-path:path('M320 150 H720')"></i><div class="ac-node" style="left:720px;top:90px"><span class="ac-badge">2</span><svg class="ic"><use href="#send"/></svg><b>밖으로 보내요</b></div></div>
+    <div class="ac-g" data-b="3" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M940 150 C1150 150 1300 160 1300 200"/></svg><i class="ac-dot" style="offset-path:path('M940 150 C1150 150 1300 160 1300 200')"></i><div class="ac-ai"><span class="ac-badge">3</span><i class="ac-ring"></i><i class="ac-ring r2"></i><svg class="ic"><use href="#bot"/></svg><b>AI가 풀어요</b></div></div>
+    <div class="ac-g" data-b="4" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M1300 400 C1300 450 1120 450 940 450"/></svg><i class="ac-dot" style="offset-path:path('M1300 400 C1300 450 1120 450 940 450')"></i><div class="ac-node" style="left:720px;top:390px"><span class="ac-badge">4</span><svg class="ic"><use href="#undo-2"/></svg><b>답이 돌아와요</b></div></div>
+    <div class="ac-g" data-b="5" data-replay><svg class="ac-lines" viewBox="0 0 1664 600"><path class="ac-seg" pathLength="1" d="M720 450 H320"/></svg><i class="ac-dot" style="offset-path:path('M720 450 H320')"></i><div class="ac-node" style="left:100px;top:390px"><span class="ac-badge">5</span><svg class="ic"><use href="#pen-line"/></svg><b>시험지에 써요</b></div><svg class="ac-write" viewBox="0 0 200 30"><path pathLength="1" d="M4 18 C20 4 30 28 46 16 S72 6 84 18 S110 26 122 12 S150 8 160 20 S186 22 196 10"/></svg></div>
+    <div class="ac-g" data-b="6" data-replay><div class="ac-stampz ac-s-in"><svg class="ic"><use href="#clipboard-check"/></svg>평가 준비 · 감독</div></div>
+  </div>
+  <p class="ac-take" data-b="6">앞뒤는 교실 안 · <b>평가 준비와 감독</b>을 함께 챙겨요</p>
+  <div class="e-big"><div class="e-k">// 방법은 달라도</div><p class="e-h">순서는<br><em>같아요</em><i class="e-slot"></i></p></div>
+  <aside class="note">[1~2.5분] 큰 글자: 「방법은 바뀌어도 순서는 같아요.」 클릭 1~5 (종이가 선을 따라가요): 「문제를 찍어요. 밖으로 보내요. AI가 풀어요. 답이 돌아와요. 시험지에 써요.」 클릭 6: 「가운데는 교실 밖이에요. 앞뒤는 교실 안이니까, 평가 준비와 감독을 함께 챙기면 돼요.」 (어떻게 찍는지 · 보내는지는 말하지 않아요.)</aside>
+</section>
+
+<!-- 4 의심이 들 때: 이렇게 해요 (행동 → 방식 연결 카드는 뺐어요) -->
+<section class="slide ac-do4 v3" data-ac-sect="02 · 의심이 들 때" data-e-bg="B" data-fx="v3gen" data-steps="4" data-agenda="1">
+  <div class="hd"><div class="kicker m-k">의심이 들 때</div><h2 class="m-wipe">이렇게 <em>해요</em></h2></div>
+  <div class="ac-do">
+    <div class="card" data-b="1" data-replay><svg class="ac-ic"><use href="#megaphone"/></svg><h3>허용 물품 · 감독 규칙은 미리 알리고 똑같이</h3></div>
+    <div class="card" data-b="2" data-replay><svg class="ac-ic"><use href="#notebook-pen"/></svg><h3>본 사실만 기록해요</h3></div>
+    <div class="card" data-b="3" data-replay><svg class="ac-ic"><use href="#user-x"/></svg><h3>공개적으로 지목하지 않아요</h3></div>
+    <div class="card" data-b="4" data-replay><svg class="ac-ic"><use href="#list-checks"/></svg><h3>학교 절차로 확인해요</h3></div>
+  </div>
+  <p class="ac-law"><svg class="ic"><use href="#shield-check"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <aside class="note">[2.5~3.5분] 「혹시 의심이 들 때는 이렇게 해요.」 클릭 1: 「허용 물품과 감독 규칙은 시험 전에 미리 알리고, 모두에게 똑같이 적용해요.」 클릭 2: 「본 사실만 기록해요. 짐작은 적지 않아요.」 클릭 3: 「다른 학생 앞에서 지목하지 않아요.」 클릭 4: 「확인은 학교 절차대로 해요.」 「기기 보관과 감독은 학교 시험 운영 규칙을 따르면 돼요.」</aside>
+</section>
+
+<!-- 6 예방 5가지 (가운데 장) -->
+<section class="slide ac-tips v3 e-paper" data-ac-sect="03 · 할 수 있는 것" data-fx="v3gen" data-steps="6" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">내 컴퓨터로</div><h2 class="m-wipe">평가 준비, <em>이렇게 도와요</em></h2></div>
+  <div class="ac-five2">
+    <div class="card" data-b="1" data-replay><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><span class="ac-fix">참고만</span></div><h3>AI 풀이도 참고해 점검하기</h3><p class="ac-why"><small>그러면</small>목표 · 난이도를 다시 봐요</p></div>
+    <div class="card" data-b="2" data-replay><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>기록표 · 자료 제시</small></div><h3>자료를 주고 과정 묻기</h3><p class="ac-why"><small>그러면</small>근거와 과정을 설명하게 해요</p></div>
+    <div class="card" data-b="3" data-replay><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A형 B형 (순서만)</h3><p class="ac-why"><small>그러면</small>옮기기 어렵게 · 정답은 직접 확인</p></div>
+    <div class="card" data-b="4" data-replay><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">배부</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">A · 3쪽</span></div><h3>쪽 번호 · 형 표시</h3><p class="ac-why"><small>그러면</small>배부 · 누락을 확인해요</p></div>
+    <div class="card" data-b="5" data-replay><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">시험 뒤</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>같은 오답 살펴보기</h3><p class="ac-why"><small>그러면</small>흔한 오개념일 수도 · 겹침만으로 판단 안 해요</p></div>
+  </div>
+  <p class="ac-law" data-b="6"><svg class="ic"><use href="#scale"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <aside class="note">[3.5~5.5분 · 가장 중요한 장] 「선생님이 컴퓨터로 평가 준비를 도울 수 있는 다섯 가지예요. 모두 보조책이에요.」 클릭 1: 「AI 풀이도 참고해서 문항을 점검해요. AI가 맞힌다고 나쁜 문항은 아니에요. 목표와 난이도를 다시 보는 데 써요.」 클릭 2: 「필요한 기록표나 자료를 주고, 근거와 과정을 설명하게 해요.」 클릭 3: 「A형 B형은 문항과 배점은 같게, 순서만 바꿔요. 그대로 옮기기 어렵게 하는 보조책이고, 정답은 꼭 직접 확인해요.」 클릭 4: 「쪽 번호와 A · B형 표시를 넣으면 배부하고 걷을 때 빠진 게 없는지 확인하기 쉬워요.」 클릭 5: 「시험 뒤에 같은 오답이 많이 겹치면 살펴봐요. 흔한 오개념일 수도 있어요. 겹침만으로 판단하지 않아요.」 클릭 6: 「기기 보관과 감독은 학교 시험 운영 규칙을 따르면 돼요.」</aside>
+</section>
+
+<!-- 7 AI 풀이 참고 · 자료 주고 과정 묻기: 말풍선 -->
+<section class="slide ac-try v3" data-ac-sect="03 · 할 수 있는 것" data-e-bg="B" data-fx="v3gen" data-steps="3" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">1 · 2번</div><h2 class="m-wipe">AI 풀이도 <em>참고해</em> 점검해요</h2></div>
+  <div class="ac-chats">
+    <div class="ac-chat" data-b="1" data-replay><span class="ac-tag">흔한 문제 (지어낸 예시)</span>
+      <div class="ac-me"><span class="l">「광합성에 필요한 세 가지를</span><span class="l l2">쓰시오.」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-bad"><svg class="ic"><use href="#circle-check"/></svg>몇 초 만에 정답</span></div></div></div>
+    <div class="ac-chat ac-ctx" data-b="2" data-replay><span class="ac-tag">자료를 주고 과정 묻기 (지어낸 예시)</span>
+      <div class="ac-me"><span class="l">「아래 기록표를 보고, 2모둠</span><span class="l l2">콩나물만 노랗게 자란 까닭을</span><span class="l l3">근거를 들어 설명하시오.」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#user-check"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#clipboard-check"/></svg>근거 · 과정을 봐요</span></div></div></div>
+  </div>
+  <p class="ac-take" data-b="3">AI가 맞힌다고 <b>나쁜 문항은 아니에요</b><small>목표 · 난이도 · 설명 요구를 다시 보는 데 써요 · 오늘은 지어낸 예시로만</small></p>
+  <aside class="note">[5.5~6.5분] 클릭 1: 「이런 흔한 문제는 AI가 몇 초 만에 맞혀요. 그렇다고 나쁜 문항은 아니에요.」 클릭 2: 「대신 필요한 기록표나 자료를 주고, 근거와 과정을 설명하게 하면 학생이 어떻게 생각했는지 볼 수 있어요.」 클릭 3: 「AI 풀이는 문항의 목표와 난이도를 다시 보는 참고로만 써요.」 <b>(선택 시연 · 2분)</b> 지어낸 예시 문제만 써요. 채팅 창에 왼쪽 문제를 붙여 넣어 바로 답이 나오는 걸 보여 주고, 「그래서 이 문항이 무엇을 보려는지 다시 생각해 봐요」로 정리. 실제 시험 문제는 넣지 않아요.</aside>
+</section>
+
+<!-- 8 A · B형 · 쪽 번호 · 같은 오답: 부탁 말풍선 (가상 자료로만) -->
+<section class="slide ac-help v3" data-ac-sect="03 · 할 수 있는 것" data-e-bg="C" data-fx="v3gen" data-steps="4" data-agenda="2">
+  <div class="hd"><div class="kicker m-k">3 · 4 · 5번</div><h2 class="m-wipe">AI한테 <em>이렇게</em> 말하면 돼요</h2></div>
+  <div class="ac-chats ac-chats3">
+    <div class="ac-chat" data-b="1" data-replay><h3><svg class="ic"><use href="#shuffle"/></svg>A형 B형</h3>
+      <div class="ac-me"><span class="l">「문항과 배점은 그대로 두고</span><span class="l l2">순서만 바꾼 B형과</span><span class="l l3">정답 대응표를 만들어 줘」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#files"/></svg>B형 · 정답 대응표</span></div></div></div>
+    <div class="ac-chat" data-b="2" data-replay><h3><svg class="ic"><use href="#hash"/></svg>쪽 번호 · 형 표시</h3>
+      <div class="ac-me"><span class="l">「모든 쪽 아래에 쪽 번호와</span><span class="l l2">A형 · B형 표시를 넣어 줘」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><svg class="ic"><use href="#hash"/></svg>A형 1 ~ 4쪽</span></div></div></div>
+    <div class="ac-chat" data-b="3" data-replay><h3><svg class="ic"><use href="#table"/></svg>같은 오답 정리</h3>
+      <div class="ac-me"><span class="l">「가상 학생별 · 문항별 답을</span><span class="l l2">표로 정리하고, 많이 나온</span><span class="l l3">오답을 묶어 줘」</span></div>
+      <div class="ac-bot"><svg class="ic"><use href="#bot"/></svg><div class="ac-ans"><span class="ac-dots"><i></i><i></i><i></i></span><span class="ac-say2 ac-good"><span class="ac-mini"><i></i><i></i><i class="h"></i><i></i><i></i><i></i><i></i><i class="h"></i><i></i><i></i></span>3번 · 8번</span></div></div></div>
+  </div>
+  <p class="ac-take" data-b="4">오늘은 <b>가상 문제 · 가상 답안</b>으로만<small>실제 시험 문제와 답안은 학교가 허용한 도구와 처리 기준을 확인한 뒤</small></p>
+  <aside class="note">[6.5~7.5분] 「나머지 셋은 AI한테 이렇게 말하면 돼요.」 클릭 1: 「문항과 배점은 그대로 두고 순서만 바꾼 B형과 정답 대응표를 만들어 줘. 정답은 꼭 직접 확인해요.」 클릭 2: 「모든 쪽 아래에 쪽 번호와 A형 · B형 표시를 넣어 줘. 배부하고 걷을 때 빠진 게 없는지 보기 쉬워요.」 클릭 3: 「가상 학생별 · 문항별 답을 표로 정리하고 많이 나온 오답을 묶어 줘. 흔한 오개념을 찾는 데도 좋아요.」 클릭 4: 「오늘 연습은 가상 문제, 가상 답안으로만 해요. 실제 시험 문제와 답안은 학교가 허용한 도구와 처리 기준을 확인한 뒤에요.」</aside>
+</section>
+
+<!-- 9 한 장으로 다시 (마무리) -->
+<section class="slide ac-tips sum5 v3 e-paper" data-ac-sect="04 · 정리" data-fx="v3gen" data-steps="0" data-agenda="3">
+  <div class="hd"><div class="kicker m-k">한 장으로 다시</div><h2 class="m-wipe">방법은 달라도, <em>순서는 같아요</em></h2></div>
+  <div class="ac-five2">
+    <div class="card"><div class="ac-top"><span class="ac-num">1</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v1"><i class="ac-paper"></i><svg class="ic"><use href="#bot"/></svg><span class="ac-ok">✓</span><span class="ac-fix">참고만</span></div><h3>AI 풀이도 참고해 점검하기</h3><p class="ac-why"><small>그러면</small>목표 · 난이도를 다시 봐요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">2</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v2"><i class="ac-pz p1"></i><i class="ac-pz p2"></i><i class="ac-pz p3"></i><svg class="ic"><use href="#puzzle"/></svg><small>기록표 · 자료 제시</small></div><h3>자료를 주고 과정 묻기</h3><p class="ac-why"><small>그러면</small>근거와 과정을 설명하게 해요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">3</span><span class="ac-tag">시험 전</span></div><div class="ac-viz ac-v3"><span class="ac-sh sa">A</span><span class="ac-sh sb">B</span><svg class="ic"><use href="#shuffle"/></svg></div><h3>A형 B형 (순서만)</h3><p class="ac-why"><small>그러면</small>옮기기 어렵게 · 정답은 직접 확인</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">4</span><span class="ac-tag">배부</span></div><div class="ac-viz ac-v4"><i class="ac-paper"></i><span class="ac-no">A · 3쪽</span></div><h3>쪽 번호 · 형 표시</h3><p class="ac-why"><small>그러면</small>배부 · 누락을 확인해요</p></div>
+    <div class="card"><div class="ac-top"><span class="ac-num">5</span><span class="ac-tag">시험 뒤</span></div><div class="ac-viz ac-v5"><div class="ac-tb"><i></i><i></i><i class="h h1"></i><i></i><i></i><i></i><i></i><i class="h h2"></i><i></i><i></i><i></i><i></i><i class="h h3"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><h3>같은 오답 살펴보기</h3><p class="ac-why"><small>그러면</small>흔한 오개념일 수도 · 겹침만으로 판단 안 해요</p></div>
+  </div>
+  <p class="ac-law"><svg class="ic"><use href="#scale"/></svg><span>기기 보관과 감독은 <b>학교 시험 운영 규칙</b>에 따라요</span></p>
+  <p class="ac-law ac-law2"><svg class="ic"><use href="#shield-check"/></svg><span>오늘은 <b>가상 문제 · 가상 답안</b>으로만 · 같은 오답만으로 판단하지 않아요</span></p>
+  <aside class="note">[7.5~8분] 「한 장으로 다시 볼게요. 사진 찍어 가셔도 돼요.」 다섯 가지를 한 줄씩: 「AI 풀이도 참고해 점검하기, 자료를 주고 과정 묻기, A형 B형은 순서만, 쪽 번호와 형 표시, 같은 오답 살펴보기.」 「기기 보관과 감독은 학교 규칙대로, 평가 준비는 우리가 함께. 고맙습니다.」</aside>
+</section>
+
+<script>/* 위 줄 구간 이름: 엔진의 SECT(메인 덱용) 대신 이 덱의 data-ac-sect를 써요 (엔진이 .dtop을 만든 뒤에 바꿔요) */
+(function () {
+  function fix() {
+    var all = document.querySelectorAll('.slide[data-ac-sect]'), done = 0;
+    [].forEach.call(all, function (sl) {
+      var sp = sl.querySelector('.dtop span'); if (!sp) return;
+      var v = sl.getAttribute('data-ac-sect').split(' · '), h = '<b>' + v[0] + '</b> · ' + v[1];
+      if (sp.innerHTML !== h) sp.innerHTML = h;
+      done++;
+    });
+    return all.length > 0 && done === all.length;
+  }
+  var st = document.getElementById('stage');
+  if (!st || !window.MutationObserver) return;
+  var mo = new MutationObserver(function () { if (fix()) mo.disconnect(); });
+  mo.observe(st, { childList: true, subtree: true });
+})();
+</script>
