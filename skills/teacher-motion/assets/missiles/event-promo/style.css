@@ -1,0 +1,49 @@
+#scene{font-family:"Noto Sans KR",sans-serif;color:#FFF4E2;word-break:keep-all}
+#scene > div{position:absolute;left:0;top:0;width:1920px;height:1080px}
+/* 1 hook */
+.fx-in{position:absolute;left:160px;top:250px;width:1600px}
+.fx-kick{font-size:64px;font-weight:700;color:#F6C453;letter-spacing:.02em}
+.fx-big{font-size:210px;font-weight:800;line-height:1.08;letter-spacing:-.03em}
+.fx-w2{color:#FF7A45;margin-top:56px;transform-origin:20% 60%;display:inline-block}
+/* 2 hero */
+.fx-frame{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden}
+.fx-img{position:absolute;left:0;top:0;width:1920px;height:1080px;object-fit:cover}
+.fx-shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(30,18,48,.92) 0%,rgba(30,18,48,.72) 34%,rgba(30,18,48,0) 60%)}
+.fx-title{position:absolute;left:130px;top:250px;width:900px}
+.fx-t1{font-size:60px;font-weight:700;color:#F6C453;margin-bottom:6px}
+.fx-t2{font-size:180px;font-weight:800;line-height:1.02;letter-spacing:-.03em}
+.fx-t2 > span{display:inline-block}
+.fx-t3{margin-top:34px;font-size:48px;font-weight:700;color:#1E1230;background:#F6C453;display:inline-block;padding:10px 28px;border-radius:999px}
+/* 3 date */
+.fx-ring{position:absolute;left:560px;top:70px;width:800px;height:800px;opacity:0}
+.fx-ring svg{width:100%;height:100%}
+.fx-ring circle{fill:none;stroke:#F6C453;stroke-width:10;stroke-linecap:round}
+.fx-ring circle.r2{stroke:#FF7A45;stroke-width:4;stroke-dasharray:2 18}
+.fx-date{position:absolute;left:0;top:330px;width:1920px;text-align:center;font-size:230px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.fx-dmask{display:inline-block;overflow:hidden;vertical-align:top;padding:0 2px}
+.fx-dch{display:inline-block}
+.fx-dow{position:absolute;left:1330px;top:150px;width:190px;height:190px;border-radius:50%;background:#FF7A45;color:#1E1230;font-size:84px;font-weight:800;line-height:190px;text-align:center;transform:rotate(10deg)}
+.fx-chips{position:absolute;left:0;top:830px;width:1920px;text-align:center}
+.fx-chip{display:inline-block;margin:0 14px;font-size:54px;font-weight:700;padding:14px 40px;border:4px solid #F6C453;border-radius:999px;color:#FFF4E2;background:rgba(30,18,48,.75)}
+/* 4 program */
+.fx-h4{position:absolute;left:0;top:130px;width:1920px;text-align:center;font-size:96px;font-weight:800}
+.fx-row{position:absolute;left:150px;top:330px;width:1620px;height:620px;display:flex;justify-content:space-between}
+.fx-cw{width:490px;height:600px}
+.fx-card{width:490px;height:580px;border-radius:44px;background:#FFF4E2;color:#2A1830;text-align:center;padding:56px 36px 0;box-sizing:border-box;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.fx-card.c0{border-top:22px solid #FF7A45}.fx-card.c1{border-top:22px solid #F6C453}.fx-card.c2{border-top:22px solid #E4572E}
+.fx-ic{width:190px;height:190px;margin:0 auto 30px;border-radius:50%;background:#2A1830;display:flex;align-items:center;justify-content:center}
+.fx-ic svg{width:130px;height:130px;fill:none;stroke:#F6C453;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.fx-nm{font-size:76px;font-weight:800;line-height:1.1}
+.fx-ds{margin-top:18px;font-size:46px;font-weight:600;color:#6B3A4E}
+/* 5 kinetic */
+.fx-band{position:absolute;left:0;top:380px;width:1920px;height:320px;background:#FF7A45;transform-origin:0 50%}
+.fx-kw{position:absolute;left:0;top:380px;width:1920px;height:320px;overflow:hidden;text-align:center}
+.fx-kwi{font-size:190px;font-weight:800;line-height:320px;color:#1E1230;letter-spacing:-.03em}
+/* 6 end */
+.fx-pic{position:absolute;left:1000px;top:170px;width:800px;height:740px;border-radius:48px;overflow:hidden;border:14px solid #FFF4E2;box-shadow:0 40px 80px rgba(0,0,0,.45)}
+.fx-pic img{width:100%;height:100%;object-fit:cover;object-position:62% 50%}
+.fx-info{position:absolute;left:130px;top:230px;width:820px}
+.fx-e1{font-size:60px;font-weight:700;color:#F6C453}
+.fx-e2{font-size:150px;font-weight:800;line-height:1.05;letter-spacing:-.03em}
+.fx-e3{margin-top:40px;font-size:56px;font-weight:800;color:#1E1230;background:#F6C453;display:inline-block;padding:12px 30px;border-radius:20px}
+.fx-e4{margin-top:30px;font-size:54px;font-weight:700}

@@ -1,6 +1,6 @@
 ---
 name: teacher-class-tools
-description: Makes timer, picker, team maker, bracket and scoreboard as one offline HTML file for teachers and anyone (class, 가족·동호회). TV-readable and touch-friendly.
+description: Makes timer, picker, team maker, bracket and scoreboard (or several as tabs on one class page) as one offline HTML file for teachers and anyone (class, 가족·동호회). TV-readable and touch-friendly.
 license: Apache-2.0
 ---
 
@@ -44,6 +44,7 @@ Quick, reliable tools for the moment a teacher asks for them ("5분 타이머", 
 | teams | `items` or `numbers`, `team_count` (2-8) or `team_size`, `team_names` |
 | bracket | `items` or `numbers` (2-16 entries), `shuffle` |
 | scoreboard | `teams` (2-8 names), `steps` e.g. [1,5,10], `start` |
+| set | several tools on ONE class page with tabs (keys 1-4): `title`, `tools` [2-4 tool specs above, e.g. picker + teams + timer]; each tool is built and checked on its own (「발표 순서 뽑기랑 모둠 나누기랑 타이머 한 화면에」) |
 Design uses the shared design system (palette from subject/grade/mood), one embedded Korean font, no external files. The user's own logo/template colours come first: `"design": {"palette_from": "pal.json"}` (made by `shared/design/color_from.py`, see `../teacher-studio/references/user-colors.md`). `check_tool.py` WARNs when correct/wrong or team colours look alike to colour-blind eyes.
 
 ## Privacy rules (non-negotiable)

@@ -1,0 +1,49 @@
+{
+ "title": "가을 축제",
+ "skin": "festival",
+ "items": [],
+ "vars": {
+  "bg1": "#1E1226",
+  "bg2": "#3A1F3D",
+  "primary": "#F6C453",
+  "accent": "#E4572E",
+  "text": "#FFF4E2"
+ },
+ "school": "우리 학교",
+ "hook_small": "올가을,",
+ "hook_a": "우리 학교가",
+ "hook_b": "들썩인다!",
+ "tagline": "우리가 만드는 하루",
+ "date_num": "11.27",
+ "date_day": "금",
+ "date_chips": [
+  "오후 1시",
+  "학교 운동장"
+ ],
+ "program_head": "이런 게 기다려요",
+ "program": [
+  {
+   "icon": "stage",
+   "name": "학급 공연",
+   "desc": "무대 위 우리 반"
+  },
+  {
+   "icon": "booth",
+   "name": "체험 부스",
+   "desc": "만들고 겨루고"
+  },
+  {
+   "icon": "food",
+   "name": "먹거리 장터",
+   "desc": "함께 만든 간식"
+  }
+ ],
+ "kinetic": [
+  "보러 와요",
+  "같이 놀아요",
+  "함께 만들어요!"
+ ],
+ "end_when": "11월 27일(금) 오후 1시",
+ "end_line": "학교 운동장에서 만나요",
+ "hero": ""
+}

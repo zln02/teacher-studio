@@ -5,6 +5,8 @@
 
 Usage:
     python3 build_tool.py --spec spec.json --out tool.html [--no-check] [--no-fonts] [--yes]
+    multi-tool class page (tabs): {"tool": "set", "title": "우리 반 수업 도우미", "design": {...}, "tools": [{"tool": "picker", ...},
+        {"tool": "teams", ...}, {"tool": "timer", ...}]}  -> one file, a tab per tool (keys 1-4), each tool checked on its own
 
 spec (see SKILL.md): {tool, title, use:"class"|"personal", sound, design:{subject,grade,mood,seed,large}, <tool options>}
 Steps: validate spec -> design tokens (shared design system) -> assemble CSS + runtime + data -> embed Korean fonts
@@ -158,6 +160,48 @@ def build(spec: dict, fonts: bool = True, yes: bool = False) -> tuple[str, dict]
     return html, report
 
 
+SET_LABEL = {"timer": "타이머", "picker": "발표 순서 뽑기", "teams": "모둠 나누기", "bracket": "대진표", "scoreboard": "점수판"}
+
+
+def build_set(spec: dict, fonts: bool = True, yes: bool = False) -> tuple[str, list[tuple[str, str]], dict]:
+    """A class page with tabs: every tool is built by build() as its own sealed page (an iframe srcdoc: no state or style leaks),
+    the tab bar switches them (click, or keys 1-4). Returns (page, [(tab label, inner html)], font report)."""
+    tools = spec.get("tools")
+    if not isinstance(tools, list) or not 2 <= len(tools) <= 4:
+        raise ValueError("set.tools needs 2-4 tool specs, e.g. [{\"tool\": \"picker\"}, {\"tool\": \"teams\"}, {\"tool\": \"timer\"}]")
+    inner: list[tuple[str, str]] = []
+    rep: dict = {"embedded": False}
+    for t in tools:
+        if not isinstance(t, dict) or t.get("tool") == "set":
+            raise ValueError("set.tools: each entry is one tool spec (timer · picker · teams · bracket · scoreboard)")
+        sub = {"use": spec.get("use", "class"), "design": spec.get("design") or {}, **t}
+        h, rep = build(sub, fonts, yes)
+        inner.append((str(t.get("title") or SET_LABEL.get(t["tool"], t["tool"]))[:14], h))
+    tk = make_tokens({"use": spec.get("use", "class"), "design": spec.get("design") or {}})
+    title = str(spec.get("title") or "수업 도우미")[:30]
+    tabs = "".join(f'<button class="tab{" on" if i == 0 else ""}" data-i="{i}"><b>{i + 1}</b>{_html.escape(lab)}</button>' for i, (lab, _) in enumerate(inner))
+    frames = "".join(f'<iframe class="pane{" on" if i == 0 else ""}" title="{_html.escape(lab)}" srcdoc="{_html.escape(h, quote=True)}"></iframe>' for i, (lab, h) in enumerate(inner))
+    css = (css_vars(tk) + "*{box-sizing:border-box;margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;background:var(--bg1)}"
+           "body{display:flex;flex-direction:column;font-family:'TS Sans','Pretendard','Noto Sans KR','Malgun Gothic',sans-serif;color:var(--text);word-break:keep-all}"
+           "nav{display:flex;align-items:center;gap:12px;padding:12px 20px;background:var(--bg2);flex:none}"
+           "nav h1{font-size:28px;font-weight:800;margin-right:auto;white-space:nowrap}"
+           ".tab{display:flex;align-items:center;gap:10px;font:inherit;font-size:28px;font-weight:700;padding:10px 22px;border-radius:14px;border:2px solid var(--cardBorder,#888);background:transparent;color:var(--text);cursor:pointer;min-height:56px}"
+           ".tab b{font-size:22px;opacity:.7}.tab.on{background:var(--primary);color:var(--btnText);border-color:var(--primary)}"
+           ".tab:focus-visible{outline:4px solid var(--accent);outline-offset:2px}"
+           "main{position:relative;flex:1}.pane{position:absolute;inset:0;width:100%;height:100%;border:0;display:none}.pane.on{display:block}")
+    js = ("(function(){var t=[].slice.call(document.querySelectorAll('.tab')),p=[].slice.call(document.querySelectorAll('.pane'));"
+          "function go(i){if(i<0||i>=t.length)return;t.forEach(function(b,k){b.classList.toggle('on',k===i);});p.forEach(function(f,k){f.classList.toggle('on',k===i);});"
+          "try{p[i].contentWindow.focus();}catch(e){}}"
+          "t.forEach(function(b,k){b.addEventListener('click',function(){go(k);});});"
+          "document.addEventListener('keydown',function(e){var n=parseInt(e.key,10);if(n>=1&&n<=t.length){go(n-1);}});"
+          "p.forEach(function(f){f.addEventListener('load',function(){try{f.contentWindow.document.addEventListener('keydown',function(e){var n=parseInt(e.key,10);"
+          "if(n>=1&&n<=t.length&&!(e.target&&/INPUT|TEXTAREA/.test(e.target.tagName))){go(n-1);}});}catch(e){}});});})();")
+    page = ('<!DOCTYPE html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">\n'
+            f'<title>{_html.escape(title)}</title>\n<style>{css}</style></head>\n<body><nav><h1>{_html.escape(title)}</h1>{tabs}</nav><main>{frames}</main>\n'
+            f'<script>{js}</script>\n</body></html>\n')
+    return page, inner, rep
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--spec", required=True)
@@ -172,6 +216,33 @@ def main() -> int:
     spec = json.loads(Path(a.spec).read_text(encoding="utf-8"))
     if (spec.get("design") or {}).get("palette_from"):
         spec["design"]["palette_from"] = design.resolve_palette_from(spec["design"]["palette_from"], Path(a.spec).resolve().parent)
+    if spec.get("tool") == "set":   # several tools on one class page (tabs): each tool is checked on its own, then the page
+        try:
+            html, inner, rep = build_set(spec, not a.no_fonts, a.yes)
+        except ValueError as exc:
+            print(f"FAIL spec: {exc}")
+            return 1
+        Path(a.out).write_text(html, encoding="utf-8")
+        print(f"wrote {a.out} ({len(html) // 1024} KB, {len(inner)} tabs: {', '.join(lab for lab, _ in inner)})")
+        if a.no_check:
+            print(f"PARTIAL {a.out} (checks disabled)")
+            return 0
+        import tempfile
+        codes = []
+        with tempfile.TemporaryDirectory(dir=str(Path(a.out).resolve().parent)) as td:
+            for i, (lab, h) in enumerate(inner):
+                f = Path(td) / f"tab{i + 1}.html"
+                f.write_text(h, encoding="utf-8")
+                print(f"-- tab {i + 1} {lab}")
+                codes.append(subprocess.call([sys.executable, str(HERE / "check_tool.py"), str(f)]))
+        worst = 1 if any(c not in (0, 2) for c in codes) else (2 if 2 in codes else 0)
+        bad = [m for m in ("http://", "https://") if m in html.replace("http://www.w3.org", "")]
+        print("FAIL page: outside address in the page" if bad else "PASS page: offline, tabs 1-%d" % len(inner))
+        if bad:
+            worst = 1
+        status = {0: "READY", 2: "PARTIAL"}.get(worst, "NOT READY")
+        print(f"{status} {Path(a.out).resolve()}")
+        return worst
     try:
         html, rep = build(spec, not a.no_fonts, a.yes)
     except ValueError as exc:

@@ -104,6 +104,23 @@ def build(doc: dict, show_js: str, out: Path, css: str = "", libs: list | None =
     return len(html.encode("utf-8"))
 
 
+PICTURE_KEYS = ("hero", "picture", "photo", "image")
+
+
+def inline_pictures(doc: dict, base: Path) -> dict:
+    """A picture given as a file next to content.json (hero, picture ...) goes INTO the page as a data URI: no outside file at runtime."""
+    import base64
+    import mimetypes
+    for k in PICTURE_KEYS:
+        v = doc.get(k)
+        if isinstance(v, str) and v and not v.startswith(("data:", "http:", "https:")):
+            p = Path(v) if Path(v).is_absolute() else base / v
+            if p.is_file() and p.stat().st_size <= 3_000_000:
+                mime = mimetypes.guess_type(str(p))[0] or "image/jpeg"
+                doc[k] = f"data:{mime};base64," + base64.b64encode(p.read_bytes()).decode("ascii")
+    return doc
+
+
 def merge(base: dict, content: dict) -> dict:
     """Overlay content on a skin preset; dict values merge one level deep."""
     out = dict(base)
@@ -136,6 +153,7 @@ def main() -> None:
         doc = json.loads((base / "skins" / f"{a.skin}.json").read_text(encoding="utf-8"))
         if a.content:
             doc = merge(doc, json.loads(a.content.read_text(encoding="utf-8")))
+            doc = inline_pictures(doc, a.content.resolve().parent)
         show = (base / "show.js").read_text(encoding="utf-8")
         css = (base / "style.css").read_text(encoding="utf-8") if (base / "style.css").exists() else ""
     else:

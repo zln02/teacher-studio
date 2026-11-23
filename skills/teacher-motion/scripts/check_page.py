@@ -296,6 +296,31 @@ HUD_JS = r"""(function(){
 })()"""
 
 
+DECO_JS = r"""(function(){
+  // decorations (canvas props the theme drew this frame, the host character, studio signs) must not sit on words or the top bar
+  var out = [], st = document.getElementById('stage'), sr = st ? st.getBoundingClientRect() : null;
+  if (!sr || !sr.width) return out;
+  var k = sr.width / 1920, deco = [];
+  (window.__tsDecoRects || []).forEach(function(r){ deco.push({n: 'prop', r: [sr.left + r[0] * k, sr.top + r[1] * k, r[2] * k, r[3] * k]}); });
+  var dom = document.querySelectorAll('#ts-deco .ts-host, #ts-deco .tv-sign, #ts-bubble:not(.empty)');
+  function vis(e){ var c = getComputedStyle(e), q = e.getBoundingClientRect(); return q.width > 2 && q.height > 2 && c.visibility !== 'hidden' && c.display !== 'none' && parseFloat(c.opacity) > 0.2; }
+  for (var i = 0; i < dom.length; i++){ if (!vis(dom[i])) continue; var q = dom[i].getBoundingClientRect(); deco.push({n: (dom[i].className || dom[i].id).toString().split(' ')[0], r: [q.left, q.top, q.width, q.height], dom: dom[i]}); }
+  var words = document.querySelectorAll('#scene .card, #scene .choice, #scene .title, #scene .subtitle, #scene [data-fit], #scene .btn, #scene .ts-chip, #scene .qs-chip, #hud .scoreboard .team, #hud .timer-num, #hud .combo');
+  for (var d = 0; d < deco.length; d++){
+    var a = deco[d].r;
+    for (var j = 0; j < words.length; j++){
+      var w = words[j]; if (!vis(w) || (deco[d].dom && (deco[d].dom.contains(w) || w.contains(deco[d].dom)))) continue;
+      var b = w.getBoundingClientRect();
+      if (a[0] < b.right - 8 && b.left < a[0] + a[2] - 8 && a[1] < b.bottom - 8 && b.top < a[1] + a[3] - 8){
+        out.push(['decooverlap', deco[d].n, ((w.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 14)) || w.className.toString().split(' ')[0]]);
+        break;
+      }
+    }
+  }
+  return out;
+})()"""
+
+
 def quiz_interactions(pg) -> list[tuple[str, str]]:
     """Exercise the quiz paths users can reach from the title and keyboard."""
     state = lambda: json.loads(pg.evaluate("render_game_to_text()"))
@@ -384,7 +409,7 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
                 if now == final and final not in ("title", "countdown", "result") and key not in checked:
                     checked.add(key)
                     pg.wait_for_timeout(350)  # let the entrance animation finish so sizes are real
-                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()") + pg.evaluate(HUD_JS):
+                    for kind, tag, txt in pg.evaluate(OVERFLOW_JS % floor) + pg.evaluate("window.__tsClip()") + pg.evaluate(HUD_JS) + pg.evaluate(DECO_JS):
                         problems.setdefault(f"{kind}:{tag}:{txt}", f"{kind} in scene {final}: <{tag}> '{txt}'")
                 steps += 1
             if final == "result" and st.get("game", {}).get("mechanic") == "quiz":
@@ -402,6 +427,8 @@ def autoplay(path: Path, tokens: dict) -> list[tuple[str, str]]:
     out.append(("FAIL" if ov else "PASS", "no text overflow / clipped answers / off-stage elements" + (f": {ov[:3]} -> shorten the text, use fewer choices, or a layout with wider buttons (design.layout split|stack)" if ov else "")))
     hv = [v for k, v in problems.items() if k.startswith("hudoverlap")]
     out.append(("FAIL" if hv else "PASS", "top bar parts (timer, score, buttons, combo) never cover question boxes or '차례' tags" + (f": {hv[:3]} -> move the box down (H.top()) or pick another design.layout" if hv else "")))
+    dv = [v for k, v in problems.items() if k.startswith("decooverlap")]
+    out.append(("FAIL" if dv else "PASS", "decorations (props, host, signs, speech bubble) never sit on words, choices or the top bar" + (f": {dv[:3]} -> another design.layout or design.seed (build.py tries the next look itself)" if dv else "")))
     mw = [v for k, v in problems.items() if k.startswith("midword")]
     out.append(("WARN" if mw else "PASS", "no Korean word broken across lines" + (f": {mw[:3]} -> shorten the text so words are not split" if mw else "")))
     orph = [v for k, v in problems.items() if k.startswith("orphan")]
